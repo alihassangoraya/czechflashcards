@@ -1,0 +1,9 @@
+*
+!/index.html
+!/styles.css
+!/app.js
+!/sw.js
+!/manifest.webmanifest
+!/sample-import.csv
+!/data/
+!/data/**
