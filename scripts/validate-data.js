@@ -16,6 +16,21 @@ const fillerExample = /(Potřebuji si zapamatovat|Ve slovníku jsem našel|V tex
 const mojibake = /[ÃÄÅÂ]|�/;
 const hasDevanagari = /[\u0900-\u097F]/;
 const hasArabic = /[\u0600-\u06FF]/;
+const requiredCorrections = {
+  "lemma-29-bez": { en: /without/i, hi: /बिना/, ur: /بغیر/, tags: /preposition/ },
+  "lemma-47-stesti": { en: /luck/i, hi: /किस्मत/, ur: /قسمت/ },
+  "lemma-62-zeme": { en: /country/i, hi: /देश/, ur: /ملک/ },
+  "lemma-74-druhy": { en: /second/i, hi: /दूसरा/, ur: /دوسرا/ },
+  "lemma-88-film": { en: /movie|film/i, hi: /फ़िल्म|फिल्म/, ur: /فلم/ },
+  "lemma-146-drink": { en: /drink/i, hi: /ड्रिंक|कॉकटेल/, ur: /ڈرنک|کاک/ },
+  "lemma-163-kouzlo": { en: /magic|spell/i, hi: /जादू|मंत्र/, ur: /جادو|منتر/ },
+  "lemma-177-talent": { en: /talent|ability/i, hi: /प्रतिभा|योग्यता/, ur: /صلاحیت|ہنر/ },
+  "lemma-233-stopa": { en: /trace|footprint/i, hi: /निशान|पदचिह्न/, ur: /نشان/ },
+  "lemma-257-lezet": { hi: /लेटना/, ur: /لیٹنا/ },
+  "lemma-299-lov": { hi: /^शिकार$/, ur: /^شکار$/ },
+  "lemma-506-spor": { hi: /विवाद|झगड़ा/, ur: /تنازع|جھگڑا/ },
+  "lemma-536-horet": { hi: /जलना/, ur: /جلنا/ }
+};
 
 function isNumberCard(card) {
   return (card.tags || []).includes("numbers");
@@ -52,6 +67,14 @@ for (const card of cards) {
 
   if (isExtended(card) && !hasDevanagari.test(card.hi || "")) warnings.push(`${label}: Hindi may not contain Devanagari`);
   if (isExtended(card) && !hasArabic.test(card.ur || "")) warnings.push(`${label}: Urdu may not contain Arabic script`);
+
+  if (requiredCorrections[label]) {
+    const checks = requiredCorrections[label];
+    for (const [field, pattern] of Object.entries(checks)) {
+      const value = field === "tags" ? (card.tags || []).join(" ") : String(card[field] || "");
+      if (!pattern.test(value)) errors.push(`${label}: corrected ${field} regressed (${value})`);
+    }
+  }
 
   if (!isNumberCard(card) && !isFormCard(card)) {
     const key = String(card.cz || "").normalize("NFC").toLocaleLowerCase("cs-CZ");
