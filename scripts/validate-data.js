@@ -29,7 +29,18 @@ const requiredCorrections = {
   "lemma-257-lezet": { hi: /लेटना/, ur: /لیٹنا/ },
   "lemma-299-lov": { hi: /^शिकार$/, ur: /^شکار$/ },
   "lemma-506-spor": { hi: /विवाद|झगड़ा/, ur: /تنازع|جھگڑا/ },
-  "lemma-536-horet": { hi: /जलना/, ur: /جلنا/ }
+  "lemma-536-horet": { hi: /जलना/, ur: /جلنا/ },
+  "lemma-224-sladky": { hi: /मीठा/, ur: /میٹھا/ },
+  "lemma-236-body": { en: /points/i, hi: /अंक|पॉइंट/, ur: /پوائنٹ|نمبر/ },
+  "lemma-399-kriz": { en: /cross/i, hi: /क्रॉस|सलीब/, ur: /صلیب/ },
+  "lemma-428-akcie": { en: /shares?|stocks?/i, hi: /शेयर/, ur: /حصہ|شیئرز/ },
+  "lemma-582-karma": { en: /karma/i, hi: /कर्म/, ur: /کرما/ },
+  "lemma-767-sach": { en: /check/i, hi: /शह/, ur: /شہ/ },
+  "lemma-806-moucha": { en: /fly/i, hi: /मक्खी/, ur: /مکھی/ },
+  "lemma-902-peceni": { en: /baking/i, hi: /बेकिंग/, ur: /بیکنگ/ },
+  "lemma-943-neb": { en: /because/i, hi: /क्योंकि|चूँकि/, ur: /کیونکہ|چونکہ/ },
+  "lemma-1112-zanedbani": { en: /neglect/i, hi: /^उपेक्षा$/, ur: /غفلت/ },
+  "lemma-1126-propaganda": { en: /propaganda/i, hi: /^प्रचार$/, ur: /پروپیگنڈا/ }
 };
 
 function isNumberCard(card) {
