@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Offline Czech A2 and B1 vocabulary flashcards with swipe review, English, Hindi, and Urdu meanings, and spaced repetition.">
+    <meta name="theme-color" content="#eef4ef">
+    <title>Czech A2/B1 Flashcards</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="topbar">
+        <div>
+          <p class="eyebrow" id="examEyebrow">B1 Czech vocabulary</p>
+          <h1>Czech Flashcards</h1>
+        </div>
+        <div class="stats" aria-label="Learning statistics">
+          <span><strong id="dueCount">0</strong> due</span>
+          <span><strong id="knownCount">0</strong> known</span>
+          <span><strong id="learningCount">0</strong> learning</span>
+        </div>
+      </section>
+
+      <section class="deck-stage" aria-live="polite">
+        <div class="deck-card" id="card" role="button" tabindex="0" aria-label="Tap to reveal translation">
+          <div class="swipe-label swipe-left">Again</div>
+          <div class="swipe-label swipe-right">Known</div>
+          <p class="card-mode" id="cardMode">Czech</p>
+          <h2 id="word">Loading...</h2>
+          <div class="answer" id="answer" hidden>
+            <div class="meaning-row">
+              <p><span>English</span><strong id="english"></strong></p>
+              <p><span id="indicLabel">Hindi</span><strong id="indicMeaning"></strong></p>
+            </div>
+            <p class="example-row"><span>Example</span><strong id="sentence"></strong><em id="sentenceEn"></em></p>
+          </div>
+          <p class="tap-hint" id="tapHint">Tap to reveal meaning</p>
+          <div class="sound-actions" aria-label="Pronunciation">
+            <button id="speakWordButton" type="button">Play word</button>
+            <button id="speakSentenceButton" type="button">Play example</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="actions" aria-label="Flashcard actions">
+        <button class="again" id="againButton" type="button">Again</button>
+        <button class="hard" id="hardButton" type="button">Hard</button>
+        <button class="reveal" id="revealButton" type="button">Reveal</button>
+        <button class="known" id="knownButton" type="button">Good</button>
+        <button class="easy" id="easyButton" type="button">Easy</button>
+      </section>
+
+      <section class="toolbar">
+        <label>
+          Exam
+          <select id="examLevel">
+            <option value="b1">B1 exam</option>
+            <option value="a2">A2 exam</option>
+          </select>
+        </label>
+        <label>
+          Deck
+          <select id="deckFilter">
+            <option value="core">Core words</option>
+            <option value="all">All study cards</option>
+            <option value="daily">Daily life</option>
+            <option value="extended">Extended words</option>
+            <option value="work">Work and study</option>
+            <option value="travel">Travel and city</option>
+            <option value="health">Health</option>
+            <option value="verbs">Verbs</option>
+            <option value="forms">Verb forms</option>
+            <option value="numbers">Numbers</option>
+            <option value="custom">My words</option>
+          </select>
+        </label>
+        <button id="shuffleButton" type="button">Shuffle due</button>
+        <button id="resetDueButton" type="button">Review all now</button>
+        <button id="exportButton" type="button">Export progress</button>
+        <button id="exportDeckButton" type="button">Export deck</button>
+        <label>
+          Daily goal
+          <input id="dailyGoalInput" type="number" min="1" max="500" step="1" value="30">
+        </label>
+        <label>
+          Meaning
+          <select id="meaningLanguage">
+            <option value="hi">Hindi</option>
+            <option value="ur">Urdu</option>
+          </select>
+        </label>
+        <label class="import-label">
+          Restore JSON
+          <input id="restoreInput" type="file" accept=".json,application/json">
+        </label>
+        <label class="import-label">
+          Import CSV
+          <input id="importInput" type="file" accept=".csv,text/csv">
+        </label>
+      </section>
+      <p class="status-line" id="statusLine" role="status">Ready for review.</p>
+
+      <section class="search-panel" aria-labelledby="searchTitle">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Deck browser</p>
+            <h2 id="searchTitle">Search words</h2>
+          </div>
+          <span><strong id="searchCount">0</strong> found</span>
+        </div>
+        <input id="searchInput" class="search-input" autocomplete="off" placeholder="Search Czech, English, Hindi, or Urdu">
+        <div class="search-results" id="searchResults" aria-live="polite"></div>
+      </section>
+
+      <section class="add-panel" aria-labelledby="addWordTitle">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Custom vocabulary</p>
+            <h2 id="addWordTitle">Add your own word</h2>
+          </div>
+          <span><strong id="customCount">0</strong> saved</span>
+        </div>
+        <form id="addWordForm" class="word-form">
+          <label>
+            Czech word
+            <input id="customCz" name="cz" autocomplete="off" required placeholder="například: schůzka">
+          </label>
+          <label>
+            English
+            <input id="customEn" name="en" autocomplete="off" required placeholder="meeting, appointment">
+          </label>
+          <label>
+            Hindi
+            <input id="customHi" name="hi" autocomplete="off" required placeholder="मीटिंग">
+          </label>
+          <label>
+            Urdu
+            <input id="customUr" name="ur" autocomplete="off" dir="rtl" placeholder="میٹنگ">
+          </label>
+          <label class="wide-field">
+            Example sentence
+            <input id="customSentence" name="sentence" autocomplete="off" required placeholder="Zítra mám důležitou schůzku.">
+          </label>
+          <label>
+            English example
+            <input id="customSentenceEn" name="sentenceEn" autocomplete="off" placeholder="Tomorrow I have an important meeting.">
+          </label>
+          <label>
+            Deck tag
+            <select id="customTag" name="tag">
+              <option value="custom">My words</option>
+              <option value="daily">Daily life</option>
+              <option value="work">Work and study</option>
+              <option value="travel">Travel and city</option>
+              <option value="health">Health</option>
+              <option value="verbs">Verbs</option>
+            </select>
+          </label>
+          <button id="addWordButton" type="submit">Add word</button>
+        </form>
+        <div class="custom-list" id="customList" aria-live="polite"></div>
+      </section>
+
+      <section class="progress-panel">
+        <div>
+          <p class="small-label">Current interval</p>
+          <strong id="intervalLabel">New word</strong>
+        </div>
+        <div>
+          <p class="small-label">Deck size</p>
+          <strong id="deckSize">0</strong>
+        </div>
+        <div>
+          <p class="small-label">Today</p>
+          <strong id="dailyProgress">0 / 30 reviewed</strong>
+        </div>
+        <div>
+          <p class="small-label">Due tomorrow</p>
+          <strong id="tomorrowCount">0</strong>
+        </div>
+        <div>
+          <p class="small-label">Tip</p>
+          <strong>Swipe or use ← H → E</strong>
+        </div>
+      </section>
+    </main>
+
+    <script src="data/vocabulary.js"></script>
+    <script src="data/extended-lemmas.js"></script>
+    <script src="data/verb-forms.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

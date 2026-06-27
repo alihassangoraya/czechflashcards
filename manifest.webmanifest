@@ -1,0 +1,10 @@
+{
+  "name": "Czech A2/B1 Flashcards",
+  "short_name": "Czech Cards",
+  "description": "Offline Czech A2 and B1 vocabulary flashcards with English, Hindi, and Urdu meanings.",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#eef4ef",
+  "theme_color": "#eef4ef",
+  "icons": []
+}

@@ -1,0 +1,15 @@
+{
+  "name": "@czech-flashcards/shared",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/runtime.mjs",
+  "types": "src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/runtime.mjs"
+    },
+    "./seed": "./data/vocabulary.seed.json"
+  }
+}
