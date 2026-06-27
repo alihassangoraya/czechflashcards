@@ -1,5 +1,7 @@
 name = "czechflashcards"
+main = "worker/index.js"
 compatibility_date = "2026-06-27"
 
 [assets]
 directory = "."
+binding = "ASSETS"
