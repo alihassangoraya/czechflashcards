@@ -3,10 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "description": "Czech A2/B1 flashcards with a static web app, shared study logic, and an Expo mobile foundation.",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
   "scripts": {
     "start": "python3 -m http.server 5173",
     "check": "node --check app.js && node --check data/vocabulary.js && node --check data/extended-lemmas.js && node --check data/verb-forms.js && node scripts/validate-data.js && node scripts/export-shared-seed.js --check && node --test packages/shared/test/*.test.mjs",
