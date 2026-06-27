@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "Czech Flashcards",
+    "slug": "czech-flashcards",
+    "scheme": "czechflashcards",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.czechflashcards.app"
+    },
+    "android": {
+      "package": "com.czechflashcards.app"
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "color": "#2f5d50"
+        }
+      ]
+    ],
+    "extra": {
+      "supabaseUrl": "",
+      "supabaseAnonKey": ""
+    }
+  }
+}
