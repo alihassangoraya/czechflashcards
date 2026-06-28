@@ -13,6 +13,8 @@
   const HARD_INTERVALS = [30 * MINUTE, 2 * HOUR, 8 * HOUR, DAY, 2 * DAY, 4 * DAY];
   const KNOWN_INTERVALS = [8 * HOUR, DAY, 3 * DAY, 7 * DAY, 16 * DAY, 35 * DAY, 75 * DAY];
   const EASY_INTERVALS = [DAY, 4 * DAY, 10 * DAY, 24 * DAY, 55 * DAY, 120 * DAY];
+  const RELEARNING_MIN_CARDS = 10;
+  const RELEARNING_MAX_CARDS = 15;
 
   const el = {
     card: document.getElementById("card"),
@@ -78,6 +80,7 @@
   let revealed = false;
   let drag = null;
   let shuffledQueue = [];
+  let relearningQueue = [];
   let forcedCardId = null;
   let lastReview = null;
   let renderTimer = null;
@@ -545,6 +548,27 @@
     shuffledQueue = [];
   }
 
+  function scheduleRelearning(cardId) {
+    const remaining = RELEARNING_MIN_CARDS + Math.floor(Math.random() * (RELEARNING_MAX_CARDS - RELEARNING_MIN_CARDS + 1));
+    relearningQueue = relearningQueue.filter((entry) => entry.id !== cardId);
+    relearningQueue.push({ id: cardId, remaining });
+  }
+
+  function advanceRelearningQueue(reviewedCardId) {
+    relearningQueue = relearningQueue.map((entry) =>
+      entry.id === reviewedCardId ? entry : { ...entry, remaining: Math.max(0, entry.remaining - 1) }
+    );
+  }
+
+  function takeRelearningCard(cards, allowEarlyReturn = false) {
+    const cardsById = new Map(cards.map((card) => [card.id, card]));
+    const eligible = relearningQueue.filter((entry) => cardsById.has(entry.id));
+    const entry = eligible.find((item) => item.remaining <= 0) || (allowEarlyReturn ? eligible.sort((a, b) => a.remaining - b.remaining)[0] : null);
+    if (!entry) return null;
+    relearningQueue = relearningQueue.filter((item) => item.id !== entry.id);
+    return cardsById.get(entry.id);
+  }
+
   function selectedMeaning(card) {
     return meaningLanguage === "ur" ? card.ur : card.hi;
   }
@@ -602,8 +626,9 @@
 
   function pickNextCard() {
     const now = Date.now();
-    const cards = dueCards(now);
-    if (!cards.length) return null;
+    const deckCards = filteredDeck();
+    const relearningIds = new Set(relearningQueue.map((entry) => entry.id));
+    const cards = dueCards(now).filter((card) => !relearningIds.has(card.id));
     const dueById = new Map(cards.map((card) => [card.id, card]));
     if (forcedCardId && dueById.has(forcedCardId)) {
       const forced = dueById.get(forcedCardId);
@@ -611,6 +636,11 @@
       return forced;
     }
     forcedCardId = null;
+
+    const scheduledRelearning = takeRelearningCard(deckCards);
+    if (scheduledRelearning) return scheduledRelearning;
+
+    if (!cards.length) return takeRelearningCard(deckCards, true);
 
     while (shuffledQueue.length) {
       const queued = dueById.get(shuffledQueue.shift());
@@ -805,6 +835,7 @@
     const previousState = { ...state };
     const previousDailyLog = { ...currentDailyLog() };
     const previousQueue = shuffledQueue.slice();
+    const previousRelearningQueue = relearningQueue.map((entry) => ({ ...entry }));
     const wasRevealed = revealed;
     const now = Date.now();
     const wasNew = !state.seen;
@@ -828,10 +859,12 @@
       state.dueAt = now + KNOWN_INTERVALS[Math.min(state.knownStreak - 1, KNOWN_INTERVALS.length - 1)];
     }
 
+    advanceRelearningQueue(reviewedCard.id);
+    if (result === "again") scheduleRelearning(reviewedCard.id);
     recordReview(wasNew);
     save();
     shuffledQueue = shuffledQueue.filter((id) => id !== reviewedCard.id);
-    lastReview = { card: reviewedCard, previousState, previousDailyLog, previousQueue, wasRevealed };
+    lastReview = { card: reviewedCard, previousState, previousDailyLog, previousQueue, previousRelearningQueue, wasRevealed };
     el.undoButton.hidden = false;
     setStatus(statusForGrade(result, reviewedCard));
     flyOut(result !== "again");
@@ -847,6 +880,7 @@
     progress[undo.card.id] = { ...undo.previousState };
     dailyLog = { ...undo.previousDailyLog };
     shuffledQueue = undo.previousQueue.slice();
+    relearningQueue = undo.previousRelearningQueue.map((entry) => ({ ...entry }));
     forcedCardId = undo.card.id;
     lastReview = null;
     reviewLocked = false;
@@ -859,7 +893,7 @@
   }
 
   function statusForGrade(result, card) {
-    if (result === "again") return `Marked again. ${card.cz} will return soon.`;
+    if (result === "again") return `Marked again. ${card.cz} will return after 10-15 other cards.`;
     if (result === "hard") return `Marked hard. ${card.cz} will return after a short interval.`;
     if (result === "easy") return `Marked easy. ${card.cz} will return much later.`;
     return `Marked good. ${card.cz} will return later.`;

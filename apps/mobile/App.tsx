@@ -47,7 +47,10 @@ import { configureLocalNotifications } from "./src/notifications";
 import { createSupabaseClient, flushSyncQueue, type SyncStatus } from "./src/sync";
 
 type Panel = "search" | "add" | "settings";
-type UndoReview = { card: Card; previousState: ReviewState; event: ReviewEvent };
+type RelearningEntry = { id: string; remaining: number };
+type UndoReview = { card: Card; previousState: ReviewState; event: ReviewEvent; previousRelearningQueue: RelearningEntry[] };
+const RELEARNING_MIN_CARDS = 10;
+const RELEARNING_MAX_CARDS = 15;
 
 const seedCardsNormalized = normalizeCards(seedPayload.cards as Parameters<typeof normalizeCards>[0]);
 
@@ -67,6 +70,7 @@ export default function App() {
   const dragX = useRef(0);
   const forcedCardId = useRef<string | null>(null);
   const revealForcedCard = useRef(false);
+  const relearningQueue = useRef<RelearningEntry[]>([]);
 
   useEffect(() => {
     async function boot() {
@@ -92,19 +96,43 @@ export default function App() {
 
   useEffect(() => {
     const now = Date.now();
+    const queuedIds = new Set(relearningQueue.current.map((entry) => entry.id));
     const due = deck
-      .filter((card) => (states[card.id]?.dueAt || 0) <= now)
+      .filter((card) => (states[card.id]?.dueAt || 0) <= now && !queuedIds.has(card.id))
       .sort((a, b) => {
         const aState = states[a.id] || { cardId: a.id, knownStreak: 0, againCount: 0, dueAt: 0, seen: 0 };
         const bState = states[b.id] || { cardId: b.id, knownStreak: 0, againCount: 0, dueAt: 0, seen: 0 };
         return compareDueReviewStates(aState, bState, now);
       });
-    const forced = forcedCardId.current ? due.find((card) => card.id === forcedCardId.current) : null;
-    setCurrent(forced || due[0] || null);
+    const forced = forcedCardId.current ? deck.find((card) => card.id === forcedCardId.current) : null;
+    const relearning = forced ? null : takeRelearningCard(deck);
+    const fallbackRelearning = forced || relearning || due.length ? null : takeRelearningCard(deck, true);
+    setCurrent(forced || relearning || due[0] || fallbackRelearning || null);
     setRevealed(Boolean(forced && revealForcedCard.current));
     forcedCardId.current = null;
     revealForcedCard.current = false;
   }, [deck, states]);
+
+  function scheduleRelearning(cardId: string) {
+    const remaining = RELEARNING_MIN_CARDS + Math.floor(Math.random() * (RELEARNING_MAX_CARDS - RELEARNING_MIN_CARDS + 1));
+    relearningQueue.current = relearningQueue.current.filter((entry) => entry.id !== cardId);
+    relearningQueue.current.push({ id: cardId, remaining });
+  }
+
+  function advanceRelearningQueue(reviewedCardId: string) {
+    relearningQueue.current = relearningQueue.current.map((entry) =>
+      entry.id === reviewedCardId ? entry : { ...entry, remaining: Math.max(0, entry.remaining - 1) }
+    );
+  }
+
+  function takeRelearningCard(deckCards: Card[], allowEarlyReturn = false): Card | null {
+    const cardsById = new Map(deckCards.map((card) => [card.id, card]));
+    const eligible = relearningQueue.current.filter((entry) => cardsById.has(entry.id));
+    const entry = eligible.find((item) => item.remaining <= 0) || (allowEarlyReturn ? eligible.sort((a, b) => a.remaining - b.remaining)[0] : null);
+    if (!entry) return null;
+    relearningQueue.current = relearningQueue.current.filter((item) => item.id !== entry.id);
+    return cardsById.get(entry.id) || null;
+  }
 
   const panResponder = useMemo(() => PanResponder.create({
     onMoveShouldSetPanResponder: (_, gesture) => Math.abs(gesture.dx) > 18,
@@ -140,8 +168,11 @@ export default function App() {
     try {
       const before = await getReviewState(db, reviewedCard.id);
       const next = applyReviewGrade(before, result, Date.now());
+      const previousRelearningQueue = relearningQueue.current.map((entry) => ({ ...entry }));
       await saveReviewResult(db, next.state, next.event, settings.dailyGoal);
-      setLastReview({ card: reviewedCard, previousState: before, event: next.event });
+      advanceRelearningQueue(reviewedCard.id);
+      if (result === "again") scheduleRelearning(reviewedCard.id);
+      setLastReview({ card: reviewedCard, previousState: before, event: next.event, previousRelearningQueue });
       await refresh(db);
     } finally {
       setGrading(false);
@@ -154,6 +185,7 @@ export default function App() {
     try {
       forcedCardId.current = lastReview.card.id;
       revealForcedCard.current = true;
+      relearningQueue.current = lastReview.previousRelearningQueue.map((entry) => ({ ...entry }));
       await undoReviewResult(db, lastReview.previousState, lastReview.event, settings.dailyGoal);
       await refresh(db);
       setLastReview(null);
@@ -277,7 +309,7 @@ export default function App() {
         <View style={styles.studyGuide}>
           <Text style={styles.guideLabel}>Study guide</Text>
           <Text style={styles.guideText}>Tap the card to reveal its meanings and example.</Text>
-          <Text style={styles.guideText}>Swipe left to see a word again soon; swipe right when it feels familiar.</Text>
+          <Text style={styles.guideText}>Swipe left to see a word again after 10-15 other cards; swipe right when it feels familiar.</Text>
           <Text style={styles.guideText}>Use the sound buttons to hear Czech pronunciation.</Text>
           <Text style={styles.guideText}>Use search to find a word, + to add one, and settings to choose your deck.</Text>
         </View>
