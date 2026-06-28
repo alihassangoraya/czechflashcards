@@ -174,25 +174,27 @@ h1 {
 
 .swipe-label {
   position: absolute;
-  top: 24px;
+  z-index: 3;
+  top: 50%;
+  right: 24px;
   border: 2px solid currentColor;
   border-radius: 8px;
-  padding: 8px 12px;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.94);
+  font-size: 2rem;
   font-weight: 850;
+  line-height: 1;
   text-transform: uppercase;
   opacity: 0;
+  transform: translateY(-50%);
 }
 
 .swipe-left {
-  left: 24px;
   color: var(--again);
-  transform: rotate(-10deg);
 }
 
 .swipe-right {
-  right: 24px;
   color: var(--known);
-  transform: rotate(10deg);
 }
 
 .deck-card.again-swipe .swipe-left,

@@ -17,6 +17,7 @@ const mojibake = /[ÃÄÅÂ]|�/;
 const hasDevanagari = /[\u0900-\u097F]/;
 const hasArabic = /[\u0600-\u06FF]/;
 const generatedExample = /(^Dnes potřebuju|pracuje dnes dlouho|^Nebudu .* pozdě večer\.$|^Umím .* jen trochu\.$|^Udělám to (furt|mile|polo|blaze|nato|minus|tama)\.$|^Ten (plán|byt) je |^Ten (onen|aji) je |I need .* today|works for a long time today|The flat is (thick|naked|French|quick|thin|ripe|obedient))/i;
+const rejectedPlaceholderExample = /se používá v každodenní praxi|used in everyday practice|used in healthcare|používá ve zdravotnictví|appears in the text|objevuje slovo|part of a meal|součást jídla|can affect the final result|ovlivnit konečný výsledek|contains useful information|obsahuje užitečné informace|is located near the city|nachází nedaleko města|works in their field|pracuje ve svém oboru|requires regular practice|vyžaduje pravidelný trénink|transports people or cargo|přepravuje lidi nebo náklad|appears in stories and films|objevuje se v příbězích a filmech|requires a medical examination|potřebuje lékařské vyšetření|is used to make various products|používá při výrobě různých produktů|is served in a glass|podává ve sklenici|žije ve volné přírodě|lives in the wild|patří do kulturního programu|is part of the cultural program|se v přírodě objevuje za určitých podmínek|occurs in nature under certain conditions|vyžaduje opatrné zacházení|requires careful handling|používá při odborném měření|used in technical measurement|sdružuje více lidí|brings several people together|je na stole|is on the table|začíná podle programu|begins according to the schedule|roste v přírodě|grows in nature|je pro mě důležitý den|is an important day for me|je pro mě důležitý měsíc|is an important month for me|patří do kalendáře|is part of the calendar|leží na stole|is lying on the table|je písmeno řecké abecedy|is a letter of the greek alphabet/i;
 const requiredCorrections = {
   "lemma-29-bez": { en: /without/i, hi: /बिना/, ur: /بغیر/, tags: /preposition/ },
   "lemma-47-stesti": { en: /luck/i, hi: /किस्मत/, ur: /قسمت/ },
@@ -127,6 +128,7 @@ for (const card of cards) {
   if (isExtended(card) && !String(card.ur || "").trim()) errors.push(`${label}: extended card missing Urdu`);
   if (fillerExample.test(card.sentence || "") || fillerExample.test(card.sentenceEn || "")) errors.push(`${label}: filler/meta example sentence`);
   if (generatedExample.test(card.sentence || "") || generatedExample.test(card.sentenceEn || "")) errors.push(`${label}: low-quality generated example sentence`);
+  if (rejectedPlaceholderExample.test(card.sentence || "") || rejectedPlaceholderExample.test(card.sentenceEn || "")) errors.push(`${label}: rejected placeholder example sentence`);
   if (mojibake.test(card.sentence || "") || mojibake.test(card.sentenceEn || "")) errors.push(`${label}: mojibake in example sentence`);
   for (const field of ["en", "hi", "ur", "sentence", "sentenceEn"]) {
     if (!hasBalancedParentheses(card[field])) errors.push(`${label}: unbalanced parentheses in ${field}`);

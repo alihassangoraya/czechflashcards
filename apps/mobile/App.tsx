@@ -67,6 +67,7 @@ export default function App() {
   const [syncStatus, setSyncStatus] = useState<SyncStatus>("not-configured");
   const [lastReview, setLastReview] = useState<UndoReview | null>(null);
   const [grading, setGrading] = useState(false);
+  const [swipeDirection, setSwipeDirection] = useState<"again" | "known" | null>(null);
   const dragX = useRef(0);
   const forcedCardId = useRef<string | null>(null);
   const revealForcedCard = useRef(false);
@@ -138,12 +139,15 @@ export default function App() {
     onMoveShouldSetPanResponder: (_, gesture) => Math.abs(gesture.dx) > 18,
     onPanResponderMove: (_, gesture) => {
       dragX.current = gesture.dx;
+      setSwipeDirection(gesture.dx > 24 ? "known" : gesture.dx < -24 ? "again" : null);
     },
     onPanResponderRelease: (_, gesture) => {
+      setSwipeDirection(null);
       if (!grading && gesture.dx > 90) void grade("good");
       if (!grading && gesture.dx < -90) void grade("again");
       dragX.current = 0;
-    }
+    },
+    onPanResponderTerminate: () => setSwipeDirection(null)
   }), [current, db, grading, settings, states]);
 
   async function refresh(database = db) {
@@ -260,6 +264,11 @@ export default function App() {
 
       <ScrollView contentContainerStyle={styles.content}>
         <Pressable style={styles.card} onPress={() => setRevealed(true)} {...panResponder.panHandlers}>
+          {swipeDirection && (
+            <Text style={[styles.swipeOverlay, swipeDirection === "known" ? styles.swipeKnown : styles.swipeAgain]}>
+              {swipeDirection === "known" ? "Known" : "Again"}
+            </Text>
+          )}
           {current ? (
             <>
               <Text style={styles.word}>{current.cz}</Text>
@@ -498,7 +507,10 @@ const styles = StyleSheet.create({
   deckChipActive: { backgroundColor: "#244d43" },
   deckChipText: { color: "#244d43", fontWeight: "700" },
   deckChipTextActive: { color: "#fff" },
-  card: { minHeight: 370, justifyContent: "center", backgroundColor: "#ffffff", borderRadius: 8, padding: 22, borderWidth: 1, borderColor: "#d8e2d7" },
+  card: { position: "relative", minHeight: 370, justifyContent: "center", backgroundColor: "#ffffff", borderRadius: 8, padding: 22, borderWidth: 1, borderColor: "#d8e2d7" },
+  swipeOverlay: { position: "absolute", zIndex: 3, right: 22, top: "50%", transform: [{ translateY: -24 }], borderWidth: 2, borderRadius: 8, paddingVertical: 10, paddingHorizontal: 14, backgroundColor: "rgba(255, 255, 255, 0.94)", fontSize: 28, fontWeight: "900", lineHeight: 30, textTransform: "uppercase" },
+  swipeKnown: { color: "#167b55", borderColor: "#167b55" },
+  swipeAgain: { color: "#b33b32", borderColor: "#b33b32" },
   word: { fontSize: 48, lineHeight: 56, color: "#17231f", fontWeight: "900", textAlign: "center" },
   answer: { gap: 8, marginTop: 18 },
   meaning: { fontSize: 18, color: "#22352f", fontWeight: "700" },
