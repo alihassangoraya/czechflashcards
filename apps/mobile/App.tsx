@@ -55,6 +55,7 @@ type RelearningEntry = { id: string; remaining: number };
 type UndoReview = { card: Card; previousState: ReviewState; event: ReviewEvent; previousRelearningQueue: RelearningEntry[] };
 const RELEARNING_MIN_CARDS = 10;
 const RELEARNING_MAX_CARDS = 15;
+const RECENT_CARD_LIMIT = 18;
 
 const seedCardsNormalized = normalizeCards(seedPayload.cards as Parameters<typeof normalizeCards>[0]);
 
@@ -81,6 +82,7 @@ export default function App() {
   const forcedCardId = useRef<string | null>(null);
   const revealForcedCard = useRef(false);
   const relearningQueue = useRef<RelearningEntry[]>([]);
+  const recentCardIds = useRef<string[]>([]);
 
   useEffect(() => {
     async function boot() {
@@ -133,7 +135,9 @@ export default function App() {
     const forced = forcedCardId.current ? deck.find((card) => card.id === forcedCardId.current) : null;
     const relearning = forced ? null : takeRelearningCard(deck);
     const fallbackRelearning = forced || relearning || due.length ? null : takeRelearningCard(deck, true);
-    setCurrent(forced || relearning || due[0] || fallbackRelearning || null);
+    const nextCard = forced || relearning || chooseVariedDueCard(due, now) || fallbackRelearning || null;
+    rememberShownCard(nextCard);
+    setCurrent(nextCard);
     setRevealed(Boolean(forced && revealForcedCard.current));
     forcedCardId.current = null;
     revealForcedCard.current = false;
@@ -154,10 +158,37 @@ export default function App() {
   function takeRelearningCard(deckCards: Card[], allowEarlyReturn = false): Card | null {
     const cardsById = new Map(deckCards.map((card) => [card.id, card]));
     const eligible = relearningQueue.current.filter((entry) => cardsById.has(entry.id));
-    const entry = eligible.find((item) => item.remaining <= 0) || (allowEarlyReturn ? eligible.sort((a, b) => a.remaining - b.remaining)[0] : null);
+    const ready = eligible.filter((item) => item.remaining <= 0);
+    const candidates = ready.length ? ready : allowEarlyReturn ? eligible.filter((item) => item.remaining === Math.min(...eligible.map((item) => item.remaining))) : [];
+    const freshCandidates = candidates.filter((item) => !recentCardIds.current.includes(item.id));
+    const pool = freshCandidates.length ? freshCandidates : candidates;
+    const entry = pool.length ? pool[Math.floor(Math.random() * pool.length)] : null;
     if (!entry) return null;
     relearningQueue.current = relearningQueue.current.filter((item) => item.id !== entry.id);
     return cardsById.get(entry.id) || null;
+  }
+
+  function chooseVariedDueCard(dueCards: Card[], now: number): Card | null {
+    const ranked = dueCards.slice().sort((a, b) => {
+      const aState = states[a.id] || { cardId: a.id, knownStreak: 0, againCount: 0, dueAt: 0, seen: 0 };
+      const bState = states[b.id] || { cardId: b.id, knownStreak: 0, againCount: 0, dueAt: 0, seen: 0 };
+      return compareDueReviewStates(aState, bState, now);
+    });
+    if (!ranked.length) return null;
+    const first = ranked[0];
+    const firstState = states[first.id] || { cardId: first.id, knownStreak: 0, againCount: 0, dueAt: 0, seen: 0 };
+    const equallyUrgent = ranked.filter((card) => {
+      const state = states[card.id] || { cardId: card.id, knownStreak: 0, againCount: 0, dueAt: 0, seen: 0 };
+      return compareDueReviewStates(state, firstState, now) === 0;
+    });
+    const freshCandidates = equallyUrgent.filter((card) => !recentCardIds.current.includes(card.id));
+    const pool = freshCandidates.length ? freshCandidates : equallyUrgent;
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
+
+  function rememberShownCard(card: Card | null) {
+    if (!card || recentCardIds.current[recentCardIds.current.length - 1] === card.id) return;
+    recentCardIds.current = [...recentCardIds.current.filter((id) => id !== card.id), card.id].slice(-RECENT_CARD_LIMIT);
   }
 
   const panResponder = useMemo(() => PanResponder.create({

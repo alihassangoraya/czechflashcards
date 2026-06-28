@@ -18,6 +18,7 @@
   const EASY_INTERVALS = [DAY, 4 * DAY, 10 * DAY, 24 * DAY, 55 * DAY, 120 * DAY];
   const RELEARNING_MIN_CARDS = 10;
   const RELEARNING_MAX_CARDS = 15;
+  const RECENT_CARD_LIMIT = 18;
 
   const el = {
     card: document.getElementById("card"),
@@ -103,6 +104,7 @@
   let drag = null;
   let shuffledQueue = [];
   let relearningQueue = [];
+  let recentCardIds = [];
   let forcedCardId = null;
   let lastReview = null;
   let renderTimer = null;
@@ -656,7 +658,11 @@
   function takeRelearningCard(cards, allowEarlyReturn = false) {
     const cardsById = new Map(cards.map((card) => [card.id, card]));
     const eligible = relearningQueue.filter((entry) => cardsById.has(entry.id));
-    const entry = eligible.find((item) => item.remaining <= 0) || (allowEarlyReturn ? eligible.sort((a, b) => a.remaining - b.remaining)[0] : null);
+    const ready = eligible.filter((item) => item.remaining <= 0);
+    const candidates = ready.length ? ready : allowEarlyReturn ? eligible.filter((item) => item.remaining === Math.min(...eligible.map((item) => item.remaining))) : [];
+    const freshCandidates = candidates.filter((item) => !recentCardIds.includes(item.id));
+    const pool = freshCandidates.length ? freshCandidates : candidates;
+    const entry = pool.length ? pool[Math.floor(Math.random() * pool.length)] : null;
     if (!entry) return null;
     relearningQueue = relearningQueue.filter((item) => item.id !== entry.id);
     return cardsById.get(entry.id);
@@ -717,6 +723,21 @@
     return (bState.againCount || 0) - (aState.againCount || 0) || (aState.knownStreak || 0) - (bState.knownStreak || 0);
   }
 
+  function chooseVariedDueCard(cards, now) {
+    const ranked = cards.slice().sort((a, b) => compareDueCards(a, b, now));
+    if (!ranked.length) return null;
+    const first = ranked[0];
+    const equallyUrgent = ranked.filter((card) => compareDueCards(card, first, now) === 0);
+    const freshCandidates = equallyUrgent.filter((card) => !recentCardIds.includes(card.id));
+    const pool = freshCandidates.length ? freshCandidates : equallyUrgent;
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
+
+  function rememberShownCard(card) {
+    if (!card || recentCardIds[recentCardIds.length - 1] === card.id) return;
+    recentCardIds = [...recentCardIds.filter((id) => id !== card.id), card.id].slice(-RECENT_CARD_LIMIT);
+  }
+
   function pickNextCard() {
     const now = Date.now();
     const deckCards = filteredDeck();
@@ -740,13 +761,13 @@
       if (queued) return queued;
     }
 
-    cards.sort((a, b) => compareDueCards(a, b, now));
-    return cards[0];
+    return chooseVariedDueCard(cards, now);
   }
 
   function render() {
     reviewLocked = false;
     current = pickNextCard();
+    rememberShownCard(current);
     revealed = false;
     el.answer.hidden = true;
     el.card.className = "deck-card";
