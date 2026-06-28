@@ -1,5 +1,4 @@
-import type { Card } from "./types";
-import { slug } from "./cards";
+import { slug, type RawCard } from "./cards";
 
 export function parseCsvRows(text: string): string[][] {
   const rows: string[][] = [];
@@ -35,7 +34,7 @@ export function parseCsvRows(text: string): string[][] {
   return rows;
 }
 
-export function parseCsvCards(text: string, now = Date.now()): Partial<Card>[] {
+export function parseCsvCards(text: string, now = Date.now()): RawCard[] {
   const rows = parseCsvRows(text)
     .filter((row) => row.some(Boolean))
     .map((row) => row.map((part) => (part || "").trim()));

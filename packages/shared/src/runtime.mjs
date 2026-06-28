@@ -11,6 +11,22 @@ export function createReviewState(cardId) {
   return { cardId, knownStreak: 0, againCount: 0, dueAt: 0, seen: 0 };
 }
 
+export function reviewPriority(state) {
+  if (!state.seen) return 1;
+  if (state.againCount > 0) return 3;
+  return 2;
+}
+
+export function compareDueReviewStates(a, b, now = Date.now()) {
+  const priorityDifference = reviewPriority(b) - reviewPriority(a);
+  if (priorityDifference) return priorityDifference;
+
+  const overdueDifference = (b.dueAt || 0) - (a.dueAt || 0);
+  if (overdueDifference) return overdueDifference;
+
+  return (b.againCount || 0) - (a.againCount || 0) || (a.knownStreak || 0) - (b.knownStreak || 0);
+}
+
 export function applyReviewGrade(state, grade, reviewedAt = Date.now()) {
   const next = { ...state, seen: (state.seen || 0) + 1 };
   const wasNew = !state.seen;

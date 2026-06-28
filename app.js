@@ -582,6 +582,24 @@
     return due.length;
   }
 
+  function reviewPriority(state) {
+    if (!state.seen) return 1;
+    if ((state.againCount || 0) > 0) return 3;
+    return 2;
+  }
+
+  function compareDueCards(a, b, now) {
+    const aState = getState(a);
+    const bState = getState(b);
+    const priorityDifference = reviewPriority(bState) - reviewPriority(aState);
+    if (priorityDifference) return priorityDifference;
+
+    const overdueDifference = (bState.dueAt || 0) - (aState.dueAt || 0);
+    if (overdueDifference) return overdueDifference;
+
+    return (bState.againCount || 0) - (aState.againCount || 0) || (aState.knownStreak || 0) - (bState.knownStreak || 0);
+  }
+
   function pickNextCard() {
     const now = Date.now();
     const cards = dueCards(now);
@@ -599,16 +617,8 @@
       if (queued) return queued;
     }
 
-    const scored = cards.map((card) => {
-      const state = getState(card);
-      const overdue = now - (state.dueAt || 0);
-      const newBoost = state.seen ? 0 : 10 * DAY;
-      const againBoost = (state.againCount || 0) * DAY;
-      return { card, score: overdue + newBoost + againBoost - (state.knownStreak || 0) * HOUR };
-    });
-
-    scored.sort((a, b) => b.score - a.score);
-    return scored[0].card;
+    cards.sort((a, b) => compareDueCards(a, b, now));
+    return cards[0];
   }
 
   function render() {

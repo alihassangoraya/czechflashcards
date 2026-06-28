@@ -321,6 +321,10 @@ select,
   margin-bottom: 14px;
 }
 
+.panel-heading > div:first-child {
+  min-width: 0;
+}
+
 .panel-heading h2 {
   margin: 2px 0 0;
   font-size: 1.2rem;
@@ -438,6 +442,7 @@ select,
 
 .dialog-heading-actions {
   display: flex;
+  flex: 0 0 auto;
   align-items: center;
   gap: 10px;
 }
@@ -703,11 +708,13 @@ select {
   }
 
   .panel-heading {
-    display: grid;
+    align-items: flex-start;
+    gap: 12px;
   }
 
   .panel-heading span {
-    text-align: left;
+    min-width: 0;
+    text-align: right;
   }
 
   .word-form {

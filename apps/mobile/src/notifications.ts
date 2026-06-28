@@ -5,6 +5,7 @@ Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldPlaySound: false,
     shouldSetBadge: false,
+    shouldShowAlert: true,
     shouldShowBanner: true,
     shouldShowList: true
   })
@@ -24,7 +25,7 @@ export async function configureLocalNotifications(preferences: NotificationPrefe
         title: "Czech review time",
         body: "A small session keeps your A2/B1 words warm."
       },
-      trigger: { hour, minute, repeats: true }
+      trigger: { type: Notifications.SchedulableTriggerInputTypes.DAILY, hour, minute }
     });
   }
 
@@ -34,7 +35,7 @@ export async function configureLocalNotifications(preferences: NotificationPrefe
         title: "Your streak needs one more review",
         body: "Finish today's goal before the day ends."
       },
-      trigger: { hour: 21, minute: 0, repeats: true }
+      trigger: { type: Notifications.SchedulableTriggerInputTypes.DAILY, hour: 21, minute: 0 }
     });
   }
 
@@ -44,7 +45,7 @@ export async function configureLocalNotifications(preferences: NotificationPrefe
         title: "Cards are due",
         body: "Open your review queue when you have a quiet minute."
       },
-      trigger: { hour: 8, minute: 30, repeats: true }
+      trigger: { type: Notifications.SchedulableTriggerInputTypes.DAILY, hour: 8, minute: 30 }
     });
   }
 }

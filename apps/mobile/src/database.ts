@@ -306,6 +306,14 @@ export async function addCustomCard(db: AppDatabase, card: Card): Promise<void> 
   });
 }
 
+export async function deleteCustomCard(db: AppDatabase, cardId: string): Promise<void> {
+  const deletedAt = Date.now();
+  await db.withTransactionAsync(async () => {
+    await db.runAsync("UPDATE custom_cards SET deleted_at = ? WHERE id = ?", deletedAt, cardId);
+    await enqueueSync(db, "custom_card_deleted", { cardId, deletedAt });
+  });
+}
+
 export async function loadSettings(db: AppDatabase): Promise<StudySettings> {
   const row = await db.getFirstAsync<{ value_json: string }>("SELECT value_json FROM settings WHERE key = 'study'");
   return row ? { ...DEFAULT_SETTINGS, ...JSON.parse(row.value_json) } : DEFAULT_SETTINGS;

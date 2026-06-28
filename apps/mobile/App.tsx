@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Modal,
   PanResponder,
   Pressable,
   SafeAreaView,
@@ -15,8 +16,8 @@ import { StatusBar } from "expo-status-bar";
 import * as Speech from "expo-speech";
 import {
   applyReviewGrade,
+  compareDueReviewStates,
   filterDeck,
-  formatInterval,
   normalizeCards,
   selectedMeaning,
   slug,
@@ -28,6 +29,7 @@ import {
 import seedPayload from "@czech-flashcards/shared/seed";
 import {
   addCustomCard,
+  deleteCustomCard,
   getDailyProgress,
   getReviewState,
   loadCards,
@@ -44,7 +46,7 @@ import {
 import { configureLocalNotifications } from "./src/notifications";
 import { createSupabaseClient, flushSyncQueue, type SyncStatus } from "./src/sync";
 
-type Tab = "study" | "search" | "add" | "settings";
+type Panel = "search" | "add" | "settings";
 type UndoReview = { card: Card; previousState: ReviewState; event: ReviewEvent };
 
 const seedCardsNormalized = normalizeCards(seedPayload.cards as Parameters<typeof normalizeCards>[0]);
@@ -56,7 +58,7 @@ export default function App() {
   const [settings, setSettingsState] = useState<StudySettings | null>(null);
   const [current, setCurrent] = useState<Card | null>(null);
   const [revealed, setRevealed] = useState(false);
-  const [tab, setTab] = useState<Tab>("study");
+  const [panel, setPanel] = useState<Panel | null>(null);
   const [query, setQuery] = useState("");
   const [dailyProgress, setDailyProgress] = useState("0 / 30");
   const [syncStatus, setSyncStatus] = useState<SyncStatus>("not-configured");
@@ -93,11 +95,9 @@ export default function App() {
     const due = deck
       .filter((card) => (states[card.id]?.dueAt || 0) <= now)
       .sort((a, b) => {
-        const aState = states[a.id];
-        const bState = states[b.id];
-        const aScore = now - (aState?.dueAt || 0) + (aState?.seen ? 0 : 10 * 24 * 60 * 60 * 1000);
-        const bScore = now - (bState?.dueAt || 0) + (bState?.seen ? 0 : 10 * 24 * 60 * 60 * 1000);
-        return bScore - aScore;
+        const aState = states[a.id] || { cardId: a.id, knownStreak: 0, againCount: 0, dueAt: 0, seen: 0 };
+        const bState = states[b.id] || { cardId: b.id, knownStreak: 0, againCount: 0, dueAt: 0, seen: 0 };
+        return compareDueReviewStates(aState, bState, now);
       });
     const forced = forcedCardId.current ? due.find((card) => card.id === forcedCardId.current) : null;
     setCurrent(forced || due[0] || null);
@@ -162,7 +162,7 @@ export default function App() {
     }
   }
 
-  async function addWord(values: { cz: string; en: string; hi: string; ur: string; sentence: string; sentenceEn: string }) {
+  async function addWord(values: { cz: string; en: string; hi: string; ur: string; sentence: string; sentenceEn: string; tag: string }) {
     if (!db) return;
     const card: Card = {
       id: `custom-${Date.now()}-${slug(values.cz)}`,
@@ -173,12 +173,26 @@ export default function App() {
       sentence: values.sentence.trim(),
       sentenceEn: values.sentenceEn.trim() || `English example with "${values.en.trim()}".`,
       level: "a2",
-      tags: ["custom"],
+      tags: Array.from(new Set(["custom", values.tag])),
       source: "custom"
     };
     await addCustomCard(db, card);
-    setTab("study");
+    setPanel(null);
     await refresh(db);
+  }
+
+  async function deleteWord(cardId: string) {
+    if (!db) return;
+    await deleteCustomCard(db, cardId);
+    await refresh(db);
+  }
+
+  function studySearchResult(card: Card) {
+    forcedCardId.current = card.id;
+    revealForcedCard.current = true;
+    setCurrent(card);
+    setRevealed(true);
+    setPanel(null);
   }
 
   if (!db || !settings) {
@@ -191,131 +205,166 @@ export default function App() {
   }
 
   const dueCount = deck.filter((card) => (states[card.id]?.dueAt || 0) <= Date.now()).length;
-  const currentState = current ? states[current.id] : null;
+  const knownCount = deck.filter((card) => (states[card.id]?.knownStreak || 0) >= 1).length;
+  const learningCount = deck.filter((card) => {
+    const state = states[card.id];
+    return Boolean(state?.seen && state.knownStreak === 0);
+  }).length;
+  const customCards = cards.filter((card) => card.source === "custom");
 
   return (
     <SafeAreaView style={styles.shell}>
       <StatusBar style="dark" />
       <View style={styles.header}>
-        <View>
-          <Text style={styles.eyebrow}>{settings.examLevel.toUpperCase()} Czech vocabulary</Text>
-          <Text style={styles.title}>Czech Flashcards</Text>
+        <View style={styles.brandRow}>
+          <Text style={styles.title}>Flashcards</Text>
+          <HeaderIcon icon="search" label="Search words" onPress={() => setPanel("search")} />
         </View>
-        <View style={styles.statPill}>
-          <Text style={styles.statNumber}>{dueCount}</Text>
-          <Text style={styles.statLabel}>due</Text>
+        <View style={styles.headerActions}>
+          <HeaderIcon icon="add" label="Add custom word" primary onPress={() => setPanel("add")} />
+          <HeaderIcon icon="settings" label="Open settings" onPress={() => setPanel("settings")} />
         </View>
       </View>
 
-      <View style={styles.tabs}>
-        {(["study", "search", "add", "settings"] as Tab[]).map((item) => (
-          <Pressable key={item} style={[styles.tab, tab === item && styles.activeTab]} onPress={() => setTab(item)}>
-            <Text style={[styles.tabText, tab === item && styles.activeTabText]}>{item}</Text>
-          </Pressable>
-        ))}
-      </View>
-
-      {tab === "study" && (
-        <ScrollView contentContainerStyle={styles.content}>
-          <View style={styles.selectors}>
-            <Segment value={settings.examLevel} options={["a2", "b1"]} onChange={(examLevel) => persistSettings({ ...settings, examLevel })} />
-            <Segment value={settings.meaningLanguage} options={["hi", "ur"]} onChange={(meaningLanguage) => persistSettings({ ...settings, meaningLanguage })} />
-          </View>
-          <DeckPicker value={settings.deckFilter} onChange={(deckFilter) => persistSettings({ ...settings, deckFilter })} />
-
-          <Pressable style={styles.card} onPress={() => setRevealed(true)} {...panResponder.panHandlers}>
-            {current ? (
-              <>
-                <Text style={styles.cardMode}>{current.tags.join(" · ")}</Text>
-                <Text style={styles.word}>{current.cz}</Text>
-                {revealed && (
-                  <View style={styles.answer}>
-                    <Text style={styles.meaning}>English: {current.en}</Text>
-                    <Text style={[styles.meaning, settings.meaningLanguage === "ur" && styles.rtl]}>
-                      {settings.meaningLanguage === "ur" ? "Urdu" : "Hindi"}: {selectedMeaning(current, settings.meaningLanguage)}
-                    </Text>
-                    <Text style={styles.example}>{current.sentence}</Text>
-                    <Text style={styles.muted}>{current.sentenceEn}</Text>
-                  </View>
-                )}
-                <Text style={styles.hint}>{revealed ? "Swipe or choose a result" : "Tap to reveal meaning"}</Text>
-              </>
-            ) : (
-              <>
-                <Text style={styles.word}>Done</Text>
-                <Text style={styles.hint}>No cards are due in this deck.</Text>
-              </>
-            )}
-          </Pressable>
-
-          <View style={styles.soundRow}>
-            <Pressable style={styles.secondaryButton} onPress={() => current && Speech.speak(current.cz, { language: "cs-CZ", rate: 0.86 })}>
-              <Text style={styles.secondaryButtonText}>Play word</Text>
-            </Pressable>
-            <Pressable style={styles.secondaryButton} onPress={() => current && Speech.speak(current.sentence, { language: "cs-CZ", rate: 0.86 })}>
-              <Text style={styles.secondaryButtonText}>Play example</Text>
-            </Pressable>
-          </View>
-
-          <View style={styles.gradeRow}>
-            {(["again", "hard", "good", "easy"] as ReviewGrade[]).map((item) => (
-              <Pressable key={item} disabled={grading || !current} style={[styles.gradeButton, (grading || !current) && styles.disabledButton]} onPress={() => grade(item)}>
-                <Text style={styles.gradeText}>{item}</Text>
-              </Pressable>
-            ))}
-          </View>
-
-          {lastReview && (
-            <Pressable disabled={grading} style={[styles.undoButton, grading && styles.disabledButton]} onPress={undoLastReview} accessibilityRole="button" accessibilityLabel={`Undo review for ${lastReview.card.cz}`}>
-              <Text style={styles.undoText}>Undo last review</Text>
-            </Pressable>
+      <ScrollView contentContainerStyle={styles.content}>
+        <Pressable style={styles.card} onPress={() => setRevealed(true)} {...panResponder.panHandlers}>
+          {current ? (
+            <>
+              <Text style={styles.word}>{current.cz}</Text>
+              {revealed && (
+                <View style={styles.answer}>
+                  <Text style={styles.meaning}>English: {current.en}</Text>
+                  <Text style={[styles.meaning, settings.meaningLanguage === "ur" && styles.rtl]}>
+                    {settings.meaningLanguage === "ur" ? "Urdu" : "Hindi"}: {selectedMeaning(current, settings.meaningLanguage)}
+                  </Text>
+                  <Text style={styles.example}>{current.sentence}</Text>
+                  <Text style={styles.muted}>{current.sentenceEn}</Text>
+                </View>
+              )}
+              <Text style={styles.hint}>{revealed ? "Swipe left to review again or right when it feels familiar" : "Tap to reveal meaning"}</Text>
+            </>
+          ) : (
+            <>
+              <Text style={styles.word}>Done</Text>
+              <Text style={styles.hint}>No cards are due in this deck.</Text>
+            </>
           )}
+        </Pressable>
 
-          <View style={styles.progressBand}>
-            <Text style={styles.metric}>Today: {dailyProgress}</Text>
-            <Text style={styles.metric}>Deck: {deck.length}</Text>
-            <Text style={styles.metric}>Interval: {currentState ? formatInterval(Math.max(0, currentState.dueAt - Date.now())) : "New word"}</Text>
-          </View>
-        </ScrollView>
-      )}
+        <View style={styles.soundRow}>
+          <Pressable style={styles.secondaryButton} onPress={() => current && Speech.speak(current.cz, { language: "cs-CZ", rate: 0.86 })}>
+            <Text style={styles.secondaryButtonText}>Play word</Text>
+          </Pressable>
+          <Pressable style={styles.secondaryButton} onPress={() => current && Speech.speak(current.sentence, { language: "cs-CZ", rate: 0.86 })}>
+            <Text style={styles.secondaryButtonText}>Play example</Text>
+          </Pressable>
+        </View>
 
-      {tab === "search" && (
-        <ScrollView contentContainerStyle={styles.content}>
-          <TextInput style={styles.input} value={query} onChangeText={setQuery} placeholder="Search Czech, English, Hindi, or Urdu" />
-          {deck
-            .filter((card) => [card.cz, card.en, card.hi, card.ur, card.sentence].some((value) => value.toLowerCase().includes(query.toLowerCase())))
-            .slice(0, 40)
-            .map((card) => (
-              <Pressable key={card.id} style={styles.row} onPress={() => setTab("study")}>
-                <Text style={styles.rowTitle}>{card.cz}</Text>
-                <Text style={styles.muted}>{card.en} · {selectedMeaning(card, settings.meaningLanguage)}</Text>
-              </Pressable>
-            ))}
-        </ScrollView>
-      )}
+        {lastReview && (
+          <Pressable disabled={grading} style={[styles.undoButton, grading && styles.disabledButton]} onPress={undoLastReview} accessibilityRole="button" accessibilityLabel={`Undo review for ${lastReview.card.cz}`}>
+            <Text style={styles.undoText}>Undo</Text>
+          </Pressable>
+        )}
 
-      {tab === "add" && <AddWordForm onSubmit={addWord} />}
+        <View style={styles.progressGrid}>
+          <Metric label="Known" value={String(knownCount)} />
+          <Metric label="Learning" value={String(learningCount)} />
+          <Metric label="Today" value={`${dailyProgress} reviewed`} />
+          <Metric label="Due" value={String(dueCount)} />
+          <Metric label="Deck size" value={String(deck.length)} />
+        </View>
 
-      {tab === "settings" && (
-        <ScrollView contentContainerStyle={styles.content}>
-          <Text style={styles.sectionTitle}>Daily goal</Text>
-          <TextInput
-            style={styles.input}
-            keyboardType="number-pad"
-            value={String(settings.dailyGoal)}
-            onChangeText={(value) => persistSettings({ ...settings, dailyGoal: Math.max(1, Number(value) || 30) })}
-          />
-          <ToggleRow label="Daily reminder" value={settings.notifications.dailyReminderEnabled} onValueChange={(value) => persistSettings({ ...settings, notifications: { ...settings.notifications, dailyReminderEnabled: value } })} />
-          <ToggleRow label="Streak risk reminder" value={settings.notifications.streakRiskEnabled} onValueChange={(value) => persistSettings({ ...settings, notifications: { ...settings.notifications, streakRiskEnabled: value } })} />
-          <ToggleRow label="Review due reminder" value={settings.notifications.reviewDueEnabled} onValueChange={(value) => persistSettings({ ...settings, notifications: { ...settings.notifications, reviewDueEnabled: value } })} />
-          <View style={styles.syncPanel}>
-            <Text style={styles.sectionTitle}>Sync</Text>
-            <Text style={styles.muted}>Guest-first mode is active. Add Supabase env values and sign in to flush the offline queue.</Text>
-            <Text style={styles.metric}>Status: {syncStatus}</Text>
-          </View>
-        </ScrollView>
-      )}
+        <View style={styles.studyGuide}>
+          <Text style={styles.guideLabel}>Study guide</Text>
+          <Text style={styles.guideText}>Tap the card to reveal its meanings and example.</Text>
+          <Text style={styles.guideText}>Swipe left to see a word again soon; swipe right when it feels familiar.</Text>
+          <Text style={styles.guideText}>Use the sound buttons to hear Czech pronunciation.</Text>
+          <Text style={styles.guideText}>Use search to find a word, + to add one, and settings to choose your deck.</Text>
+        </View>
+      </ScrollView>
+
+      <AppModal visible={panel === "search"} title="Search words" onClose={() => setPanel(null)}>
+        <TextInput style={styles.input} value={query} onChangeText={setQuery} autoFocus placeholder="Search Czech, English, Hindi, or Urdu" />
+        {deck
+          .filter((card) => [card.cz, card.en, card.hi, card.ur, card.sentence].some((value) => value.toLowerCase().includes(query.toLowerCase())))
+          .slice(0, 40)
+          .map((card) => (
+            <Pressable key={card.id} style={styles.row} onPress={() => studySearchResult(card)}>
+              <Text style={styles.rowTitle}>{card.cz}</Text>
+              <View style={[styles.searchMeaningRow, settings.meaningLanguage === "ur" && styles.searchMeaningRtl]}>
+                <Text style={styles.muted}>{`${card.en}${settings.meaningLanguage === "hi" ? " ·" : ""}`}</Text>
+                <Text style={[styles.muted, settings.meaningLanguage === "ur" && styles.rtl]}>{selectedMeaning(card, settings.meaningLanguage)}</Text>
+              </View>
+            </Pressable>
+          ))}
+      </AppModal>
+
+      <AppModal visible={panel === "add"} title="Add your own word" onClose={() => setPanel(null)}>
+        <AddWordForm onSubmit={addWord} cards={customCards} onDelete={deleteWord} />
+      </AppModal>
+
+      <AppModal visible={panel === "settings"} title="Settings" onClose={() => setPanel(null)}>
+        <Text style={styles.fieldLabel}>Level</Text>
+        <Segment value={settings.examLevel} options={["a2", "b1"]} onChange={(examLevel) => persistSettings({ ...settings, examLevel })} />
+        <Text style={styles.fieldLabel}>Meaning</Text>
+        <Segment value={settings.meaningLanguage} options={["hi", "ur"]} onChange={(meaningLanguage) => persistSettings({ ...settings, meaningLanguage })} />
+        <Text style={styles.fieldLabel}>Deck</Text>
+        <DeckPicker value={settings.deckFilter} onChange={(deckFilter) => persistSettings({ ...settings, deckFilter })} />
+        <Text style={styles.fieldLabel}>Daily goal</Text>
+        <TextInput
+          style={styles.input}
+          keyboardType="number-pad"
+          value={String(settings.dailyGoal)}
+          onChangeText={(value) => persistSettings({ ...settings, dailyGoal: Math.max(1, Number(value) || 30) })}
+        />
+        <ToggleRow label="Daily reminder" value={settings.notifications.dailyReminderEnabled} onValueChange={(value) => persistSettings({ ...settings, notifications: { ...settings.notifications, dailyReminderEnabled: value } })} />
+        <ToggleRow label="Streak risk reminder" value={settings.notifications.streakRiskEnabled} onValueChange={(value) => persistSettings({ ...settings, notifications: { ...settings.notifications, streakRiskEnabled: value } })} />
+        <ToggleRow label="Review due reminder" value={settings.notifications.reviewDueEnabled} onValueChange={(value) => persistSettings({ ...settings, notifications: { ...settings.notifications, reviewDueEnabled: value } })} />
+        <View style={styles.syncPanel}>
+          <Text style={styles.sectionTitle}>Sync</Text>
+          <Text style={styles.muted}>Guest-first mode is active. Add Supabase env values and sign in to flush the offline queue.</Text>
+          <Text style={styles.metric}>Status: {syncStatus}</Text>
+        </View>
+      </AppModal>
     </SafeAreaView>
+  );
+}
+
+function HeaderIcon({ icon, label, onPress, primary = false }: { icon: "search" | "add" | "settings"; label: string; onPress: () => void; primary?: boolean }) {
+  const symbols = { search: "⌕", add: "+", settings: "⚙" };
+  return (
+    <Pressable style={[styles.headerIcon, primary && styles.headerIconPrimary]} onPress={onPress} accessibilityRole="button" accessibilityLabel={label}>
+      <Text style={[styles.headerIconText, primary && styles.headerIconPrimaryText]}>{symbols[icon]}</Text>
+    </Pressable>
+  );
+}
+
+function Metric({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={styles.metricCard}>
+      <Text style={styles.metricLabel}>{label}</Text>
+      <Text style={styles.metricValue}>{value}</Text>
+    </View>
+  );
+}
+
+function AppModal({ visible, title, onClose, children }: { visible: boolean; title: string; onClose: () => void; children: React.ReactNode }) {
+  return (
+    <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
+      <SafeAreaView style={styles.modalOverlay}>
+        <View style={styles.modalSheet}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>{title}</Text>
+            <Pressable style={styles.closeButton} onPress={onClose} accessibilityRole="button" accessibilityLabel={`Close ${title}`}>
+              <Text style={styles.closeButtonText}>×</Text>
+            </Pressable>
+          </View>
+          <ScrollView contentContainerStyle={styles.modalContent} keyboardShouldPersistTaps="handled">
+            {children}
+          </ScrollView>
+        </View>
+      </SafeAreaView>
+    </Modal>
   );
 }
 
@@ -331,8 +380,7 @@ function Segment<T extends string>({ value, options, onChange }: { value: T; opt
   );
 }
 
-function DeckPicker({ value, onChange }: { value: string; onChange: (value: string) => void }) {
-  const options = ["core", "all", "daily", "extended", "work", "travel", "health", "verbs", "forms", "numbers", "custom"];
+function DeckPicker({ value, onChange, options = ["core", "all", "daily", "extended", "work", "travel", "health", "verbs", "forms", "numbers", "custom"] }: { value: string; onChange: (value: string) => void; options?: string[] }) {
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.deckPicker}>
       {options.map((option) => (
@@ -344,11 +392,15 @@ function DeckPicker({ value, onChange }: { value: string; onChange: (value: stri
   );
 }
 
-function AddWordForm({ onSubmit }: { onSubmit: (values: { cz: string; en: string; hi: string; ur: string; sentence: string; sentenceEn: string }) => void }) {
-  const [values, setValues] = useState({ cz: "", en: "", hi: "", ur: "", sentence: "", sentenceEn: "" });
+function AddWordForm({ onSubmit, cards, onDelete }: {
+  onSubmit: (values: { cz: string; en: string; hi: string; ur: string; sentence: string; sentenceEn: string; tag: string }) => void;
+  cards: Card[];
+  onDelete: (cardId: string) => void;
+}) {
+  const [values, setValues] = useState({ cz: "", en: "", hi: "", ur: "", sentence: "", sentenceEn: "", tag: "custom" });
   const update = (key: keyof typeof values, value: string) => setValues((current) => ({ ...current, [key]: value }));
   return (
-    <ScrollView contentContainerStyle={styles.content}>
+    <View style={styles.form}>
       {[
         ["cz", "Czech word"],
         ["en", "English"],
@@ -359,10 +411,28 @@ function AddWordForm({ onSubmit }: { onSubmit: (values: { cz: string; en: string
       ].map(([key, label]) => (
         <TextInput key={key} style={styles.input} value={values[key as keyof typeof values]} onChangeText={(value) => update(key as keyof typeof values, value)} placeholder={label} />
       ))}
+      <Text style={styles.fieldLabel}>Deck tag</Text>
+      <DeckPicker value={values.tag} onChange={(tag) => update("tag", tag)} options={["custom", "daily", "work", "travel", "health", "verbs"]} />
       <Pressable style={styles.primaryButton} onPress={() => onSubmit(values)}>
         <Text style={styles.primaryButtonText}>Add word</Text>
       </Pressable>
-    </ScrollView>
+      {cards.length > 0 && (
+        <View style={styles.customList}>
+          <Text style={styles.fieldLabel}>Saved words</Text>
+          {cards.slice(0, 12).map((card) => (
+            <View key={card.id} style={styles.customRow}>
+              <View style={styles.customCopy}>
+                <Text style={styles.rowTitle}>{card.cz}</Text>
+                <Text style={styles.muted}>{card.en}</Text>
+              </View>
+              <Pressable style={styles.deleteButton} onPress={() => onDelete(card.id)} accessibilityRole="button" accessibilityLabel={`Delete ${card.cz}`}>
+                <Text style={styles.deleteButtonText}>Delete</Text>
+              </Pressable>
+            </View>
+          ))}
+        </View>
+      )}
+    </View>
   );
 }
 
@@ -377,19 +447,15 @@ function ToggleRow({ label, value, onValueChange }: { label: string; value: bool
 
 const styles = StyleSheet.create({
   shell: { flex: 1, backgroundColor: "#f2f5ef", paddingHorizontal: 18 },
-  header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingTop: 16, paddingBottom: 12 },
-  eyebrow: { color: "#587064", fontSize: 12, fontWeight: "700", textTransform: "uppercase" },
-  title: { color: "#17231f", fontSize: 28, fontWeight: "800" },
-  statPill: { minWidth: 72, alignItems: "center", backgroundColor: "#dfe9df", padding: 10, borderRadius: 8 },
-  statNumber: { fontSize: 22, fontWeight: "800", color: "#20362f" },
-  statLabel: { fontSize: 12, color: "#587064" },
-  tabs: { flexDirection: "row", gap: 8, marginBottom: 12 },
-  tab: { flex: 1, alignItems: "center", paddingVertical: 9, borderRadius: 8, backgroundColor: "#e6ece5" },
-  activeTab: { backgroundColor: "#244d43" },
-  tabText: { color: "#244d43", fontWeight: "700", textTransform: "capitalize" },
-  activeTabText: { color: "#ffffff" },
+  header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingTop: 16, paddingBottom: 16 },
+  brandRow: { flexDirection: "row", alignItems: "center", gap: 8 },
+  title: { color: "#17231f", fontSize: 25, fontWeight: "800" },
+  headerActions: { flexDirection: "row", gap: 8 },
+  headerIcon: { width: 42, height: 42, alignItems: "center", justifyContent: "center", borderRadius: 8, borderWidth: 1, borderColor: "#d8e2d7", backgroundColor: "#ffffff" },
+  headerIconPrimary: { borderColor: "#2f6f9f", backgroundColor: "#2f6f9f" },
+  headerIconText: { color: "#17231f", fontSize: 24, fontWeight: "700", lineHeight: 27 },
+  headerIconPrimaryText: { color: "#ffffff", fontSize: 30 },
   content: { gap: 14, paddingBottom: 32 },
-  selectors: { flexDirection: "row", gap: 10 },
   segment: { flex: 1, flexDirection: "row", backgroundColor: "#e4ebe3", borderRadius: 8, padding: 4 },
   segmentItem: { flex: 1, alignItems: "center", paddingVertical: 8, borderRadius: 6 },
   segmentActive: { backgroundColor: "#ffffff" },
@@ -400,32 +466,50 @@ const styles = StyleSheet.create({
   deckChipActive: { backgroundColor: "#244d43" },
   deckChipText: { color: "#244d43", fontWeight: "700" },
   deckChipTextActive: { color: "#fff" },
-  card: { minHeight: 310, justifyContent: "center", backgroundColor: "#ffffff", borderRadius: 8, padding: 22, borderWidth: 1, borderColor: "#d8e2d7" },
-  cardMode: { color: "#6d7f75", fontWeight: "700", textTransform: "uppercase", marginBottom: 10 },
-  word: { fontSize: 40, lineHeight: 48, color: "#17231f", fontWeight: "900" },
+  card: { minHeight: 370, justifyContent: "center", backgroundColor: "#ffffff", borderRadius: 8, padding: 22, borderWidth: 1, borderColor: "#d8e2d7" },
+  word: { fontSize: 48, lineHeight: 56, color: "#17231f", fontWeight: "900", textAlign: "center" },
   answer: { gap: 8, marginTop: 18 },
   meaning: { fontSize: 18, color: "#22352f", fontWeight: "700" },
   rtl: { writingDirection: "rtl", textAlign: "right" },
   example: { fontSize: 17, color: "#31463d", marginTop: 8 },
-  hint: { color: "#6d7f75", marginTop: 18 },
+  hint: { color: "#6d7f75", marginTop: 22, textAlign: "center", fontWeight: "700" },
   muted: { color: "#6d7f75", lineHeight: 20 },
   soundRow: { flexDirection: "row", gap: 10 },
-  secondaryButton: { flex: 1, alignItems: "center", padding: 12, borderRadius: 8, backgroundColor: "#e4ebe3" },
+  secondaryButton: { flex: 1, alignItems: "center", padding: 12, borderRadius: 8, borderWidth: 1, borderColor: "#d8e2d7", backgroundColor: "#ffffff" },
   secondaryButtonText: { color: "#244d43", fontWeight: "800" },
-  gradeRow: { flexDirection: "row", gap: 8 },
-  gradeButton: { flex: 1, alignItems: "center", backgroundColor: "#244d43", paddingVertical: 12, borderRadius: 8 },
-  gradeText: { color: "#fff", fontWeight: "800", textTransform: "capitalize" },
-  undoButton: { alignSelf: "center", minWidth: 170, alignItems: "center", paddingVertical: 11, paddingHorizontal: 16, borderRadius: 8, borderWidth: 1, borderColor: "#9aa9a1", backgroundColor: "#ffffff" },
+  undoButton: { alignSelf: "center", minWidth: 96, alignItems: "center", paddingVertical: 10, paddingHorizontal: 16, borderRadius: 8, borderWidth: 1, borderColor: "#9aa9a1", backgroundColor: "#ffffff" },
   undoText: { color: "#244d43", fontWeight: "800" },
   disabledButton: { opacity: 0.45 },
-  progressBand: { gap: 6, backgroundColor: "#dfe9df", padding: 14, borderRadius: 8 },
+  progressGrid: { flexDirection: "row", flexWrap: "wrap", gap: 10 },
+  metricCard: { width: "48%", minHeight: 78, justifyContent: "center", backgroundColor: "#ffffff", borderWidth: 1, borderColor: "#d8e2d7", borderRadius: 8, padding: 13 },
+  metricLabel: { color: "#6d7f75", fontSize: 12, fontWeight: "800", textTransform: "uppercase" },
+  metricValue: { color: "#20362f", fontSize: 19, fontWeight: "800", marginTop: 4 },
+  studyGuide: { gap: 8, backgroundColor: "#ffffff", borderWidth: 1, borderColor: "#d8e2d7", borderRadius: 8, padding: 14 },
+  guideLabel: { color: "#6d7f75", fontSize: 12, fontWeight: "800", textTransform: "uppercase" },
+  guideText: { color: "#51645b", lineHeight: 20, fontWeight: "600" },
   metric: { color: "#20362f", fontWeight: "700" },
   input: { backgroundColor: "#ffffff", borderWidth: 1, borderColor: "#d8e2d7", borderRadius: 8, padding: 14, fontSize: 16 },
   row: { backgroundColor: "#ffffff", borderRadius: 8, padding: 14, borderWidth: 1, borderColor: "#d8e2d7" },
   rowTitle: { color: "#17231f", fontWeight: "800", fontSize: 16 },
+  searchMeaningRow: { flexDirection: "row", alignItems: "center", gap: 6, marginTop: 4 },
+  searchMeaningRtl: { justifyContent: "space-between" },
   sectionTitle: { color: "#17231f", fontWeight: "900", fontSize: 18 },
+  fieldLabel: { color: "#6d7f75", fontSize: 12, fontWeight: "800", textTransform: "uppercase", marginTop: 4 },
+  form: { gap: 14 },
+  customList: { gap: 8, marginTop: 4 },
+  customRow: { flexDirection: "row", alignItems: "center", gap: 12, backgroundColor: "#ffffff", borderWidth: 1, borderColor: "#d8e2d7", borderRadius: 8, padding: 12 },
+  customCopy: { flex: 1, gap: 2 },
+  deleteButton: { minWidth: 72, alignItems: "center", borderWidth: 1, borderColor: "#e5b8b3", borderRadius: 8, paddingVertical: 9, paddingHorizontal: 10, backgroundColor: "#ffffff" },
+  deleteButtonText: { color: "#b33b32", fontWeight: "800" },
   primaryButton: { alignItems: "center", backgroundColor: "#244d43", borderRadius: 8, padding: 14 },
   primaryButtonText: { color: "#fff", fontWeight: "900" },
   toggleRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", backgroundColor: "#ffffff", borderRadius: 8, padding: 14 },
-  syncPanel: { gap: 8, backgroundColor: "#ffffff", borderRadius: 8, padding: 14, borderWidth: 1, borderColor: "#d8e2d7" }
+  syncPanel: { gap: 8, backgroundColor: "#ffffff", borderRadius: 8, padding: 14, borderWidth: 1, borderColor: "#d8e2d7" },
+  modalOverlay: { flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(23, 33, 27, 0.42)" },
+  modalSheet: { maxHeight: "90%", backgroundColor: "#f2f5ef", borderTopLeftRadius: 8, borderTopRightRadius: 8 },
+  modalHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 18, paddingTop: 18, paddingBottom: 12, backgroundColor: "#ffffff", borderBottomWidth: 1, borderBottomColor: "#d8e2d7" },
+  modalTitle: { color: "#17231f", fontSize: 20, fontWeight: "900" },
+  closeButton: { width: 36, height: 36, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "#d8e2d7", borderRadius: 8, backgroundColor: "#ffffff" },
+  closeButtonText: { color: "#17231f", fontSize: 28, lineHeight: 30 },
+  modalContent: { gap: 14, padding: 18, paddingBottom: 32 }
 });

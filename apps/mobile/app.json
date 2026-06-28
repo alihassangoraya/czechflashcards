@@ -6,7 +6,9 @@
     "version": "0.1.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.czechflashcards.app"
@@ -20,7 +22,8 @@
         {
           "color": "#2f5d50"
         }
-      ]
+      ],
+      "expo-asset"
     ],
     "extra": {
       "supabaseUrl": "",
