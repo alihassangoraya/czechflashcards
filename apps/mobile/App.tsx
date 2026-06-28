@@ -21,6 +21,7 @@ import {
   selectedMeaning,
   slug,
   type Card,
+  type ReviewEvent,
   type ReviewGrade,
   type ReviewState
 } from "@czech-flashcards/shared";
@@ -36,6 +37,7 @@ import {
   saveReviewResult,
   saveSettings,
   seedCards,
+  undoReviewResult,
   type AppDatabase,
   type StudySettings
 } from "./src/database";
@@ -43,6 +45,7 @@ import { configureLocalNotifications } from "./src/notifications";
 import { createSupabaseClient, flushSyncQueue, type SyncStatus } from "./src/sync";
 
 type Tab = "study" | "search" | "add" | "settings";
+type UndoReview = { card: Card; previousState: ReviewState; event: ReviewEvent };
 
 const seedCardsNormalized = normalizeCards(seedPayload.cards as Parameters<typeof normalizeCards>[0]);
 
@@ -57,7 +60,11 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [dailyProgress, setDailyProgress] = useState("0 / 30");
   const [syncStatus, setSyncStatus] = useState<SyncStatus>("not-configured");
+  const [lastReview, setLastReview] = useState<UndoReview | null>(null);
+  const [grading, setGrading] = useState(false);
   const dragX = useRef(0);
+  const forcedCardId = useRef<string | null>(null);
+  const revealForcedCard = useRef(false);
 
   useEffect(() => {
     async function boot() {
@@ -92,8 +99,11 @@ export default function App() {
         const bScore = now - (bState?.dueAt || 0) + (bState?.seen ? 0 : 10 * 24 * 60 * 60 * 1000);
         return bScore - aScore;
       });
-    setCurrent(due[0] || null);
-    setRevealed(false);
+    const forced = forcedCardId.current ? due.find((card) => card.id === forcedCardId.current) : null;
+    setCurrent(forced || due[0] || null);
+    setRevealed(Boolean(forced && revealForcedCard.current));
+    forcedCardId.current = null;
+    revealForcedCard.current = false;
   }, [deck, states]);
 
   const panResponder = useMemo(() => PanResponder.create({
@@ -102,11 +112,11 @@ export default function App() {
       dragX.current = gesture.dx;
     },
     onPanResponderRelease: (_, gesture) => {
-      if (gesture.dx > 90) void grade("good");
-      if (gesture.dx < -90) void grade("again");
+      if (!grading && gesture.dx > 90) void grade("good");
+      if (!grading && gesture.dx < -90) void grade("again");
       dragX.current = 0;
     }
-  }), [current, db, settings, states]);
+  }), [current, db, grading, settings, states]);
 
   async function refresh(database = db) {
     if (!database) return;
@@ -124,11 +134,32 @@ export default function App() {
   }
 
   async function grade(result: ReviewGrade) {
-    if (!db || !settings || !current) return;
-    const before = await getReviewState(db, current.id);
-    const next = applyReviewGrade(before, result, Date.now());
-    await saveReviewResult(db, next.state, next.event, settings.dailyGoal);
-    await refresh(db);
+    if (!db || !settings || !current || grading) return;
+    const reviewedCard = current;
+    setGrading(true);
+    try {
+      const before = await getReviewState(db, reviewedCard.id);
+      const next = applyReviewGrade(before, result, Date.now());
+      await saveReviewResult(db, next.state, next.event, settings.dailyGoal);
+      setLastReview({ card: reviewedCard, previousState: before, event: next.event });
+      await refresh(db);
+    } finally {
+      setGrading(false);
+    }
+  }
+
+  async function undoLastReview() {
+    if (!db || !settings || !lastReview || grading) return;
+    setGrading(true);
+    try {
+      forcedCardId.current = lastReview.card.id;
+      revealForcedCard.current = true;
+      await undoReviewResult(db, lastReview.previousState, lastReview.event, settings.dailyGoal);
+      await refresh(db);
+      setLastReview(null);
+    } finally {
+      setGrading(false);
+    }
   }
 
   async function addWord(values: { cz: string; en: string; hi: string; ur: string; sentence: string; sentenceEn: string }) {
@@ -228,11 +259,17 @@ export default function App() {
 
           <View style={styles.gradeRow}>
             {(["again", "hard", "good", "easy"] as ReviewGrade[]).map((item) => (
-              <Pressable key={item} style={styles.gradeButton} onPress={() => grade(item)}>
+              <Pressable key={item} disabled={grading || !current} style={[styles.gradeButton, (grading || !current) && styles.disabledButton]} onPress={() => grade(item)}>
                 <Text style={styles.gradeText}>{item}</Text>
               </Pressable>
             ))}
           </View>
+
+          {lastReview && (
+            <Pressable disabled={grading} style={[styles.undoButton, grading && styles.disabledButton]} onPress={undoLastReview} accessibilityRole="button" accessibilityLabel={`Undo review for ${lastReview.card.cz}`}>
+              <Text style={styles.undoText}>Undo last review</Text>
+            </Pressable>
+          )}
 
           <View style={styles.progressBand}>
             <Text style={styles.metric}>Today: {dailyProgress}</Text>
@@ -378,6 +415,9 @@ const styles = StyleSheet.create({
   gradeRow: { flexDirection: "row", gap: 8 },
   gradeButton: { flex: 1, alignItems: "center", backgroundColor: "#244d43", paddingVertical: 12, borderRadius: 8 },
   gradeText: { color: "#fff", fontWeight: "800", textTransform: "capitalize" },
+  undoButton: { alignSelf: "center", minWidth: 170, alignItems: "center", paddingVertical: 11, paddingHorizontal: 16, borderRadius: 8, borderWidth: 1, borderColor: "#9aa9a1", backgroundColor: "#ffffff" },
+  undoText: { color: "#244d43", fontWeight: "800" },
+  disabledButton: { opacity: 0.45 },
   progressBand: { gap: 6, backgroundColor: "#dfe9df", padding: 14, borderRadius: 8 },
   metric: { color: "#20362f", fontWeight: "700" },
   input: { backgroundColor: "#ffffff", borderWidth: 1, borderColor: "#d8e2d7", borderRadius: 8, padding: 14, fontSize: 16 },

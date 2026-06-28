@@ -18,6 +18,11 @@
   }
 
   const presentOverrides = {
+    "jet": ["jedu", "jedeš", "jede", "jedeme", "jedete", "jedou"],
+    "přijet": ["přijedu", "přijedeš", "přijede", "přijedeme", "přijedete", "přijedou"],
+    "odjet": ["odjedu", "odjedeš", "odjede", "odjedeme", "odjedete", "odjedou"],
+    "vědět": ["vím", "víš", "ví", "víme", "víte", "vědí"],
+    "chtít": ["chci", "chceš", "chce", "chceme", "chcete", "chtějí"],
     "kašlat": ["kašlu", "kašleš", "kašle", "kašleme", "kašlete", "kašlou"],
     "plakat": ["pláču", "pláčeš", "pláče", "pláčeme", "pláčete", "pláčou"],
     "plavat": ["plavu", "plaveš", "plave", "plaveme", "plavete", "plavou"],
@@ -45,6 +50,15 @@
     "smazat": ["smaž", "smažte"]
   };
 
+  const excludedPersonalVerbs = new Set([
+    "podařit se",
+    "trvat",
+    "pršet",
+    "sněžit",
+    "foukat",
+    "mrznout"
+  ]);
+
   const safeAtVerbs = new Set([
     "běhat",
     "dělat",
@@ -63,6 +77,7 @@
   ]);
 
   function makeForms(verb) {
+    if (excludedPersonalVerbs.has(verb)) return [];
     const reflexive = /\s+(se|si)$/.exec(verb);
     const reflexivePart = reflexive ? ` ${reflexive[1]}` : "";
     const infinitive = reflexive ? verb.replace(/\s+(se|si)$/, "") : verb;
@@ -101,36 +116,39 @@
     return `ne${form.replace(/\s+(se|si)$/, "")} ${reflexive[1]}`;
   }
 
+  function englishForm(verbMeaning, person, isNegative) {
+    const subject = person.en.charAt(0).toUpperCase() + person.en.slice(1);
+    const [verb, ...restParts] = verbMeaning.split(" ");
+    const rest = restParts.length ? ` ${restParts.join(" ")}` : "";
+
+    if (verb === "be") {
+      const conjugated = person.code === "ja" ? "am" : person.code === "on" ? "is" : "are";
+      return `${subject} ${conjugated}${isNegative ? " not" : ""}${rest}`;
+    }
+
+    if (isNegative) {
+      return `${subject} ${person.code === "on" ? "does not" : "do not"} ${verbMeaning}`;
+    }
+
+    if (person.code !== "on") return `${subject} ${verbMeaning}`;
+    if (verb === "have") return `${subject} has${rest}`;
+
+    let conjugated = verb;
+    if (/[^aeiou]y$/i.test(verb)) conjugated = `${verb.slice(0, -1)}ies`;
+    else if (/(?:s|x|z|ch|sh|o)$/i.test(verb)) conjugated = `${verb}es`;
+    else conjugated = `${verb}s`;
+    return `${subject} ${conjugated}${rest}`;
+  }
+
   function makeImperatives(verb) {
     const reflexive = /\s+(se|si)$/.exec(verb);
     const reflexivePart = reflexive ? ` ${reflexive[1]}` : "";
     const infinitive = reflexive ? verb.replace(/\s+(se|si)$/, "") : verb;
-    let singular = "";
-    let plural = "";
 
     if (imperativeOverrides[infinitive]) {
       return imperativeOverrides[infinitive].map((form) => `${form}${reflexivePart}`);
     }
-
-    if (infinitive.endsWith("ovat")) {
-      const stem = infinitive.slice(0, -4);
-      singular = `${stem}uj`;
-      plural = `${stem}ujte`;
-    } else if (infinitive.endsWith("at") && safeAtVerbs.has(infinitive)) {
-      const stem = infinitive.slice(0, -2);
-      singular = `${stem}ej`;
-      plural = `${stem}ejte`;
-    } else if (infinitive.endsWith("it") || infinitive.endsWith("ět") || infinitive.endsWith("et")) {
-      const stem = infinitive.slice(0, -2);
-      singular = stem;
-      plural = `${stem}te`;
-    } else if (infinitive.endsWith("nout")) {
-      const stem = infinitive.slice(0, -4);
-      singular = `${stem}ni`;
-      plural = `${stem}něte`;
-    }
-
-    return [singular && `${singular}${reflexivePart}`, plural && `${plural}${reflexivePart}`].filter(Boolean);
+    return [];
   }
 
   function pushCard(source, form, person, isNegative) {
@@ -140,11 +158,11 @@
 
     const verbMeaning = cleanVerb(source.en);
     const sentence = `${person.cs} ${isNegative ? form : form}.`;
-    const sentenceEn = `${person.en} ${isNegative ? "do not " : ""}${verbMeaning}.`;
+    const sentenceEn = `${englishForm(verbMeaning, person, isNegative)}.`;
     deck.push({
       id: `verb-form-${source.id || source.cz}-${person.code}-${isNegative ? "neg" : "pos"}-${key.replace(/\s+/g, "-")}`,
       cz: form,
-      en: `${person.en} ${isNegative ? "do not " : ""}${verbMeaning}`,
+      en: englishForm(verbMeaning, person, isNegative),
       hi: `क्रिया रूप: ${person.en} ${isNegative ? "do not " : ""}${verbMeaning}`,
       ur: `فعل کی شکل: ${person.en} ${isNegative ? "do not " : ""}${verbMeaning}`,
       sentence,

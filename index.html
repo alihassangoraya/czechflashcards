@@ -13,13 +13,19 @@
     <main class="app-shell">
       <section class="topbar">
         <div>
-          <p class="eyebrow" id="examEyebrow">B1 Czech vocabulary</p>
-          <h1>Czech Flashcards</h1>
+          <div class="brand-title">
+            <h1>Czech Flashcards</h1>
+            <button class="header-icon search-trigger" id="searchTrigger" type="button" aria-label="Search words" aria-haspopup="dialog" aria-controls="searchDialog" title="Search words">&#128269;</button>
+          </div>
         </div>
-        <div class="stats" aria-label="Learning statistics">
-          <span><strong id="dueCount">0</strong> due</span>
-          <span><strong id="knownCount">0</strong> known</span>
-          <span><strong id="learningCount">0</strong> learning</span>
+        <div class="topbar-actions">
+          <div class="stats" aria-label="Learning statistics">
+            <span><strong id="dueCount">0</strong> due</span>
+            <span><strong id="knownCount">0</strong> known</span>
+            <span><strong id="learningCount">0</strong> learning</span>
+          </div>
+          <button class="add-word-trigger" id="addWordTrigger" type="button" aria-label="Add custom word" aria-haspopup="dialog" aria-controls="addWordDialog" title="Add custom word">+</button>
+          <button class="header-icon settings-trigger" id="settingsTrigger" type="button" aria-label="Open settings" aria-haspopup="dialog" aria-controls="settingsDialog" title="Settings">&#9881;</button>
         </div>
       </section>
 
@@ -41,127 +47,142 @@
             <button id="speakWordButton" type="button">Play word</button>
             <button id="speakSentenceButton" type="button">Play example</button>
           </div>
+          <button class="card-undo" id="undoButton" type="button" aria-label="Undo last review" title="Undo last review" hidden>&#8617;</button>
         </div>
       </section>
 
-      <section class="actions" aria-label="Flashcard actions">
-        <button class="again" id="againButton" type="button">Again</button>
-        <button class="hard" id="hardButton" type="button">Hard</button>
-        <button class="reveal" id="revealButton" type="button">Reveal</button>
-        <button class="known" id="knownButton" type="button">Good</button>
-        <button class="easy" id="easyButton" type="button">Easy</button>
-      </section>
-
-      <section class="toolbar">
-        <label>
-          Exam
-          <select id="examLevel">
-            <option value="b1">B1 exam</option>
-            <option value="a2">A2 exam</option>
-          </select>
-        </label>
-        <label>
-          Deck
-          <select id="deckFilter">
-            <option value="core">Core words</option>
-            <option value="all">All study cards</option>
-            <option value="daily">Daily life</option>
-            <option value="extended">Extended words</option>
-            <option value="work">Work and study</option>
-            <option value="travel">Travel and city</option>
-            <option value="health">Health</option>
-            <option value="verbs">Verbs</option>
-            <option value="forms">Verb forms</option>
-            <option value="numbers">Numbers</option>
-            <option value="custom">My words</option>
-          </select>
-        </label>
-        <button id="shuffleButton" type="button">Shuffle due</button>
-        <button id="resetDueButton" type="button">Review all now</button>
-        <button id="exportButton" type="button">Export progress</button>
-        <button id="exportDeckButton" type="button">Export deck</button>
-        <label>
-          Daily goal
-          <input id="dailyGoalInput" type="number" min="1" max="500" step="1" value="30">
-        </label>
-        <label>
-          Meaning
-          <select id="meaningLanguage">
-            <option value="hi">Hindi</option>
-            <option value="ur">Urdu</option>
-          </select>
-        </label>
-        <label class="import-label">
-          Restore JSON
-          <input id="restoreInput" type="file" accept=".json,application/json">
-        </label>
-        <label class="import-label">
-          Import CSV
-          <input id="importInput" type="file" accept=".csv,text/csv">
-        </label>
-      </section>
-      <p class="status-line" id="statusLine" role="status">Ready for review.</p>
-
-      <section class="search-panel" aria-labelledby="searchTitle">
-        <div class="panel-heading">
-          <div>
-            <p class="eyebrow">Deck browser</p>
-            <h2 id="searchTitle">Search words</h2>
+      <dialog class="word-dialog search-dialog" id="searchDialog" aria-labelledby="searchTitle">
+        <div class="word-dialog-content">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Deck browser</p>
+              <h2 id="searchTitle">Search words</h2>
+            </div>
+            <div class="dialog-heading-actions">
+              <span><strong id="searchCount">0</strong> found</span>
+              <button class="dialog-close" id="closeSearchDialog" type="button" aria-label="Close search dialog" title="Close">&times;</button>
+            </div>
           </div>
-          <span><strong id="searchCount">0</strong> found</span>
+          <input id="searchInput" class="search-input" autocomplete="off" placeholder="Search Czech, English, Hindi, or Urdu">
+          <div class="search-results" id="searchResults" aria-live="polite"></div>
         </div>
-        <input id="searchInput" class="search-input" autocomplete="off" placeholder="Search Czech, English, Hindi, or Urdu">
-        <div class="search-results" id="searchResults" aria-live="polite"></div>
-      </section>
+      </dialog>
 
-      <section class="add-panel" aria-labelledby="addWordTitle">
-        <div class="panel-heading">
-          <div>
-            <p class="eyebrow">Custom vocabulary</p>
-            <h2 id="addWordTitle">Add your own word</h2>
+      <dialog class="word-dialog settings-dialog" id="settingsDialog" aria-labelledby="settingsTitle">
+        <div class="word-dialog-content">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Study setup</p>
+              <h2 id="settingsTitle">Settings</h2>
+            </div>
+            <div class="dialog-heading-actions">
+              <button class="dialog-close" id="closeSettingsDialog" type="button" aria-label="Close settings dialog" title="Close">&times;</button>
+            </div>
           </div>
-          <span><strong id="customCount">0</strong> saved</span>
+          <section class="toolbar">
+            <label>
+              Exam
+              <select id="examLevel">
+                <option value="b1">B1 exam</option>
+                <option value="a2">A2 exam</option>
+              </select>
+            </label>
+            <label>
+              Deck
+              <select id="deckFilter">
+                <option value="core">Core words</option>
+                <option value="all">All study cards</option>
+                <option value="daily">Daily life</option>
+                <option value="extended">Extended words</option>
+                <option value="work">Work and study</option>
+                <option value="travel">Travel and city</option>
+                <option value="health">Health</option>
+                <option value="verbs">Verbs</option>
+                <option value="forms">Verb forms</option>
+                <option value="numbers">Numbers</option>
+                <option value="custom">My words</option>
+              </select>
+            </label>
+            <label>
+              Daily goal
+              <input id="dailyGoalInput" type="number" min="1" max="500" step="1" value="30">
+            </label>
+            <label>
+              Meaning
+              <select id="meaningLanguage">
+                <option value="hi">Hindi</option>
+                <option value="ur" selected>Urdu</option>
+              </select>
+            </label>
+            <label class="import-label">
+              Restore JSON
+              <input id="restoreInput" type="file" accept=".json,application/json">
+            </label>
+            <label class="import-label">
+              Import CSV
+              <input id="importInput" type="file" accept=".csv,text/csv">
+            </label>
+            <button id="shuffleButton" type="button">Shuffle due</button>
+            <button id="resetDueButton" type="button">Review all now</button>
+            <button id="exportButton" type="button">Export progress</button>
+            <button id="exportDeckButton" type="button">Export deck</button>
+          </section>
         </div>
-        <form id="addWordForm" class="word-form">
-          <label>
-            Czech word
-            <input id="customCz" name="cz" autocomplete="off" required placeholder="například: schůzka">
-          </label>
-          <label>
-            English
-            <input id="customEn" name="en" autocomplete="off" required placeholder="meeting, appointment">
-          </label>
-          <label>
-            Hindi
-            <input id="customHi" name="hi" autocomplete="off" required placeholder="मीटिंग">
-          </label>
-          <label>
-            Urdu
-            <input id="customUr" name="ur" autocomplete="off" dir="rtl" placeholder="میٹنگ">
-          </label>
-          <label class="wide-field">
-            Example sentence
-            <input id="customSentence" name="sentence" autocomplete="off" required placeholder="Zítra mám důležitou schůzku.">
-          </label>
-          <label>
-            English example
-            <input id="customSentenceEn" name="sentenceEn" autocomplete="off" placeholder="Tomorrow I have an important meeting.">
-          </label>
-          <label>
-            Deck tag
-            <select id="customTag" name="tag">
-              <option value="custom">My words</option>
-              <option value="daily">Daily life</option>
-              <option value="work">Work and study</option>
-              <option value="travel">Travel and city</option>
-              <option value="health">Health</option>
-              <option value="verbs">Verbs</option>
-            </select>
-          </label>
-          <button id="addWordButton" type="submit">Add word</button>
-        </form>
-        <div class="custom-list" id="customList" aria-live="polite"></div>
-      </section>
+      </dialog>
+
+      <dialog class="word-dialog" id="addWordDialog" aria-labelledby="addWordTitle">
+        <div class="word-dialog-content">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Custom vocabulary</p>
+              <h2 id="addWordTitle">Add your own word</h2>
+            </div>
+            <div class="dialog-heading-actions">
+              <span><strong id="customCount">0</strong> saved</span>
+              <button class="dialog-close" id="closeAddWordDialog" type="button" aria-label="Close add custom word dialog" title="Close">&times;</button>
+            </div>
+          </div>
+          <form id="addWordForm" class="word-form">
+            <label>
+              Czech word
+              <input id="customCz" name="cz" autocomplete="off" required placeholder="například: schůzka">
+            </label>
+            <label>
+              English
+              <input id="customEn" name="en" autocomplete="off" required placeholder="meeting, appointment">
+            </label>
+            <label>
+              Hindi
+              <input id="customHi" name="hi" autocomplete="off" required placeholder="मीटिंग">
+            </label>
+            <label>
+              Urdu
+              <input id="customUr" name="ur" autocomplete="off" dir="rtl" placeholder="میٹنگ">
+            </label>
+            <label class="wide-field">
+              Example sentence
+              <input id="customSentence" name="sentence" autocomplete="off" required placeholder="Zítra mám důležitou schůzku.">
+            </label>
+            <label>
+              English example
+              <input id="customSentenceEn" name="sentenceEn" autocomplete="off" placeholder="Tomorrow I have an important meeting.">
+            </label>
+            <label>
+              Deck tag
+              <select id="customTag" name="tag">
+                <option value="custom">My words</option>
+                <option value="daily">Daily life</option>
+                <option value="work">Work and study</option>
+                <option value="travel">Travel and city</option>
+                <option value="health">Health</option>
+                <option value="verbs">Verbs</option>
+              </select>
+            </label>
+            <button id="addWordButton" type="submit">Add word</button>
+          </form>
+          <div class="custom-list" id="customList" aria-live="polite"></div>
+        </div>
+      </dialog>
 
       <section class="progress-panel">
         <div>
@@ -182,7 +203,7 @@
         </div>
         <div>
           <p class="small-label">Tip</p>
-          <strong>Swipe or use ← H → E</strong>
+          <strong>Swipe or use ← →</strong>
         </div>
       </section>
     </main>

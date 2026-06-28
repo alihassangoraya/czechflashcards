@@ -1,4 +1,4 @@
-const CACHE_NAME = "czech-b1-flashcards-v27";
+const CACHE_NAME = "czech-b1-flashcards-v28";
 const ASSETS = [
   "./",
   "./index.html",

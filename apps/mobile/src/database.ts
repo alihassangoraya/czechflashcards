@@ -15,7 +15,7 @@ export type StudySettings = {
 const DEFAULT_SETTINGS: StudySettings = {
   examLevel: "b1",
   deckFilter: "core",
-  meaningLanguage: "hi",
+  meaningLanguage: "ur",
   dailyGoal: 30,
   notifications: {
     dailyReminderEnabled: false,
@@ -197,6 +197,76 @@ export async function saveReviewResult(db: AppDatabase, state: ReviewState, even
       dailyGoal <= 1 ? 1 : 0
     );
     await enqueueSync(db, "review_recorded", { event, state, date, dailyGoal });
+  });
+  return getDailyProgress(db, date, dailyGoal);
+}
+
+export async function undoReviewResult(
+  db: AppDatabase,
+  previousState: ReviewState,
+  event: ReviewEvent,
+  dailyGoal: number
+): Promise<DailyProgress> {
+  const date = localDateKey(new Date(event.reviewedAt));
+  const now = Date.now();
+  await db.withTransactionAsync(async () => {
+    if (!previousState.seen && !previousState.knownStreak && !previousState.againCount && !previousState.dueAt) {
+      await db.runAsync("DELETE FROM user_cards WHERE card_id = ?", previousState.cardId);
+    } else {
+      await db.runAsync(
+        `INSERT INTO user_cards (card_id, known_streak, again_count, due_at, seen, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?)
+         ON CONFLICT(card_id) DO UPDATE SET
+          known_streak = excluded.known_streak,
+          again_count = excluded.again_count,
+          due_at = excluded.due_at,
+          seen = excluded.seen,
+          updated_at = excluded.updated_at`,
+        previousState.cardId,
+        previousState.knownStreak,
+        previousState.againCount,
+        previousState.dueAt,
+        previousState.seen,
+        now
+      );
+    }
+
+    await db.runAsync(
+      `DELETE FROM reviews
+       WHERE id = (
+         SELECT id FROM reviews
+         WHERE card_id = ? AND reviewed_at = ?
+         ORDER BY id DESC LIMIT 1
+       )`,
+      event.cardId,
+      event.reviewedAt
+    );
+    await db.runAsync(
+      `UPDATE daily_progress SET
+        reviewed = MAX(0, reviewed - 1),
+        new_cards = MAX(0, new_cards - ?),
+        goal = ?,
+        completed = CASE WHEN MAX(0, reviewed - 1) >= ? THEN 1 ELSE 0 END,
+        synced_at = NULL
+       WHERE date = ?`,
+      event.wasNew ? 1 : 0,
+      dailyGoal,
+      dailyGoal,
+      date
+    );
+    await db.runAsync(
+      `DELETE FROM sync_queue
+       WHERE id = (
+         SELECT id FROM sync_queue
+         WHERE type = 'review_recorded'
+           AND synced_at IS NULL
+           AND instr(payload_json, ?) > 0
+           AND instr(payload_json, ?) > 0
+         ORDER BY id DESC LIMIT 1
+       )`,
+      `"cardId":"${event.cardId}"`,
+      `"reviewedAt":${event.reviewedAt}`
+    );
   });
   return getDailyProgress(db, date, dailyGoal);
 }

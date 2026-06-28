@@ -51,6 +51,12 @@ button {
   margin-bottom: 24px;
 }
 
+.topbar-actions {
+  display: flex;
+  align-items: end;
+  gap: 10px;
+}
+
 .eyebrow,
 .small-label,
 .card-mode,
@@ -65,8 +71,14 @@ button {
 
 h1 {
   margin: 4px 0 0;
-  font-size: clamp(2rem, 5vw, 4.5rem);
-  line-height: 0.95;
+  font-size: 1.45rem;
+  line-height: 1.1;
+}
+
+.brand-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .stats,
@@ -79,10 +91,8 @@ h1 {
 .stats span,
 .progress-panel > div,
 .toolbar,
-.add-panel,
 .search-panel,
 .toolbar button,
-.actions button,
 .sound-actions button,
 .import-label {
   border: 1px solid var(--line);
@@ -90,16 +100,47 @@ h1 {
 }
 
 .stats span {
-  min-width: 104px;
-  padding: 10px 12px;
+  min-width: 72px;
+  padding: 6px 9px;
   border-radius: 8px;
   color: var(--muted);
+  font-size: 0.78rem;
 }
 
 .stats strong {
   display: block;
   color: var(--ink);
-  font-size: 1.3rem;
+  font-size: 1rem;
+}
+
+.add-word-trigger,
+.header-icon,
+.dialog-close {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  background: var(--accent);
+  color: white;
+  cursor: pointer;
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.search-trigger {
+  border-color: var(--line);
+  background: white;
+  color: var(--ink);
+  font-size: 1.1rem;
+}
+
+.settings-trigger {
+  border-color: var(--line);
+  background: white;
+  color: var(--ink);
+  font-size: 1.25rem;
 }
 
 .deck-stage {
@@ -243,15 +284,6 @@ h1 {
   text-align: center;
 }
 
-.actions {
-  width: min(520px, 100%);
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.actions button,
 .sound-actions button,
 .toolbar button,
 .import-label,
@@ -262,32 +294,11 @@ select,
   padding: 0 16px;
 }
 
-.actions button,
 .sound-actions button,
 .toolbar button,
 .import-label {
   cursor: pointer;
   font-weight: 800;
-}
-
-.again {
-  color: var(--again);
-}
-
-.known {
-  color: var(--known);
-}
-
-.hard {
-  color: #9a6518;
-}
-
-.easy {
-  color: #12615d;
-}
-
-.reveal {
-  color: var(--accent);
 }
 
 .sound-actions {
@@ -311,12 +322,6 @@ select,
   gap: 12px;
   flex-wrap: wrap;
   align-items: end;
-}
-
-.add-panel {
-  margin-top: 16px;
-  border-radius: 8px;
-  padding: 16px;
 }
 
 .search-panel {
@@ -392,9 +397,12 @@ select,
 .toolbar input:focus,
 .search-input:focus,
 .toolbar button:focus-visible,
-.actions button:focus-visible,
 .sound-actions button:focus-visible,
 .delete-word:focus-visible,
+.card-undo:focus-visible,
+.add-word-trigger:focus-visible,
+.header-icon:focus-visible,
+.dialog-close:focus-visible,
 .import-label:focus-within {
   outline: 3px solid rgba(47, 111, 159, 0.25);
   outline-offset: 2px;
@@ -413,6 +421,51 @@ select,
   padding: 0 18px;
   font-weight: 850;
   cursor: pointer;
+}
+
+.word-dialog {
+  width: min(760px, calc(100% - 32px));
+  max-height: min(780px, calc(100dvh - 32px));
+  margin: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0;
+  background: var(--panel);
+  color: var(--ink);
+  box-shadow: var(--shadow);
+}
+
+.word-dialog::backdrop {
+  background: rgba(23, 33, 27, 0.42);
+}
+
+.word-dialog-content {
+  overflow-y: auto;
+  max-height: inherit;
+  padding: 20px;
+}
+
+.search-dialog .word-dialog-content {
+  min-height: 360px;
+}
+
+.settings-dialog .toolbar {
+  margin-top: 0;
+}
+
+.dialog-heading-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dialog-close {
+  width: 36px;
+  height: 36px;
+  border-color: var(--line);
+  background: white;
+  color: var(--ink);
+  font-size: 1.5rem;
 }
 
 .custom-list {
@@ -531,12 +584,20 @@ select {
   color: var(--muted);
 }
 
-.status-line {
-  min-height: 22px;
-  margin: 10px 2px 0;
-  color: var(--muted);
-  font-size: 0.9rem;
-  font-weight: 700;
+.card-undo {
+  display: grid;
+  place-items: center;
+  align-self: center;
+  width: 40px;
+  height: 40px;
+  margin-top: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 1.55rem;
+  line-height: 1;
 }
 
 .progress-panel {
@@ -560,6 +621,15 @@ select {
     align-items: start;
   }
 
+  .topbar-actions {
+    align-items: end;
+    justify-content: space-between;
+  }
+
+  .stats {
+    flex: 1;
+  }
+
   .deck-stage {
     min-height: 430px;
   }
@@ -576,14 +646,6 @@ select {
 
   .answer strong {
     font-size: 1rem;
-  }
-
-  .actions {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .reveal {
-    grid-column: span 2;
   }
 
   .toolbar {

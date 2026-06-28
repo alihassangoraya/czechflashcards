@@ -28,14 +28,8 @@
     dueCount: document.getElementById("dueCount"),
     knownCount: document.getElementById("knownCount"),
     learningCount: document.getElementById("learningCount"),
-    examEyebrow: document.getElementById("examEyebrow"),
     intervalLabel: document.getElementById("intervalLabel"),
     deckSize: document.getElementById("deckSize"),
-    againButton: document.getElementById("againButton"),
-    hardButton: document.getElementById("hardButton"),
-    revealButton: document.getElementById("revealButton"),
-    knownButton: document.getElementById("knownButton"),
-    easyButton: document.getElementById("easyButton"),
     speakWordButton: document.getElementById("speakWordButton"),
     speakSentenceButton: document.getElementById("speakSentenceButton"),
     shuffleButton: document.getElementById("shuffleButton"),
@@ -47,7 +41,16 @@
     examLevel: document.getElementById("examLevel"),
     deckFilter: document.getElementById("deckFilter"),
     meaningLanguage: document.getElementById("meaningLanguage"),
-    statusLine: document.getElementById("statusLine"),
+    undoButton: document.getElementById("undoButton"),
+    searchTrigger: document.getElementById("searchTrigger"),
+    searchDialog: document.getElementById("searchDialog"),
+    closeSearchDialog: document.getElementById("closeSearchDialog"),
+    settingsTrigger: document.getElementById("settingsTrigger"),
+    settingsDialog: document.getElementById("settingsDialog"),
+    closeSettingsDialog: document.getElementById("closeSettingsDialog"),
+    addWordTrigger: document.getElementById("addWordTrigger"),
+    addWordDialog: document.getElementById("addWordDialog"),
+    closeAddWordDialog: document.getElementById("closeAddWordDialog"),
     addWordForm: document.getElementById("addWordForm"),
     customCz: document.getElementById("customCz"),
     customEn: document.getElementById("customEn"),
@@ -69,7 +72,7 @@
   let progress = readJson(STORAGE_KEY, {});
   let importedCards = readJson(EXTRA_KEY, []);
   let customCards = readJson(CUSTOM_KEY, []);
-  let meaningLanguage = localStorage.getItem(LANGUAGE_KEY) || "hi";
+  let meaningLanguage = localStorage.getItem(LANGUAGE_KEY) || "ur";
   let examLevel = localStorage.getItem(LEVEL_KEY) || "b1";
   let dailyLog = readJson(DAILY_KEY, todayLog());
   let dailyGoal = Number(localStorage.getItem(GOAL_KEY)) || 30;
@@ -79,6 +82,9 @@
   let drag = null;
   let shuffledQueue = [];
   let forcedCardId = null;
+  let lastReview = null;
+  let renderTimer = null;
+  let reviewLocked = false;
 
   function readJson(key, fallback) {
     try {
@@ -125,7 +131,7 @@
   }
 
   function setStatus(message) {
-    el.statusLine.textContent = message;
+    void message;
   }
 
   function normalizeDeck(cards) {
@@ -609,6 +615,7 @@
   }
 
   function render() {
+    reviewLocked = false;
     current = pickNextCard();
     revealed = false;
     el.answer.hidden = true;
@@ -643,7 +650,6 @@
     el.cardMode.textContent = current.tags.join(" · ");
     el.tapHint.textContent = "Tap to reveal meaning";
     el.intervalLabel.textContent = state.seen ? formatInterval(Math.max(0, state.dueAt - Date.now())) : "New word";
-    setStatus(`Showing ${current.cz}. ${filteredDeck().length} cards in this deck.`);
     updateStats();
   }
 
@@ -670,7 +676,6 @@
     el.learningCount.textContent = learning;
     el.deckSize.textContent = cards.length;
     el.customCount.textContent = customCards.length;
-    el.examEyebrow.textContent = `${examLabel()} Czech vocabulary`;
     el.dailyProgress.textContent = `${log.reviewed} / ${dailyGoal} reviewed`;
     el.tomorrowCount.textContent = dueTomorrow;
     el.dailyGoalInput.value = dailyGoal;
@@ -728,6 +733,7 @@
     forcedCardId = card.id;
     clearShuffleQueue();
     save();
+    closeSearchDialog();
     render();
     setStatus(`Loaded ${card.cz} for review.`);
   }
@@ -766,7 +772,7 @@
     if (!current) return;
     revealed = true;
     el.answer.hidden = false;
-    el.tapHint.textContent = "Now swipe or choose an answer";
+    el.tapHint.textContent = "Now swipe left or right";
     setStatus(`${current.cz}: ${current.en} · ${selectedMeaning(current)}`);
   }
 
@@ -783,8 +789,14 @@
   }
 
   function grade(result) {
-    if (!current) return;
-    const state = getState(current);
+    if (!current || reviewLocked) return;
+    reviewLocked = true;
+    const reviewedCard = current;
+    const state = getState(reviewedCard);
+    const previousState = { ...state };
+    const previousDailyLog = { ...currentDailyLog() };
+    const previousQueue = shuffledQueue.slice();
+    const wasRevealed = revealed;
     const now = Date.now();
     const wasNew = !state.seen;
     state.seen = (state.seen || 0) + 1;
@@ -809,9 +821,32 @@
 
     recordReview(wasNew);
     save();
-    shuffledQueue = shuffledQueue.filter((id) => id !== current.id);
-    setStatus(statusForGrade(result, current));
+    shuffledQueue = shuffledQueue.filter((id) => id !== reviewedCard.id);
+    lastReview = { card: reviewedCard, previousState, previousDailyLog, previousQueue, wasRevealed };
+    el.undoButton.hidden = false;
+    setStatus(statusForGrade(result, reviewedCard));
     flyOut(result !== "again");
+  }
+
+  function undoLastReview() {
+    if (!lastReview) return;
+    if (renderTimer) {
+      window.clearTimeout(renderTimer);
+      renderTimer = null;
+    }
+    const undo = lastReview;
+    progress[undo.card.id] = { ...undo.previousState };
+    dailyLog = { ...undo.previousDailyLog };
+    shuffledQueue = undo.previousQueue.slice();
+    forcedCardId = undo.card.id;
+    lastReview = null;
+    reviewLocked = false;
+    el.undoButton.hidden = true;
+    save();
+    saveDailyLog();
+    render();
+    if (undo.wasRevealed) reveal();
+    setStatus(`Undid the last review for ${undo.card.cz}.`);
   }
 
   function statusForGrade(result, card) {
@@ -831,7 +866,10 @@
   function flyOut(known) {
     el.card.style.transform = `translateX(${known ? 120 : -120}vw) rotate(${known ? 18 : -18}deg)`;
     el.card.style.opacity = "0";
-    window.setTimeout(render, 180);
+    renderTimer = window.setTimeout(() => {
+      renderTimer = null;
+      render();
+    }, 180);
   }
 
   function formatInterval(ms) {
@@ -998,6 +1036,34 @@
     render();
   }
 
+  function openAddWordDialog() {
+    el.addWordDialog.showModal();
+    el.customCz.focus();
+  }
+
+  function openSearchDialog() {
+    el.searchDialog.showModal();
+    renderSearchResults();
+    el.searchInput.focus();
+  }
+
+  function closeSearchDialog() {
+    if (el.searchDialog.open) el.searchDialog.close();
+  }
+
+  function openSettingsDialog() {
+    el.settingsDialog.showModal();
+    el.examLevel.focus();
+  }
+
+  function closeSettingsDialog() {
+    if (el.settingsDialog.open) el.settingsDialog.close();
+  }
+
+  function closeAddWordDialog() {
+    if (el.addWordDialog.open) el.addWordDialog.close();
+  }
+
   el.card.addEventListener("click", reveal);
   el.card.addEventListener("keydown", (event) => {
     if (event.key === "Enter" || event.key === " ") {
@@ -1005,11 +1071,29 @@
       reveal();
     }
   });
-  el.revealButton.addEventListener("click", reveal);
-  el.againButton.addEventListener("click", () => grade("again"));
-  el.hardButton.addEventListener("click", () => grade("hard"));
-  el.knownButton.addEventListener("click", () => grade("good"));
-  el.easyButton.addEventListener("click", () => grade("easy"));
+  el.undoButton.addEventListener("click", (event) => {
+    event.stopPropagation();
+    undoLastReview();
+  });
+  el.undoButton.addEventListener("pointerdown", (event) => event.stopPropagation());
+  el.searchTrigger.addEventListener("click", openSearchDialog);
+  el.closeSearchDialog.addEventListener("click", closeSearchDialog);
+  el.searchDialog.addEventListener("click", (event) => {
+    if (event.target === el.searchDialog) closeSearchDialog();
+  });
+  el.searchDialog.addEventListener("close", () => el.searchTrigger.focus());
+  el.settingsTrigger.addEventListener("click", openSettingsDialog);
+  el.closeSettingsDialog.addEventListener("click", closeSettingsDialog);
+  el.settingsDialog.addEventListener("click", (event) => {
+    if (event.target === el.settingsDialog) closeSettingsDialog();
+  });
+  el.settingsDialog.addEventListener("close", () => el.settingsTrigger.focus());
+  el.addWordTrigger.addEventListener("click", openAddWordDialog);
+  el.closeAddWordDialog.addEventListener("click", closeAddWordDialog);
+  el.addWordDialog.addEventListener("click", (event) => {
+    if (event.target === el.addWordDialog) closeAddWordDialog();
+  });
+  el.addWordDialog.addEventListener("close", () => el.addWordTrigger.focus());
   el.speakWordButton.addEventListener("click", (event) => {
     event.stopPropagation();
     if (current) speak(current.cz);
@@ -1149,6 +1233,7 @@
     el.addWordForm.reset();
     el.customTag.value = "custom";
     el.deckFilter.value = "custom";
+    closeAddWordDialog();
     setStatus(`Added ${cz}. It is ready in My words.`);
     render();
   });
@@ -1159,12 +1244,12 @@
   });
 
   window.addEventListener("keydown", (event) => {
+    if (el.addWordDialog.open || el.searchDialog.open || el.settingsDialog.open) return;
     if (isTypingTarget(event.target)) return;
     if (event.key === "ArrowLeft") grade("again");
     if (event.key === "ArrowRight") grade("good");
-    if (event.key.toLowerCase() === "h") grade("hard");
-    if (event.key.toLowerCase() === "e") grade("easy");
     if (event.key.toLowerCase() === "r") reveal();
+    if (event.key.toLowerCase() === "u") undoLastReview();
   });
 
   el.card.addEventListener("pointerdown", (event) => {
