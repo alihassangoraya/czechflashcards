@@ -1,4 +1,4 @@
-const CACHE_NAME = "czech-b1-flashcards-v31";
+const CACHE_NAME = "czech-b1-flashcards-v33";
 const ASSETS = [
   "./",
   "./index.html",
@@ -6,6 +6,7 @@ const ASSETS = [
   "./app.js",
   "./data/vocabulary.js",
   "./data/extended-lemmas.js",
+  "./data/focus-decks.js",
   "./data/verb-forms.js",
   "./manifest.webmanifest"
 ];

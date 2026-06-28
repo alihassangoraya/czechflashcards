@@ -34,12 +34,14 @@ import {
   getReviewState,
   loadCards,
   loadReviewStates,
+  loadSavedCardIds,
   loadSettings,
   openAppDatabase,
   saveReviewResult,
   saveCardCorrection,
   saveSettings,
   seedCards,
+  setCardSaved,
   undoReviewResult,
   type AppDatabase,
   type StudySettings
@@ -58,6 +60,7 @@ const seedCardsNormalized = normalizeCards(seedPayload.cards as Parameters<typeo
 export default function App() {
   const [db, setDb] = useState<AppDatabase | null>(null);
   const [cards, setCards] = useState<Card[]>([]);
+  const [savedCardIds, setSavedCardIds] = useState<Set<string>>(new Set());
   const [states, setStates] = useState<Record<string, ReviewState>>({});
   const [settings, setSettingsState] = useState<StudySettings | null>(null);
   const [current, setCurrent] = useState<Card | null>(null);
@@ -83,6 +86,7 @@ export default function App() {
       setDb(database);
       setSettingsState(nextSettings);
       setCards(await loadCards(database));
+      setSavedCardIds(await loadSavedCardIds(database));
       setStates(await loadReviewStates(database));
       const progress = await getDailyProgress(database, undefined, nextSettings.dailyGoal);
       setDailyProgress(`${progress.reviewed} / ${progress.goal}`);
@@ -94,8 +98,8 @@ export default function App() {
 
   const deck = useMemo(() => {
     if (!settings) return [];
-    return filterDeck(cards, settings.examLevel, settings.deckFilter);
-  }, [cards, settings]);
+    return filterDeck(cards, settings.examLevel, settings.deckFilter, savedCardIds);
+  }, [cards, savedCardIds, settings]);
 
   useEffect(() => {
     const now = Date.now();
@@ -155,6 +159,7 @@ export default function App() {
   async function refresh(database = db) {
     if (!database) return;
     setCards(await loadCards(database));
+    setSavedCardIds(await loadSavedCardIds(database));
     setStates(await loadReviewStates(database));
     const progress = await getDailyProgress(database, undefined, settings?.dailyGoal || 30);
     setDailyProgress(`${progress.reviewed} / ${progress.goal}`);
@@ -202,14 +207,15 @@ export default function App() {
 
   async function addWord(values: { cz: string; en: string; hi: string; ur: string; sentence: string; sentenceEn: string; tag: string }) {
     if (!db) return;
+    if (!values.cz.trim() || !values.en.trim()) return;
     const card: Card = {
       id: `custom-${Date.now()}-${slug(values.cz)}`,
       cz: values.cz.trim(),
       en: values.en.trim(),
-      hi: values.hi.trim(),
-      ur: values.ur.trim() || values.hi.trim(),
+      hi: values.hi.trim() || "Hindi meaning pending",
+      ur: values.ur.trim() || "اردو معنی باقی ہے",
       sentence: values.sentence.trim(),
-      sentenceEn: values.sentenceEn.trim() || `English example with "${values.en.trim()}".`,
+      sentenceEn: values.sentenceEn.trim(),
       level: "a2",
       tags: Array.from(new Set(["custom", values.tag])),
       source: "custom"
@@ -223,6 +229,13 @@ export default function App() {
     if (!db) return;
     await deleteCustomCard(db, cardId);
     await refresh(db);
+  }
+
+  async function toggleSavedCard(cardId: string) {
+    if (!db) return;
+    const saved = !savedCardIds.has(cardId);
+    await setCardSaved(db, cardId, saved);
+    setSavedCardIds(await loadSavedCardIds(db));
   }
 
   async function saveCorrection(values: { cz: string; en: string; hi: string; ur: string; sentence: string; sentenceEn: string }) {
@@ -299,6 +312,9 @@ export default function App() {
           )}
           {current ? (
             <>
+              <Pressable style={styles.cardSaveButton} onPress={() => void toggleSavedCard(current.id)} accessibilityRole="button" accessibilityLabel={savedCardIds.has(current.id) ? `Remove ${current.cz} from My list` : `Save ${current.cz} to My list`}>
+                <Text style={styles.cardSaveIcon}>{savedCardIds.has(current.id) ? "★" : "☆"}</Text>
+              </Pressable>
               <Pressable style={styles.cardEditButton} onPress={openCardEditor} accessibilityRole="button" accessibilityLabel={`Edit ${current.cz}`}>
                 <Text style={styles.cardEditIcon}>✎</Text>
               </Pressable>
@@ -309,8 +325,8 @@ export default function App() {
                   <Text style={[styles.meaning, settings.meaningLanguage === "ur" && styles.rtl]}>
                     {settings.meaningLanguage === "ur" ? "Urdu" : "Hindi"}: {selectedMeaning(current, settings.meaningLanguage)}
                   </Text>
-                  <Text style={styles.example}>{current.sentence}</Text>
-                  <Text style={styles.muted}>{current.sentenceEn}</Text>
+                  {Boolean(current.sentence) && <Text style={styles.example}>{current.sentence}</Text>}
+                  {Boolean(current.sentenceEn) && <Text style={styles.muted}>{current.sentenceEn}</Text>}
                 </View>
               )}
               <Text style={styles.hint}>{revealed ? "Swipe left to review again or right when it feels familiar" : "Tap to reveal meaning"}</Text>
@@ -361,13 +377,18 @@ export default function App() {
           .filter((card) => [card.cz, card.en, card.hi, card.ur, card.sentence].some((value) => value.toLowerCase().includes(query.toLowerCase())))
           .slice(0, 40)
           .map((card) => (
-            <Pressable key={card.id} style={styles.row} onPress={() => studySearchResult(card)}>
-              <Text style={styles.rowTitle}>{card.cz}</Text>
-              <View style={[styles.searchMeaningRow, settings.meaningLanguage === "ur" && styles.searchMeaningRtl]}>
-                <Text style={styles.muted}>{`${card.en}${settings.meaningLanguage === "hi" ? " ·" : ""}`}</Text>
-                <Text style={[styles.muted, settings.meaningLanguage === "ur" && styles.rtl]}>{selectedMeaning(card, settings.meaningLanguage)}</Text>
-              </View>
-            </Pressable>
+            <View key={card.id} style={styles.searchRow}>
+              <Pressable style={styles.searchStudyRow} onPress={() => studySearchResult(card)}>
+                <Text style={styles.rowTitle}>{card.cz}</Text>
+                <View style={[styles.searchMeaningRow, settings.meaningLanguage === "ur" && styles.searchMeaningRtl]}>
+                  <Text style={styles.muted}>{`${card.en}${settings.meaningLanguage === "hi" ? " ·" : ""}`}</Text>
+                  <Text style={[styles.muted, settings.meaningLanguage === "ur" && styles.rtl]}>{selectedMeaning(card, settings.meaningLanguage)}</Text>
+                </View>
+              </Pressable>
+              <Pressable style={styles.searchSaveButton} onPress={() => void toggleSavedCard(card.id)} accessibilityRole="button" accessibilityLabel={savedCardIds.has(card.id) ? `Remove ${card.cz} from My list` : `Save ${card.cz} to My list`}>
+                <Text style={styles.searchSaveIcon}>{savedCardIds.has(card.id) ? "★" : "☆"}</Text>
+              </Pressable>
+            </View>
           ))}
       </AppModal>
 
@@ -381,7 +402,17 @@ export default function App() {
 
       <AppModal visible={panel === "settings"} title="Settings" onClose={() => setPanel(null)}>
         <Text style={styles.fieldLabel}>Level</Text>
-        <Segment value={settings.examLevel} options={["a2", "b1"]} onChange={(examLevel) => persistSettings({ ...settings, examLevel })} />
+        <Segment
+          value={settings.examLevel}
+          options={["a2", "b1"]}
+          onChange={(examLevel) => persistSettings({
+            ...settings,
+            examLevel,
+            deckFilter: settings.deckFilter === "a2-focus" || settings.deckFilter === "b1-focus"
+              ? `${examLevel}-focus`
+              : settings.deckFilter
+          })}
+        />
         <Text style={styles.fieldLabel}>Meaning</Text>
         <Segment value={settings.meaningLanguage} options={["hi", "ur"]} onChange={(meaningLanguage) => persistSettings({ ...settings, meaningLanguage })} />
         <Text style={styles.fieldLabel}>Deck</Text>
@@ -456,12 +487,13 @@ function Segment<T extends string>({ value, options, onChange }: { value: T; opt
   );
 }
 
-function DeckPicker({ value, onChange, options = ["core", "all", "daily", "extended", "work", "travel", "health", "verbs", "forms", "numbers", "custom"] }: { value: string; onChange: (value: string) => void; options?: string[] }) {
+function DeckPicker({ value, onChange, options = ["a2-focus", "b1-focus", "saved", "core", "all", "daily", "extended", "work", "travel", "health", "verbs", "forms", "numbers", "custom"] }: { value: string; onChange: (value: string) => void; options?: string[] }) {
+  const labelFor = (option: string) => ({ "a2-focus": "A2 Focus 1000", "b1-focus": "B1 Focus 1000", saved: "My list", core: "Core words", all: "All cards" }[option] || option);
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.deckPicker}>
       {options.map((option) => (
         <Pressable key={option} style={[styles.deckChip, value === option && styles.deckChipActive]} onPress={() => onChange(option)}>
-          <Text style={[styles.deckChipText, value === option && styles.deckChipTextActive]}>{option}</Text>
+          <Text style={[styles.deckChipText, value === option && styles.deckChipTextActive]}>{labelFor(option)}</Text>
         </Pressable>
       ))}
     </ScrollView>
@@ -474,22 +506,32 @@ function AddWordForm({ onSubmit, cards, onDelete }: {
   onDelete: (cardId: string) => void;
 }) {
   const [values, setValues] = useState({ cz: "", en: "", hi: "", ur: "", sentence: "", sentenceEn: "", tag: "custom" });
+  const [error, setError] = useState("");
   const update = (key: keyof typeof values, value: string) => setValues((current) => ({ ...current, [key]: value }));
+  const submit = () => {
+    if (!values.cz.trim() || !values.en.trim()) {
+      setError("Enter the Czech word and English meaning to save it.");
+      return;
+    }
+    setError("");
+    onSubmit(values);
+  };
   return (
     <View style={styles.form}>
       {[
         ["cz", "Czech word"],
         ["en", "English"],
-        ["hi", "Hindi"],
-        ["ur", "Urdu"],
-        ["sentence", "Czech example"],
-        ["sentenceEn", "English example"]
+        ["hi", "Hindi (optional)"],
+        ["ur", "Urdu (optional)"],
+        ["sentence", "Czech example (optional)"],
+        ["sentenceEn", "English example (optional)"]
       ].map(([key, label]) => (
         <TextInput key={key} style={styles.input} value={values[key as keyof typeof values]} onChangeText={(value) => update(key as keyof typeof values, value)} placeholder={label} />
       ))}
       <Text style={styles.fieldLabel}>Deck tag</Text>
       <DeckPicker value={values.tag} onChange={(tag) => update("tag", tag)} options={["custom", "daily", "work", "travel", "health", "verbs"]} />
-      <Pressable style={styles.primaryButton} onPress={() => onSubmit(values)}>
+      {Boolean(error) && <Text style={styles.formError}>{error}</Text>}
+      <Pressable style={styles.primaryButton} onPress={submit}>
         <Text style={styles.primaryButtonText}>Add word</Text>
       </Pressable>
       {cards.length > 0 && (
@@ -575,6 +617,8 @@ const styles = StyleSheet.create({
   deckChipText: { color: "#244d43", fontWeight: "700" },
   deckChipTextActive: { color: "#fff" },
   card: { position: "relative", minHeight: 370, justifyContent: "center", backgroundColor: "#ffffff", borderRadius: 8, padding: 22, borderWidth: 1, borderColor: "#d8e2d7" },
+  cardSaveButton: { position: "absolute", top: 14, left: 14, zIndex: 4, width: 36, height: 36, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "#d8e2d7", borderRadius: 8, backgroundColor: "#ffffff" },
+  cardSaveIcon: { color: "#2f6f9f", fontSize: 22, fontWeight: "800", lineHeight: 24 },
   cardEditButton: { position: "absolute", top: 14, right: 14, zIndex: 4, width: 36, height: 36, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "#d8e2d7", borderRadius: 8, backgroundColor: "#ffffff" },
   cardEditIcon: { color: "#53665e", fontSize: 21, fontWeight: "800", lineHeight: 23 },
   swipeOverlay: { position: "absolute", zIndex: 10, left: -10, right: -10, top: "50%", transform: [{ translateY: -42 }, { rotate: "-18deg" }], borderWidth: 4, borderRadius: 8, paddingVertical: 8, backgroundColor: "rgba(255, 255, 255, 0.92)", fontSize: 62, fontWeight: "900", lineHeight: 68, textAlign: "center", textTransform: "uppercase" },
@@ -603,12 +647,17 @@ const styles = StyleSheet.create({
   metric: { color: "#20362f", fontWeight: "700" },
   input: { backgroundColor: "#ffffff", borderWidth: 1, borderColor: "#d8e2d7", borderRadius: 8, padding: 14, fontSize: 16 },
   row: { backgroundColor: "#ffffff", borderRadius: 8, padding: 14, borderWidth: 1, borderColor: "#d8e2d7" },
+  searchRow: { flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: "#ffffff", borderRadius: 8, padding: 8, borderWidth: 1, borderColor: "#d8e2d7" },
+  searchStudyRow: { flex: 1, padding: 6 },
+  searchSaveButton: { width: 38, height: 38, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "#2f6f9f", borderRadius: 8, backgroundColor: "#ffffff" },
+  searchSaveIcon: { color: "#2f6f9f", fontSize: 20, fontWeight: "800" },
   rowTitle: { color: "#17231f", fontWeight: "800", fontSize: 16 },
   searchMeaningRow: { flexDirection: "row", alignItems: "center", gap: 6, marginTop: 4 },
   searchMeaningRtl: { justifyContent: "space-between" },
   sectionTitle: { color: "#17231f", fontWeight: "900", fontSize: 18 },
   fieldLabel: { color: "#6d7f75", fontSize: 12, fontWeight: "800", textTransform: "uppercase", marginTop: 4 },
   form: { gap: 14 },
+  formError: { color: "#b33b32", fontWeight: "700" },
   customList: { gap: 8, marginTop: 4 },
   customRow: { flexDirection: "row", alignItems: "center", gap: 12, backgroundColor: "#ffffff", borderWidth: 1, borderColor: "#d8e2d7", borderRadius: 8, padding: 12 },
   customCopy: { flex: 1, gap: 2 },

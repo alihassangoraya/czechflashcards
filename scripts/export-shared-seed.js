@@ -4,7 +4,7 @@ const vm = require("vm");
 
 const root = path.resolve(__dirname, "..");
 const outFile = path.join(root, "packages", "shared", "data", "vocabulary.seed.json");
-const sourceFiles = ["data/vocabulary.js", "data/extended-lemmas.js", "data/verb-forms.js"];
+const sourceFiles = ["data/vocabulary.js", "data/extended-lemmas.js", "data/focus-decks.js", "data/verb-forms.js"];
 
 function loadCards() {
   const context = { window: {} };

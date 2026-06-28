@@ -3,6 +3,7 @@
   const EXTRA_KEY = "czech-b1-flashcards-imports-v1";
   const CUSTOM_KEY = "czech-b1-flashcards-custom-v1";
   const EDITED_KEY = "czech-b1-flashcards-edits-v1";
+  const SAVED_KEY = "czech-b1-flashcards-saved-v1";
   const LANGUAGE_KEY = "czech-b1-flashcards-meaning-language-v1";
   const LEVEL_KEY = "czech-b1-flashcards-exam-level-v1";
   const DAILY_KEY = "czech-b1-flashcards-daily-v1";
@@ -25,6 +26,7 @@
     indicMeaning: document.getElementById("indicMeaning"),
     sentence: document.getElementById("sentence"),
     sentenceEn: document.getElementById("sentenceEn"),
+    exampleRow: document.querySelector(".example-row"),
     answer: document.getElementById("answer"),
     tapHint: document.getElementById("tapHint"),
     dueCount: document.getElementById("dueCount"),
@@ -43,6 +45,7 @@
     deckFilter: document.getElementById("deckFilter"),
     meaningLanguage: document.getElementById("meaningLanguage"),
     undoButton: document.getElementById("undoButton"),
+    saveCardButton: document.getElementById("saveCardButton"),
     searchTrigger: document.getElementById("searchTrigger"),
     searchDialog: document.getElementById("searchDialog"),
     closeSearchDialog: document.getElementById("closeSearchDialog"),
@@ -72,6 +75,7 @@
     customTag: document.getElementById("customTag"),
     customCount: document.getElementById("customCount"),
     customList: document.getElementById("customList"),
+    addWordError: document.getElementById("addWordError"),
     dailyGoalInput: document.getElementById("dailyGoalInput"),
     dailyProgress: document.getElementById("dailyProgress"),
     searchInput: document.getElementById("searchInput"),
@@ -83,6 +87,7 @@
   let importedCards = readJson(EXTRA_KEY, []);
   let customCards = readJson(CUSTOM_KEY, []);
   let editedCards = readJson(EDITED_KEY, {});
+  let savedCardIds = new Set(readJson(SAVED_KEY, []).filter((id) => typeof id === "string"));
   let meaningLanguage = localStorage.getItem(LANGUAGE_KEY) || "ur";
   let examLevel = localStorage.getItem(LEVEL_KEY) || "b1";
   let dailyLog = readJson(DAILY_KEY, todayLog());
@@ -116,6 +121,15 @@
 
   function saveEditedCards() {
     localStorage.setItem(EDITED_KEY, JSON.stringify(editedCards));
+  }
+
+  function saveSavedCards() {
+    localStorage.setItem(SAVED_KEY, JSON.stringify([...savedCardIds]));
+  }
+
+  function setAddWordError(message = "") {
+    el.addWordError.textContent = message;
+    el.addWordError.hidden = !message;
   }
 
   function todayKey() {
@@ -157,17 +171,21 @@
     const seen = new Set();
     return cards
       .filter((card) => card && card.cz && card.en)
-      .map((card, index) => ({
-        id: card.id || slug(card.cz) + "-" + index,
-        cz: card.cz.trim(),
-        en: card.en.trim(),
-        hi: (card.hi || "Hindi meaning pending").trim(),
-        ur: (card.ur || card.urdu || toUrdu(card.hi || "") || "اردو معنی باقی ہے").trim(),
-        sentence: (card.sentence || `Používám slovo "${card.cz}" ve větě.`).trim(),
-        sentenceEn: (card.sentenceEn || card.exampleEn || inferSentenceEn(card)).trim(),
-        level: card.level || inferLevel(card),
-        tags: normalizeTags(card.tags)
-      }))
+      .map((card, index) => {
+        const tags = normalizeTags(card.tags);
+        const isCustom = tags.includes("custom");
+        return {
+          id: card.id || slug(card.cz) + "-" + index,
+          cz: card.cz.trim(),
+          en: card.en.trim(),
+          hi: (card.hi || "Hindi meaning pending").trim(),
+          ur: (card.ur || card.urdu || toUrdu(card.hi || "") || "اردو معنی باقی ہے").trim(),
+          sentence: card.sentence ? card.sentence.trim() : isCustom ? "" : `Používám slovo "${card.cz}" ve větě.`,
+          sentenceEn: card.sentenceEn || card.exampleEn ? (card.sentenceEn || card.exampleEn).trim() : isCustom ? "" : inferSentenceEn(card),
+          level: card.level || inferLevel(card),
+          tags
+        };
+      })
       .filter((card) => {
         if (seen.has(card.id)) return false;
         seen.add(card.id);
@@ -545,6 +563,9 @@
   }
 
   function filteredDeck() {
+    if (el.deckFilter.value === "saved") return deck.filter((card) => savedCardIds.has(card.id));
+    if (el.deckFilter.value === "a2-focus") return deck.filter((card) => card.tags.includes("a2-focus"));
+    if (el.deckFilter.value === "b1-focus") return deck.filter((card) => card.tags.includes("b1-focus"));
     const levelDeck = deck.filter((card) => isCardForExam(card));
     const filter = el.deckFilter.value;
     if (filter === "all") return levelDeck;
@@ -679,6 +700,7 @@
     el.card.style.transform = "";
     el.card.style.opacity = "";
     el.editCardTrigger.disabled = !current;
+    el.saveCardButton.hidden = !current;
 
     if (!current) {
       const hasCards = filteredDeck().length > 0;
@@ -687,6 +709,7 @@
       el.indicMeaning.textContent = "";
       el.sentence.textContent = "";
       el.sentenceEn.textContent = "";
+      el.exampleRow.hidden = true;
       el.tapHint.textContent = hasCards ? "No cards are due right now" : "Import CSV cards or choose another deck";
       setStatus(hasCards ? "All caught up. Known cards will return later." : "No cards available in this deck.");
       updateStats();
@@ -694,6 +717,9 @@
     }
 
     const state = getState(current);
+    el.saveCardButton.textContent = savedCardIds.has(current.id) ? "★" : "☆";
+    el.saveCardButton.setAttribute("aria-label", savedCardIds.has(current.id) ? `Remove ${current.cz} from My list` : `Save ${current.cz} to My list`);
+    el.saveCardButton.title = savedCardIds.has(current.id) ? "Remove from My list" : "Save to My list";
     el.word.textContent = current.cz;
     el.english.textContent = current.en;
     el.indicLabel.textContent = meaningLabel();
@@ -702,6 +728,7 @@
     el.indicMeaning.lang = meaningLanguage === "ur" ? "ur" : "hi";
     el.sentence.textContent = current.sentence;
     el.sentenceEn.textContent = current.sentenceEn;
+    el.exampleRow.hidden = !current.sentence;
     el.tapHint.textContent = "Tap to reveal meaning";
     updateStats();
   }
@@ -780,7 +807,15 @@
       study.dataset.studyId = card.id;
       study.textContent = "Study";
 
-      item.append(copy, meta, study);
+      const save = document.createElement("button");
+      save.type = "button";
+      save.className = "save-word";
+      save.dataset.saveId = card.id;
+      save.setAttribute("aria-label", savedCardIds.has(card.id) ? `Remove ${card.cz} from My list` : `Save ${card.cz} to My list`);
+      save.title = savedCardIds.has(card.id) ? "Remove from My list" : "Save to My list";
+      save.textContent = savedCardIds.has(card.id) ? "★" : "☆";
+
+      item.append(copy, meta, save, study);
       el.searchResults.append(item);
     }
   }
@@ -795,6 +830,14 @@
     closeSearchDialog();
     render();
     setStatus(`Loaded ${card.cz} for review.`);
+  }
+
+  function toggleSavedCard(cardId) {
+    if (savedCardIds.has(cardId)) savedCardIds.delete(cardId);
+    else savedCardIds.add(cardId);
+    saveSavedCards();
+    clearShuffleQueue();
+    render();
   }
 
   function isTypingTarget(target) {
@@ -1022,7 +1065,7 @@
   }
 
   function exportProgress() {
-    const payload = JSON.stringify({ exportedAt: new Date().toISOString(), progress, importedCards, customCards, editedCards, dailyLog, dailyGoal, examLevel, meaningLanguage }, null, 2);
+    const payload = JSON.stringify({ exportedAt: new Date().toISOString(), progress, importedCards, customCards, editedCards, savedCardIds: [...savedCardIds], dailyLog, dailyGoal, examLevel, meaningLanguage }, null, 2);
     const blob = new Blob([payload], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -1064,6 +1107,7 @@
     importedCards = Array.isArray(payload.importedCards) ? payload.importedCards : [];
     customCards = Array.isArray(payload.customCards) ? payload.customCards : [];
     editedCards = payload.editedCards && typeof payload.editedCards === "object" ? payload.editedCards : {};
+    savedCardIds = new Set(Array.isArray(payload.savedCardIds) ? payload.savedCardIds.filter((id) => typeof id === "string") : []);
     dailyLog = payload.dailyLog && typeof payload.dailyLog === "object" ? payload.dailyLog : todayLog();
     dailyGoal = Number(payload.dailyGoal) || dailyGoal;
     examLevel = payload.examLevel === "a2" ? "a2" : payload.examLevel === "b1" ? "b1" : examLevel;
@@ -1076,6 +1120,7 @@
     localStorage.setItem(LANGUAGE_KEY, meaningLanguage);
     saveCustomCards();
     saveEditedCards();
+    saveSavedCards();
     deck = buildDeck();
     clearShuffleQueue();
   }
@@ -1083,8 +1128,10 @@
   function deleteCustomWord(id) {
     const deleted = customCards.find((card) => card.id === id);
     customCards = customCards.filter((card) => card.id !== id);
+    savedCardIds.delete(id);
     delete progress[id];
     saveCustomCards();
+    saveSavedCards();
     save();
     deck = buildDeck();
     clearShuffleQueue();
@@ -1093,6 +1140,7 @@
   }
 
   function openAddWordDialog() {
+    setAddWordError();
     el.addWordDialog.showModal();
     el.customCz.focus();
   }
@@ -1148,6 +1196,11 @@
     undoLastReview();
   });
   el.undoButton.addEventListener("pointerdown", (event) => event.stopPropagation());
+  el.saveCardButton.addEventListener("click", (event) => {
+    event.stopPropagation();
+    if (current) toggleSavedCard(current.id);
+  });
+  el.saveCardButton.addEventListener("pointerdown", (event) => event.stopPropagation());
   el.searchTrigger.addEventListener("click", openSearchDialog);
   el.closeSearchDialog.addEventListener("click", closeSearchDialog);
   el.searchDialog.addEventListener("click", (event) => {
@@ -1190,6 +1243,9 @@
   el.examLevel.addEventListener("change", () => {
     examLevel = el.examLevel.value;
     localStorage.setItem(LEVEL_KEY, examLevel);
+    if (el.deckFilter.value === "a2-focus" || el.deckFilter.value === "b1-focus") {
+      el.deckFilter.value = examLevel === "a2" ? "a2-focus" : "b1-focus";
+    }
     clearShuffleQueue();
     render();
     setStatus(`Switched to ${examLabel()} exam vocabulary.`);
@@ -1217,6 +1273,11 @@
   });
   el.searchInput.addEventListener("input", renderSearchResults);
   el.searchResults.addEventListener("click", (event) => {
+    const save = event.target.closest("button[data-save-id]");
+    if (save) {
+      toggleSavedCard(save.dataset.saveId);
+      return;
+    }
     const button = event.target.closest("button[data-study-id]");
     if (button) studySearchResult(button.dataset.studyId);
   });
@@ -1279,19 +1340,19 @@
     const cz = el.customCz.value.trim();
     const en = el.customEn.value.trim();
     const hi = el.customHi.value.trim();
-    const ur = el.customUr.value.trim() || toUrdu(hi);
+    const ur = el.customUr.value.trim() || (hi ? toUrdu(hi) : "");
     const sentence = el.customSentence.value.trim();
-    const sentenceEn = el.customSentenceEn.value.trim() || `English example with "${en}".`;
+    const sentenceEn = el.customSentenceEn.value.trim();
     const tag = el.customTag.value;
 
-    if (!cz || !en || !hi || !sentence) {
-      setStatus("Please fill Czech, English, Hindi, and an example sentence.");
+    if (!cz || !en) {
+      setAddWordError("Enter the Czech word and English meaning to save it.");
       return;
     }
 
     const duplicate = deck.some((card) => card.cz.toLocaleLowerCase("cs-CZ") === cz.toLocaleLowerCase("cs-CZ"));
     if (duplicate) {
-      setStatus(`${cz} is already in your deck.`);
+      setAddWordError(`${cz} is already in your deck.`);
       return;
     }
 
@@ -1313,6 +1374,7 @@
     progress[customCard.id] = { knownStreak: 0, againCount: 0, dueAt: 0, seen: 0 };
     save();
     el.addWordForm.reset();
+    setAddWordError();
     el.customTag.value = "custom";
     el.deckFilter.value = "custom";
     closeAddWordDialog();

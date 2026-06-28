@@ -14,7 +14,7 @@ export type StudySettings = {
 
 const DEFAULT_SETTINGS: StudySettings = {
   examLevel: "b1",
-  deckFilter: "core",
+  deckFilter: "b1-focus",
   meaningLanguage: "ur",
   dailyGoal: 30,
   notifications: {
@@ -77,6 +77,11 @@ export async function openAppDatabase(): Promise<AppDatabase> {
       id TEXT PRIMARY KEY,
       payload_json TEXT NOT NULL,
       updated_at INTEGER NOT NULL,
+      synced_at INTEGER
+    );
+    CREATE TABLE IF NOT EXISTS saved_cards (
+      card_id TEXT PRIMARY KEY,
+      saved_at INTEGER NOT NULL,
       synced_at INTEGER
     );
     CREATE TABLE IF NOT EXISTS sync_queue (
@@ -328,10 +333,29 @@ export async function saveCardCorrection(db: AppDatabase, card: Card): Promise<v
   });
 }
 
+export async function loadSavedCardIds(db: AppDatabase): Promise<Set<string>> {
+  const rows = await db.getAllAsync<{ card_id: string }>("SELECT card_id FROM saved_cards");
+  return new Set(rows.map((row) => row.card_id));
+}
+
+export async function setCardSaved(db: AppDatabase, cardId: string, saved: boolean): Promise<void> {
+  await db.withTransactionAsync(async () => {
+    if (saved) {
+      const savedAt = Date.now();
+      await db.runAsync("INSERT OR REPLACE INTO saved_cards (card_id, saved_at, synced_at) VALUES (?, ?, NULL)", cardId, savedAt);
+      await enqueueSync(db, "saved_card_added", { cardId, savedAt });
+    } else {
+      await db.runAsync("DELETE FROM saved_cards WHERE card_id = ?", cardId);
+      await enqueueSync(db, "saved_card_removed", { cardId });
+    }
+  });
+}
+
 export async function deleteCustomCard(db: AppDatabase, cardId: string): Promise<void> {
   const deletedAt = Date.now();
   await db.withTransactionAsync(async () => {
     await db.runAsync("UPDATE custom_cards SET deleted_at = ? WHERE id = ?", deletedAt, cardId);
+    await db.runAsync("DELETE FROM saved_cards WHERE card_id = ?", cardId);
     await enqueueSync(db, "custom_card_deleted", { cardId, deletedAt });
   });
 }

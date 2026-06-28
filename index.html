@@ -28,6 +28,7 @@
         <div class="deck-card" id="card" role="button" tabindex="0" aria-label="Tap to reveal translation">
           <div class="swipe-label swipe-left">Again</div>
           <div class="swipe-label swipe-right">Known</div>
+          <button class="card-save-button" id="saveCardButton" type="button" aria-label="Save this card to My list" title="Save to My list">&#9734;</button>
           <button class="card-edit-button" id="editCardTrigger" type="button" aria-label="Edit this card" aria-haspopup="dialog" aria-controls="editCardDialog" title="Edit this card">&#9998;</button>
           <h2 id="word">Loading...</h2>
           <div class="answer" id="answer" hidden>
@@ -85,6 +86,8 @@
             <label>
               Deck
               <select id="deckFilter">
+                <option value="a2-focus">A2 Focus 1000</option>
+                <option value="b1-focus" selected>B1 Focus 1000</option>
                 <option value="core">Core words</option>
                 <option value="all">All study cards</option>
                 <option value="daily">Daily life</option>
@@ -96,6 +99,7 @@
                 <option value="forms">Verb forms</option>
                 <option value="numbers">Numbers</option>
                 <option value="custom">My words</option>
+                <option value="saved">My list</option>
               </select>
             </label>
             <label>
@@ -140,26 +144,26 @@
           <form id="addWordForm" class="word-form">
             <label>
               Czech word
-              <input id="customCz" name="cz" autocomplete="off" required placeholder="například: schůzka">
+              <input id="customCz" name="cz" autocomplete="off" placeholder="například: schůzka">
             </label>
             <label>
               English
-              <input id="customEn" name="en" autocomplete="off" required placeholder="meeting, appointment">
+              <input id="customEn" name="en" autocomplete="off" placeholder="meeting, appointment">
             </label>
             <label>
-              Hindi
-              <input id="customHi" name="hi" autocomplete="off" required placeholder="मीटिंग">
+              Hindi (optional)
+              <input id="customHi" name="hi" autocomplete="off" placeholder="मीटिंग">
             </label>
             <label>
-              Urdu
+              Urdu (optional)
               <input id="customUr" name="ur" autocomplete="off" dir="rtl" placeholder="میٹنگ">
             </label>
             <label class="wide-field">
-              Example sentence
-              <input id="customSentence" name="sentence" autocomplete="off" required placeholder="Zítra mám důležitou schůzku.">
+              Czech example (optional)
+              <input id="customSentence" name="sentence" autocomplete="off" placeholder="Zítra mám důležitou schůzku.">
             </label>
             <label>
-              English example
+              English example (optional)
               <input id="customSentenceEn" name="sentenceEn" autocomplete="off" placeholder="Tomorrow I have an important meeting.">
             </label>
             <label>
@@ -175,6 +179,7 @@
             </label>
             <button id="addWordButton" type="submit">Add word</button>
           </form>
+          <p class="form-error" id="addWordError" role="alert" hidden></p>
           <div class="custom-list" id="customList" aria-live="polite"></div>
         </div>
       </dialog>
@@ -256,6 +261,7 @@
 
     <script src="data/vocabulary.js"></script>
     <script src="data/extended-lemmas.js"></script>
+    <script src="data/focus-decks.js"></script>
     <script src="data/verb-forms.js"></script>
     <script src="app.js"></script>
   </body>

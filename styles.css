@@ -182,6 +182,30 @@ h1 {
   line-height: 1;
 }
 
+.card-save-button {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 4;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.96);
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.card-save-button:hover,
+.card-save-button:focus-visible {
+  border-color: var(--accent);
+  background: rgba(47, 111, 159, 0.08);
+}
+
 .card-edit-button:hover,
 .card-edit-button:focus-visible {
   border-color: var(--blue);
@@ -504,7 +528,7 @@ select,
 
 .search-item {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
   gap: 12px;
   align-items: center;
   border: 1px solid var(--line);
@@ -561,8 +585,20 @@ select,
   cursor: pointer;
 }
 
+.search-item .save-word {
+  min-width: 36px;
+  padding: 0;
+  font-size: 1.2rem;
+}
+
 .custom-list:empty {
   display: none;
+}
+
+.form-error {
+  margin: 12px 0 0;
+  color: var(--again);
+  font-weight: 750;
 }
 
 .custom-item {
