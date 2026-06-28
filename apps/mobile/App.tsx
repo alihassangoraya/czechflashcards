@@ -47,9 +47,9 @@ import {
   type StudySettings
 } from "./src/database";
 import { configureLocalNotifications } from "./src/notifications";
-import { createSupabaseClient, flushSyncQueue, type SyncStatus } from "./src/sync";
+import { createSupabaseClient, flushSyncQueue, getFriendCode, restoreSyncSnapshot, sendFriendRequest, signInWithPassword, signOut, signUpWithPassword, type SyncStatus } from "./src/sync";
 
-type Panel = "search" | "add" | "edit" | "settings";
+type Panel = "search" | "add" | "edit" | "settings" | "account";
 type RelearningEntry = { id: string; remaining: number };
 type UndoReview = { card: Card; previousState: ReviewState; event: ReviewEvent; previousRelearningQueue: RelearningEntry[] };
 const RELEARNING_MIN_CARDS = 10;
@@ -58,6 +58,7 @@ const RELEARNING_MAX_CARDS = 15;
 const seedCardsNormalized = normalizeCards(seedPayload.cards as Parameters<typeof normalizeCards>[0]);
 
 export default function App() {
+  const supabase = useMemo(() => createSupabaseClient(), []);
   const [db, setDb] = useState<AppDatabase | null>(null);
   const [cards, setCards] = useState<Card[]>([]);
   const [savedCardIds, setSavedCardIds] = useState<Set<string>>(new Set());
@@ -70,6 +71,8 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [dailyProgress, setDailyProgress] = useState("0 / 30");
   const [syncStatus, setSyncStatus] = useState<SyncStatus>("not-configured");
+  const [accountEmail, setAccountEmail] = useState<string | null>(null);
+  const [authBusy, setAuthBusy] = useState(false);
   const [lastReview, setLastReview] = useState<UndoReview | null>(null);
   const [grading, setGrading] = useState(false);
   const [swipeDirection, setSwipeDirection] = useState<"again" | "known" | null>(null);
@@ -91,10 +94,25 @@ export default function App() {
       const progress = await getDailyProgress(database, undefined, nextSettings.dailyGoal);
       setDailyProgress(`${progress.reviewed} / ${progress.goal}`);
       await configureLocalNotifications(nextSettings.notifications);
-      setSyncStatus(await flushSyncQueue(database, createSupabaseClient()));
+      if (supabase) {
+        const { data } = await supabase.auth.getSession();
+        setAccountEmail(data.session?.user.email || null);
+      }
+      const flushStatus = await flushSyncQueue(database, supabase);
+      setSyncStatus(flushStatus === "error" ? flushStatus : await restoreSyncSnapshot(database, supabase));
     }
     boot();
   }, []);
+
+  useEffect(() => {
+    if (!supabase) return;
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setAccountEmail(session?.user.email || null);
+      if (db && session?.user) void syncNow(db);
+      if (!session?.user) setSyncStatus("guest");
+    });
+    return () => listener.subscription.unsubscribe();
+  }, [db, supabase]);
 
   const deck = useMemo(() => {
     if (!settings) return [];
@@ -170,6 +188,31 @@ export default function App() {
     setSettingsState(next);
     await saveSettings(db, next);
     await configureLocalNotifications(next.notifications);
+  }
+
+  async function syncNow(database = db) {
+    if (!database) return;
+    const flushStatus = await flushSyncQueue(database, supabase);
+    setSyncStatus(flushStatus === "error" ? flushStatus : await restoreSyncSnapshot(database, supabase));
+    await refresh(database);
+  }
+
+  async function authenticate(mode: "sign-in" | "sign-up", email: string, password: string, displayName: string) {
+    setAuthBusy(true);
+    const error = mode === "sign-in"
+      ? await signInWithPassword(supabase, email, password)
+      : await signUpWithPassword(supabase, email, password, displayName);
+    setAuthBusy(false);
+    if (!error) await syncNow();
+    return error;
+  }
+
+  async function signOutAccount() {
+    setAuthBusy(true);
+    const error = await signOut(supabase);
+    setAuthBusy(false);
+    if (!error) setPanel(null);
+    return error;
   }
 
   async function grade(result: ReviewGrade) {
@@ -429,9 +472,24 @@ export default function App() {
         <ToggleRow label="Review due reminder" value={settings.notifications.reviewDueEnabled} onValueChange={(value) => persistSettings({ ...settings, notifications: { ...settings.notifications, reviewDueEnabled: value } })} />
         <View style={styles.syncPanel}>
           <Text style={styles.sectionTitle}>Sync</Text>
-          <Text style={styles.muted}>Guest-first mode is active. Add Supabase env values and sign in to flush the offline queue.</Text>
+          <Text style={styles.muted}>{accountEmail ? `Signed in as ${accountEmail}` : "Guest-first mode is active. Sign in to back up this device."}</Text>
           <Text style={styles.metric}>Status: {syncStatus}</Text>
+          <View style={styles.syncActions}>
+            <Pressable style={styles.secondaryAction} onPress={() => void syncNow()}><Text style={styles.secondaryActionText}>Sync now</Text></Pressable>
+            <Pressable style={styles.secondaryAction} onPress={() => setPanel("account")}><Text style={styles.secondaryActionText}>{accountEmail ? "Account" : "Sign in"}</Text></Pressable>
+          </View>
         </View>
+      </AppModal>
+
+      <AppModal visible={panel === "account"} title="Account and sync" onClose={() => setPanel(null)}>
+        <AccountForm
+          configured={Boolean(supabase)}
+          supabase={supabase}
+          accountEmail={accountEmail}
+          busy={authBusy}
+          onAuthenticate={authenticate}
+          onSignOut={signOutAccount}
+        />
       </AppModal>
     </SafeAreaView>
   );
@@ -497,6 +555,56 @@ function DeckPicker({ value, onChange, options = ["a2-focus", "b1-focus", "saved
         </Pressable>
       ))}
     </ScrollView>
+  );
+}
+
+function AccountForm({ configured, supabase, accountEmail, busy, onAuthenticate, onSignOut }: {
+  configured: boolean;
+  supabase: ReturnType<typeof createSupabaseClient>;
+  accountEmail: string | null;
+  busy: boolean;
+  onAuthenticate: (mode: "sign-in" | "sign-up", email: string, password: string, displayName: string) => Promise<string | null>;
+  onSignOut: () => Promise<string | null>;
+}) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [displayName, setDisplayName] = useState("");
+  const [friendCode, setFriendCode] = useState("");
+  const [myFriendCode, setMyFriendCode] = useState<string | null>(null);
+  const [message, setMessage] = useState("");
+  const submit = async (mode: "sign-in" | "sign-up") => {
+    if (!email.trim() || !password) {
+      setMessage("Enter your email and password.");
+      return;
+    }
+    const error = await onAuthenticate(mode, email, password, displayName);
+    setMessage(error || (mode === "sign-up" ? "Account created. Check email confirmation if your project requires it." : "Signed in and syncing this device."));
+  };
+  useEffect(() => { if (accountEmail) void getFriendCode(supabase).then(setMyFriendCode); }, [accountEmail, supabase]);
+  if (!configured) return <Text style={styles.muted}>This build has no Supabase URL or anonymous key. Offline study remains available.</Text>;
+  if (accountEmail) return (
+    <View style={styles.form}>
+      <Text style={styles.rowTitle}>{accountEmail}</Text>
+      <Text style={styles.muted}>Your offline reviews, custom words, corrections, settings, and saved words are queued for this account.</Text>
+      <View style={styles.friendPanel}>
+        <Text style={styles.fieldLabel}>Friend code</Text>
+        <Text style={styles.friendCode}>{myFriendCode || "Preparing..."}</Text>
+        <TextInput style={styles.input} value={friendCode} onChangeText={setFriendCode} autoCapitalize="none" placeholder="Enter a friend's code" />
+        <Pressable style={styles.secondaryAction} onPress={async () => setMessage((await sendFriendRequest(supabase, friendCode)) || "Friend request sent.")}><Text style={styles.secondaryActionText}>Send friend request</Text></Pressable>
+      </View>
+      {Boolean(message) && <Text style={styles.formError}>{message}</Text>}
+      <Pressable disabled={busy} style={[styles.dangerButton, busy && styles.disabledButton]} onPress={async () => setMessage((await onSignOut()) || "Signed out. Your local study data remains on this device.")}><Text style={styles.dangerButtonText}>Sign out</Text></Pressable>
+    </View>
+  );
+  return (
+    <View style={styles.form}>
+      <TextInput style={styles.input} value={displayName} onChangeText={setDisplayName} placeholder="Display name (for friends, optional)" />
+      <TextInput style={styles.input} value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" autoCorrect={false} placeholder="Email" />
+      <TextInput style={styles.input} value={password} onChangeText={setPassword} secureTextEntry placeholder="Password" />
+      {Boolean(message) && <Text style={styles.formError}>{message}</Text>}
+      <Pressable disabled={busy} style={[styles.primaryButton, busy && styles.disabledButton]} onPress={() => void submit("sign-in")}><Text style={styles.primaryButtonText}>Sign in</Text></Pressable>
+      <Pressable disabled={busy} style={[styles.secondaryAction, busy && styles.disabledButton]} onPress={() => void submit("sign-up")}><Text style={styles.secondaryActionText}>Create account</Text></Pressable>
+    </View>
   );
 }
 
@@ -665,8 +773,15 @@ const styles = StyleSheet.create({
   deleteButtonText: { color: "#b33b32", fontWeight: "800" },
   primaryButton: { alignItems: "center", backgroundColor: "#244d43", borderRadius: 8, padding: 14 },
   primaryButtonText: { color: "#fff", fontWeight: "900" },
+  secondaryAction: { alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "#2f6f9f", borderRadius: 8, paddingVertical: 11, paddingHorizontal: 14, backgroundColor: "#ffffff" },
+  secondaryActionText: { color: "#2f6f9f", fontWeight: "800" },
+  dangerButton: { alignItems: "center", backgroundColor: "#b33b32", borderRadius: 8, padding: 14 },
+  dangerButtonText: { color: "#ffffff", fontWeight: "900" },
+  friendPanel: { gap: 8, backgroundColor: "#ffffff", borderWidth: 1, borderColor: "#d8e2d7", borderRadius: 8, padding: 14 },
+  friendCode: { color: "#20362f", fontSize: 22, fontWeight: "900", letterSpacing: 1.5 },
   toggleRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", backgroundColor: "#ffffff", borderRadius: 8, padding: 14 },
   syncPanel: { gap: 8, backgroundColor: "#ffffff", borderRadius: 8, padding: 14, borderWidth: 1, borderColor: "#d8e2d7" },
+  syncActions: { flexDirection: "row", gap: 8 },
   modalOverlay: { flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(23, 33, 27, 0.42)" },
   modalSheet: { maxHeight: "90%", backgroundColor: "#f2f5ef", borderTopLeftRadius: 8, borderTopRightRadius: 8 },
   modalHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 18, paddingTop: 18, paddingBottom: 12, backgroundColor: "#ffffff", borderBottomWidth: 1, borderBottomColor: "#d8e2d7" },

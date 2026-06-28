@@ -59,8 +59,10 @@ The active repository is [`alihassangoraya/czechflashcards`](https://github.com/
 - `supabase/migrations` contains the Postgres/Supabase schema for profiles,
   cards, review state, streaks, custom cards, notification preferences,
   sync-events, and future friendship/privacy features.
-- Supabase sync configuration and queue flushing exist in mobile. An in-app
-  authentication screen and friend-sharing UI are not implemented yet.
+- Mobile includes email/password account creation and sign-in, durable session
+  storage, manual/offline queue sync, and restore on a second device. Signed-in
+  users can share a friend code and send a friend request; streak visibility is
+  limited by the account privacy model.
 
 ## Vocabulary
 
@@ -118,8 +120,10 @@ EXPO_PUBLIC_SUPABASE_URL=...
 EXPO_PUBLIC_SUPABASE_ANON_KEY=...
 ```
 
-Apply the migration in `supabase/migrations` to the matching Supabase project
-before enabling authenticated sync.
+Apply both migrations in `supabase/migrations` to the matching Supabase project
+before enabling authenticated sync. In Supabase Auth, enable Email sign-in and
+choose whether new accounts require email confirmation. The mobile account
+screen remains safely guest-only until both Expo variables are present.
 
 ## Custom Vocabulary and Import
 
