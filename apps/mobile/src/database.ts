@@ -73,6 +73,12 @@ export async function openAppDatabase(): Promise<AppDatabase> {
       deleted_at INTEGER,
       synced_at INTEGER
     );
+    CREATE TABLE IF NOT EXISTS card_overrides (
+      id TEXT PRIMARY KEY,
+      payload_json TEXT NOT NULL,
+      updated_at INTEGER NOT NULL,
+      synced_at INTEGER
+    );
     CREATE TABLE IF NOT EXISTS sync_queue (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       type TEXT NOT NULL,
@@ -118,6 +124,8 @@ export async function seedCards(db: AppDatabase, cards: Card[]): Promise<void> {
 
 export async function loadCards(db: AppDatabase): Promise<Card[]> {
   const rows = await db.getAllAsync<any>("SELECT * FROM cards WHERE id NOT IN (SELECT id FROM custom_cards WHERE deleted_at IS NOT NULL)");
+  const overrides = await db.getAllAsync<{ id: string; payload_json: string }>("SELECT id, payload_json FROM card_overrides");
+  const overridesById = new Map(overrides.map((row) => [row.id, JSON.parse(row.payload_json)]));
   return rows.map((row) => ({
     id: row.id,
     cz: row.cz,
@@ -128,7 +136,8 @@ export async function loadCards(db: AppDatabase): Promise<Card[]> {
     sentenceEn: row.sentence_en,
     level: row.level,
     tags: JSON.parse(row.tags_json),
-    source: row.source
+    source: row.source,
+    ...(overridesById.get(row.id) || {})
   }));
 }
 
@@ -303,6 +312,19 @@ export async function addCustomCard(db: AppDatabase, card: Card): Promise<void> 
     );
     await db.runAsync("INSERT OR REPLACE INTO custom_cards (id, payload_json) VALUES (?, ?)", card.id, JSON.stringify(card));
     await enqueueSync(db, "custom_card_upserted", { card });
+  });
+}
+
+export async function saveCardCorrection(db: AppDatabase, card: Card): Promise<void> {
+  const now = Date.now();
+  await db.withTransactionAsync(async () => {
+    await db.runAsync(
+      "INSERT OR REPLACE INTO card_overrides (id, payload_json, updated_at) VALUES (?, ?, ?)",
+      card.id,
+      JSON.stringify(card),
+      now
+    );
+    await enqueueSync(db, "card_correction_upserted", { card });
   });
 }
 

@@ -37,6 +37,7 @@ import {
   loadSettings,
   openAppDatabase,
   saveReviewResult,
+  saveCardCorrection,
   saveSettings,
   seedCards,
   undoReviewResult,
@@ -46,7 +47,7 @@ import {
 import { configureLocalNotifications } from "./src/notifications";
 import { createSupabaseClient, flushSyncQueue, type SyncStatus } from "./src/sync";
 
-type Panel = "search" | "add" | "settings";
+type Panel = "search" | "add" | "edit" | "settings";
 type RelearningEntry = { id: string; remaining: number };
 type UndoReview = { card: Card; previousState: ReviewState; event: ReviewEvent; previousRelearningQueue: RelearningEntry[] };
 const RELEARNING_MIN_CARDS = 10;
@@ -62,6 +63,7 @@ export default function App() {
   const [current, setCurrent] = useState<Card | null>(null);
   const [revealed, setRevealed] = useState(false);
   const [panel, setPanel] = useState<Panel | null>(null);
+  const [editingCard, setEditingCard] = useState<Card | null>(null);
   const [query, setQuery] = useState("");
   const [dailyProgress, setDailyProgress] = useState("0 / 30");
   const [syncStatus, setSyncStatus] = useState<SyncStatus>("not-configured");
@@ -223,6 +225,32 @@ export default function App() {
     await refresh(db);
   }
 
+  async function saveCorrection(values: { cz: string; en: string; hi: string; ur: string; sentence: string; sentenceEn: string }) {
+    if (!db || !editingCard) return;
+    const card = {
+      ...editingCard,
+      cz: values.cz.trim(),
+      en: values.en.trim(),
+      hi: values.hi.trim(),
+      ur: values.ur.trim() || values.hi.trim(),
+      sentence: values.sentence.trim(),
+      sentenceEn: values.sentenceEn.trim()
+    };
+    if (card.source === "custom") await addCustomCard(db, card);
+    else await saveCardCorrection(db, card);
+    forcedCardId.current = card.id;
+    revealForcedCard.current = true;
+    setEditingCard(null);
+    setPanel(null);
+    await refresh(db);
+  }
+
+  function openCardEditor() {
+    if (!current) return;
+    setEditingCard(current);
+    setPanel("edit");
+  }
+
   function studySearchResult(card: Card) {
     forcedCardId.current = card.id;
     revealForcedCard.current = true;
@@ -271,6 +299,9 @@ export default function App() {
           )}
           {current ? (
             <>
+              <Pressable style={styles.cardEditButton} onPress={openCardEditor} accessibilityRole="button" accessibilityLabel={`Edit ${current.cz}`}>
+                <Text style={styles.cardEditIcon}>✎</Text>
+              </Pressable>
               <Text style={styles.word}>{current.cz}</Text>
               {revealed && (
                 <View style={styles.answer}>
@@ -342,6 +373,10 @@ export default function App() {
 
       <AppModal visible={panel === "add"} title="Add your own word" onClose={() => setPanel(null)}>
         <AddWordForm onSubmit={addWord} cards={customCards} onDelete={deleteWord} />
+      </AppModal>
+
+      <AppModal visible={panel === "edit"} title="Edit card" onClose={() => { setEditingCard(null); setPanel(null); }}>
+        {editingCard && <EditCardForm key={editingCard.id} card={editingCard} onSubmit={saveCorrection} />}
       </AppModal>
 
       <AppModal visible={panel === "settings"} title="Settings" onClose={() => setPanel(null)}>
@@ -477,6 +512,38 @@ function AddWordForm({ onSubmit, cards, onDelete }: {
   );
 }
 
+function EditCardForm({ card, onSubmit }: {
+  card: Card;
+  onSubmit: (values: { cz: string; en: string; hi: string; ur: string; sentence: string; sentenceEn: string }) => void;
+}) {
+  const [values, setValues] = useState({
+    cz: card.cz,
+    en: card.en,
+    hi: card.hi,
+    ur: card.ur,
+    sentence: card.sentence,
+    sentenceEn: card.sentenceEn
+  });
+  const update = (key: keyof typeof values, value: string) => setValues((current) => ({ ...current, [key]: value }));
+  return (
+    <View style={styles.form}>
+      {[
+        ["cz", "Czech word"],
+        ["en", "English"],
+        ["hi", "Hindi"],
+        ["ur", "Urdu"],
+        ["sentence", "Czech example"],
+        ["sentenceEn", "English example"]
+      ].map(([key, label]) => (
+        <TextInput key={key} style={styles.input} value={values[key as keyof typeof values]} onChangeText={(value) => update(key as keyof typeof values, value)} placeholder={label} />
+      ))}
+      <Pressable style={styles.primaryButton} onPress={() => onSubmit(values)}>
+        <Text style={styles.primaryButtonText}>Save correction</Text>
+      </Pressable>
+    </View>
+  );
+}
+
 function ToggleRow({ label, value, onValueChange }: { label: string; value: boolean; onValueChange: (value: boolean) => void }) {
   return (
     <View style={styles.toggleRow}>
@@ -508,7 +575,9 @@ const styles = StyleSheet.create({
   deckChipText: { color: "#244d43", fontWeight: "700" },
   deckChipTextActive: { color: "#fff" },
   card: { position: "relative", minHeight: 370, justifyContent: "center", backgroundColor: "#ffffff", borderRadius: 8, padding: 22, borderWidth: 1, borderColor: "#d8e2d7" },
-  swipeOverlay: { position: "absolute", zIndex: 3, right: 22, top: "50%", transform: [{ translateY: -24 }], borderWidth: 2, borderRadius: 8, paddingVertical: 10, paddingHorizontal: 14, backgroundColor: "rgba(255, 255, 255, 0.94)", fontSize: 28, fontWeight: "900", lineHeight: 30, textTransform: "uppercase" },
+  cardEditButton: { position: "absolute", top: 14, right: 14, zIndex: 4, width: 36, height: 36, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "#d8e2d7", borderRadius: 8, backgroundColor: "#ffffff" },
+  cardEditIcon: { color: "#53665e", fontSize: 21, fontWeight: "800", lineHeight: 23 },
+  swipeOverlay: { position: "absolute", zIndex: 10, left: -10, right: -10, top: "50%", transform: [{ translateY: -42 }, { rotate: "-18deg" }], borderWidth: 4, borderRadius: 8, paddingVertical: 8, backgroundColor: "rgba(255, 255, 255, 0.92)", fontSize: 62, fontWeight: "900", lineHeight: 68, textAlign: "center", textTransform: "uppercase" },
   swipeKnown: { color: "#167b55", borderColor: "#167b55" },
   swipeAgain: { color: "#b33b32", borderColor: "#b33b32" },
   word: { fontSize: 48, lineHeight: 56, color: "#17231f", fontWeight: "900", textAlign: "center" },

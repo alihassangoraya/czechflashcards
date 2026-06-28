@@ -2,6 +2,7 @@
   const STORAGE_KEY = "czech-b1-flashcards-progress-v1";
   const EXTRA_KEY = "czech-b1-flashcards-imports-v1";
   const CUSTOM_KEY = "czech-b1-flashcards-custom-v1";
+  const EDITED_KEY = "czech-b1-flashcards-edits-v1";
   const LANGUAGE_KEY = "czech-b1-flashcards-meaning-language-v1";
   const LEVEL_KEY = "czech-b1-flashcards-exam-level-v1";
   const DAILY_KEY = "czech-b1-flashcards-daily-v1";
@@ -51,6 +52,16 @@
     addWordTrigger: document.getElementById("addWordTrigger"),
     addWordDialog: document.getElementById("addWordDialog"),
     closeAddWordDialog: document.getElementById("closeAddWordDialog"),
+    editCardTrigger: document.getElementById("editCardTrigger"),
+    editCardDialog: document.getElementById("editCardDialog"),
+    closeEditCardDialog: document.getElementById("closeEditCardDialog"),
+    editCardForm: document.getElementById("editCardForm"),
+    editCz: document.getElementById("editCz"),
+    editEn: document.getElementById("editEn"),
+    editHi: document.getElementById("editHi"),
+    editUr: document.getElementById("editUr"),
+    editSentence: document.getElementById("editSentence"),
+    editSentenceEn: document.getElementById("editSentenceEn"),
     addWordForm: document.getElementById("addWordForm"),
     customCz: document.getElementById("customCz"),
     customEn: document.getElementById("customEn"),
@@ -71,6 +82,7 @@
   let progress = readJson(STORAGE_KEY, {});
   let importedCards = readJson(EXTRA_KEY, []);
   let customCards = readJson(CUSTOM_KEY, []);
+  let editedCards = readJson(EDITED_KEY, {});
   let meaningLanguage = localStorage.getItem(LANGUAGE_KEY) || "ur";
   let examLevel = localStorage.getItem(LEVEL_KEY) || "b1";
   let dailyLog = readJson(DAILY_KEY, todayLog());
@@ -102,6 +114,10 @@
     localStorage.setItem(CUSTOM_KEY, JSON.stringify(customCards));
   }
 
+  function saveEditedCards() {
+    localStorage.setItem(EDITED_KEY, JSON.stringify(editedCards));
+  }
+
   function todayKey() {
     const today = new Date();
     const year = today.getFullYear();
@@ -127,7 +143,10 @@
   }
 
   function buildDeck() {
-    return normalizeDeck([...(window.CZECH_B1_VOCAB || []), ...importedCards, ...customCards]);
+    return normalizeDeck([...(window.CZECH_B1_VOCAB || []), ...importedCards, ...customCards]).map((card) => ({
+      ...card,
+      ...(editedCards[card.id] || {})
+    }));
   }
 
   function setStatus(message) {
@@ -659,6 +678,7 @@
     el.card.className = "deck-card";
     el.card.style.transform = "";
     el.card.style.opacity = "";
+    el.editCardTrigger.disabled = !current;
 
     if (!current) {
       const hasCards = filteredDeck().length > 0;
@@ -1002,7 +1022,7 @@
   }
 
   function exportProgress() {
-    const payload = JSON.stringify({ exportedAt: new Date().toISOString(), progress, importedCards, customCards, dailyLog, dailyGoal, examLevel, meaningLanguage }, null, 2);
+    const payload = JSON.stringify({ exportedAt: new Date().toISOString(), progress, importedCards, customCards, editedCards, dailyLog, dailyGoal, examLevel, meaningLanguage }, null, 2);
     const blob = new Blob([payload], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -1043,6 +1063,7 @@
     progress = payload.progress && typeof payload.progress === "object" ? payload.progress : {};
     importedCards = Array.isArray(payload.importedCards) ? payload.importedCards : [];
     customCards = Array.isArray(payload.customCards) ? payload.customCards : [];
+    editedCards = payload.editedCards && typeof payload.editedCards === "object" ? payload.editedCards : {};
     dailyLog = payload.dailyLog && typeof payload.dailyLog === "object" ? payload.dailyLog : todayLog();
     dailyGoal = Number(payload.dailyGoal) || dailyGoal;
     examLevel = payload.examLevel === "a2" ? "a2" : payload.examLevel === "b1" ? "b1" : examLevel;
@@ -1054,6 +1075,7 @@
     localStorage.setItem(LEVEL_KEY, examLevel);
     localStorage.setItem(LANGUAGE_KEY, meaningLanguage);
     saveCustomCards();
+    saveEditedCards();
     deck = buildDeck();
     clearShuffleQueue();
   }
@@ -1098,6 +1120,22 @@
     if (el.addWordDialog.open) el.addWordDialog.close();
   }
 
+  function openEditCardDialog() {
+    if (!current) return;
+    el.editCz.value = current.cz;
+    el.editEn.value = current.en;
+    el.editHi.value = current.hi;
+    el.editUr.value = current.ur;
+    el.editSentence.value = current.sentence;
+    el.editSentenceEn.value = current.sentenceEn;
+    el.editCardDialog.showModal();
+    el.editCz.focus();
+  }
+
+  function closeEditCardDialog() {
+    if (el.editCardDialog.open) el.editCardDialog.close();
+  }
+
   el.card.addEventListener("click", reveal);
   el.card.addEventListener("keydown", (event) => {
     if (event.key === "Enter" || event.key === " ") {
@@ -1128,6 +1166,16 @@
     if (event.target === el.addWordDialog) closeAddWordDialog();
   });
   el.addWordDialog.addEventListener("close", () => el.addWordTrigger.focus());
+  el.editCardTrigger.addEventListener("click", (event) => {
+    event.stopPropagation();
+    openEditCardDialog();
+  });
+  el.editCardTrigger.addEventListener("pointerdown", (event) => event.stopPropagation());
+  el.closeEditCardDialog.addEventListener("click", closeEditCardDialog);
+  el.editCardDialog.addEventListener("click", (event) => {
+    if (event.target === el.editCardDialog) closeEditCardDialog();
+  });
+  el.editCardDialog.addEventListener("close", () => el.editCardTrigger.focus());
   el.speakWordButton.addEventListener("click", (event) => {
     event.stopPropagation();
     if (current) speak(current.cz);
@@ -1271,6 +1319,33 @@
     setStatus(`Added ${cz}. It is ready in My words.`);
     render();
   });
+  el.editCardForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (!current) return;
+    const correction = {
+      cz: el.editCz.value.trim(),
+      en: el.editEn.value.trim(),
+      hi: el.editHi.value.trim(),
+      ur: el.editUr.value.trim() || toUrdu(el.editHi.value.trim()),
+      sentence: el.editSentence.value.trim(),
+      sentenceEn: el.editSentenceEn.value.trim()
+    };
+    if (!correction.cz || !correction.en || !correction.hi || !correction.sentence || !correction.sentenceEn) return;
+
+    const cardId = current.id;
+    editedCards[cardId] = correction;
+    const customIndex = customCards.findIndex((card) => card.id === cardId);
+    if (customIndex >= 0) {
+      customCards[customIndex] = { ...customCards[customIndex], ...correction };
+      saveCustomCards();
+    }
+    saveEditedCards();
+    deck = buildDeck();
+    forcedCardId = cardId;
+    clearShuffleQueue();
+    closeEditCardDialog();
+    render();
+  });
   el.customList.addEventListener("click", (event) => {
     const button = event.target.closest(".delete-word");
     if (!button) return;
@@ -1278,7 +1353,7 @@
   });
 
   window.addEventListener("keydown", (event) => {
-    if (el.addWordDialog.open || el.searchDialog.open || el.settingsDialog.open) return;
+    if (el.addWordDialog.open || el.editCardDialog.open || el.searchDialog.open || el.settingsDialog.open) return;
     if (isTypingTarget(event.target)) return;
     if (event.key === "ArrowLeft") grade("again");
     if (event.key === "ArrowRight") grade("good");
