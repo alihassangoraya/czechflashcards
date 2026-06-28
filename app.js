@@ -4,6 +4,7 @@
   const CUSTOM_KEY = "czech-b1-flashcards-custom-v1";
   const EDITED_KEY = "czech-b1-flashcards-edits-v1";
   const SAVED_KEY = "czech-b1-flashcards-saved-v1";
+  const CUSTOM_DECKS_KEY = "czech-b1-flashcards-custom-decks-v1";
   const LANGUAGE_KEY = "czech-b1-flashcards-meaning-language-v1";
   const LEVEL_KEY = "czech-b1-flashcards-exam-level-v1";
   const DAILY_KEY = "czech-b1-flashcards-daily-v1";
@@ -77,6 +78,9 @@
     customList: document.getElementById("customList"),
     addWordError: document.getElementById("addWordError"),
     dailyGoalInput: document.getElementById("dailyGoalInput"),
+    newDeckName: document.getElementById("newDeckName"),
+    createDeckButton: document.getElementById("createDeckButton"),
+    customDeckList: document.getElementById("customDeckList"),
     dailyProgress: document.getElementById("dailyProgress"),
     searchInput: document.getElementById("searchInput"),
     searchResults: document.getElementById("searchResults"),
@@ -88,6 +92,7 @@
   let customCards = readJson(CUSTOM_KEY, []);
   let editedCards = readJson(EDITED_KEY, {});
   let savedCardIds = new Set(readJson(SAVED_KEY, []).filter((id) => typeof id === "string"));
+  let customDecks = readJson(CUSTOM_DECKS_KEY, []).filter((deck) => deck && typeof deck.id === "string" && typeof deck.name === "string");
   let meaningLanguage = localStorage.getItem(LANGUAGE_KEY) || "ur";
   let examLevel = localStorage.getItem(LEVEL_KEY) || "b1";
   let dailyLog = readJson(DAILY_KEY, todayLog());
@@ -117,6 +122,54 @@
 
   function saveCustomCards() {
     localStorage.setItem(CUSTOM_KEY, JSON.stringify(customCards));
+  }
+
+  function saveCustomDecks() {
+    localStorage.setItem(CUSTOM_DECKS_KEY, JSON.stringify(customDecks));
+  }
+
+  function renderCustomDecks() {
+    const deckSelects = [el.deckFilter, el.customTag];
+    for (const select of deckSelects) {
+      const selected = select.value;
+      select.querySelectorAll("option[data-custom-deck]").forEach((option) => option.remove());
+      for (const deckItem of customDecks) {
+        const option = document.createElement("option");
+        option.value = deckItem.id;
+        option.textContent = deckItem.name;
+        option.dataset.customDeck = "true";
+        select.append(option);
+      }
+      if ([...select.options].some((option) => option.value === selected)) select.value = selected;
+    }
+    el.customDeckList.replaceChildren();
+    for (const deckItem of customDecks) {
+      const row = document.createElement("button");
+      row.type = "button";
+      row.className = "deck-list-item";
+      row.textContent = `Study ${deckItem.name}`;
+      row.addEventListener("click", () => {
+        el.deckFilter.value = deckItem.id;
+        clearShuffleQueue();
+        render();
+      });
+      el.customDeckList.append(row);
+    }
+  }
+
+  function createCustomDeck() {
+    const name = el.newDeckName.value.trim().replace(/\s+/g, " ");
+    if (!name) return;
+    if (customDecks.some((deckItem) => deckItem.name.toLocaleLowerCase("cs-CZ") === name.toLocaleLowerCase("cs-CZ"))) return;
+    const id = `deck-${slug(name)}-${Date.now()}`;
+    customDecks = [...customDecks, { id, name }];
+    saveCustomDecks();
+    renderCustomDecks();
+    el.newDeckName.value = "";
+    el.deckFilter.value = id;
+    el.customTag.value = id;
+    clearShuffleQueue();
+    render();
   }
 
   function saveEditedCards() {
@@ -1065,7 +1118,7 @@
   }
 
   function exportProgress() {
-    const payload = JSON.stringify({ exportedAt: new Date().toISOString(), progress, importedCards, customCards, editedCards, savedCardIds: [...savedCardIds], dailyLog, dailyGoal, examLevel, meaningLanguage }, null, 2);
+    const payload = JSON.stringify({ exportedAt: new Date().toISOString(), progress, importedCards, customCards, customDecks, editedCards, savedCardIds: [...savedCardIds], dailyLog, dailyGoal, examLevel, meaningLanguage }, null, 2);
     const blob = new Blob([payload], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -1106,6 +1159,7 @@
     progress = payload.progress && typeof payload.progress === "object" ? payload.progress : {};
     importedCards = Array.isArray(payload.importedCards) ? payload.importedCards : [];
     customCards = Array.isArray(payload.customCards) ? payload.customCards : [];
+    customDecks = Array.isArray(payload.customDecks) ? payload.customDecks.filter((deckItem) => deckItem && typeof deckItem.id === "string" && typeof deckItem.name === "string") : [];
     editedCards = payload.editedCards && typeof payload.editedCards === "object" ? payload.editedCards : {};
     savedCardIds = new Set(Array.isArray(payload.savedCardIds) ? payload.savedCardIds.filter((id) => typeof id === "string") : []);
     dailyLog = payload.dailyLog && typeof payload.dailyLog === "object" ? payload.dailyLog : todayLog();
@@ -1119,6 +1173,7 @@
     localStorage.setItem(LEVEL_KEY, examLevel);
     localStorage.setItem(LANGUAGE_KEY, meaningLanguage);
     saveCustomCards();
+    saveCustomDecks();
     saveEditedCards();
     saveSavedCards();
     deck = buildDeck();
@@ -1263,6 +1318,13 @@
   });
   el.exportButton.addEventListener("click", exportProgress);
   el.exportDeckButton.addEventListener("click", exportDeck);
+  el.createDeckButton.addEventListener("click", createCustomDeck);
+  el.newDeckName.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      createCustomDeck();
+    }
+  });
   el.dailyGoalInput.value = dailyGoal;
   el.dailyGoalInput.addEventListener("change", () => {
     const nextGoal = Math.max(1, Math.min(500, Number(el.dailyGoalInput.value) || 30));
@@ -1324,6 +1386,7 @@
       clearShuffleQueue();
       el.examLevel.value = examLevel;
       el.meaningLanguage.value = meaningLanguage;
+      renderCustomDecks();
       if (customCards.length) {
         el.deckFilter.value = "custom";
       }
@@ -1375,10 +1438,10 @@
     save();
     el.addWordForm.reset();
     setAddWordError();
-    el.customTag.value = "custom";
-    el.deckFilter.value = "custom";
+    el.customTag.value = tag;
+    el.deckFilter.value = tag;
     closeAddWordDialog();
-    setStatus(`Added ${cz}. It is ready in My words.`);
+    setStatus(`Added ${cz}. It is ready in ${el.customTag.selectedOptions[0]?.textContent || "your deck"}.`);
     render();
   });
   el.editCardForm.addEventListener("submit", (event) => {
@@ -1465,5 +1528,6 @@
     });
   }
 
+  renderCustomDecks();
   render();
 })();

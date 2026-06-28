@@ -44,6 +44,7 @@ import {
   setCardSaved,
   undoReviewResult,
   type AppDatabase,
+  type CustomDeck,
   type StudySettings
 } from "./src/database";
 import { configureLocalNotifications } from "./src/notifications";
@@ -436,7 +437,7 @@ export default function App() {
       </AppModal>
 
       <AppModal visible={panel === "add"} title="Add your own word" onClose={() => setPanel(null)}>
-        <AddWordForm onSubmit={addWord} cards={customCards} onDelete={deleteWord} />
+        <AddWordForm onSubmit={addWord} cards={customCards} decks={settings.customDecks} onDelete={deleteWord} />
       </AppModal>
 
       <AppModal visible={panel === "edit"} title="Edit card" onClose={() => { setEditingCard(null); setPanel(null); }}>
@@ -459,7 +460,9 @@ export default function App() {
         <Text style={styles.fieldLabel}>Meaning</Text>
         <Segment value={settings.meaningLanguage} options={["hi", "ur"]} onChange={(meaningLanguage) => persistSettings({ ...settings, meaningLanguage })} />
         <Text style={styles.fieldLabel}>Deck</Text>
-        <DeckPicker value={settings.deckFilter} onChange={(deckFilter) => persistSettings({ ...settings, deckFilter })} />
+        <DeckPicker value={settings.deckFilter} onChange={(deckFilter) => persistSettings({ ...settings, deckFilter })} decks={settings.customDecks} />
+        <Text style={styles.fieldLabel}>My decks</Text>
+        <CustomDeckManager decks={settings.customDecks} onCreate={(deck) => persistSettings({ ...settings, customDecks: [...settings.customDecks, deck], deckFilter: deck.id })} />
         <Text style={styles.fieldLabel}>Daily goal</Text>
         <TextInput
           style={styles.input}
@@ -545,16 +548,36 @@ function Segment<T extends string>({ value, options, onChange }: { value: T; opt
   );
 }
 
-function DeckPicker({ value, onChange, options = ["a2-focus", "b1-focus", "saved", "core", "all", "daily", "extended", "work", "travel", "health", "verbs", "forms", "numbers", "custom"] }: { value: string; onChange: (value: string) => void; options?: string[] }) {
-  const labelFor = (option: string) => ({ "a2-focus": "A2 Focus 1000", "b1-focus": "B1 Focus 1000", saved: "My list", core: "Core words", all: "All cards" }[option] || option);
+function DeckPicker({ value, onChange, decks = [], options = ["a2-focus", "b1-focus", "saved", "core", "all", "daily", "extended", "work", "travel", "health", "verbs", "forms", "numbers", "custom"] }: { value: string; onChange: (value: string) => void; decks?: CustomDeck[]; options?: string[] }) {
+  const allOptions = [...options, ...decks.map((deck) => deck.id)];
+  const labelFor = (option: string) => decks.find((deck) => deck.id === option)?.name || ({ "a2-focus": "A2 Focus 1000", "b1-focus": "B1 Focus 1000", saved: "My list", core: "Core words", all: "All cards" }[option] || option);
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.deckPicker}>
-      {options.map((option) => (
+      {allOptions.map((option) => (
         <Pressable key={option} style={[styles.deckChip, value === option && styles.deckChipActive]} onPress={() => onChange(option)}>
           <Text style={[styles.deckChipText, value === option && styles.deckChipTextActive]}>{labelFor(option)}</Text>
         </Pressable>
       ))}
     </ScrollView>
+  );
+}
+
+function CustomDeckManager({ decks, onCreate }: { decks: CustomDeck[]; onCreate: (deck: CustomDeck) => void }) {
+  const [name, setName] = useState("");
+  const create = () => {
+    const clean = name.trim().replace(/\s+/g, " ");
+    if (!clean || decks.some((deck) => deck.name.toLowerCase() === clean.toLowerCase())) return;
+    onCreate({ id: `deck-${slug(clean)}-${Date.now()}`, name: clean });
+    setName("");
+  };
+  return (
+    <View style={styles.deckManager}>
+      <View style={styles.deckCreateRow}>
+        <TextInput style={[styles.input, styles.deckNameInput]} value={name} onChangeText={setName} placeholder="Deck name" />
+        <Pressable style={styles.secondaryAction} onPress={create}><Text style={styles.secondaryActionText}>Create</Text></Pressable>
+      </View>
+      {decks.map((deck) => <Text key={deck.id} style={styles.muted}>{deck.name}</Text>)}
+    </View>
   );
 }
 
@@ -633,9 +656,10 @@ function AccountForm({ configured, supabase, accountEmail, busy, onAuthenticate,
   );
 }
 
-function AddWordForm({ onSubmit, cards, onDelete }: {
+function AddWordForm({ onSubmit, cards, decks, onDelete }: {
   onSubmit: (values: { cz: string; en: string; hi: string; ur: string; sentence: string; sentenceEn: string; tag: string }) => void;
   cards: Card[];
+  decks: CustomDeck[];
   onDelete: (cardId: string) => void;
 }) {
   const [values, setValues] = useState({ cz: "", en: "", hi: "", ur: "", sentence: "", sentenceEn: "", tag: "custom" });
@@ -661,8 +685,8 @@ function AddWordForm({ onSubmit, cards, onDelete }: {
       ].map(([key, label]) => (
         <TextInput key={key} style={styles.input} value={values[key as keyof typeof values]} onChangeText={(value) => update(key as keyof typeof values, value)} placeholder={label} />
       ))}
-      <Text style={styles.fieldLabel}>Deck tag</Text>
-      <DeckPicker value={values.tag} onChange={(tag) => update("tag", tag)} options={["custom", "daily", "work", "travel", "health", "verbs"]} />
+      <Text style={styles.fieldLabel}>Deck</Text>
+      <DeckPicker value={values.tag} onChange={(tag) => update("tag", tag)} decks={decks} options={["custom", "daily", "work", "travel", "health", "verbs"]} />
       {Boolean(error) && <Text style={styles.formError}>{error}</Text>}
       <Pressable style={styles.primaryButton} onPress={submit}>
         <Text style={styles.primaryButtonText}>Add word</Text>
@@ -745,6 +769,9 @@ const styles = StyleSheet.create({
   segmentText: { color: "#53665e", fontWeight: "800" },
   segmentActiveText: { color: "#17231f" },
   deckPicker: { gap: 8, paddingVertical: 2 },
+  deckManager: { gap: 8, backgroundColor: "#ffffff", borderWidth: 1, borderColor: "#d8e2d7", borderRadius: 8, padding: 12 },
+  deckCreateRow: { flexDirection: "row", gap: 8, alignItems: "center" },
+  deckNameInput: { flex: 1 },
   deckChip: { paddingVertical: 8, paddingHorizontal: 12, backgroundColor: "#e4ebe3", borderRadius: 8 },
   deckChipActive: { backgroundColor: "#244d43" },
   deckChipText: { color: "#244d43", fontWeight: "700" },

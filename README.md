@@ -19,6 +19,8 @@ The active repository is [`alihassangoraya/czechflashcards`](https://github.com/
 - A2/B1 mode, deck filters, daily goals, review queue, known/learning/due
   counts, search, custom vocabulary, CSV import, progress backup/restore, and
   deck export.
+- Named custom decks can be created in Settings and used when adding personal
+  vocabulary, for focused lists such as work, driving school, or weak words.
 - `A2 Focus 1000` and `B1 Focus 1000` are separate, non-overlapping study
   decks. B1 starts after the A2 foundation rather than repeating greetings and
   other beginner vocabulary. `My list` lets learners bookmark existing cards

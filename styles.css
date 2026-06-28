@@ -494,6 +494,75 @@ select,
   margin-top: 0;
 }
 
+.settings-section {
+  display: grid;
+  gap: 10px;
+  padding: 16px 0;
+  border-top: 1px solid var(--line);
+}
+
+.settings-section:first-of-type {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.settings-section h3 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.9rem;
+}
+
+.deck-create-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
+.deck-create-row input {
+  min-width: 0;
+  height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 12px;
+  color: var(--ink);
+  background: white;
+}
+
+.deck-create-row button,
+.deck-list-item {
+  min-height: 42px;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  padding: 0 14px;
+  background: white;
+  color: var(--accent);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.deck-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.deck-list:empty::before {
+  content: "Create a deck for a focused list of your own words.";
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.deck-list-item {
+  min-height: 36px;
+  padding: 0 12px;
+}
+
+.settings-actions .toolbar button {
+  background: white;
+  color: var(--ink);
+  border-color: var(--line);
+}
+
 .dialog-heading-actions {
   display: flex;
   flex: 0 0 auto;

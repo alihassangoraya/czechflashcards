@@ -4,11 +4,14 @@ import { createReviewState } from "@czech-flashcards/shared";
 
 export type AppDatabase = SQLite.SQLiteDatabase;
 
+export type CustomDeck = { id: string; name: string };
+
 export type StudySettings = {
   examLevel: "a2" | "b1";
   deckFilter: string;
   meaningLanguage: "hi" | "ur";
   dailyGoal: number;
+  customDecks: CustomDeck[];
   notifications: NotificationPreferences;
 };
 
@@ -17,6 +20,7 @@ const DEFAULT_SETTINGS: StudySettings = {
   deckFilter: "b1-focus",
   meaningLanguage: "ur",
   dailyGoal: 30,
+  customDecks: [],
   notifications: {
     dailyReminderEnabled: false,
     dailyReminderTime: "19:00",

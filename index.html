@@ -75,7 +75,9 @@
               <button class="dialog-close" id="closeSettingsDialog" type="button" aria-label="Close settings dialog" title="Close">&times;</button>
             </div>
           </div>
-          <section class="toolbar">
+          <section class="settings-section">
+            <h3>Study</h3>
+            <div class="toolbar">
             <label>
               Exam
               <select id="examLevel">
@@ -113,6 +115,19 @@
                 <option value="ur" selected>Urdu</option>
               </select>
             </label>
+            </div>
+          </section>
+          <section class="settings-section">
+            <h3>My decks</h3>
+            <div class="deck-create-row">
+              <input id="newDeckName" autocomplete="off" maxlength="40" placeholder="Deck name, e.g. Driving school">
+              <button id="createDeckButton" type="button">Create deck</button>
+            </div>
+            <div class="deck-list" id="customDeckList" aria-live="polite"></div>
+          </section>
+          <section class="settings-section settings-actions">
+            <h3>Data</h3>
+            <div class="toolbar">
             <label class="import-label">
               Restore JSON
               <input id="restoreInput" type="file" accept=".json,application/json">
@@ -125,6 +140,7 @@
             <button id="resetDueButton" type="button">Review all now</button>
             <button id="exportButton" type="button">Export progress</button>
             <button id="exportDeckButton" type="button">Export deck</button>
+            </div>
           </section>
         </div>
       </dialog>
@@ -167,7 +183,7 @@
               <input id="customSentenceEn" name="sentenceEn" autocomplete="off" placeholder="Tomorrow I have an important meeting.">
             </label>
             <label>
-              Deck tag
+              Deck
               <select id="customTag" name="tag">
                 <option value="custom">My words</option>
                 <option value="daily">Daily life</option>
