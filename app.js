@@ -24,11 +24,9 @@
     sentenceEn: document.getElementById("sentenceEn"),
     answer: document.getElementById("answer"),
     tapHint: document.getElementById("tapHint"),
-    cardMode: document.getElementById("cardMode"),
     dueCount: document.getElementById("dueCount"),
     knownCount: document.getElementById("knownCount"),
     learningCount: document.getElementById("learningCount"),
-    intervalLabel: document.getElementById("intervalLabel"),
     deckSize: document.getElementById("deckSize"),
     speakWordButton: document.getElementById("speakWordButton"),
     speakSentenceButton: document.getElementById("speakSentenceButton"),
@@ -63,7 +61,6 @@
     customList: document.getElementById("customList"),
     dailyGoalInput: document.getElementById("dailyGoalInput"),
     dailyProgress: document.getElementById("dailyProgress"),
-    tomorrowCount: document.getElementById("tomorrowCount"),
     searchInput: document.getElementById("searchInput"),
     searchResults: document.getElementById("searchResults"),
     searchCount: document.getElementById("searchCount")
@@ -626,13 +623,11 @@
     if (!current) {
       const hasCards = filteredDeck().length > 0;
       el.word.textContent = hasCards ? "Done" : "No cards";
-      el.cardMode.textContent = hasCards ? "Caught up" : "Empty deck";
       el.english.textContent = "";
       el.indicMeaning.textContent = "";
       el.sentence.textContent = "";
       el.sentenceEn.textContent = "";
       el.tapHint.textContent = hasCards ? "No cards are due right now" : "Import CSV cards or choose another deck";
-      el.intervalLabel.textContent = hasCards ? nextDueLabel() : "No cards";
       setStatus(hasCards ? "All caught up. Known cards will return later." : "No cards available in this deck.");
       updateStats();
       return;
@@ -647,9 +642,7 @@
     el.indicMeaning.lang = meaningLanguage === "ur" ? "ur" : "hi";
     el.sentence.textContent = current.sentence;
     el.sentenceEn.textContent = current.sentenceEn;
-    el.cardMode.textContent = current.tags.join(" · ");
     el.tapHint.textContent = "Tap to reveal meaning";
-    el.intervalLabel.textContent = state.seen ? formatInterval(Math.max(0, state.dueAt - Date.now())) : "New word";
     updateStats();
   }
 
@@ -659,13 +652,10 @@
     let due = 0;
     let known = 0;
     let learning = 0;
-    let dueTomorrow = 0;
-    const tomorrow = now + DAY;
 
     for (const card of cards) {
       const state = getState(card);
       if ((state.dueAt || 0) <= now) due += 1;
-      if ((state.dueAt || 0) > now && (state.dueAt || 0) <= tomorrow) dueTomorrow += 1;
       if ((state.knownStreak || 0) >= 1) known += 1;
       if (state.seen && (state.knownStreak || 0) === 0) learning += 1;
     }
@@ -677,7 +667,6 @@
     el.deckSize.textContent = cards.length;
     el.customCount.textContent = customCards.length;
     el.dailyProgress.textContent = `${log.reviewed} / ${dailyGoal} reviewed`;
-    el.tomorrowCount.textContent = dueTomorrow;
     el.dailyGoalInput.value = dailyGoal;
     renderCustomList();
     renderSearchResults();
@@ -707,10 +696,20 @@
       const copy = document.createElement("div");
       const word = document.createElement("strong");
       word.textContent = card.cz;
-      const meaning = document.createElement("span");
-      meaning.textContent = `${card.en} · ${meaningLanguage === "ur" ? card.ur : card.hi}`;
-      meaning.dir = meaningLanguage === "ur" ? "rtl" : "ltr";
-      copy.append(word, meaning);
+      const meanings = document.createElement("div");
+      meanings.className = `search-meanings${meaningLanguage === "ur" ? " is-rtl" : ""}`;
+      const english = document.createElement("span");
+      english.className = "search-english";
+      english.textContent = card.en;
+      const indic = document.createElement("span");
+      indic.className = "search-indic";
+      indic.textContent = meaningLanguage === "ur" ? card.ur : card.hi;
+      if (meaningLanguage === "ur") {
+        indic.dir = "rtl";
+        indic.lang = "ur";
+      }
+      meanings.append(english, indic);
+      copy.append(word, meanings);
 
       const meta = document.createElement("span");
       meta.className = "search-meta";
@@ -877,15 +876,6 @@
     if (ms < HOUR) return `${Math.ceil(ms / MINUTE)} min`;
     if (ms < DAY) return `${Math.ceil(ms / HOUR)} hr`;
     return `${Math.ceil(ms / DAY)} days`;
-  }
-
-  function nextDueLabel() {
-    const dueTimes = filteredDeck()
-      .map((card) => getState(card).dueAt || 0)
-      .filter((dueAt) => dueAt > Date.now())
-      .sort((a, b) => a - b);
-
-    return dueTimes.length ? `Next in ${formatInterval(dueTimes[0] - Date.now())}` : "No cards";
   }
 
   function parseCsv(text) {
