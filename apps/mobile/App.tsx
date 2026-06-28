@@ -47,7 +47,7 @@ import {
   type StudySettings
 } from "./src/database";
 import { configureLocalNotifications } from "./src/notifications";
-import { createSupabaseClient, flushSyncQueue, getFriendCode, restoreSyncSnapshot, sendFriendRequest, signInWithPassword, signOut, signUpWithPassword, type SyncStatus } from "./src/sync";
+import { createSupabaseClient, flushSyncQueue, getFriendCode, loadFriendActivity, respondToFriendRequest, restoreSyncSnapshot, sendFriendRequest, signInWithPassword, signOut, signUpWithPassword, type FriendRequest, type FriendStreak, type SyncStatus } from "./src/sync";
 
 type Panel = "search" | "add" | "edit" | "settings" | "account";
 type RelearningEntry = { id: string; remaining: number };
@@ -571,6 +571,8 @@ function AccountForm({ configured, supabase, accountEmail, busy, onAuthenticate,
   const [displayName, setDisplayName] = useState("");
   const [friendCode, setFriendCode] = useState("");
   const [myFriendCode, setMyFriendCode] = useState<string | null>(null);
+  const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
+  const [friends, setFriends] = useState<FriendStreak[]>([]);
   const [message, setMessage] = useState("");
   const submit = async (mode: "sign-in" | "sign-up") => {
     if (!email.trim() || !password) {
@@ -580,7 +582,16 @@ function AccountForm({ configured, supabase, accountEmail, busy, onAuthenticate,
     const error = await onAuthenticate(mode, email, password, displayName);
     setMessage(error || (mode === "sign-up" ? "Account created. Check email confirmation if your project requires it." : "Signed in and syncing this device."));
   };
-  useEffect(() => { if (accountEmail) void getFriendCode(supabase).then(setMyFriendCode); }, [accountEmail, supabase]);
+  const refreshFriends = async () => {
+    const activity = await loadFriendActivity(supabase);
+    setFriendRequests(activity.requests);
+    setFriends(activity.friends);
+  };
+  useEffect(() => {
+    if (!accountEmail) return;
+    void getFriendCode(supabase).then(setMyFriendCode);
+    void refreshFriends();
+  }, [accountEmail, supabase]);
   if (!configured) return <Text style={styles.muted}>This build has no Supabase URL or anonymous key. Offline study remains available.</Text>;
   if (accountEmail) return (
     <View style={styles.form}>
@@ -590,7 +601,21 @@ function AccountForm({ configured, supabase, accountEmail, busy, onAuthenticate,
         <Text style={styles.fieldLabel}>Friend code</Text>
         <Text style={styles.friendCode}>{myFriendCode || "Preparing..."}</Text>
         <TextInput style={styles.input} value={friendCode} onChangeText={setFriendCode} autoCapitalize="none" placeholder="Enter a friend's code" />
-        <Pressable style={styles.secondaryAction} onPress={async () => setMessage((await sendFriendRequest(supabase, friendCode)) || "Friend request sent.")}><Text style={styles.secondaryActionText}>Send friend request</Text></Pressable>
+        <Pressable style={styles.secondaryAction} onPress={async () => {
+          setMessage((await sendFriendRequest(supabase, friendCode)) || "Friend request sent.");
+          setFriendCode("");
+          await refreshFriends();
+        }}><Text style={styles.secondaryActionText}>Send friend request</Text></Pressable>
+        {friendRequests.map((request) => (
+          <View key={request.id} style={styles.friendRow}>
+            <Text style={styles.muted}>{request.display_name || request.friend_code} wants to connect.</Text>
+            <View style={styles.friendActions}>
+              <Pressable style={styles.smallAction} onPress={async () => { setMessage((await respondToFriendRequest(supabase, request.id, true)) || "Friend added."); await refreshFriends(); }}><Text style={styles.secondaryActionText}>Accept</Text></Pressable>
+              <Pressable style={styles.smallAction} onPress={async () => { setMessage((await respondToFriendRequest(supabase, request.id, false)) || "Request declined."); await refreshFriends(); }}><Text style={styles.secondaryActionText}>Decline</Text></Pressable>
+            </View>
+          </View>
+        ))}
+        {friends.map((friend) => <Text key={friend.friend_code} style={styles.muted}>{friend.display_name || friend.friend_code}: {friend.current_streak ?? 0}-day streak</Text>)}
       </View>
       {Boolean(message) && <Text style={styles.formError}>{message}</Text>}
       <Pressable disabled={busy} style={[styles.dangerButton, busy && styles.disabledButton]} onPress={async () => setMessage((await onSignOut()) || "Signed out. Your local study data remains on this device.")}><Text style={styles.dangerButtonText}>Sign out</Text></Pressable>
@@ -779,6 +804,9 @@ const styles = StyleSheet.create({
   dangerButtonText: { color: "#ffffff", fontWeight: "900" },
   friendPanel: { gap: 8, backgroundColor: "#ffffff", borderWidth: 1, borderColor: "#d8e2d7", borderRadius: 8, padding: 14 },
   friendCode: { color: "#20362f", fontSize: 22, fontWeight: "900", letterSpacing: 1.5 },
+  friendRow: { gap: 8, borderTopWidth: 1, borderTopColor: "#e4ebe3", paddingTop: 10 },
+  friendActions: { flexDirection: "row", gap: 8 },
+  smallAction: { flex: 1, alignItems: "center", borderWidth: 1, borderColor: "#2f6f9f", borderRadius: 8, paddingVertical: 8, backgroundColor: "#ffffff" },
   toggleRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", backgroundColor: "#ffffff", borderRadius: 8, padding: 14 },
   syncPanel: { gap: 8, backgroundColor: "#ffffff", borderRadius: 8, padding: 14, borderWidth: 1, borderColor: "#d8e2d7" },
   syncActions: { flexDirection: "row", gap: 8 },

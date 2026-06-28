@@ -59,6 +59,24 @@ export async function sendFriendRequest(supabase: SupabaseClient | null, friendC
   return error?.message || null;
 }
 
+export type FriendRequest = { id: string; friend_code: string; display_name: string | null };
+export type FriendStreak = { friend_code: string; display_name: string | null; current_streak: number | null; privacy_level: string };
+
+export async function loadFriendActivity(supabase: SupabaseClient | null): Promise<{ requests: FriendRequest[]; friends: FriendStreak[] }> {
+  if (!supabase) return { requests: [], friends: [] };
+  const [requestsResult, friendsResult] = await Promise.all([
+    supabase.rpc("friend_requests"),
+    supabase.rpc("friend_streaks")
+  ]);
+  return { requests: requestsResult.data || [], friends: friendsResult.data || [] };
+}
+
+export async function respondToFriendRequest(supabase: SupabaseClient | null, requestId: string, accept: boolean): Promise<string | null> {
+  if (!supabase) return "Supabase is not configured for this build.";
+  const { error } = await supabase.rpc("respond_to_friend_request", { request_id: requestId, accept_request: accept });
+  return error?.message || null;
+}
+
 export async function flushSyncQueue(db: AppDatabase, supabase: SupabaseClient | null): Promise<SyncStatus> {
   if (!supabase) return "not-configured";
   const { data: userData, error: userError } = await supabase.auth.getUser();
