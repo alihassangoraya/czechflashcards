@@ -2,6 +2,9 @@ name = "czechflashcards"
 main = "worker/index.js"
 compatibility_date = "2026-06-27"
 
+[build]
+command = "npm run build:web"
+
 [assets]
 directory = "apps/mobile/dist"
 binding = "ASSETS"
