@@ -1,14 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
-  ActivityIndicator,
   SafeAreaView,
   StyleSheet,
   StatusBar,
-  Text,
   View
 } from "react-native";
-import MaterialIcons from "./src/components/MaterialIcons";
+import { AppLoadingScreen } from "./src/components/AppLoadingScreen";
 import { AppModal } from "./src/components/AppModal";
+import { AppToast } from "./src/components/AppToast";
 import {
   applyReviewGrade,
   formatInterval,
@@ -49,6 +48,7 @@ import {
 import { configureLocalNotifications } from "./src/notifications";
 import { createSupabaseClient, flushSyncQueue, restoreSyncSnapshot, signInWithPassword, signOut, signUpWithPassword, type SyncStatus } from "./src/sync";
 import { AccountPanel, type AccountStudySummary } from "./src/features/account/AccountPanel";
+import { GrammarEmptyState } from "./src/features/grammar/GrammarEmptyState";
 import { GrammarGuide } from "./src/features/grammar/GrammarGuide";
 import { HomeScreen } from "./src/features/home/HomeScreen";
 import { QuizScreen } from "./src/features/quiz/QuizScreen";
@@ -69,7 +69,7 @@ import {
 import { AddWordPanel } from "./src/features/words/AddWordPanel";
 import { EditCardForm } from "./src/features/words/EditCardForm";
 import { downloadJson, pickTextFile } from "./src/services/fileTransfer";
-import { colors, radius, shadow, size, spacing, typography } from "./src/theme/design";
+import { colors } from "./src/theme/design";
 
 type Panel = "search" | "add" | "edit" | "settings" | "account" | "grammar";
 type Screen = "home" | "study" | "quiz";
@@ -483,12 +483,7 @@ export default function App() {
   }
 
   if (!db || !settings) {
-    return (
-      <SafeAreaView style={styles.shell}>
-        <ActivityIndicator />
-        <Text style={styles.muted}>Preparing offline study mode...</Text>
-      </SafeAreaView>
-    );
+    return <AppLoadingScreen />;
   }
 
   const dueCount = deck.filter((card) => (states[card.id]?.dueAt || 0) <= Date.now()).length;
@@ -623,22 +618,14 @@ export default function App() {
       </AppModal>
 
       <AppModal visible={panel === "grammar"} title="B1 grammar guide" onClose={() => setPanel(null)}>
-        {current ? <GrammarGuide card={current} /> : <Text style={styles.muted}>Choose a card to see its grammar notes.</Text>}
+        {current ? <GrammarGuide card={current} /> : <GrammarEmptyState />}
       </AppModal>
 
-      {Boolean(toastMessage) && (
-        <View pointerEvents="none" style={styles.toast}>
-          <MaterialIcons name="star" size={size.iconSmall} color={colors.onPrimary} />
-          <Text style={styles.toastText}>{toastMessage}</Text>
-        </View>
-      )}
+      <AppToast message={toastMessage} />
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  shell: { flex: 1, backgroundColor: colors.background },
-  toast: { position: "absolute", left: spacing.page, right: spacing.page, bottom: spacing.hero, alignSelf: "center", minHeight: size.touchTarget, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: spacing.smd, borderRadius: radius.md, backgroundColor: colors.primaryDeep, paddingHorizontal: spacing.xl, paddingVertical: spacing.md, ...shadow.soft },
-  toastText: { flexShrink: 1, color: colors.onPrimary, fontSize: typography.bodySmall, fontWeight: typography.weightSemibold, textAlign: "center" },
-  muted: { color: colors.textMuted, lineHeight: 20 }
+  shell: { flex: 1, backgroundColor: colors.background }
 });

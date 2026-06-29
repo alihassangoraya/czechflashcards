@@ -9,13 +9,15 @@ import {
   View
 } from "react-native";
 import type { Card, ReviewGrade } from "@czech-flashcards/shared";
-import { selectedMeaning } from "@czech-flashcards/shared";
 import * as Speech from "../../speech";
 import MaterialIcons from "../../components/MaterialIcons";
-import { HeaderIcon } from "../../components/HeaderIcon";
 import { GeminiTutorPanel } from "../tutor/GeminiTutorPanel";
 import type { StudySettings } from "../../database";
 import { colors, radius, size, spacing, typography } from "../../theme/design";
+import { ReviewButtons } from "./components/ReviewButtons";
+import { StudyHeader } from "./components/StudyHeader";
+import { StudyProgress } from "./components/StudyProgress";
+import { displaySelectedMeaning, pronunciationHint } from "./studyMeaning";
 import { WordDetailsPanel } from "./WordDetailsPanel";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -83,24 +85,8 @@ export function StudyScreen({
 
   return (
     <>
-      <View style={styles.header}>
-        <View style={styles.brandRow}>
-          <Pressable style={styles.backIcon} onPress={onBack} accessibilityRole="button" accessibilityLabel="Back home">
-            <MaterialIcons name="arrow-back" size={size.iconLarge} color={colors.textStrong} />
-          </Pressable>
-          <Text style={styles.title}>Czech Flashcards</Text>
-        </View>
-        <View style={styles.headerActions}>
-          <HeaderIcon icon="school" label="Open grammar guide" onPress={onOpenGrammar} />
-        </View>
-      </View>
-
-      <View style={styles.sessionProgressRow}>
-        <Text style={styles.sessionProgressText}>Card {sessionReviews + 1} of {sessionTarget} · Today {reviewedToday} / {dailyGoal}</Text>
-        <View style={styles.sessionProgressTrack}>
-          <View style={[styles.sessionProgressFill, { width: `${Math.max(3, sessionProgress * 100)}%` }]} />
-        </View>
-      </View>
+      <StudyHeader onBack={onBack} onOpenGrammar={onOpenGrammar} />
+      <StudyProgress sessionReviews={sessionReviews} sessionTarget={sessionTarget} reviewedToday={reviewedToday} dailyGoal={dailyGoal} sessionProgress={sessionProgress} />
 
       <ScrollView contentContainerStyle={styles.content} directionalLockEnabled>
         <View style={styles.cardFrame} {...panHandlers}>
@@ -241,26 +227,7 @@ export function StudyScreen({
           </Animated.View>
         </View>
 
-        {revealed && current && (
-          <View style={styles.reviewRow}>
-            <Pressable disabled={grading} style={[styles.reviewButton, styles.reviewAgain, grading && styles.disabledButton]} onPress={() => onGrade("again")}>
-              <Text style={styles.reviewButtonText}>Again</Text>
-              <Text style={styles.reviewIntervalText}>{reviewInterval("again")}</Text>
-            </Pressable>
-            <Pressable disabled={grading} style={[styles.reviewButton, styles.reviewHard, grading && styles.disabledButton]} onPress={() => onGrade("hard")}>
-              <Text style={styles.reviewButtonText}>Hard</Text>
-              <Text style={styles.reviewIntervalText}>{reviewInterval("hard")}</Text>
-            </Pressable>
-            <Pressable disabled={grading} style={[styles.reviewButton, styles.reviewGood, grading && styles.disabledButton]} onPress={() => onGrade("good")}>
-              <Text style={styles.reviewButtonText}>Good</Text>
-              <Text style={styles.reviewIntervalText}>{reviewInterval("good")}</Text>
-            </Pressable>
-            <Pressable disabled={grading} style={[styles.reviewButton, styles.reviewEasy, grading && styles.disabledButton]} onPress={() => onGrade("easy")}>
-              <Text style={styles.reviewEasyText}>Easy</Text>
-              <Text style={styles.reviewIntervalText}>{reviewInterval("easy")}</Text>
-            </Pressable>
-          </View>
-        )}
+        {revealed && current && <ReviewButtons grading={grading} reviewInterval={reviewInterval} onGrade={onGrade} />}
 
         {revealed && current && <WordDetailsPanel card={current} />}
         {revealed && <GeminiTutorPanel card={current} />}
@@ -269,30 +236,7 @@ export function StudyScreen({
   );
 }
 
-function pronunciationHint(word: string) {
-  return `[ ${word} ] · stress the first syllable`;
-}
-
-function displaySelectedMeaning(card: Card, language: StudySettings["meaningLanguage"]): string {
-  const meaning = selectedMeaning(card, language).trim();
-  return isRealTranslation(meaning) ? meaning : "";
-}
-
-function isRealTranslation(value: string): boolean {
-  const normalized = value.trim().toLowerCase();
-  return Boolean(normalized) && normalized !== "hindi meaning pending" && normalized !== "اردو معنی باقی ہے";
-}
-
 const styles = StyleSheet.create({
-  header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: spacing.page, paddingTop: typography.bodyLarge, paddingBottom: typography.bodyLarge },
-  brandRow: { flexDirection: "row", alignItems: "center", gap: spacing.lg },
-  title: { color: colors.textStrong, fontSize: typography.screenTitle, fontWeight: typography.weightSemibold },
-  sessionProgressRow: { width: 250, alignSelf: "center", gap: 5, marginTop: 1, marginBottom: 12 },
-  sessionProgressText: { color: colors.textSubtle, fontSize: typography.caption, fontWeight: typography.weightMedium, textAlign: "center" },
-  sessionProgressTrack: { height: spacing.sm, overflow: "hidden", borderRadius: spacing.xs, backgroundColor: colors.progressTrackStrong },
-  sessionProgressFill: { height: "100%", borderRadius: spacing.xs, backgroundColor: colors.primary },
-  headerActions: { flexDirection: "row", gap: spacing.lg },
-  backIcon: { width: size.headerAction, height: size.headerAction, alignItems: "center", justifyContent: "center" },
   content: { gap: spacing.xlPlus, paddingHorizontal: spacing.page, paddingBottom: spacing.screenBottom },
   cardFrame: { position: "relative", height: size.cardHeight },
   cardMotion: { ...StyleSheet.absoluteFillObject },
@@ -326,14 +270,5 @@ const styles = StyleSheet.create({
   example: { flex: 1, fontSize: typography.bodyLarge, lineHeight: 21, color: colors.textExample },
   hint: { color: colors.textMuted, marginTop: typography.bodyLarge, textAlign: "center", fontWeight: typography.weightRegular },
   muted: { color: colors.textMuted, lineHeight: 20 },
-  reviewRow: { flexDirection: "row", gap: 6 },
-  reviewButton: { flex: 1, minHeight: size.reviewButton, alignItems: "center", justifyContent: "center", gap: spacing.xxs, borderRadius: radius.xl, paddingHorizontal: spacing.sm },
-  reviewAgain: { backgroundColor: colors.danger },
-  reviewHard: { backgroundColor: colors.warning },
-  reviewGood: { backgroundColor: colors.primary },
-  reviewEasy: { backgroundColor: colors.success },
-  reviewButtonText: { color: colors.onPrimary, fontSize: typography.bodySmall, fontWeight: typography.weightBold },
-  reviewEasyText: { color: colors.onPrimary, fontSize: typography.bodySmall, fontWeight: typography.weightBold },
-  reviewIntervalText: { color: colors.onPrimaryMuted, fontSize: typography.micro, fontWeight: typography.weightMedium },
   disabledButton: { opacity: 0.45 }
 });
