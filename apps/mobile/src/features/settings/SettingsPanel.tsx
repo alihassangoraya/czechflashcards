@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from "react-native";
 import MaterialIcons from "../../components/MaterialIcons";
 import type { CustomDeck, StudySettings } from "../../database";
@@ -9,17 +9,43 @@ type Props = {
   settings: StudySettings;
   accountEmail: string | null;
   syncStatus: SyncStatus;
+  notice?: string;
   onChange: (settings: StudySettings) => void;
   onSyncNow: () => void;
   onAccount: () => void;
+  onRestoreJson: () => void;
+  onImportCsv: () => void;
+  onShuffleDue: () => void;
+  onReviewAllNow: () => void;
+  onExportProgress: () => void;
+  onExportDeck: () => void;
 };
 
 const deckOptions = ["a2-focus", "b1-focus", "saved", "core", "all", "daily", "work", "travel", "health", "verbs", "forms", "numbers", "custom"];
 
-export function SettingsPanel({ settings, accountEmail, syncStatus, onChange, onSyncNow, onAccount }: Props) {
+export function SettingsPanel({
+  settings,
+  accountEmail,
+  syncStatus,
+  notice,
+  onChange,
+  onSyncNow,
+  onAccount,
+  onRestoreJson,
+  onImportCsv,
+  onShuffleDue,
+  onReviewAllNow,
+  onExportProgress,
+  onExportDeck
+}: Props) {
   const [deckName, setDeckName] = useState("");
+  const [customReminderTime, setCustomReminderTime] = useState(settings.notifications.dailyReminderTime);
   const activeDeckLabel = deckLabel(settings.deckFilter, settings.customDecks);
   const syncReady = syncStatus === "synced" || syncStatus === "not-configured";
+
+  useEffect(() => {
+    setCustomReminderTime(settings.notifications.dailyReminderTime);
+  }, [settings.notifications.dailyReminderTime]);
 
   function update(patch: Partial<StudySettings>) {
     onChange({ ...settings, ...patch });
@@ -27,6 +53,17 @@ export function SettingsPanel({ settings, accountEmail, syncStatus, onChange, on
 
   function updateNotifications(patch: Partial<StudySettings["notifications"]>) {
     update({ notifications: { ...settings.notifications, ...patch } });
+  }
+
+  function setReminderTime(value: string) {
+    setCustomReminderTime(value);
+    updateNotifications({ dailyReminderTime: value });
+  }
+
+  function commitCustomReminderTime() {
+    const normalized = normalizeReminderTime(customReminderTime);
+    if (normalized) setReminderTime(normalized);
+    else setCustomReminderTime(settings.notifications.dailyReminderTime);
   }
 
   function createDeck() {
@@ -105,14 +142,50 @@ export function SettingsPanel({ settings, accountEmail, syncStatus, onChange, on
         <SettingGroup>
           <TogglePreference icon="notifications" title="Daily reminder" detail="A prompt to keep your study habit moving." value={settings.notifications.dailyReminderEnabled} onChange={(value) => updateNotifications({ dailyReminderEnabled: value })} />
           {settings.notifications.dailyReminderEnabled && (
-            <View style={styles.reminderTime}>
-              <Text style={styles.reminderTimeLabel}>Reminder time</Text>
-              <ChoiceSegment value={settings.notifications.dailyReminderTime} options={["08:00", "12:00", "19:00"]} labels={{ "08:00": "08:00", "12:00": "12:00", "19:00": "19:00" }} onChange={(dailyReminderTime) => updateNotifications({ dailyReminderTime })} compact />
+            <View style={styles.reminderTimeBlock}>
+              <View style={styles.reminderTime}>
+                <Text style={styles.reminderTimeLabel}>Reminder time</Text>
+                <ChoiceSegment value={settings.notifications.dailyReminderTime} options={["08:00", "12:00", "19:00"]} labels={{ "08:00": "08:00", "12:00": "12:00", "19:00": "19:00" }} onChange={setReminderTime} compact />
+              </View>
+              <View style={styles.customTimeRow}>
+                <MaterialIcons name="schedule" size={size.iconSmall} color={colors.textMuted} />
+                <TextInput
+                  style={styles.timeInput}
+                  value={customReminderTime}
+                  onChangeText={setCustomReminderTime}
+                  onBlur={commitCustomReminderTime}
+                  onSubmitEditing={commitCustomReminderTime}
+                  placeholder="HH:mm"
+                  placeholderTextColor={colors.textMuted}
+                  keyboardType="numbers-and-punctuation"
+                  maxLength={5}
+                  returnKeyType="done"
+                  accessibilityLabel="Custom daily reminder time"
+                />
+                <Text style={styles.timeHint}>24-hour time</Text>
+              </View>
             </View>
           )}
           <TogglePreference icon="local-fire-department" title="Streak protection" detail="A reminder before today's practice window closes." value={settings.notifications.streakRiskEnabled} onChange={(value) => updateNotifications({ streakRiskEnabled: value })} />
           <TogglePreference icon="schedule" title="Reviews due" detail="A nudge when scheduled cards are ready." value={settings.notifications.reviewDueEnabled} onChange={(value) => updateNotifications({ reviewDueEnabled: value })} />
         </SettingGroup>
+      </SettingsSection>
+
+      <SettingsSection icon="assignment" title="Data tools" description="Move your deck and progress in or out of this app.">
+        <View style={styles.utilityGrid}>
+          <UtilityButton icon="refresh" title="Restore JSON" detail="Load a progress backup" onPress={onRestoreJson} />
+          <UtilityButton icon="library-add" title="Import CSV" detail="Add words from a file" onPress={onImportCsv} />
+          <UtilityButton icon="swap-horiz" title="Shuffle due" detail="Mix ready cards" onPress={onShuffleDue} />
+          <UtilityButton icon="today" title="Review all now" detail="Make this deck due" onPress={onReviewAllNow} />
+          <UtilityButton icon="trending-up" title="Export progress" detail="Save a JSON backup" onPress={onExportProgress} />
+          <UtilityButton icon="folder" title="Export deck" detail="Save current deck" onPress={onExportDeck} />
+        </View>
+        {Boolean(notice) && (
+          <View style={styles.notice}>
+            <MaterialIcons name="info" size={size.iconSmall} color={colors.action} />
+            <Text style={styles.noticeText}>{notice}</Text>
+          </View>
+        )}
       </SettingsSection>
 
       <SettingsSection icon="cloud-sync" title="Backup and sync" description="Your study data stays local until you connect an account.">
@@ -137,6 +210,20 @@ export function SettingsPanel({ settings, accountEmail, syncStatus, onChange, on
         </View>
       </SettingsSection>
     </View>
+  );
+}
+
+function UtilityButton({ icon, title, detail, onPress }: { icon: React.ComponentProps<typeof MaterialIcons>["name"]; title: string; detail: string; onPress: () => void }) {
+  return (
+    <Pressable style={styles.utilityButton} onPress={onPress} accessibilityRole="button">
+      <View style={styles.utilityIcon}>
+        <MaterialIcons name={icon} size={size.iconSmall} color={colors.primaryDeep} />
+      </View>
+      <View style={styles.utilityCopy}>
+        <Text style={styles.utilityTitle}>{title}</Text>
+        <Text style={styles.utilityDetail}>{detail}</Text>
+      </View>
+    </Pressable>
   );
 }
 
@@ -227,6 +314,16 @@ function slug(value: string) {
   return value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
 
+function normalizeReminderTime(value: string): string | null {
+  const trimmed = value.trim();
+  const match = /^(\d{1,2})(?::?(\d{2}))?$/.exec(trimmed);
+  if (!match) return null;
+  const hour = Number(match[1]);
+  const minute = Number(match[2] || "0");
+  if (hour < 0 || hour > 23 || minute < 0 || minute > 59) return null;
+  return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+}
+
 const styles = StyleSheet.create({
   root: { gap: spacing.hero },
   summary: { flexDirection: "row", alignItems: "center", gap: spacing.xl, borderWidth: spacing.hairline, borderColor: colors.borderSoft, borderRadius: radius.md, backgroundColor: colors.surfaceWarm, padding: spacing.xlPlus },
@@ -273,8 +370,20 @@ const styles = StyleSheet.create({
   toggleCopy: { flex: 1, gap: spacing.xxs },
   toggleTitle: { color: colors.textStrong, fontSize: typography.body, fontWeight: typography.weightMedium },
   toggleDetail: { color: colors.textMuted, fontSize: typography.caption, lineHeight: typography.bodySmall + spacing.xs },
-  reminderTime: { flexDirection: "row", alignItems: "center", gap: spacing.xl, borderTopWidth: spacing.hairline, borderTopColor: colors.borderSoft, paddingTop: spacing.xl },
+  reminderTimeBlock: { gap: spacing.lg, borderTopWidth: spacing.hairline, borderTopColor: colors.borderSoft, paddingTop: spacing.xl },
+  reminderTime: { flexDirection: "row", alignItems: "center", gap: spacing.xl },
   reminderTimeLabel: { flex: 1, color: colors.textSoft, fontSize: typography.bodySmall, fontWeight: typography.weightMedium },
+  customTimeRow: { minHeight: size.touchTarget, flexDirection: "row", alignItems: "center", gap: spacing.smd, borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surfaceWarm, paddingHorizontal: spacing.lg },
+  timeInput: { minWidth: 74, color: colors.textStrong, fontSize: typography.body, fontWeight: typography.weightSemibold, paddingVertical: spacing.smd },
+  timeHint: { flex: 1, color: colors.textMuted, fontSize: typography.caption, fontWeight: typography.weightMedium },
+  utilityGrid: { flexDirection: "row", flexWrap: "wrap", gap: spacing.lg },
+  utilityButton: { width: "48%", minWidth: 132, flexGrow: 1, minHeight: size.reviewButton, flexDirection: "row", alignItems: "center", gap: spacing.smd, borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surface, paddingHorizontal: spacing.lg, paddingVertical: spacing.md },
+  utilityIcon: { width: size.cardAction, height: size.cardAction, alignItems: "center", justifyContent: "center", borderRadius: radius.sm, backgroundColor: colors.primarySoft },
+  utilityCopy: { flex: 1, minWidth: 0, gap: spacing.xxs },
+  utilityTitle: { color: colors.textStrong, fontSize: typography.bodySmall, fontWeight: typography.weightSemibold },
+  utilityDetail: { color: colors.textMuted, fontSize: typography.caption, lineHeight: typography.bodySmall },
+  notice: { flexDirection: "row", alignItems: "center", gap: spacing.smd, borderWidth: spacing.hairline, borderColor: colors.actionSoft, borderRadius: radius.md, backgroundColor: colors.surfaceWarm, padding: spacing.lg },
+  noticeText: { flex: 1, color: colors.textSoft, fontSize: typography.bodySmall, lineHeight: typography.bodyLarge },
   syncStatus: { flexDirection: "row", alignItems: "center", gap: spacing.xl, borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surface, padding: spacing.xl },
   syncStatusIcon: { width: size.headerAction, height: size.headerAction, alignItems: "center", justifyContent: "center", borderRadius: radius.md },
   syncStatusGood: { backgroundColor: colors.mintSoft },

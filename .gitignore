@@ -1,2 +1,6 @@
 node_modules/
 apps/mobile/dist/
+apps/mobile/ios/Pods/
+apps/mobile/ios/build/
+apps/mobile/ios/DerivedData/
+apps/mobile/ios/.xcode.env.local

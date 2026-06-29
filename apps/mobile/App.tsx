@@ -5,6 +5,7 @@ import {
   Easing,
   Modal,
   PanResponder,
+  Platform,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -23,6 +24,7 @@ import {
   formatInterval,
   filterDeck,
   normalizeCards,
+  parseCsvCards,
   selectedMeaning,
   slug,
   type Card,
@@ -34,14 +36,18 @@ import seedPayload from "@czech-flashcards/shared/seed";
 import {
   addCustomCard,
   deleteCustomCard,
+  exportBackup,
   getDailyProgress,
   getReviewState,
+  importCards,
   loadCards,
   loadReviewStates,
   loadSavedCardIds,
   loadSettings,
   openAppDatabase,
   saveReviewResult,
+  markCardsDueNow,
+  restoreBackup,
   saveCardCorrection,
   saveSettings,
   seedCards,
@@ -65,10 +71,22 @@ type Panel = "search" | "add" | "edit" | "settings" | "account" | "grammar";
 type Screen = "home" | "study" | "quiz";
 type RelearningEntry = { id: string; remaining: number };
 type UndoReview = { card: Card; previousState: ReviewState; event: ReviewEvent; previousRelearningQueue: RelearningEntry[] };
+type AccountStudySummary = {
+  deckTotal: number;
+  studiedCount: number;
+  masteredCount: number;
+  learningCount: number;
+  dueCount: number;
+  customCount: number;
+  savedCount: number;
+  examLevel: string;
+  syncStatus: string;
+};
 const RELEARNING_MIN_CARDS = 10;
 const RELEARNING_MAX_CARDS = 15;
 const RECENT_CARD_LIMIT = 18;
 const EMPTY_SAVED_CARD_IDS = new Set<string>();
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const seedCardsNormalized = normalizeCards(seedPayload.cards as Parameters<typeof normalizeCards>[0]);
 
@@ -87,6 +105,8 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [dailyProgress, setDailyProgress] = useState("0 / 30");
   const [syncStatus, setSyncStatus] = useState<SyncStatus>("not-configured");
+  const [settingsNotice, setSettingsNotice] = useState("");
+  const [toastMessage, setToastMessage] = useState("");
   const [accountEmail, setAccountEmail] = useState<string | null>(null);
   const [authBusy, setAuthBusy] = useState(false);
   const [lastReview, setLastReview] = useState<UndoReview | null>(null);
@@ -98,10 +118,12 @@ export default function App() {
   const swipeCompleting = useRef(false);
   const forcedCardId = useRef<string | null>(null);
   const revealForcedCard = useRef(false);
+  const shuffledDueQueue = useRef<string[]>([]);
   const relearningQueue = useRef<RelearningEntry[]>([]);
   const recentCardIds = useRef<string[]>([]);
   const savingCardIds = useRef(new Set<string>());
   const flipProgress = useRef(new Animated.Value(0)).current;
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [flipping, setFlipping] = useState(false);
 
   useEffect(() => {
@@ -156,7 +178,9 @@ export default function App() {
     const forced = forcedCardId.current ? deck.find((card) => card.id === forcedCardId.current) : null;
     const relearning = forced ? null : takeRelearningCard(deck);
     const fallbackRelearning = forced || relearning || due.length ? null : takeRelearningCard(deck, true);
-    const nextCard = forced || relearning || chooseVariedDueCard(due, now) || fallbackRelearning || null;
+    shuffledDueQueue.current = shuffledDueQueue.current.filter((id) => due.some((card) => card.id === id));
+    const queued = shuffledDueQueue.current.length ? due.find((card) => card.id === shuffledDueQueue.current[0]) || null : null;
+    const nextCard = forced || relearning || queued || chooseVariedDueCard(due, now) || fallbackRelearning || null;
     rememberShownCard(nextCard);
     setCurrent(nextCard);
     setRevealed(Boolean(forced && revealForcedCard.current));
@@ -169,6 +193,10 @@ export default function App() {
     flipProgress.setValue(revealed ? 1 : 0);
     setFlipping(false);
   }, [current?.id]);
+
+  useEffect(() => () => {
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+  }, []);
 
   function scheduleRelearning(cardId: string) {
     const remaining = RELEARNING_MIN_CARDS + Math.floor(Math.random() * (RELEARNING_MAX_CARDS - RELEARNING_MIN_CARDS + 1));
@@ -218,6 +246,25 @@ export default function App() {
     recentCardIds.current = [...recentCardIds.current.filter((id) => id !== card.id), card.id].slice(-RECENT_CARD_LIMIT);
   }
 
+  function completeSwipe(direction: "again" | "known") {
+    if (grading || swipeCompleting.current) return;
+    consumedSwipe.current = true;
+    swipeCompleting.current = true;
+    setSwipeDirection(direction);
+    Animated.timing(dragX, {
+      toValue: direction === "known" ? 460 : -460,
+      duration: 230,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true
+    }).start(({ finished }) => {
+      dragX.setValue(0);
+      setSwipeDirection(null);
+      swipeCompleting.current = false;
+      if (finished) void grade(direction === "known" ? "good" : "again");
+    });
+    setTimeout(() => { consumedSwipe.current = false; }, 360);
+  }
+
   const panResponder = useMemo(() => PanResponder.create({
     onMoveShouldSetPanResponder: (_, gesture) => Math.abs(gesture.dx) > 12 && Math.abs(gesture.dx) > Math.abs(gesture.dy),
     onMoveShouldSetPanResponderCapture: (_, gesture) => Math.abs(gesture.dx) > 12 && Math.abs(gesture.dx) > Math.abs(gesture.dy),
@@ -231,21 +278,7 @@ export default function App() {
     onPanResponderRelease: (_, gesture) => {
       const direction = gesture.dx > 90 ? "known" : gesture.dx < -90 ? "again" : null;
       if (!grading && direction) {
-        consumedSwipe.current = true;
-        swipeCompleting.current = true;
-        setSwipeDirection(direction);
-        Animated.timing(dragX, {
-          toValue: direction === "known" ? 460 : -460,
-          duration: 230,
-          easing: Easing.out(Easing.cubic),
-          useNativeDriver: true
-        }).start(({ finished }) => {
-          dragX.setValue(0);
-          setSwipeDirection(null);
-          swipeCompleting.current = false;
-          if (finished) void grade(direction === "known" ? "good" : "again");
-        });
-        setTimeout(() => { consumedSwipe.current = false; }, 360);
+        completeSwipe(direction);
         return;
       }
       setSwipeDirection(null);
@@ -347,6 +380,7 @@ export default function App() {
       const next = applyReviewGrade(before, result, Date.now());
       const previousRelearningQueue = relearningQueue.current.map((entry) => ({ ...entry }));
       await saveReviewResult(db, next.state, next.event, settings.dailyGoal);
+      shuffledDueQueue.current = shuffledDueQueue.current.filter((id) => id !== reviewedCard.id);
       advanceRelearningQueue(reviewedCard.id);
       if (result === "again") scheduleRelearning(reviewedCard.id);
       setLastReview({ card: reviewedCard, previousState: before, event: next.event, previousRelearningQueue });
@@ -399,22 +433,34 @@ export default function App() {
     await refresh(db);
   }
 
-  async function toggleSavedCard(cardId: string) {
+  function showToast(message: string) {
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    setToastMessage(message);
+    toastTimer.current = setTimeout(() => {
+      setToastMessage("");
+      toastTimer.current = null;
+    }, 1800);
+  }
+
+  async function toggleSavedCard(cardId: string, showFeedback = false) {
     if (!db || savingCardIds.current.has(cardId)) return;
 
     savingCardIds.current.add(cardId);
     const nextSaved = !savedCardIds.has(cardId);
+    const card = cards.find((item) => item.id === cardId);
     setSavedCardIds((previous) => {
       const next = new Set(previous);
       if (nextSaved) next.add(cardId);
       else next.delete(cardId);
       return next;
     });
+    if (showFeedback) showToast(nextSaved ? `${card?.cz || "Card"} added to starred.` : `${card?.cz || "Card"} removed from starred.`);
 
     try {
       await setCardSaved(db, cardId, nextSaved);
     } catch {
       setSavedCardIds(await loadSavedCardIds(db));
+      if (showFeedback) showToast("Could not update starred card.");
     } finally {
       savingCardIds.current.delete(cardId);
     }
@@ -456,6 +502,86 @@ export default function App() {
     setPanel(null);
   }
 
+  function shuffleDueCards() {
+    const due = deck.filter((card) => (states[card.id]?.dueAt || 0) <= Date.now());
+    const currentId = current && due.some((card) => card.id === current.id) ? current.id : null;
+    const otherIds = due.map((card) => card.id).filter((id) => id !== currentId);
+    shuffledDueQueue.current = currentId ? [...shuffleValues(otherIds), currentId] : shuffleValues(otherIds);
+    forcedCardId.current = null;
+    setSettingsNotice(due.length ? `Shuffled ${due.length} due cards.` : "No due cards to shuffle in this deck.");
+    setStates((value) => ({ ...value }));
+  }
+
+  async function reviewAllNow() {
+    if (!db) return;
+    const count = await markCardsDueNow(db, deck.map((card) => card.id));
+    shuffledDueQueue.current = [];
+    setSettingsNotice(count ? `${count} cards in this deck are due now.` : "There are no cards in this deck.");
+    await refresh(db);
+  }
+
+  async function exportProgress() {
+    if (!db) return;
+    const ok = downloadJson("czech-flashcards-progress.json", exportBackup(db));
+    setSettingsNotice(ok ? "Progress backup exported." : "Export is available in the web app. Native sharing needs a document/share module.");
+  }
+
+  function exportCurrentDeck() {
+    if (!settings) return;
+    const payload = {
+      exportedAt: new Date().toISOString(),
+      exam: settings.examLevel,
+      deck: settings.deckFilter,
+      cards: deck.map((card) => ({
+        id: card.id,
+        level: card.level,
+        cz: card.cz,
+        en: card.en,
+        hi: card.hi,
+        ur: card.ur,
+        sentence: card.sentence,
+        sentenceEn: card.sentenceEn,
+        pronunciation: card.pronunciation,
+        synonyms: card.synonyms,
+        antonyms: card.antonyms,
+        grammar: card.grammar,
+        googleCategory: card.googleCategory,
+        tags: card.tags
+      }))
+    };
+    const ok = downloadJson(`czech-${settings.examLevel}-${settings.deckFilter}-deck.json`, payload);
+    setSettingsNotice(ok ? `Exported ${deck.length} cards from the current deck.` : "Deck export is available in the web app. Native sharing needs a document/share module.");
+  }
+
+  function importCsv() {
+    pickTextFile(".csv,text/csv", async (text) => {
+      if (!db) return;
+      const imported = normalizeCards(parseCsvCards(text));
+      if (!imported.length) {
+        setSettingsNotice("No valid CSV cards found. Use Czech, English, Hindi, Urdu, sentence, sentenceEn, tags.");
+        return;
+      }
+      const count = await importCards(db, imported);
+      setSettingsNotice(`Imported ${count} cards.`);
+      await refresh(db);
+    }, () => setSettingsNotice("CSV import is available in the web app. Native file picking needs a document picker module."));
+  }
+
+  function restoreJson() {
+    pickTextFile(".json,application/json", async (text) => {
+      if (!db) return;
+      try {
+        const nextSettings = await restoreBackup(db, JSON.parse(text));
+        await seedCards(db, seedCardsNormalized);
+        setSettingsState(nextSettings);
+        setSettingsNotice("Progress backup restored.");
+        await refresh(db);
+      } catch {
+        setSettingsNotice("Could not restore backup. Choose a JSON export from this app.");
+      }
+    }, () => setSettingsNotice("Restore JSON is available in the web app. Native file picking needs a document picker module."));
+  }
+
   if (!db || !settings) {
     return (
       <SafeAreaView style={styles.shell}>
@@ -466,12 +592,24 @@ export default function App() {
   }
 
   const dueCount = deck.filter((card) => (states[card.id]?.dueAt || 0) <= Date.now()).length;
-  const knownCount = deck.filter((card) => (states[card.id]?.knownStreak || 0) >= 1).length;
+  const studiedCount = deck.filter((card) => (states[card.id]?.seen || 0) > 0).length;
+  const masteredCount = deck.filter((card) => (states[card.id]?.knownStreak || 0) >= 4).length;
   const learningCount = deck.filter((card) => {
     const state = states[card.id];
-    return Boolean(state?.seen && state.knownStreak === 0);
+    return Boolean(state?.seen && (state.knownStreak || 0) < 4);
   }).length;
   const customCards = cards.filter((card) => card.source === "custom");
+  const accountStudySummary: AccountStudySummary = {
+    deckTotal: deck.length,
+    studiedCount,
+    masteredCount,
+    learningCount,
+    dueCount,
+    customCount: customCards.length,
+    savedCount: savedCardIds.size,
+    examLevel: settings.examLevel.toUpperCase(),
+    syncStatus
+  };
   const [reviewedToday, dailyGoal] = dailyProgress.split(" / ").map((value) => Number.parseInt(value, 10) || 0);
   const sessionProgress = dailyGoal ? Math.min(1, reviewedToday / dailyGoal) : 0;
   const sessionTarget = Math.min(deck.length, Math.max(1, dailyGoal - reviewedToday + sessionReviews));
@@ -528,7 +666,6 @@ export default function App() {
 
           <ScrollView contentContainerStyle={styles.content} directionalLockEnabled>
             <View style={styles.cardFrame} {...panResponder.panHandlers}>
-              <Pressable style={styles.cardTapSurface} onPress={flipCard} accessibilityRole="button" accessibilityLabel={revealed ? "Show Czech word" : "Reveal meaning"} />
               <Animated.View pointerEvents="box-none" style={[styles.cardMotion, { transform: [{ translateX: dragX }, { rotateZ: cardRotation }] }]}>
                 {swipeDirection && (
                   <Text style={[styles.swipeOverlay, swipeDirection === "known" ? styles.swipeKnown : styles.swipeAgain]}>
@@ -540,7 +677,7 @@ export default function App() {
                     <Pressable
                       style={styles.cardSaveButton}
                       onPressIn={(event) => event.stopPropagation()}
-                      onPress={(event) => { event.stopPropagation(); void toggleSavedCard(current.id); }}
+                      onPress={(event) => { event.stopPropagation(); void toggleSavedCard(current.id, true); }}
                       accessibilityRole="button"
                       accessibilityState={{ selected: savedCardIds.has(current.id) }}
                       accessibilityLabel={savedCardIds.has(current.id) ? `Remove ${current.cz} from My list` : `Add ${current.cz} to My list`}
@@ -552,8 +689,10 @@ export default function App() {
                         <MaterialIcons name="edit" size={size.iconMedium} color={colors.actionMuted} />
                       </Pressable>
                     )}
-                    <Animated.View
-                      pointerEvents="box-none"
+                    <AnimatedPressable
+                      onPress={flipCard}
+                      accessibilityRole="button"
+                      accessibilityLabel="Reveal meaning"
                       style={[
                         styles.cardFace,
                         {
@@ -575,13 +714,45 @@ export default function App() {
                         <Text style={styles.pronunciationText}>{current.pronunciation || pronunciationHint(current.cz)}</Text>
                       </Pressable>
                       <View style={styles.swipeAffordance}>
-                        <MaterialIcons name="arrow-back" size={size.icon} color={colors.danger} />
-                        <MaterialIcons name="arrow-forward" size={size.icon} color={colors.success} />
+                        <Pressable
+                          disabled={grading}
+                          style={[styles.swipeAffordanceButton, styles.swipeAffordanceAgain, grading && styles.disabledButton]}
+                          onPress={(event) => { event.stopPropagation(); completeSwipe("again"); }}
+                          accessibilityRole="button"
+                          accessibilityLabel="Mark again"
+                        >
+                          <MaterialIcons name="arrow-back" size={size.icon} color={colors.danger} />
+                          <Text style={[styles.swipeAffordanceText, styles.swipeAffordanceAgainText]}>Again</Text>
+                        </Pressable>
+                        <Pressable
+                          disabled={grading}
+                          style={[styles.swipeAffordanceButton, styles.swipeAffordanceKnown, grading && styles.disabledButton]}
+                          onPress={(event) => { event.stopPropagation(); completeSwipe("known"); }}
+                          accessibilityRole="button"
+                          accessibilityLabel="Mark known"
+                        >
+                          <Text style={[styles.swipeAffordanceText, styles.swipeAffordanceKnownText]}>Known</Text>
+                          <MaterialIcons name="arrow-forward" size={size.icon} color={colors.success} />
+                        </Pressable>
                       </View>
                       <Text style={styles.hint}>Tap to reveal meaning</Text>
-                    </Animated.View>
-                    <Animated.View
-                      pointerEvents="box-none"
+                      {lastReview && !revealed && (
+                        <Pressable
+                          disabled={grading}
+                          style={[styles.cardUndoButton, grading && styles.disabledButton]}
+                          onPress={(event) => { event.stopPropagation(); void undoLastReview(); }}
+                          accessibilityRole="button"
+                          accessibilityLabel={`Undo review for ${lastReview.card.cz}`}
+                        >
+                          <MaterialIcons name="undo" size={size.iconSmall} color={colors.primaryDeep} />
+                          <Text style={styles.cardUndoText}>Undo</Text>
+                        </Pressable>
+                      )}
+                    </AnimatedPressable>
+                    <AnimatedPressable
+                      onPress={flipCard}
+                      accessibilityRole="button"
+                      accessibilityLabel="Show Czech word"
                       style={[
                         styles.cardFace,
                         styles.cardBack,
@@ -619,7 +790,7 @@ export default function App() {
                         )}
                       </View>
                       <Text style={styles.hint}>Tap to see Czech</Text>
-                    </Animated.View>
+                    </AnimatedPressable>
                   </>
                 ) : (
                   <View style={styles.cardFace}>
@@ -655,12 +826,6 @@ export default function App() {
 
             {revealed && <GeminiTutorPanel card={current} />}
 
-            {lastReview && (
-              <Pressable disabled={grading} style={[styles.undoButton, grading && styles.disabledButton]} onPress={undoLastReview} accessibilityRole="button" accessibilityLabel={`Undo review for ${lastReview.card.cz}`}>
-                <Text style={styles.undoText}>Undo</Text>
-              </Pressable>
-            )}
-
           </ScrollView>
         </>
       )}
@@ -690,9 +855,16 @@ export default function App() {
           settings={settings}
           accountEmail={accountEmail}
           syncStatus={syncStatus}
+          notice={settingsNotice}
           onChange={(nextSettings) => { void persistSettings(nextSettings); }}
           onSyncNow={() => { void syncNow(); }}
           onAccount={() => setPanel("account")}
+          onRestoreJson={restoreJson}
+          onImportCsv={importCsv}
+          onShuffleDue={shuffleDueCards}
+          onReviewAllNow={() => { void reviewAllNow(); }}
+          onExportProgress={() => { void exportProgress(); }}
+          onExportDeck={exportCurrentDeck}
         />
       </AppModal>
 
@@ -701,6 +873,7 @@ export default function App() {
           configured={Boolean(supabase)}
           supabase={supabase}
           accountEmail={accountEmail}
+          studySummary={accountStudySummary}
           busy={authBusy}
           onAuthenticate={authenticate}
           onSignOut={signOutAccount}
@@ -710,6 +883,13 @@ export default function App() {
       <AppModal visible={panel === "grammar"} title="B1 grammar guide" onClose={() => setPanel(null)}>
         {current ? <GrammarGuide card={current} /> : <Text style={styles.muted}>Choose a card to see its grammar notes.</Text>}
       </AppModal>
+
+      {Boolean(toastMessage) && (
+        <View pointerEvents="none" style={styles.toast}>
+          <MaterialIcons name="star" size={size.iconSmall} color={colors.onPrimary} />
+          <Text style={styles.toastText}>{toastMessage}</Text>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -809,6 +989,43 @@ function pronunciationHint(word: string) {
   return `[ ${word} ] · stress the first syllable`;
 }
 
+function shuffleValues<T>(items: T[]): T[] {
+  const shuffled = items.slice();
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+  }
+  return shuffled;
+}
+
+function downloadJson(fileName: string, payload: unknown): boolean {
+  if (Platform.OS !== "web" || typeof document === "undefined") return false;
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = fileName;
+  link.click();
+  URL.revokeObjectURL(url);
+  return true;
+}
+
+function pickTextFile(accept: string, onText: (text: string) => void | Promise<void>, onUnavailable: () => void) {
+  if (Platform.OS !== "web" || typeof document === "undefined") {
+    onUnavailable();
+    return;
+  }
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = accept;
+  input.onchange = async () => {
+    const file = input.files?.[0];
+    if (file) await onText(await file.text());
+    input.value = "";
+  };
+  input.click();
+}
+
 function Metric({ label, value }: { label: string; value: string }) {
   return (
     <View style={styles.metricCard}>
@@ -883,10 +1100,11 @@ function CustomDeckManager({ decks, onCreate }: { decks: CustomDeck[]; onCreate:
   );
 }
 
-function AccountForm({ configured, supabase, accountEmail, busy, onAuthenticate, onSignOut }: {
+function AccountForm({ configured, supabase, accountEmail, studySummary, busy, onAuthenticate, onSignOut }: {
   configured: boolean;
   supabase: ReturnType<typeof createSupabaseClient>;
   accountEmail: string | null;
+  studySummary: AccountStudySummary;
   busy: boolean;
   onAuthenticate: (mode: "sign-in" | "sign-up", email: string, password: string, displayName: string) => Promise<string | null>;
   onSignOut: () => Promise<string | null>;
@@ -917,9 +1135,15 @@ function AccountForm({ configured, supabase, accountEmail, busy, onAuthenticate,
     void getFriendCode(supabase).then(setMyFriendCode);
     void refreshFriends();
   }, [accountEmail, supabase]);
-  if (!configured) return <Text style={styles.muted}>This build has no Supabase URL or anonymous key. Offline study remains available.</Text>;
+  if (!configured) return (
+    <View style={styles.form}>
+      <AccountStudyPanel summary={studySummary} accountEmail={accountEmail} />
+      <Text style={styles.muted}>This build has no Supabase URL or anonymous key. Offline study remains available.</Text>
+    </View>
+  );
   if (accountEmail) return (
     <View style={styles.form}>
+      <AccountStudyPanel summary={studySummary} accountEmail={accountEmail} />
       <Text style={styles.rowTitle}>{accountEmail}</Text>
       <Text style={styles.muted}>Your offline reviews, custom words, corrections, settings, and starred words are queued for this account.</Text>
       <View style={styles.friendPanel}>
@@ -948,12 +1172,75 @@ function AccountForm({ configured, supabase, accountEmail, busy, onAuthenticate,
   );
   return (
     <View style={styles.form}>
+      <AccountStudyPanel summary={studySummary} accountEmail={accountEmail} />
       <TextInput style={styles.input} value={displayName} onChangeText={setDisplayName} placeholder="Display name (for friends, optional)" />
       <TextInput style={styles.input} value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" autoCorrect={false} placeholder="Email" />
       <TextInput style={styles.input} value={password} onChangeText={setPassword} secureTextEntry placeholder="Password" />
       {Boolean(message) && <Text style={styles.formError}>{message}</Text>}
       <Pressable disabled={busy} style={[styles.primaryButton, busy && styles.disabledButton]} onPress={() => void submit("sign-in")}><Text style={styles.primaryButtonText}>Sign in</Text></Pressable>
       <Pressable disabled={busy} style={[styles.secondaryAction, busy && styles.disabledButton]} onPress={() => void submit("sign-up")}><Text style={styles.secondaryActionText}>Create account</Text></Pressable>
+    </View>
+  );
+}
+
+function AccountStudyPanel({ summary, accountEmail }: { summary: AccountStudySummary; accountEmail: string | null }) {
+  const progress = summary.deckTotal ? summary.masteredCount / summary.deckTotal : 0;
+  const badges = [
+    { icon: "trending-up" as const, title: "First Step", label: "Study 1 card", unlocked: summary.studiedCount >= 1 },
+    { icon: "star" as const, title: "Starred List", label: "Star 5 cards", unlocked: summary.savedCount >= 5 },
+    { icon: "check-circle" as const, title: "Due Clear", label: "No due cards", unlocked: summary.deckTotal > 0 && summary.dueCount === 0 },
+    { icon: "star" as const, title: "Mastery", label: "Master 10 cards", unlocked: summary.masteredCount >= 10 }
+  ];
+
+  return (
+    <View style={styles.accountStudyPanel}>
+      <View style={styles.accountProfileRow}>
+        <View style={styles.accountAvatar}>
+          <Text style={styles.accountAvatarText}>Č</Text>
+        </View>
+        <View style={styles.accountProfileCopy}>
+          <Text style={styles.accountProfileName}>{accountEmail ? "Aktivní Student" : "Guest Student"}</Text>
+          <Text style={styles.accountProfileMeta}>{summary.studiedCount} studied · {summary.customCount} custom · {summary.savedCount} starred</Text>
+        </View>
+        <Text style={styles.accountRankPill}>{summary.examLevel} NOVICE</Text>
+      </View>
+
+      <View style={styles.accountProgressHeader}>
+        <Text style={styles.accountSectionTitle}>Learning Progress</Text>
+        <Text style={styles.accountSectionMeta}>{summary.masteredCount} mastered</Text>
+      </View>
+      <View style={styles.accountProgressTrack}>
+        <View style={[styles.accountProgressFill, { width: `${Math.max(3, Math.min(100, progress * 100))}%` }]} />
+      </View>
+      <View style={styles.accountStatsRow}>
+        <AccountStat count={summary.deckTotal} label="Total" color={colors.bohemianBlue} />
+        <AccountStat count={summary.masteredCount} label="Mastered" color={colors.success} />
+        <AccountStat count={summary.learningCount} label="Learning" color={colors.bohemianGold} />
+        <AccountStat count={summary.dueCount} label="Due" color={colors.bohemianRed} />
+      </View>
+
+      <Text style={styles.accountBadgeTitle}>Milestones</Text>
+      <View style={styles.accountBadges}>
+        {badges.map((badge) => (
+          <View key={badge.title} style={styles.accountBadgeItem}>
+            <View style={[styles.accountBadgeIcon, !badge.unlocked && styles.accountBadgeLocked]}>
+              <MaterialIcons name={badge.icon} size={size.iconSmall} color={badge.unlocked ? colors.bohemianGold : colors.textMuted} />
+            </View>
+            <Text style={[styles.accountBadgeName, !badge.unlocked && styles.accountLockedText]} numberOfLines={1}>{badge.title}</Text>
+            <Text style={styles.accountBadgeLabel} numberOfLines={2}>{badge.label}</Text>
+          </View>
+        ))}
+      </View>
+      {!accountEmail && <Text style={styles.muted}>Progress is saved on this device · {summary.syncStatus}</Text>}
+    </View>
+  );
+}
+
+function AccountStat({ count, label, color }: { count: number; label: string; color: string }) {
+  return (
+    <View style={styles.accountStat}>
+      <Text style={[styles.accountStatCount, { color }]}>{count}</Text>
+      <Text style={styles.accountStatLabel}>{label}</Text>
     </View>
   );
 }
@@ -1056,6 +1343,8 @@ function ToggleRow({ label, value, onValueChange }: { label: string; value: bool
 
 const styles = StyleSheet.create({
   shell: { flex: 1, backgroundColor: colors.background },
+  toast: { position: "absolute", left: spacing.page, right: spacing.page, bottom: spacing.hero, alignSelf: "center", minHeight: size.touchTarget, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: spacing.smd, borderRadius: radius.md, backgroundColor: colors.primaryDeep, paddingHorizontal: spacing.xl, paddingVertical: spacing.md, ...shadow.soft },
+  toastText: { flexShrink: 1, color: colors.onPrimary, fontSize: typography.bodySmall, fontWeight: typography.weightSemibold, textAlign: "center" },
   header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: spacing.page, paddingTop: typography.bodyLarge, paddingBottom: typography.bodyLarge },
   brandRow: { flexDirection: "row", alignItems: "center", gap: spacing.lg },
   title: { color: colors.textStrong, fontSize: typography.screenTitle, fontWeight: typography.weightSemibold },
@@ -1084,7 +1373,6 @@ const styles = StyleSheet.create({
   deckChipText: { color: colors.primaryDeep, fontWeight: typography.weightBold },
   deckChipTextActive: { color: colors.onPrimary },
   cardFrame: { position: "relative", height: size.cardHeight },
-  cardTapSurface: { ...StyleSheet.absoluteFillObject },
   cardMotion: { ...StyleSheet.absoluteFillObject },
   cardFace: { position: "absolute", inset: 0, justifyContent: "center", backgroundColor: colors.surface, borderRadius: radius.card, padding: spacing.card, borderWidth: spacing.hairline, borderColor: colors.borderSoft, backfaceVisibility: "hidden" },
   cardBack: { backgroundColor: colors.surfaceSecondary },
@@ -1092,6 +1380,8 @@ const styles = StyleSheet.create({
   cardSaveIcon: { color: colors.action, fontSize: size.iconMedium, fontWeight: typography.weightSemibold, lineHeight: size.iconLarge },
   cardEditButton: { position: "absolute", top: spacing.xlPlus, right: spacing.xlPlus, zIndex: spacing.sm, width: size.cardAction, height: size.cardAction, alignItems: "center", justifyContent: "center", borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surface },
   cardEditIcon: { color: colors.actionMuted, fontSize: typography.screenTitle, fontWeight: typography.weightSemibold, lineHeight: 23 },
+  cardUndoButton: { position: "absolute", bottom: spacing.xlPlus, alignSelf: "center", minHeight: size.touchTarget, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: spacing.smd, borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surfaceWarm, paddingHorizontal: spacing.xl },
+  cardUndoText: { color: colors.primaryDeep, fontSize: typography.bodySmall, fontWeight: typography.weightSemibold },
   swipeOverlay: { position: "absolute", zIndex: spacing.lgPlus, left: -spacing.lgPlus, right: -spacing.lgPlus, top: "50%", borderWidth: spacing.sm, borderRadius: radius.md, paddingVertical: spacing.lg, backgroundColor: colors.stampSurface, fontSize: 62, fontWeight: "900", lineHeight: 68, textAlign: "center", textTransform: "uppercase" },
   swipeKnown: { color: colors.successStrong, borderColor: colors.successStrong, transform: [{ translateY: -size.headerAction }, { rotate: "-18deg" }] },
   swipeAgain: { color: colors.dangerStrong, borderColor: colors.dangerStrong, transform: [{ translateY: -size.headerAction }, { rotate: "18deg" }] },
@@ -1099,7 +1389,13 @@ const styles = StyleSheet.create({
   pronunciationPill: { alignSelf: "center", flexDirection: "row", alignItems: "center", gap: spacing.md, marginTop: spacing.xlPlus, borderRadius: radius.md, backgroundColor: colors.actionSoft, paddingHorizontal: spacing.lg, paddingVertical: spacing.smd },
   pronunciationText: { color: colors.action, fontSize: typography.bodySmall, fontWeight: typography.weightMedium },
   backWord: { color: colors.primary, fontSize: typography.screenTitle, fontWeight: typography.weightSemibold, textAlign: "center", marginBottom: spacing.sm },
-  swipeAffordance: { flexDirection: "row", justifyContent: "space-between", marginTop: 20, paddingHorizontal: 8 },
+  swipeAffordance: { flexDirection: "row", justifyContent: "space-between", gap: spacing.lg, marginTop: spacing.xlPlus },
+  swipeAffordanceButton: { flex: 1, minHeight: size.touchTarget, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: spacing.smd, borderRadius: radius.md, borderWidth: spacing.hairline, paddingHorizontal: spacing.md },
+  swipeAffordanceAgain: { borderColor: colors.dangerSoft, backgroundColor: colors.dangerSoft },
+  swipeAffordanceKnown: { borderColor: colors.mintSoft, backgroundColor: colors.mintSoft },
+  swipeAffordanceText: { fontSize: typography.bodySmall, fontWeight: typography.weightSemibold },
+  swipeAffordanceAgainText: { color: colors.danger },
+  swipeAffordanceKnownText: { color: colors.success },
   answer: { gap: 7, marginTop: 12 },
   contentLabel: { color: colors.action, fontSize: typography.caption, fontWeight: typography.weightSemibold, textTransform: "uppercase" },
   meaningRow: { flexDirection: "row", alignItems: "flex-start", gap: 12 },
@@ -1143,8 +1439,6 @@ const styles = StyleSheet.create({
   reviewButtonText: { color: colors.onPrimary, fontSize: typography.bodySmall, fontWeight: typography.weightBold },
   reviewEasyText: { color: colors.onPrimary, fontSize: typography.bodySmall, fontWeight: typography.weightBold },
   reviewIntervalText: { color: colors.onPrimaryMuted, fontSize: typography.micro, fontWeight: typography.weightMedium },
-  undoButton: { alignSelf: "center", minWidth: 96, alignItems: "center", paddingVertical: spacing.lgPlus, paddingHorizontal: typography.bodyLarge, borderRadius: radius.md, borderWidth: spacing.hairline, borderColor: colors.borderMuted, backgroundColor: colors.surface },
-  undoText: { color: colors.primaryDeep, fontWeight: typography.weightSemibold },
   disabledButton: { opacity: 0.45 },
   progressGrid: { flexDirection: "row", flexWrap: "wrap", gap: 10 },
   metricCard: { width: "48%", minHeight: 78, justifyContent: "center", backgroundColor: colors.surface, borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, padding: typography.bodySmall },
@@ -1167,6 +1461,31 @@ const styles = StyleSheet.create({
   fieldLabel: { color: colors.textMuted, fontSize: typography.label, fontWeight: typography.weightMedium, textTransform: "uppercase", marginTop: spacing.sm },
   form: { gap: 14 },
   formError: { color: colors.dangerStrong, fontWeight: typography.weightBold },
+  accountStudyPanel: { gap: spacing.xl, borderWidth: spacing.hairline, borderColor: colors.borderSoft, borderRadius: radius.md, backgroundColor: colors.surfaceWarm, padding: spacing.xlPlus },
+  accountProfileRow: { flexDirection: "row", alignItems: "center", gap: spacing.lg },
+  accountAvatar: { width: size.headerAction, height: size.headerAction, borderRadius: radius.md, alignItems: "center", justifyContent: "center", backgroundColor: colors.primarySoft },
+  accountAvatarText: { color: colors.primaryDeep, fontSize: size.icon, fontWeight: typography.weightSemibold },
+  accountProfileCopy: { flex: 1, minWidth: 0, gap: spacing.xxs },
+  accountProfileName: { color: colors.textStrong, fontSize: typography.bodyLarge, fontWeight: typography.weightSemibold },
+  accountProfileMeta: { color: colors.textMuted, fontSize: typography.bodySmall, fontWeight: typography.weightRegular },
+  accountRankPill: { overflow: "hidden", borderRadius: radius.md, backgroundColor: colors.mintSoft, color: colors.success, paddingHorizontal: spacing.md, paddingVertical: spacing.xs, fontSize: typography.micro, fontWeight: typography.weightSemibold },
+  accountProgressHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: spacing.lg },
+  accountSectionTitle: { color: colors.textStrong, fontSize: typography.bodyLarge, fontWeight: typography.weightSemibold },
+  accountSectionMeta: { color: colors.textMuted, fontSize: typography.bodySmall, fontWeight: typography.weightMedium },
+  accountProgressTrack: { height: spacing.lg, overflow: "hidden", borderRadius: spacing.sm, backgroundColor: colors.progressTrack },
+  accountProgressFill: { height: "100%", borderRadius: spacing.sm, backgroundColor: colors.success },
+  accountStatsRow: { flexDirection: "row", justifyContent: "space-between", gap: spacing.md },
+  accountStat: { flex: 1, alignItems: "center", gap: spacing.xxs },
+  accountStatCount: { fontSize: typography.bodyLarge, fontWeight: typography.weightBold },
+  accountStatLabel: { color: colors.textMuted, fontSize: typography.micro, fontWeight: typography.weightMedium },
+  accountBadgeTitle: { color: colors.primaryDeep, fontSize: typography.caption, fontWeight: typography.weightSemibold, textTransform: "uppercase" },
+  accountBadges: { flexDirection: "row", gap: spacing.md },
+  accountBadgeItem: { flex: 1, alignItems: "center", gap: spacing.xxs },
+  accountBadgeIcon: { width: size.cardAction, height: size.cardAction, alignItems: "center", justifyContent: "center", borderRadius: radius.md, backgroundColor: colors.goldSoft },
+  accountBadgeLocked: { backgroundColor: colors.surfaceMuted },
+  accountBadgeName: { color: colors.textStrong, fontSize: typography.micro, fontWeight: typography.weightSemibold, textAlign: "center" },
+  accountBadgeLabel: { color: colors.textMuted, fontSize: typography.micro, lineHeight: typography.bodySmall, textAlign: "center" },
+  accountLockedText: { color: colors.textMuted },
   customList: { gap: 8, marginTop: 4 },
   customRow: { flexDirection: "row", alignItems: "center", gap: spacing.xl, backgroundColor: colors.surface, borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, padding: spacing.xl },
   customCopy: { flex: 1, gap: 2 },

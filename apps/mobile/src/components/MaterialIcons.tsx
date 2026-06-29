@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, type TextStyle } from "react-native";
+import { Platform, Text, type TextStyle } from "react-native";
 
 const glyphs = {
   "account-circle": 59475,
@@ -60,9 +60,13 @@ const glyphs = {
   "trending-up": 59621,
   tune: 58409,
   today: 59615,
+  "touch-app": 59667,
+  undo: 57702,
   "volume-up": 57424,
   whatshot: 59406
 } as const;
+
+const fontFamily = Platform.OS === "ios" ? "Material Icons" : "MaterialIcons";
 
 export type MaterialIconName = keyof typeof glyphs;
 
@@ -80,7 +84,7 @@ export default function MaterialIcons({ name, size = 24, color = "currentColor",
       style={[
         {
           color,
-          fontFamily: "MaterialIcons",
+          fontFamily,
           fontSize: size,
           fontWeight: "400",
           lineHeight: size,

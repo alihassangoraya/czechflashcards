@@ -1,9 +1,10 @@
 const path = require("path");
+const { getDefaultConfig, mergeConfig } = require("@react-native/metro-config");
 
 const projectRoot = __dirname;
 const workspaceRoot = path.resolve(projectRoot, "../..");
 
-module.exports = {
+module.exports = mergeConfig(getDefaultConfig(projectRoot), {
   projectRoot,
   watchFolders: [workspaceRoot],
   resolver: {
@@ -13,4 +14,4 @@ module.exports = {
     ],
     unstable_enablePackageExports: true
   }
-};
+});
