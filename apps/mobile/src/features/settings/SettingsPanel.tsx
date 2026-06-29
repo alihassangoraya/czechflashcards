@@ -81,7 +81,7 @@ export function SettingsPanel({ settings, accountEmail, syncStatus, onChange, on
         </SettingGroup>
       </SettingsSection>
 
-      <SettingsSection icon="bookmark" title="My decks" description="Keep your own words together.">
+      <SettingsSection icon="folder" title="My decks" description="Keep your own words together.">
         <View style={styles.deckCreateRow}>
           <TextInput style={styles.deckInput} value={deckName} onChangeText={setDeckName} placeholder="Deck name" placeholderTextColor={colors.textMuted} returnKeyType="done" onSubmitEditing={createDeck} />
           <Pressable style={styles.addDeckButton} onPress={createDeck} accessibilityRole="button" accessibilityLabel="Create deck">

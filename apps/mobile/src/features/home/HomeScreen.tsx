@@ -72,7 +72,7 @@ export function HomeScreen({
   ]));
   const badges: Badge[] = [
     { icon: "trending-up", title: "First Step", label: "Study 1 card", unlocked: studiedCount >= 1 },
-    { icon: "bookmark", title: "Saved List", label: "Save 5 cards", unlocked: savedCount >= 5 },
+    { icon: "star", title: "Starred List", label: "Star 5 cards", unlocked: savedCount >= 5 },
     { icon: "check-circle", title: "Goal Getter", label: "Meet today's goal", unlocked: dailyRatio >= 1 },
     { icon: "star", title: "Mastery", label: "Master 10 cards", unlocked: masteredCount >= 10 }
   ];
@@ -170,7 +170,7 @@ export function HomeScreen({
           </View>
           <View style={styles.profileCopy}>
             <Text style={styles.profileName}>Aktivní Student</Text>
-            <Text style={styles.profileMeta}>{studiedCount} studied · {customCount} custom · {savedCount} saved</Text>
+            <Text style={styles.profileMeta}>{studiedCount} studied · {customCount} custom · {savedCount} starred</Text>
           </View>
           <Text style={styles.rankPill}>{settings.examLevel.toUpperCase()} NOVICE</Text>
         </View>

@@ -52,6 +52,7 @@ const glyphs = {
   "search-off": 60022,
   settings: 59576,
   star: 59448,
+  "star-border": 59450,
   "swap-horiz": 59604,
   sync: 58919,
   "sync-problem": 58921,

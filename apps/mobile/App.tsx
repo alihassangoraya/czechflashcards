@@ -68,6 +68,7 @@ type UndoReview = { card: Card; previousState: ReviewState; event: ReviewEvent; 
 const RELEARNING_MIN_CARDS = 10;
 const RELEARNING_MAX_CARDS = 15;
 const RECENT_CARD_LIMIT = 18;
+const EMPTY_SAVED_CARD_IDS = new Set<string>();
 
 const seedCardsNormalized = normalizeCards(seedPayload.cards as Parameters<typeof normalizeCards>[0]);
 
@@ -136,10 +137,11 @@ export default function App() {
     return () => listener.subscription.unsubscribe();
   }, [db, supabase]);
 
+  const savedDeckIds = settings?.deckFilter === "saved" ? savedCardIds : null;
   const deck = useMemo(() => {
     if (!settings) return [];
-    return filterDeck(cards, settings.examLevel, settings.deckFilter, savedCardIds);
-  }, [cards, savedCardIds, settings]);
+    return filterDeck(cards, settings.examLevel, settings.deckFilter, savedDeckIds || EMPTY_SAVED_CARD_IDS);
+  }, [cards, savedDeckIds, settings]);
 
   useEffect(() => {
     const now = Date.now();
@@ -526,8 +528,8 @@ export default function App() {
 
           <ScrollView contentContainerStyle={styles.content} directionalLockEnabled>
             <View style={styles.cardFrame} {...panResponder.panHandlers}>
-              <Pressable style={styles.cardTapSurface} onPress={flipCard} accessibilityRole="button" accessibilityLabel={revealed ? "Show Czech word" : "Reveal meaning"}>
-              <Animated.View style={[styles.cardMotion, { transform: [{ translateX: dragX }, { rotateZ: cardRotation }] }]}>
+              <Pressable style={styles.cardTapSurface} onPress={flipCard} accessibilityRole="button" accessibilityLabel={revealed ? "Show Czech word" : "Reveal meaning"} />
+              <Animated.View pointerEvents="box-none" style={[styles.cardMotion, { transform: [{ translateX: dragX }, { rotateZ: cardRotation }] }]}>
                 {swipeDirection && (
                   <Text style={[styles.swipeOverlay, swipeDirection === "known" ? styles.swipeKnown : styles.swipeAgain]}>
                     {swipeDirection === "known" ? "Known" : "Again"}
@@ -541,9 +543,9 @@ export default function App() {
                       onPress={(event) => { event.stopPropagation(); void toggleSavedCard(current.id); }}
                       accessibilityRole="button"
                       accessibilityState={{ selected: savedCardIds.has(current.id) }}
-                      accessibilityLabel={savedCardIds.has(current.id) ? `Remove ${current.cz} from My list` : `Save ${current.cz} to My list`}
+                      accessibilityLabel={savedCardIds.has(current.id) ? `Remove ${current.cz} from My list` : `Add ${current.cz} to My list`}
                     >
-                      <MaterialIcons name={savedCardIds.has(current.id) ? "bookmark" : "bookmark-border"} size={size.icon} color={colors.action} />
+                      <MaterialIcons name={savedCardIds.has(current.id) ? "star" : "star-border"} size={size.icon} color={colors.action} />
                     </Pressable>
                     {revealed && !flipping && (
                       <Pressable style={styles.cardEditButton} onPress={(event) => { event.stopPropagation(); openCardEditor(); }} accessibilityRole="button" accessibilityLabel={`Edit ${current.cz}`}>
@@ -551,6 +553,7 @@ export default function App() {
                       </Pressable>
                     )}
                     <Animated.View
+                      pointerEvents="box-none"
                       style={[
                         styles.cardFace,
                         {
@@ -578,6 +581,7 @@ export default function App() {
                       <Text style={styles.hint}>Tap to reveal meaning</Text>
                     </Animated.View>
                     <Animated.View
+                      pointerEvents="box-none"
                       style={[
                         styles.cardFace,
                         styles.cardBack,
@@ -624,7 +628,6 @@ export default function App() {
                   </View>
                 )}
               </Animated.View>
-              </Pressable>
             </View>
 
             {revealed && current && (
@@ -918,7 +921,7 @@ function AccountForm({ configured, supabase, accountEmail, busy, onAuthenticate,
   if (accountEmail) return (
     <View style={styles.form}>
       <Text style={styles.rowTitle}>{accountEmail}</Text>
-      <Text style={styles.muted}>Your offline reviews, custom words, corrections, settings, and saved words are queued for this account.</Text>
+      <Text style={styles.muted}>Your offline reviews, custom words, corrections, settings, and starred words are queued for this account.</Text>
       <View style={styles.friendPanel}>
         <Text style={styles.fieldLabel}>Friend code</Text>
         <Text style={styles.friendCode}>{myFriendCode || "Preparing..."}</Text>

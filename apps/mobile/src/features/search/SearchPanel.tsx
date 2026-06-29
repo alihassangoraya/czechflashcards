@@ -83,8 +83,8 @@ export function SearchPanel({ cards, query, meaningLanguage, savedCardIds, onQue
                 <Pressable style={styles.resultAction} onPress={() => Speech.speak(card.cz, { language: "cs-CZ", rate: 0.86 })} accessibilityRole="button" accessibilityLabel={`Play ${card.cz}`}>
                   <MaterialIcons name="volume-up" size={size.iconSmall} color={colors.action} />
                 </Pressable>
-                <Pressable style={[styles.resultAction, saved && styles.savedAction]} onPress={() => onToggleSaved(card)} accessibilityRole="button" accessibilityLabel={saved ? `Remove ${card.cz} from My list` : `Save ${card.cz} to My list`}>
-                  <MaterialIcons name={saved ? "bookmark" : "bookmark-border"} size={size.iconSmall} color={saved ? colors.onPrimary : colors.action} />
+                <Pressable style={[styles.resultAction, saved && styles.savedAction]} onPress={() => onToggleSaved(card)} accessibilityRole="button" accessibilityLabel={saved ? `Remove ${card.cz} from My list` : `Add ${card.cz} to My list`}>
+                  <MaterialIcons name={saved ? "star" : "star-border"} size={size.iconSmall} color={saved ? colors.onPrimary : colors.action} />
                 </Pressable>
               </View>
             </View>
