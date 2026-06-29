@@ -124,12 +124,14 @@ export function QuizScreen({ deck, onClose }: Props) {
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
       <View style={styles.topBar}>
-        <Pressable style={styles.backButton} onPress={onClose} accessibilityRole="button" accessibilityLabel="Back home">
-          <MaterialIcons name="arrow-back" size={size.iconLarge} color={colors.textStrong} />
-        </Pressable>
-        <View style={styles.headerCopy}>
-          <Text style={styles.topTitle}>Czech quiz</Text>
-          <Text style={styles.topMeta}>Multiple choice</Text>
+        <View style={styles.headerLeft}>
+          <Pressable style={styles.backButton} onPress={onClose} accessibilityRole="button" accessibilityLabel="Back home">
+            <MaterialIcons name="arrow-back" size={size.iconLarge} color={colors.textStrong} />
+          </Pressable>
+          <View style={styles.headerCopy}>
+            <Text style={styles.topTitle}>Czech quiz</Text>
+            <Text style={styles.topMeta}>Multiple choice</Text>
+          </View>
         </View>
         <View style={styles.scoreChip} accessibilityLabel={`${score} correct answers`}>
           <MaterialIcons name="check-circle" size={size.iconSmall} color={colors.success} />
@@ -252,12 +254,13 @@ function titleCase(value: string) {
 const styles = StyleSheet.create({
   scroll: { flex: 1, backgroundColor: colors.background },
   content: { gap: spacing.xlPlus, paddingHorizontal: spacing.page, paddingTop: typography.bodyLarge, paddingBottom: spacing.screenBottom },
-  topBar: { minHeight: size.headerAction, flexDirection: "row", alignItems: "center" },
+  topBar: { minHeight: size.headerAction, flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+  headerLeft: { flex: 1, flexDirection: "row", alignItems: "center", gap: spacing.lg },
   backButton: { width: size.headerAction, height: size.headerAction, alignItems: "center", justifyContent: "center" },
-  headerCopy: { flex: 1, alignItems: "center" },
-  topTitle: { color: colors.textStrong, fontSize: typography.titleSmall, fontWeight: typography.weightSemibold },
+  headerCopy: { flex: 1, alignItems: "flex-start" },
+  topTitle: { color: colors.textStrong, fontSize: typography.screenTitle, fontWeight: typography.weightSemibold },
   topMeta: { color: colors.textMuted, fontSize: typography.caption, fontWeight: typography.weightMedium },
-  scoreChip: { minWidth: size.headerAction, height: size.headerAction, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: spacing.xs, borderRadius: radius.md, backgroundColor: colors.mintSoft },
+  scoreChip: { width: size.headerAction, height: size.headerAction, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: spacing.xs, borderRadius: radius.md, backgroundColor: colors.mintSoft },
   scoreChipText: { color: colors.success, fontSize: typography.body, fontWeight: typography.weightBold },
   progressSection: { gap: spacing.smd },
   progressLabels: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
