@@ -31,7 +31,7 @@ export function StudyCardBack({ current, currentSecondaryMeaning, flipProgress, 
 const styles = StyleSheet.create({
   backWord: {
     color: colors.primary,
-    fontSize: typography.screenTitle,
+    fontSize: typography.cardTitle,
     fontWeight: typography.weightSemibold,
     textAlign: "center",
     marginBottom: spacing.sm
@@ -39,6 +39,7 @@ const styles = StyleSheet.create({
   answer: { gap: 7, marginTop: 12 },
   hint: {
     color: colors.textMuted,
+    fontSize: typography.cardHint,
     marginTop: typography.bodyLarge,
     textAlign: "center",
     fontWeight: typography.weightRegular

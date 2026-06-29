@@ -44,9 +44,13 @@ const styles = StyleSheet.create({
   },
   example: {
     flex: 1,
-    fontSize: typography.bodyLarge,
-    lineHeight: 21,
+    fontSize: typography.cardBody,
+    lineHeight: typography.cardBodyLine,
     color: colors.textExample
   },
-  muted: { color: colors.textMuted, lineHeight: 20 }
+  muted: {
+    color: colors.textMuted,
+    fontSize: typography.bodyLarge,
+    lineHeight: typography.cardBodyLine
+  }
 });

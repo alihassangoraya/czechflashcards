@@ -35,6 +35,7 @@ export const size = {
   iconLarge: 24,
   headerAction: 42,
   cardAction: 36,
+  studyProgressMaxWidth: 326,
   navAction: 36,
   touchTarget: 42,
   reviewButton: 48,

@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { colors, spacing, typography } from "../../../theme/design";
+import { colors, radius, size, spacing, typography } from "../../../theme/design";
 
 type Props = {
   sessionReviews: number;
@@ -22,8 +22,25 @@ export function StudyProgress({ sessionReviews, sessionTarget, reviewedToday, da
 }
 
 const styles = StyleSheet.create({
-  sessionProgressRow: { width: 250, alignSelf: "center", gap: 5, marginTop: 1, marginBottom: 12 },
-  sessionProgressText: { color: colors.textSubtle, fontSize: typography.caption, fontWeight: typography.weightMedium, textAlign: "center" },
-  sessionProgressTrack: { height: spacing.sm, overflow: "hidden", borderRadius: spacing.xs, backgroundColor: colors.progressTrackStrong },
-  sessionProgressFill: { height: "100%", borderRadius: spacing.xs, backgroundColor: colors.primary }
+  sessionProgressRow: {
+    width: "100%",
+    maxWidth: size.studyProgressMaxWidth,
+    alignSelf: "center",
+    gap: spacing.smd,
+    marginTop: spacing.xs,
+    marginBottom: spacing.xl
+  },
+  sessionProgressText: {
+    color: colors.textSubtle,
+    fontSize: typography.bodySmall,
+    fontWeight: typography.weightMedium,
+    textAlign: "center"
+  },
+  sessionProgressTrack: {
+    height: spacing.md,
+    overflow: "hidden",
+    borderRadius: radius.xs,
+    backgroundColor: colors.progressTrackStrong
+  },
+  sessionProgressFill: { height: "100%", borderRadius: radius.xs, backgroundColor: colors.primary }
 });

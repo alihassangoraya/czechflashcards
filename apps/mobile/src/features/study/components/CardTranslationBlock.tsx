@@ -39,8 +39,8 @@ const styles = StyleSheet.create({
     flex: 1,
     flexShrink: 1,
     minWidth: 0,
-    fontSize: typography.bodyLarge,
-    lineHeight: 21,
+    fontSize: typography.cardBody,
+    lineHeight: typography.cardBodyLine,
     color: colors.textBody,
     fontWeight: typography.weightMedium
   },
