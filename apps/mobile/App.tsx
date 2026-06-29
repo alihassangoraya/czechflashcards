@@ -67,6 +67,12 @@ export default function App() {
     syncScreenPath(nextScreen);
   }, []);
 
+  useEffect(() => {
+    if (accountEmail && (screen === "login" || screen === "register")) {
+      navigateScreen("home");
+    }
+  }, [accountEmail, navigateScreen, screen]);
+
   const savedDeckIds = settings?.deckFilter === "saved" ? savedCardIds : null;
   const deck = useMemo(() => {
     if (!settings) return [];
@@ -157,6 +163,7 @@ export default function App() {
       reviewInterval={studySession.reviewInterval}
       onSetPanel={setPanel}
       onSetScreen={navigateScreen}
+      onAuthenticate={authenticate}
       onStartStudy={startStudy}
       onSelectCategory={(category) => { void selectCategory(category); }}
       onQueryChange={setQuery}
@@ -183,7 +190,6 @@ export default function App() {
       onReviewAllNow={() => { void settingsTools.reviewAllNow(); }}
       onExportProgress={() => { void settingsTools.exportProgress(); }}
       onExportDeck={settingsTools.exportCurrentDeck}
-      onAuthenticate={authenticate}
       onSignOut={async () => {
         const error = await signOutAccount();
         if (!error) setPanel(null);

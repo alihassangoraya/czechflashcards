@@ -45,6 +45,7 @@ export type AppShellProps = {
   reviewInterval: (grade: ReviewGrade) => string;
   onSetPanel: (panel: Panel | null) => void;
   onSetScreen: (screen: Screen) => void;
+  onAuthenticate: AccountPanelProps["onAuthenticate"];
   onStartStudy: () => void;
   onSelectCategory: (category: string) => void;
   onQueryChange: (value: string) => void;
@@ -68,6 +69,5 @@ export type AppShellProps = {
   onReviewAllNow: () => void;
   onExportProgress: () => void;
   onExportDeck: () => void;
-  onAuthenticate: AccountPanelProps["onAuthenticate"];
   onSignOut: AccountPanelProps["onSignOut"];
 };

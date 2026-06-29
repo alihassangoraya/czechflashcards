@@ -1,7 +1,7 @@
 export default {
   async fetch(request, env) {
     const pathname = new URL(request.url).pathname;
-    const appRoute = pathname === "/" || pathname === "/index.html" || pathname === "/quiz" || pathname === "/flashcards";
+    const appRoute = pathname === "/" || pathname === "/index.html" || pathname === "/quiz" || pathname === "/flashcards" || pathname === "/login" || pathname === "/register";
     const assetRequest = appRoute ? new Request(new URL("/index.html", request.url), request) : request;
     const response = await env.ASSETS.fetch(assetRequest);
 

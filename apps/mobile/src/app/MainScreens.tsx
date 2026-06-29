@@ -1,6 +1,7 @@
 import React from "react";
 import type { Card, ReviewGrade, ReviewState } from "@czech-flashcards/shared";
 import type { StudySettings } from "../database";
+import { AuthScreen } from "../features/account/AuthScreen";
 import { HomeScreen } from "../features/home/HomeScreen";
 import { QuizScreen } from "../features/quiz/QuizScreen";
 import { StudyScreen } from "../features/study/StudyScreen";
@@ -30,10 +31,12 @@ type Props = {
   studyAnimations: StudyAnimations;
   accountEmail: string | null;
   syncStatus: SyncStatus;
+  authBusy: boolean;
   dailyProgress: string;
   reviewInterval: (grade: ReviewGrade) => string;
   onSetPanel: (panel: Panel | null) => void;
   onSetScreen: (screen: Screen) => void;
+  onAuthenticate: (mode: "sign-in" | "sign-up", email: string, password: string, displayName: string) => Promise<string | null>;
   onStartStudy: () => void;
   onSelectCategory: (category: string) => void;
   onToggleSaved: (cardId: string, showFeedback?: boolean) => void;
@@ -44,7 +47,7 @@ type Props = {
 };
 
 export function MainScreens(props: Props) {
-  const { screen, deck, cards, customCards, states, settings, savedCardIds, current, revealed, grading, lastReviewCard, sessionReviews, sessionTarget, reviewedToday, dailyGoal, sessionProgress, studyAnimations, accountEmail, syncStatus, dailyProgress, reviewInterval, onSetPanel, onSetScreen, onStartStudy, onSelectCategory, onToggleSaved, onSetDeckManagementCard, onOpenCardEditor, onUndoLastReview, onGrade } = props;
+  const { screen, deck, cards, customCards, states, settings, savedCardIds, current, revealed, grading, lastReviewCard, sessionReviews, sessionTarget, reviewedToday, dailyGoal, sessionProgress, studyAnimations, accountEmail, syncStatus, authBusy, dailyProgress, reviewInterval, onSetPanel, onSetScreen, onAuthenticate, onStartStudy, onSelectCategory, onToggleSaved, onSetDeckManagementCard, onOpenCardEditor, onUndoLastReview, onGrade } = props;
 
   return (
     <>
@@ -70,6 +73,17 @@ export function MainScreens(props: Props) {
       )}
 
       {screen === "quiz" && <QuizScreen deck={deck} onClose={() => onSetScreen("home")} />}
+
+      {(screen === "login" || screen === "register") && (
+        <AuthScreen
+          configured={syncStatus !== "not-configured"}
+          initialMode={screen === "register" ? "sign-up" : "sign-in"}
+          busy={authBusy}
+          onBack={() => onSetScreen("home")}
+          onSwitchMode={(mode) => onSetScreen(mode === "sign-up" ? "register" : "login")}
+          onAuthenticate={onAuthenticate}
+        />
+      )}
 
       {screen === "study" && (
         <StudyScreen
