@@ -56,6 +56,8 @@ import { createSupabaseClient, flushSyncQueue, getFriendCode, loadFriendActivity
 import { HomeScreen } from "./src/features/home/HomeScreen";
 import { QuizScreen } from "./src/features/quiz/QuizScreen";
 import { SettingsPanel } from "./src/features/settings/SettingsPanel";
+import { SearchPanel } from "./src/features/search/SearchPanel";
+import { AddWordPanel } from "./src/features/words/AddWordPanel";
 import { GeminiTutorPanel } from "./src/features/tutor/GeminiTutorPanel";
 import { colors, radius, shadow, size, spacing, typography } from "./src/theme/design";
 
@@ -661,28 +663,19 @@ export default function App() {
       )}
 
       <AppModal visible={panel === "search"} title="Search words" onClose={() => setPanel(null)}>
-        <TextInput style={styles.input} value={query} onChangeText={setQuery} autoFocus placeholder="Search Czech, English, Hindi, or Urdu" />
-        {deck
-          .filter((card) => [card.cz, card.en, card.hi, card.ur, card.sentence].some((value) => value.toLowerCase().includes(query.toLowerCase())))
-          .slice(0, 40)
-          .map((card) => (
-            <View key={card.id} style={styles.searchRow}>
-              <Pressable style={styles.searchStudyRow} onPress={() => studySearchResult(card)}>
-                <Text style={styles.rowTitle}>{card.cz}</Text>
-                <View style={[styles.searchMeaningRow, settings.meaningLanguage === "ur" && styles.searchMeaningRtl]}>
-                  <Text style={styles.muted}>{`${card.en}${settings.meaningLanguage === "hi" ? " ·" : ""}`}</Text>
-                  <Text style={[styles.muted, settings.meaningLanguage === "ur" && styles.rtl]}>{selectedMeaning(card, settings.meaningLanguage)}</Text>
-                </View>
-              </Pressable>
-              <Pressable style={styles.searchSaveButton} onPress={() => void toggleSavedCard(card.id)} accessibilityRole="button" accessibilityLabel={savedCardIds.has(card.id) ? `Remove ${card.cz} from My list` : `Save ${card.cz} to My list`}>
-                <Text style={styles.searchSaveIcon}>{savedCardIds.has(card.id) ? "★" : "☆"}</Text>
-              </Pressable>
-            </View>
-          ))}
+        <SearchPanel
+          cards={cards}
+          query={query}
+          meaningLanguage={settings.meaningLanguage}
+          savedCardIds={savedCardIds}
+          onQueryChange={setQuery}
+          onStudy={studySearchResult}
+          onToggleSaved={(card) => { void toggleSavedCard(card.id); }}
+        />
       </AppModal>
 
       <AppModal visible={panel === "add"} title="Add your own word" onClose={() => setPanel(null)}>
-        <AddWordForm onSubmit={addWord} cards={customCards} decks={settings.customDecks} onDelete={deleteWord} />
+        <AddWordPanel onSubmit={addWord} cards={customCards} decks={settings.customDecks} onDelete={deleteWord} />
       </AppModal>
 
       <AppModal visible={panel === "edit"} title="Edit card" onClose={() => { setEditingCard(null); setPanel(null); }}>
