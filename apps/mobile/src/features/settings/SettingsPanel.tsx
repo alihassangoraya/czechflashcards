@@ -1,9 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from "react-native";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import MaterialIcons from "../../components/MaterialIcons";
-import type { CustomDeck, StudySettings } from "../../database";
+import type { StudySettings } from "../../database";
 import type { SyncStatus } from "../../sync";
 import { colors, radius, size, spacing, typography } from "../../theme/design";
+import { ChoiceSegment } from "./components/ChoiceSegment";
+import { DeckPicker } from "./components/DeckPicker";
+import { IconButton } from "./components/IconButton";
+import { PreferenceRow } from "./components/PreferenceRow";
+import { SettingGroup } from "./components/SettingGroup";
+import { SettingsSection } from "./components/SettingsSection";
+import { TogglePreference } from "./components/TogglePreference";
+import { UtilityButton } from "./components/UtilityButton";
+import { deckLabel, normalizeReminderTime, slug } from "./settingsFormat";
 
 type Props = {
   settings: StudySettings;
@@ -20,8 +29,6 @@ type Props = {
   onExportProgress: () => void;
   onExportDeck: () => void;
 };
-
-const deckOptions = ["a2-focus", "b1-focus", "saved", "core", "all", "daily", "work", "travel", "health", "verbs", "forms", "numbers", "custom"];
 
 export function SettingsPanel({
   settings,
@@ -213,117 +220,6 @@ export function SettingsPanel({
   );
 }
 
-function UtilityButton({ icon, title, detail, onPress }: { icon: React.ComponentProps<typeof MaterialIcons>["name"]; title: string; detail: string; onPress: () => void }) {
-  return (
-    <Pressable style={styles.utilityButton} onPress={onPress} accessibilityRole="button">
-      <View style={styles.utilityIcon}>
-        <MaterialIcons name={icon} size={size.iconSmall} color={colors.primaryDeep} />
-      </View>
-      <View style={styles.utilityCopy}>
-        <Text style={styles.utilityTitle}>{title}</Text>
-        <Text style={styles.utilityDetail}>{detail}</Text>
-      </View>
-    </Pressable>
-  );
-}
-
-function SettingsSection({ icon, title, description, children }: { icon: React.ComponentProps<typeof MaterialIcons>["name"]; title: string; description: string; children: React.ReactNode }) {
-  return (
-    <View style={styles.section}>
-      <View style={styles.sectionHeader}>
-        <View style={styles.sectionIcon}><MaterialIcons name={icon} size={size.iconSmall} color={colors.primaryDeep} /></View>
-        <View style={styles.sectionCopy}>
-          <Text style={styles.sectionTitle}>{title}</Text>
-          <Text style={styles.sectionDescription}>{description}</Text>
-        </View>
-      </View>
-      {children}
-    </View>
-  );
-}
-
-function SettingGroup({ children }: { children: React.ReactNode }) {
-  return <View style={styles.settingGroup}>{children}</View>;
-}
-
-function PreferenceRow({ icon, title, value }: { icon: React.ComponentProps<typeof MaterialIcons>["name"]; title: string; value: string }) {
-  return (
-    <View style={styles.preferenceRow}>
-      <MaterialIcons name={icon} size={size.iconSmall} color={colors.textMuted} />
-      <Text style={styles.preferenceTitle}>{title}</Text>
-      <Text style={styles.preferenceValue}>{value}</Text>
-    </View>
-  );
-}
-
-function TogglePreference({ icon, title, detail, value, onChange }: { icon: React.ComponentProps<typeof MaterialIcons>["name"]; title: string; detail: string; value: boolean; onChange: (value: boolean) => void }) {
-  return (
-    <View style={styles.toggleRow}>
-      <View style={styles.toggleIcon}><MaterialIcons name={icon} size={size.iconSmall} color={colors.actionMuted} /></View>
-      <View style={styles.toggleCopy}>
-        <Text style={styles.toggleTitle}>{title}</Text>
-        <Text style={styles.toggleDetail}>{detail}</Text>
-      </View>
-      <Switch value={value} onValueChange={onChange} trackColor={{ false: colors.borderMuted, true: colors.primary }} thumbColor={colors.surface} />
-    </View>
-  );
-}
-
-function ChoiceSegment<T extends string>({ value, options, labels, onChange, compact = false }: { value: T; options: T[]; labels: Record<T, string>; onChange: (value: T) => void; compact?: boolean }) {
-  return (
-    <View style={[styles.choiceSegment, compact && styles.choiceSegmentCompact]}>
-      {options.map((option) => (
-        <Pressable key={option} style={[styles.choiceOption, value === option && styles.choiceOptionActive]} onPress={() => onChange(option)} accessibilityRole="radio" accessibilityState={{ selected: value === option }}>
-          <Text style={[styles.choiceText, value === option && styles.choiceTextActive]}>{labels[option]}</Text>
-        </Pressable>
-      ))}
-    </View>
-  );
-}
-
-function DeckPicker({ value, decks, onChange }: { value: string; decks: CustomDeck[]; onChange: (value: string) => void }) {
-  const options = [...deckOptions, ...decks.map((deck) => deck.id)];
-  return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.deckPicker}>
-      {options.map((option) => (
-        <Pressable key={option} style={[styles.deckChip, value === option && styles.deckChipActive]} onPress={() => onChange(option)}>
-          <Text style={[styles.deckChipText, value === option && styles.deckChipTextActive]}>{deckLabel(option, decks)}</Text>
-        </Pressable>
-      ))}
-    </ScrollView>
-  );
-}
-
-function IconButton({ icon, label, disabled = false, onPress }: { icon: React.ComponentProps<typeof MaterialIcons>["name"]; label: string; disabled?: boolean; onPress: () => void }) {
-  return (
-    <Pressable disabled={disabled} style={[styles.iconButton, disabled && styles.iconButtonDisabled]} onPress={onPress} accessibilityRole="button" accessibilityLabel={label}>
-      <MaterialIcons name={icon} size={size.icon} color={colors.primaryDeep} />
-    </Pressable>
-  );
-}
-
-function deckLabel(value: string, decks: CustomDeck[]) {
-  return decks.find((deck) => deck.id === value)?.name || ({ "a2-focus": "A2 Focus", "b1-focus": "B1 Focus", saved: "My list", core: "Core words", all: "All cards" }[value] || titleCase(value));
-}
-
-function titleCase(value: string) {
-  return value.replace(/-/g, " ").replace(/\b\w/g, (character) => character.toUpperCase());
-}
-
-function slug(value: string) {
-  return value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-}
-
-function normalizeReminderTime(value: string): string | null {
-  const trimmed = value.trim();
-  const match = /^(\d{1,2})(?::?(\d{2}))?$/.exec(trimmed);
-  if (!match) return null;
-  const hour = Number(match[1]);
-  const minute = Number(match[2] || "0");
-  if (hour < 0 || hour > 23 || minute < 0 || minute > 59) return null;
-  return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
-}
-
 const styles = StyleSheet.create({
   root: { gap: spacing.hero },
   summary: { flexDirection: "row", alignItems: "center", gap: spacing.xl, borderWidth: spacing.hairline, borderColor: colors.borderSoft, borderRadius: radius.md, backgroundColor: colors.surfaceWarm, padding: spacing.xlPlus },
@@ -331,30 +227,7 @@ const styles = StyleSheet.create({
   summaryCopy: { flex: 1, gap: spacing.xs },
   summaryTitle: { color: colors.textStrong, fontSize: typography.bodyLarge, fontWeight: typography.weightSemibold },
   summaryText: { color: colors.textSoft, fontSize: typography.bodySmall, lineHeight: typography.titleSmall },
-  section: { gap: spacing.xl },
-  sectionHeader: { flexDirection: "row", alignItems: "center", gap: spacing.lg },
-  sectionIcon: { width: size.touchTarget, height: size.touchTarget, alignItems: "center", justifyContent: "center", borderRadius: radius.md, backgroundColor: colors.primarySoft },
-  sectionCopy: { flex: 1, gap: spacing.xxs },
-  sectionTitle: { color: colors.textStrong, fontSize: typography.titleSmall, fontWeight: typography.weightSemibold },
-  sectionDescription: { color: colors.textMuted, fontSize: typography.bodySmall, lineHeight: typography.bodyLarge },
-  settingGroup: { gap: spacing.xl, borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surface, padding: spacing.xl },
-  preferenceRow: { flexDirection: "row", alignItems: "center", gap: spacing.lg },
-  preferenceTitle: { flex: 1, color: colors.textStrong, fontSize: typography.body, fontWeight: typography.weightMedium },
-  preferenceValue: { color: colors.primaryDeep, fontSize: typography.bodySmall, fontWeight: typography.weightSemibold },
-  choiceSegment: { flexDirection: "row", gap: spacing.xs, borderRadius: radius.md, backgroundColor: colors.surfaceMuted, padding: spacing.xs },
-  choiceSegmentCompact: { flex: 1 },
-  choiceOption: { flex: 1, minHeight: size.touchTarget, alignItems: "center", justifyContent: "center", borderRadius: radius.sm, paddingHorizontal: spacing.md },
-  choiceOptionActive: { backgroundColor: colors.surface, borderWidth: spacing.hairline, borderColor: colors.border },
-  choiceText: { color: colors.textMuted, fontSize: typography.bodySmall, fontWeight: typography.weightMedium },
-  choiceTextActive: { color: colors.primaryDeep, fontWeight: typography.weightSemibold },
-  deckPicker: { gap: spacing.smd, paddingRight: spacing.xl },
-  deckChip: { borderRadius: radius.md, backgroundColor: colors.surfaceMuted, paddingHorizontal: spacing.lg, paddingVertical: spacing.smd },
-  deckChipActive: { backgroundColor: colors.primaryDeep },
-  deckChipText: { color: colors.primaryDeep, fontSize: typography.bodySmall, fontWeight: typography.weightMedium },
-  deckChipTextActive: { color: colors.onPrimary, fontWeight: typography.weightSemibold },
   stepper: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: spacing.xl },
-  iconButton: { width: size.touchTarget, height: size.touchTarget, alignItems: "center", justifyContent: "center", borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surfaceWarm },
-  iconButtonDisabled: { opacity: 0.42 },
   stepperValue: { alignItems: "center", gap: spacing.xxs },
   stepperNumber: { color: colors.textStrong, fontSize: typography.screenTitle, fontWeight: typography.weightBold },
   stepperLabel: { color: colors.textMuted, fontSize: typography.caption, fontWeight: typography.weightMedium },
@@ -365,11 +238,6 @@ const styles = StyleSheet.create({
   customDeckRow: { minHeight: size.touchTarget, flexDirection: "row", alignItems: "center", gap: spacing.lg, borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surface, paddingHorizontal: spacing.xl },
   customDeckRowActive: { borderColor: colors.success },
   customDeckName: { flex: 1, color: colors.textStrong, fontSize: typography.body, fontWeight: typography.weightMedium },
-  toggleRow: { flexDirection: "row", alignItems: "center", gap: spacing.lg },
-  toggleIcon: { width: size.cardAction, height: size.cardAction, alignItems: "center", justifyContent: "center", borderRadius: radius.sm, backgroundColor: colors.actionSoft },
-  toggleCopy: { flex: 1, gap: spacing.xxs },
-  toggleTitle: { color: colors.textStrong, fontSize: typography.body, fontWeight: typography.weightMedium },
-  toggleDetail: { color: colors.textMuted, fontSize: typography.caption, lineHeight: typography.bodySmall + spacing.xs },
   reminderTimeBlock: { gap: spacing.lg, borderTopWidth: spacing.hairline, borderTopColor: colors.borderSoft, paddingTop: spacing.xl },
   reminderTime: { flexDirection: "row", alignItems: "center", gap: spacing.xl },
   reminderTimeLabel: { flex: 1, color: colors.textSoft, fontSize: typography.bodySmall, fontWeight: typography.weightMedium },
@@ -377,11 +245,6 @@ const styles = StyleSheet.create({
   timeInput: { minWidth: 74, color: colors.textStrong, fontSize: typography.body, fontWeight: typography.weightSemibold, paddingVertical: spacing.smd },
   timeHint: { flex: 1, color: colors.textMuted, fontSize: typography.caption, fontWeight: typography.weightMedium },
   utilityGrid: { flexDirection: "row", flexWrap: "wrap", gap: spacing.lg },
-  utilityButton: { width: "48%", minWidth: 132, flexGrow: 1, minHeight: size.reviewButton, flexDirection: "row", alignItems: "center", gap: spacing.smd, borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surface, paddingHorizontal: spacing.lg, paddingVertical: spacing.md },
-  utilityIcon: { width: size.cardAction, height: size.cardAction, alignItems: "center", justifyContent: "center", borderRadius: radius.sm, backgroundColor: colors.primarySoft },
-  utilityCopy: { flex: 1, minWidth: 0, gap: spacing.xxs },
-  utilityTitle: { color: colors.textStrong, fontSize: typography.bodySmall, fontWeight: typography.weightSemibold },
-  utilityDetail: { color: colors.textMuted, fontSize: typography.caption, lineHeight: typography.bodySmall },
   notice: { flexDirection: "row", alignItems: "center", gap: spacing.smd, borderWidth: spacing.hairline, borderColor: colors.actionSoft, borderRadius: radius.md, backgroundColor: colors.surfaceWarm, padding: spacing.lg },
   noticeText: { flex: 1, color: colors.textSoft, fontSize: typography.bodySmall, lineHeight: typography.bodyLarge },
   syncStatus: { flexDirection: "row", alignItems: "center", gap: spacing.xl, borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surface, padding: spacing.xl },

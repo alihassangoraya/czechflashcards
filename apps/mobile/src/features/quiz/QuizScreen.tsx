@@ -4,12 +4,9 @@ import * as Speech from "../../speech";
 import MaterialIcons from "../../components/MaterialIcons";
 import type { Card } from "@czech-flashcards/shared";
 import { colors, radius, shadow, size, spacing, typography } from "../../theme/design";
-
-type Question = {
-  card: Card;
-  options: string[];
-  correctIndex: number;
-};
+import { QuizOption } from "./components/QuizOption";
+import { ResultMetric } from "./components/ResultMetric";
+import { buildQuestions } from "./quizQuestions";
 
 type Props = {
   deck: Card[];
@@ -221,55 +218,6 @@ export function QuizScreen({ deck, onClose }: Props) {
   );
 }
 
-function QuizOption({ option, letter, selected, correct, checked, onPress }: { option: string; letter: string; selected: boolean; correct: boolean; checked: boolean; onPress: () => void }) {
-  const stateStyle = checked && correct ? styles.correctOption : checked && selected ? styles.wrongOption : selected ? styles.selectedOption : null;
-  const letterStyle = checked && correct ? styles.correctLetter : checked && selected ? styles.wrongLetter : selected ? styles.selectedLetter : styles.optionLetter;
-  const textStyle = checked && (correct || selected) ? styles.optionTextInverted : styles.optionText;
-  return (
-    <Pressable disabled={checked} style={[styles.option, stateStyle]} onPress={onPress} accessibilityRole="radio" accessibilityState={{ selected }}>
-      <View style={styles.optionInner}>
-        <Text style={letterStyle}>{letter}</Text>
-        <Text style={textStyle}>{option}</Text>
-      </View>
-      {checked && correct && <MaterialIcons name="check-circle" size={size.iconMedium} color={colors.onPrimary} />}
-      {checked && selected && !correct && <MaterialIcons name="cancel" size={size.iconMedium} color={colors.onPrimary} />}
-    </Pressable>
-  );
-}
-
-function ResultMetric({ icon, value, label, color }: { icon: React.ComponentProps<typeof MaterialIcons>["name"]; value: string; label: string; color: string }) {
-  return (
-    <View style={styles.resultMetric}>
-      <MaterialIcons name={icon} size={size.iconSmall} color={color} />
-      <Text style={styles.resultMetricValue}>{value}</Text>
-      <Text style={styles.resultMetricLabel}>{label}</Text>
-    </View>
-  );
-}
-
-function buildQuestions(deck: Card[]): Question[] {
-  const pool = deck.filter((card) => card.cz && card.en);
-  const meanings = Array.from(new Set(pool.map((card) => card.en)));
-  if (pool.length < 4 || meanings.length < 4) return [];
-
-  // Build only the questions displayed in this session. The former generator
-  // rebuilt a full distractor pool for every card, which was costly on B1 decks.
-  return shuffle(pool).slice(0, Math.min(10, pool.length)).map((card) => {
-    const distractors = shuffle(meanings.filter((meaning) => meaning !== card.en)).slice(0, 3);
-    const options = shuffle([...distractors, card.en]);
-    return { card, options, correctIndex: options.indexOf(card.en) };
-  });
-}
-
-function shuffle<T>(items: T[]): T[] {
-  const result = items.slice();
-  for (let index = result.length - 1; index > 0; index -= 1) {
-    const nextIndex = Math.floor(Math.random() * (index + 1));
-    [result[index], result[nextIndex]] = [result[nextIndex], result[index]];
-  }
-  return result;
-}
-
 const styles = StyleSheet.create({
   scroll: { flex: 1, backgroundColor: colors.background },
   content: { gap: spacing.xlPlus, paddingHorizontal: spacing.page, paddingTop: typography.bodyLarge, paddingBottom: spacing.screenBottom },
@@ -292,17 +240,6 @@ const styles = StyleSheet.create({
   audioLine: { alignSelf: "center", flexDirection: "row", alignItems: "center", gap: spacing.smd, borderRadius: radius.md, backgroundColor: colors.actionSoft, paddingHorizontal: spacing.lg, paddingVertical: spacing.smd },
   pronunciation: { color: colors.action, fontSize: typography.bodySmall, fontWeight: typography.weightMedium },
   options: { gap: spacing.lg },
-  option: { minHeight: size.quizOptionHeight, flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: spacing.lg, borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surface, paddingHorizontal: spacing.xl },
-  optionInner: { flex: 1, flexDirection: "row", alignItems: "center", gap: spacing.lg },
-  optionLetter: { width: size.iconLarge, height: size.iconLarge, borderRadius: radius.sm, color: colors.textMuted, backgroundColor: colors.surfaceMuted, fontSize: typography.caption, fontWeight: typography.weightBold, lineHeight: size.iconLarge, textAlign: "center" },
-  selectedOption: { borderColor: colors.primary, backgroundColor: colors.primarySoft },
-  selectedLetter: { width: size.iconLarge, height: size.iconLarge, borderRadius: radius.sm, color: colors.onPrimary, backgroundColor: colors.primary, fontSize: typography.caption, fontWeight: typography.weightBold, lineHeight: size.iconLarge, textAlign: "center" },
-  correctOption: { borderColor: colors.success, backgroundColor: colors.success },
-  correctLetter: { width: size.iconLarge, height: size.iconLarge, borderRadius: radius.sm, color: colors.success, backgroundColor: colors.surface, fontSize: typography.caption, fontWeight: typography.weightBold, lineHeight: size.iconLarge, textAlign: "center" },
-  wrongOption: { borderColor: colors.danger, backgroundColor: colors.danger },
-  wrongLetter: { width: size.iconLarge, height: size.iconLarge, borderRadius: radius.sm, color: colors.danger, backgroundColor: colors.surface, fontSize: typography.caption, fontWeight: typography.weightBold, lineHeight: size.iconLarge, textAlign: "center" },
-  optionText: { flex: 1, color: colors.textStrong, fontSize: typography.bodyLarge, fontWeight: typography.weightMedium },
-  optionTextInverted: { flex: 1, color: colors.onPrimary, fontSize: typography.bodyLarge, fontWeight: typography.weightSemibold },
   feedbackPanel: { flexDirection: "row", alignItems: "flex-start", gap: spacing.lg, borderWidth: spacing.hairline, borderRadius: radius.md, padding: spacing.xl },
   feedbackCorrect: { borderColor: colors.success, backgroundColor: colors.mintSoft },
   feedbackWrong: { borderColor: colors.dangerBorder, backgroundColor: colors.dangerSoft },
@@ -339,8 +276,5 @@ const styles = StyleSheet.create({
   scoreNeedsReview: { color: colors.danger },
   scoreTotal: { color: colors.textMuted, fontSize: typography.title, fontWeight: typography.weightMedium },
   resultFeedback: { color: colors.textSoft, fontSize: typography.body, fontWeight: typography.weightRegular, lineHeight: typography.bodyLarge + spacing.xs, textAlign: "center" },
-  resultMetrics: { flexDirection: "row", borderTopWidth: spacing.hairline, borderTopColor: colors.borderSoft, paddingTop: spacing.xl },
-  resultMetric: { flex: 1, alignItems: "center", gap: spacing.xs },
-  resultMetricValue: { color: colors.textStrong, fontSize: typography.title, fontWeight: typography.weightBold },
-  resultMetricLabel: { color: colors.textMuted, fontSize: typography.caption, fontWeight: typography.weightMedium }
+  resultMetrics: { flexDirection: "row", borderTopWidth: spacing.hairline, borderTopColor: colors.borderSoft, paddingTop: spacing.xl }
 });
