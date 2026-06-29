@@ -1,0 +1,22 @@
+import React from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import MaterialIcons from "../../../components/MaterialIcons";
+import { colors, radius, size, spacing, typography } from "../../../theme/design";
+
+export function AddWordDetailsToggle({ expanded, onToggle }: { expanded: boolean; onToggle: () => void }) {
+  return (
+    <Pressable style={styles.toggle} onPress={onToggle} accessibilityRole="button" accessibilityState={{ expanded }}>
+      <View style={styles.copy}>
+        <MaterialIcons name="library-add" size={size.iconSmall} color={colors.action} />
+        <Text style={styles.text}>Translations and context</Text>
+      </View>
+      <MaterialIcons name={expanded ? "expand-less" : "expand-more"} size={size.icon} color={colors.action} />
+    </Pressable>
+  );
+}
+
+const styles = StyleSheet.create({
+  toggle: { minHeight: size.touchTarget, flexDirection: "row", alignItems: "center", justifyContent: "space-between", borderRadius: radius.md, backgroundColor: colors.actionSoft, paddingHorizontal: spacing.xl },
+  copy: { flexDirection: "row", alignItems: "center", gap: spacing.smd },
+  text: { color: colors.action, fontSize: typography.body, fontWeight: typography.weightSemibold }
+});

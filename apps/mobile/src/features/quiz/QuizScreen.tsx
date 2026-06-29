@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import MaterialIcons from "../../components/MaterialIcons";
 import type { Card } from "@czech-flashcards/shared";
@@ -11,7 +11,7 @@ import { QuizOption } from "./components/QuizOption";
 import { QuizProgress } from "./components/QuizProgress";
 import { QuizPromptCard } from "./components/QuizPromptCard";
 import { QuizResultScreen } from "./components/QuizResultScreen";
-import { buildQuestions } from "./quizQuestions";
+import { useQuizSession } from "./useQuizSession";
 
 type Props = {
   deck: Card[];
@@ -19,76 +19,22 @@ type Props = {
 };
 
 export function QuizScreen({ deck, onClose }: Props) {
-  const [round, setRound] = useState(0);
-  const questions = useMemo(() => buildQuestions(deck), [deck, round]);
-  const [index, setIndex] = useState(0);
-  const [selected, setSelected] = useState<number | null>(null);
-  const [checked, setChecked] = useState(false);
-  const [score, setScore] = useState(0);
-  const [finished, setFinished] = useState(false);
-  const [showExitConfirm, setShowExitConfirm] = useState(false);
+  const quiz = useQuizSession(deck, onClose);
 
-  useEffect(() => {
-    setIndex(0);
-    setSelected(null);
-    setChecked(false);
-    setScore(0);
-    setFinished(false);
-    setShowExitConfirm(false);
-  }, [deck, round]);
-
-  const answeredCount = index + (checked ? 1 : 0);
-  const accuracy = answeredCount ? Math.round((score / answeredCount) * 100) : 0;
-  const hasProgress = index > 0 || selected !== null || checked || score > 0;
-
-  function restartQuiz() {
-    setRound((value) => value + 1);
-  }
-
-  function requestClose() {
-    if (hasProgress && !finished) {
-      setShowExitConfirm(true);
-      return;
-    }
-    onClose();
-  }
-
-  function confirmClose() {
-    setShowExitConfirm(false);
-    onClose();
-  }
-
-  if (questions.length === 0) {
+  if (quiz.questions.length === 0) {
     return <QuizEmptyState onClose={onClose} />;
   }
 
-  if (finished) {
-    return <QuizResultScreen score={score} total={questions.length} onRestart={restartQuiz} onClose={onClose} />;
+  if (quiz.finished) {
+    return <QuizResultScreen score={quiz.score} total={quiz.questions.length} onRestart={quiz.restartQuiz} onClose={onClose} />;
   }
 
-  const question = questions[index];
-  const isCorrect = selected === question.correctIndex;
-
-  function next() {
-    if (!checked) {
-      if (selected == null) return;
-      setChecked(true);
-      if (selected === question.correctIndex) setScore((value) => value + 1);
-      return;
-    }
-    if (index + 1 >= questions.length) {
-      setFinished(true);
-      return;
-    }
-    setIndex((value) => value + 1);
-    setSelected(null);
-    setChecked(false);
-  }
+  const question = quiz.question;
 
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-      <QuizHeader score={score} onBack={requestClose} />
-      <QuizProgress current={index + 1} total={questions.length} accuracy={accuracy} />
+      <QuizHeader score={quiz.score} onBack={quiz.requestClose} />
+      <QuizProgress current={quiz.index + 1} total={quiz.questions.length} accuracy={quiz.accuracy} />
       <QuizPromptCard card={question.card} />
 
       <View style={styles.options}>
@@ -97,22 +43,22 @@ export function QuizScreen({ deck, onClose }: Props) {
             key={`${option}-${optionIndex}`}
             option={option}
             letter={String.fromCharCode(65 + optionIndex)}
-            selected={selected === optionIndex}
+            selected={quiz.selected === optionIndex}
             correct={question.correctIndex === optionIndex}
-            checked={checked}
-            onPress={() => setSelected(optionIndex)}
+            checked={quiz.checked}
+            onPress={() => quiz.setSelected(optionIndex)}
           />
         ))}
       </View>
 
-      {checked && <QuizFeedback correct={isCorrect} correctAnswer={question.options[question.correctIndex]} />}
+      {quiz.checked && <QuizFeedback correct={quiz.isCorrect} correctAnswer={question.options[question.correctIndex]} />}
 
-      <Pressable disabled={selected == null} style={[styles.primaryButton, selected == null && styles.disabled]} onPress={next} accessibilityRole="button">
-        <Text style={styles.primaryText}>{checked ? (index + 1 === questions.length ? "See results" : "Next question") : "Check answer"}</Text>
-        <MaterialIcons name={checked ? "arrow-forward" : "check"} size={size.icon} color={colors.onPrimary} />
+      <Pressable disabled={quiz.selected == null} style={[styles.primaryButton, quiz.selected == null && styles.disabled]} onPress={quiz.next} accessibilityRole="button">
+        <Text style={styles.primaryText}>{quiz.checked ? (quiz.index + 1 === quiz.questions.length ? "See results" : "Next question") : "Check answer"}</Text>
+        <MaterialIcons name={quiz.checked ? "arrow-forward" : "check"} size={size.icon} color={colors.onPrimary} />
       </Pressable>
 
-      <QuizExitConfirmModal visible={showExitConfirm} onCancel={() => setShowExitConfirm(false)} onConfirm={confirmClose} />
+      <QuizExitConfirmModal visible={quiz.showExitConfirm} onCancel={() => quiz.setShowExitConfirm(false)} onConfirm={quiz.confirmClose} />
     </ScrollView>
   );
 }

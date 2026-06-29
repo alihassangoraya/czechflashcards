@@ -1,9 +1,10 @@
 import React from "react";
 import { ImageBackground, Pressable, StyleSheet, Text, View } from "react-native";
-import MaterialIcons, { type MaterialIconName } from "../../../components/MaterialIcons";
+import MaterialIcons from "../../../components/MaterialIcons";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
 import pragueHero from "../../../../assets/images/prague_hero_banner.jpg";
 import { labelForDeck } from "../homeContent";
+import { HeroIcon } from "./HeroIcon";
 
 type Props = {
   deckFilter: string;
@@ -51,14 +52,6 @@ export function HomeHero({ deckFilter, examLevel, dueCount, accountEmail, wide, 
   );
 }
 
-function HeroIcon({ icon, label, onPress }: { icon: MaterialIconName; label: string; onPress: () => void }) {
-  return (
-    <Pressable style={styles.heroIcon} onPress={onPress} accessibilityRole="button" accessibilityLabel={label}>
-      <MaterialIcons name={icon} size={size.iconSmall} color={colors.heroText} />
-    </Pressable>
-  );
-}
-
 const styles = StyleSheet.create({
   hero: { width: "100%", height: size.heroHeight, overflow: "hidden", backgroundColor: colors.primaryDeep, padding: spacing.page, justifyContent: "space-between" },
   heroWide: { height: size.heroWideHeight },
@@ -67,7 +60,6 @@ const styles = StyleSheet.create({
   heroTop: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   levelPill: { overflow: "hidden", borderRadius: radius.md, backgroundColor: colors.heroPill, color: colors.heroText, paddingHorizontal: spacing.md, paddingVertical: spacing.xxs, fontSize: typography.caption, fontWeight: typography.weightSemibold },
   heroIconGroup: { flexDirection: "row", alignItems: "center", gap: spacing.xs },
-  heroIcon: { width: size.cardAction, height: size.cardAction, borderRadius: radius.md, alignItems: "center", justifyContent: "center", backgroundColor: colors.heroControl },
   heroCopy: { gap: 2 },
   heroEyebrow: { color: colors.heroTextMuted, fontSize: typography.label, fontWeight: typography.weightMedium },
   heroTitle: { color: colors.heroText, fontSize: typography.display, lineHeight: 33, fontWeight: typography.weightBold },

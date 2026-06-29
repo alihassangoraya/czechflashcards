@@ -5,6 +5,9 @@ import type { Card } from "@czech-flashcards/shared";
 import type { CustomDeck } from "../../database";
 import { colors, radius, size, spacing, typography } from "../../theme/design";
 import { initialAddWordValues, type AddWordValues } from "./addWordTypes";
+import { AddWordDetailsToggle } from "./components/AddWordDetailsToggle";
+import { AddWordIntro } from "./components/AddWordIntro";
+import { AddWordOptionalDetails } from "./components/AddWordOptionalDetails";
 import { CustomWordsList } from "./components/CustomWordsList";
 import { FormField } from "./components/FormField";
 import { FormSection } from "./components/FormSection";
@@ -35,13 +38,7 @@ export function AddWordPanel({ onSubmit, cards, decks, onDelete, onEdit }: Props
 
   return (
     <View style={styles.root}>
-      <View style={styles.intro}>
-        <View style={styles.introIcon}><MaterialIcons name="add-circle-outline" size={size.iconMedium} color={colors.primaryDeep} /></View>
-        <View style={styles.introCopy}>
-          <Text style={styles.introTitle}>Make it yours</Text>
-          <Text style={styles.introText}>Core Czech and English fields are required. Add translations and context whenever you have them.</Text>
-        </View>
-      </View>
+      <AddWordIntro />
 
       <FormSection icon="edit" title="Word" required>
         <FormField label="Czech word" value={values.cz} onChangeText={(value) => update("cz", value)} placeholder="e.g. rozumet" autoFocus />
@@ -52,24 +49,9 @@ export function AddWordPanel({ onSubmit, cards, decks, onDelete, onEdit }: Props
         <WordDeckPicker value={values.tag} decks={decks} onChange={(tag) => update("tag", tag)} />
       </FormSection>
 
-      <Pressable style={styles.detailsToggle} onPress={() => setShowDetails((value) => !value)} accessibilityRole="button" accessibilityState={{ expanded: showDetails }}>
-        <View style={styles.detailsToggleCopy}>
-          <MaterialIcons name="library-add" size={size.iconSmall} color={colors.action} />
-          <Text style={styles.detailsToggleText}>Translations and context</Text>
-        </View>
-        <MaterialIcons name={showDetails ? "expand-less" : "expand-more"} size={size.icon} color={colors.action} />
-      </Pressable>
+      <AddWordDetailsToggle expanded={showDetails} onToggle={() => setShowDetails((value) => !value)} />
 
-      {showDetails && (
-        <FormSection icon="translate" title="Optional details">
-          <View style={styles.languageRow}>
-            <View style={styles.languageField}><FormField label="Hindi" value={values.hi} onChangeText={(value) => update("hi", value)} placeholder="Hindi meaning" /></View>
-            <View style={styles.languageField}><FormField label="Urdu" value={values.ur} onChangeText={(value) => update("ur", value)} placeholder="Urdu meaning" rtl /></View>
-          </View>
-          <FormField label="Czech example" value={values.sentence} onChangeText={(value) => update("sentence", value)} placeholder="Use the word in a Czech sentence" multiline />
-          <FormField label="English example" value={values.sentenceEn} onChangeText={(value) => update("sentenceEn", value)} placeholder="English translation of the example" multiline />
-        </FormSection>
-      )}
+      {showDetails && <AddWordOptionalDetails values={values} onUpdate={update} />}
 
       {Boolean(error) && <Text style={styles.error}>{error}</Text>}
       <Pressable style={styles.submitButton} onPress={submit} accessibilityRole="button">
@@ -95,16 +77,6 @@ export function AddWordPanel({ onSubmit, cards, decks, onDelete, onEdit }: Props
 
 const styles = StyleSheet.create({
   root: { gap: spacing.xlPlus },
-  intro: { flexDirection: "row", alignItems: "center", gap: spacing.xl, borderWidth: spacing.hairline, borderColor: colors.borderSoft, borderRadius: radius.md, backgroundColor: colors.surfaceWarm, padding: spacing.xlPlus },
-  introIcon: { width: size.headerAction, height: size.headerAction, alignItems: "center", justifyContent: "center", borderRadius: radius.md, backgroundColor: colors.primarySoft },
-  introCopy: { flex: 1, gap: spacing.xxs },
-  introTitle: { color: colors.textStrong, fontSize: typography.bodyLarge, fontWeight: typography.weightSemibold },
-  introText: { color: colors.textSoft, fontSize: typography.bodySmall, lineHeight: typography.bodyLarge },
-  languageRow: { flexDirection: "row", gap: spacing.lg },
-  languageField: { flex: 1 },
-  detailsToggle: { minHeight: size.touchTarget, flexDirection: "row", alignItems: "center", justifyContent: "space-between", borderRadius: radius.md, backgroundColor: colors.actionSoft, paddingHorizontal: spacing.xl },
-  detailsToggleCopy: { flexDirection: "row", alignItems: "center", gap: spacing.smd },
-  detailsToggleText: { color: colors.action, fontSize: typography.body, fontWeight: typography.weightSemibold },
   error: { color: colors.dangerStrong, fontSize: typography.bodySmall, fontWeight: typography.weightMedium },
   submitButton: { minHeight: size.reviewButton, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: spacing.smd, borderRadius: radius.md, backgroundColor: colors.primaryDeep },
   submitText: { color: colors.onPrimary, fontSize: typography.bodyLarge, fontWeight: typography.weightSemibold }

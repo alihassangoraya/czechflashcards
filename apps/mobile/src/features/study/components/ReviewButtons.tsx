@@ -1,7 +1,8 @@
 import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import type { ReviewGrade } from "@czech-flashcards/shared";
-import { colors, radius, size, spacing, typography } from "../../../theme/design";
+import { colors } from "../../../theme/design";
+import { ReviewButton } from "./ReviewButton";
 
 type Props = {
   grading: boolean;
@@ -20,23 +21,10 @@ export function ReviewButtons({ grading, reviewInterval, onGrade }: Props) {
   );
 }
 
-function ReviewButton({ disabled, style, label, interval, onPress }: { disabled: boolean; style: object; label: string; interval: string; onPress: () => void }) {
-  return (
-    <Pressable disabled={disabled} style={[styles.reviewButton, style, disabled && styles.disabledButton]} onPress={onPress}>
-      <Text style={styles.reviewButtonText}>{label}</Text>
-      <Text style={styles.reviewIntervalText}>{interval}</Text>
-    </Pressable>
-  );
-}
-
 const styles = StyleSheet.create({
   reviewRow: { flexDirection: "row", gap: 6 },
-  reviewButton: { flex: 1, minHeight: size.reviewButton, alignItems: "center", justifyContent: "center", gap: spacing.xxs, borderRadius: radius.xl, paddingHorizontal: spacing.sm },
   reviewAgain: { backgroundColor: colors.danger },
   reviewHard: { backgroundColor: colors.warning },
   reviewGood: { backgroundColor: colors.primary },
-  reviewEasy: { backgroundColor: colors.success },
-  reviewButtonText: { color: colors.onPrimary, fontSize: typography.bodySmall, fontWeight: typography.weightBold },
-  reviewIntervalText: { color: colors.onPrimaryMuted, fontSize: typography.micro, fontWeight: typography.weightMedium },
-  disabledButton: { opacity: 0.45 }
+  reviewEasy: { backgroundColor: colors.success }
 });
