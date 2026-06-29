@@ -5,7 +5,14 @@ const { enrichWithGoogleVocabulary } = require("./google-vocabulary");
 
 const root = path.resolve(__dirname, "..");
 const outFile = path.join(root, "packages", "shared", "data", "vocabulary.seed.json");
-const sourceFiles = ["data/vocabulary.js", "data/extended-lemmas.js", "data/focus-decks.js", "data/verb-forms.js", "data/google-vocabulary-details.json"];
+const sourceFiles = [
+  "data/vocabulary.js",
+  "data/extended-lemmas.js",
+  "data/focus-decks.js",
+  "data/b1-verb-pack.js",
+  "data/verb-forms.js",
+  "data/google-vocabulary-details.json"
+];
 
 function loadCards() {
   const context = { window: {} };
