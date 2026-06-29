@@ -102,6 +102,7 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>("home");
   const [panel, setPanel] = useState<Panel | null>(null);
   const [editingCard, setEditingCard] = useState<Card | null>(null);
+  const [editReturnPanel, setEditReturnPanel] = useState<Panel | null>(null);
   const [query, setQuery] = useState("");
   const [dailyProgress, setDailyProgress] = useState("0 / 30");
   const [syncStatus, setSyncStatus] = useState<SyncStatus>("not-configured");
@@ -414,8 +415,8 @@ export default function App() {
       id: `custom-${Date.now()}-${slug(values.cz)}`,
       cz: values.cz.trim(),
       en: values.en.trim(),
-      hi: values.hi.trim() || "Hindi meaning pending",
-      ur: values.ur.trim() || "اردو معنی باقی ہے",
+      hi: values.hi.trim(),
+      ur: values.ur.trim(),
       sentence: values.sentence.trim(),
       sentenceEn: values.sentenceEn.trim(),
       level: "a2",
@@ -423,7 +424,6 @@ export default function App() {
       source: "custom"
     };
     await addCustomCard(db, card);
-    setPanel(null);
     await refresh(db);
   }
 
@@ -473,7 +473,7 @@ export default function App() {
       cz: values.cz.trim(),
       en: values.en.trim(),
       hi: values.hi.trim(),
-      ur: values.ur.trim() || values.hi.trim(),
+      ur: values.ur.trim(),
       sentence: values.sentence.trim(),
       sentenceEn: values.sentenceEn.trim()
     };
@@ -481,15 +481,25 @@ export default function App() {
     else await saveCardCorrection(db, card);
     forcedCardId.current = card.id;
     revealForcedCard.current = true;
+    const returnPanel = editReturnPanel;
     setEditingCard(null);
-    setPanel(null);
+    setEditReturnPanel(null);
+    setPanel(returnPanel);
     await refresh(db);
   }
 
   function openCardEditor(card = current) {
     if (!card) return;
     setEditingCard(card);
+    setEditReturnPanel(panel === "add" ? "add" : null);
     setPanel("edit");
+  }
+
+  function closeCardEditor() {
+    const returnPanel = editReturnPanel;
+    setEditingCard(null);
+    setEditReturnPanel(null);
+    setPanel(returnPanel);
   }
 
   function studySearchResult(card: Card) {
@@ -614,6 +624,7 @@ export default function App() {
   const sessionProgress = dailyGoal ? Math.min(1, reviewedToday / dailyGoal) : 0;
   const sessionTarget = Math.min(deck.length, Math.max(1, dailyGoal - reviewedToday + sessionReviews));
   const cardRotation = dragX.interpolate({ inputRange: [-120, 0, 120], outputRange: ["-4deg", "0deg", "4deg"], extrapolate: "clamp" });
+  const currentSecondaryMeaning = current ? displaySelectedMeaning(current, settings.meaningLanguage) : "";
 
   return (
     <SafeAreaView style={styles.shell}>
@@ -769,9 +780,11 @@ export default function App() {
                         <Text style={styles.contentLabel}>Translation</Text>
                         <View style={styles.meaningRow}>
                           <Text style={styles.meaning}>{current.en}</Text>
-                          <Text style={[styles.meaning, settings.meaningLanguage === "ur" && styles.rtl]}>
-                            {selectedMeaning(current, settings.meaningLanguage)}
-                          </Text>
+                          {Boolean(currentSecondaryMeaning) && (
+                            <Text style={[styles.meaning, settings.meaningLanguage === "ur" && styles.rtl]}>
+                              {currentSecondaryMeaning}
+                            </Text>
+                          )}
                         </View>
                         {Boolean(current.sentence) && (
                           <View style={styles.exampleBlock}>
@@ -847,7 +860,7 @@ export default function App() {
         <AddWordPanel onSubmit={addWord} cards={customCards} decks={settings.customDecks} onDelete={deleteWord} onEdit={openCardEditor} />
       </AppModal>
 
-      <AppModal visible={panel === "edit"} title="Edit card" onClose={() => { setEditingCard(null); setPanel(null); }}>
+      <AppModal visible={panel === "edit"} title="Edit card" onClose={closeCardEditor}>
         {editingCard && <EditCardForm key={editingCard.id} card={editingCard} onSubmit={saveCorrection} />}
       </AppModal>
 
@@ -988,6 +1001,16 @@ function RelatedWords({ label, icon, value, color }: { label: string; icon: Reac
 
 function pronunciationHint(word: string) {
   return `[ ${word} ] · stress the first syllable`;
+}
+
+function displaySelectedMeaning(card: Card, language: StudySettings["meaningLanguage"]): string {
+  const meaning = selectedMeaning(card, language).trim();
+  return isRealTranslation(meaning) ? meaning : "";
+}
+
+function isRealTranslation(value: string): boolean {
+  const normalized = value.trim().toLowerCase();
+  return Boolean(normalized) && normalized !== "hindi meaning pending" && normalized !== "اردو معنی باقی ہے";
 }
 
 function shuffleValues<T>(items: T[]): T[] {
