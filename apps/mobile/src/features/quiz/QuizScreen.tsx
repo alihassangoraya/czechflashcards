@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import * as Speech from "../../speech";
 import MaterialIcons from "../../components/MaterialIcons";
 import type { Card } from "@czech-flashcards/shared";
@@ -24,6 +24,7 @@ export function QuizScreen({ deck, onClose }: Props) {
   const [checked, setChecked] = useState(false);
   const [score, setScore] = useState(0);
   const [finished, setFinished] = useState(false);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
 
   useEffect(() => {
     setIndex(0);
@@ -31,13 +32,28 @@ export function QuizScreen({ deck, onClose }: Props) {
     setChecked(false);
     setScore(0);
     setFinished(false);
+    setShowExitConfirm(false);
   }, [deck, round]);
 
   const answeredCount = index + (checked ? 1 : 0);
   const accuracy = answeredCount ? Math.round((score / answeredCount) * 100) : 0;
+  const hasProgress = index > 0 || selected !== null || checked || score > 0;
 
   function restartQuiz() {
     setRound((value) => value + 1);
+  }
+
+  function requestClose() {
+    if (hasProgress && !finished) {
+      setShowExitConfirm(true);
+      return;
+    }
+    onClose();
+  }
+
+  function confirmClose() {
+    setShowExitConfirm(false);
+    onClose();
   }
 
   if (questions.length === 0) {
@@ -124,7 +140,7 @@ export function QuizScreen({ deck, onClose }: Props) {
     <ScrollView style={styles.scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
       <View style={styles.topBar}>
         <View style={styles.headerLeft}>
-          <Pressable style={styles.backButton} onPress={onClose} accessibilityRole="button" accessibilityLabel="Back home">
+          <Pressable style={styles.backButton} onPress={requestClose} accessibilityRole="button" accessibilityLabel="Back home">
             <MaterialIcons name="arrow-back" size={size.iconLarge} color={colors.textStrong} />
           </Pressable>
           <View style={styles.headerCopy}>
@@ -184,6 +200,23 @@ export function QuizScreen({ deck, onClose }: Props) {
         <Text style={styles.primaryText}>{checked ? (index + 1 === questions.length ? "See results" : "Next question") : "Check answer"}</Text>
         <MaterialIcons name={checked ? "arrow-forward" : "check"} size={size.icon} color={colors.onPrimary} />
       </Pressable>
+
+      <Modal visible={showExitConfirm} transparent animationType="fade" onRequestClose={() => setShowExitConfirm(false)}>
+        <View style={styles.exitOverlay}>
+          <View style={styles.exitDialog}>
+            <Text style={styles.exitTitle}>Leave quiz?</Text>
+            <Text style={styles.exitCopy}>Your current quiz answers will be lost.</Text>
+            <View style={styles.exitActions}>
+              <Pressable style={styles.exitSecondary} onPress={() => setShowExitConfirm(false)} accessibilityRole="button">
+                <Text style={styles.exitSecondaryText}>Stay</Text>
+              </Pressable>
+              <Pressable style={styles.exitPrimary} onPress={confirmClose} accessibilityRole="button">
+                <Text style={styles.exitPrimaryText}>Leave</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 }
@@ -276,6 +309,15 @@ const styles = StyleSheet.create({
   feedbackCopy: { flex: 1, gap: spacing.xs },
   feedbackTitle: { color: colors.textStrong, fontSize: typography.body, fontWeight: typography.weightSemibold },
   feedbackText: { color: colors.textSoft, fontSize: typography.bodySmall, fontWeight: typography.weightRegular },
+  exitOverlay: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: colors.modalOverlay, padding: spacing.page },
+  exitDialog: { width: "100%", maxWidth: 360, gap: spacing.xlPlus, borderRadius: radius.card, backgroundColor: colors.surface, padding: spacing.card, ...shadow.soft },
+  exitTitle: { color: colors.textStrong, fontSize: typography.title, fontWeight: typography.weightSemibold, textAlign: "center" },
+  exitCopy: { color: colors.textSoft, fontSize: typography.body, fontWeight: typography.weightRegular, lineHeight: typography.screenTitle, textAlign: "center" },
+  exitActions: { flexDirection: "row", gap: spacing.lg },
+  exitSecondary: { flex: 1, minHeight: size.touchTarget, alignItems: "center", justifyContent: "center", borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surfaceWarm },
+  exitPrimary: { flex: 1, minHeight: size.touchTarget, alignItems: "center", justifyContent: "center", borderRadius: radius.md, backgroundColor: colors.danger },
+  exitSecondaryText: { color: colors.textStrong, fontSize: typography.body, fontWeight: typography.weightSemibold },
+  exitPrimaryText: { color: colors.onPrimary, fontSize: typography.body, fontWeight: typography.weightSemibold },
   primaryButton: { minHeight: size.reviewButton, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: spacing.lg, borderRadius: radius.md, backgroundColor: colors.primaryDeep, paddingHorizontal: spacing.hero },
   primaryText: { color: colors.onPrimary, fontSize: typography.bodyLarge, fontWeight: typography.weightSemibold },
   secondaryButton: { minHeight: size.reviewButton, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: spacing.lg, borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surface, paddingHorizontal: spacing.hero },
