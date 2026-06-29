@@ -2,6 +2,12 @@ export type CardLevel = "a2" | "b1";
 export type MeaningLanguage = "hi" | "ur";
 export type ReviewGrade = "again" | "hard" | "good" | "easy";
 
+export interface GrammarDetails {
+  partOfSpeech: string;
+  reflexive: boolean;
+  note: string;
+}
+
 export interface Card {
   id: string;
   cz: string;
@@ -13,6 +19,11 @@ export interface Card {
   level: CardLevel;
   tags: string[];
   source: "seed" | "legacy-web" | "custom" | "import";
+  pronunciation?: string;
+  synonyms?: string;
+  antonyms?: string;
+  grammar?: GrammarDetails;
+  googleCategory?: string;
 }
 
 export interface ReviewState {

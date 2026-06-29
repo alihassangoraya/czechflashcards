@@ -159,7 +159,7 @@ export function QuizScreen({ deck, onClose }: Props) {
         <Text style={styles.word}>{question.card.cz}</Text>
         <Pressable style={styles.audioLine} onPress={() => Speech.speak(question.card.cz, { language: "cs-CZ", rate: 0.86 })} accessibilityRole="button" accessibilityLabel={`Play ${question.card.cz}`}>
           <MaterialIcons name="volume-up" size={size.iconSmall} color={colors.action} />
-          <Text style={styles.pronunciation}>[ {question.card.cz} ]</Text>
+          <Text style={styles.pronunciation}>[ {question.card.pronunciation || question.card.cz} ]</Text>
         </Pressable>
         {Boolean(question.card.sentence) && <Text style={styles.example}>{question.card.sentence}</Text>}
       </View>

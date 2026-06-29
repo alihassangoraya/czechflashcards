@@ -47,7 +47,12 @@ export function normalizeCards(cards: RawCard[]): Card[] {
         sentenceEn: String(card.sentenceEn || "").trim(),
         level: card.level === "a2" || card.level === "b1" ? card.level : inferLevel({ id, tags }),
         tags,
-        source: card.source === "custom" || card.source === "import" || card.source === "seed" ? card.source : "legacy-web"
+        source: card.source === "custom" || card.source === "import" || card.source === "seed" ? card.source : "legacy-web",
+        pronunciation: String(card.pronunciation || "").trim(),
+        synonyms: String(card.synonyms || "").trim(),
+        antonyms: String(card.antonyms || "").trim(),
+        grammar: card.grammar && typeof card.grammar === "object" ? card.grammar : undefined,
+        googleCategory: String(card.googleCategory || "").trim()
       };
       return normalized;
     })

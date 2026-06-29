@@ -1,10 +1,11 @@
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
+const { enrichWithGoogleVocabulary } = require("./google-vocabulary");
 
 const root = path.resolve(__dirname, "..");
 const outFile = path.join(root, "packages", "shared", "data", "vocabulary.seed.json");
-const sourceFiles = ["data/vocabulary.js", "data/extended-lemmas.js", "data/focus-decks.js", "data/verb-forms.js"];
+const sourceFiles = ["data/vocabulary.js", "data/extended-lemmas.js", "data/focus-decks.js", "data/verb-forms.js", "data/google-vocabulary-details.json"];
 
 function loadCards() {
   const context = { window: {} };
@@ -15,7 +16,7 @@ function loadCards() {
     vm.runInContext(fs.readFileSync(path.join(root, file), "utf8"), context, { filename: file });
   }
 
-  return context.window.CZECH_B1_VOCAB || [];
+  return enrichWithGoogleVocabulary(context.window.CZECH_B1_VOCAB || []);
 }
 
 function normalizeForSeed(card, index) {
@@ -29,7 +30,12 @@ function normalizeForSeed(card, index) {
     sentenceEn: String(card.sentenceEn || card.exampleEn || "").trim(),
     level: card.level || null,
     tags: Array.isArray(card.tags) ? card.tags : String(card.tags || "daily").split(/[,\s]+/).filter(Boolean),
-    source: card.source || "legacy-web"
+    source: card.source || "legacy-web",
+    pronunciation: String(card.pronunciation || "").trim(),
+    synonyms: String(card.synonyms || "").trim(),
+    antonyms: String(card.antonyms || "").trim(),
+    grammar: card.grammar || null,
+    googleCategory: String(card.googleCategory || "").trim()
   };
 }
 

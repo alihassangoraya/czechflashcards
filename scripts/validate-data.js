@@ -1,5 +1,6 @@
 const fs = require("fs");
 const vm = require("vm");
+const { enrichWithGoogleVocabulary } = require("./google-vocabulary");
 
 const context = { window: {} };
 context.globalThis = context;
@@ -9,7 +10,7 @@ for (const file of ["data/vocabulary.js", "data/extended-lemmas.js", "data/focus
   vm.runInContext(fs.readFileSync(file, "utf8"), context, { filename: file });
 }
 
-const cards = context.window.CZECH_B1_VOCAB || [];
+const cards = enrichWithGoogleVocabulary(context.window.CZECH_B1_VOCAB || []);
 const errors = [];
 const warnings = [];
 const fillerExample = /(Potřebuji si zapamatovat|Ve slovníku jsem našel|V textu jsem četl|V češtině často vidím|V nové větě používám|Dnes si zapíšu|Dnes trénuji použití|Dnes procvičuji|Dnes opakuji|The teacher explained the expression|I found the expression|I read the word|I need to remember the word|I use the word|Today I am practicing the use|Today I am reviewing)/i;

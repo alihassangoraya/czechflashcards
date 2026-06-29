@@ -43,6 +43,7 @@ export async function openAppDatabase(): Promise<AppDatabase> {
       sentence_en TEXT NOT NULL,
       level TEXT NOT NULL,
       tags_json TEXT NOT NULL,
+      details_json TEXT NOT NULL DEFAULT '{}',
       source TEXT NOT NULL,
       updated_at INTEGER NOT NULL
     );
@@ -101,6 +102,10 @@ export async function openAppDatabase(): Promise<AppDatabase> {
       updated_at INTEGER NOT NULL
     );
   `);
+  const columns = await db.getAllAsync<{ name: string }>("PRAGMA table_info(cards)");
+  if (!columns.some((column) => column.name === "details_json")) {
+    await db.execAsync("ALTER TABLE cards ADD COLUMN details_json TEXT NOT NULL DEFAULT '{}'");
+  }
   return db;
 }
 
@@ -112,15 +117,18 @@ export async function seedCards(db: AppDatabase, cards: Card[]): Promise<void> {
   const mixedLanguageMeanings = await db.getFirstAsync<{ count: number }>(
     "SELECT COUNT(*) as count FROM cards WHERE source IN ('seed', 'legacy-web') AND (hi GLOB '*[A-Za-z]*' OR ur GLOB '*[A-Za-z]*')"
   );
-  if ((existing?.count || 0) >= cards.length && !(untranslatedNumbers?.count || 0) && !(mixedLanguageMeanings?.count || 0)) return;
+  const missingWordDetails = await db.getFirstAsync<{ count: number }>(
+    "SELECT COUNT(*) as count FROM cards WHERE source IN ('seed', 'legacy-web') AND id LIKE 'google-%' AND details_json = '{}'"
+  );
+  if ((existing?.count || 0) >= cards.length && !(untranslatedNumbers?.count || 0) && !(mixedLanguageMeanings?.count || 0) && !(missingWordDetails?.count || 0)) return;
 
   const now = Date.now();
   await db.withTransactionAsync(async () => {
     for (const card of cards) {
       await db.runAsync(
         `INSERT OR REPLACE INTO cards
-          (id, cz, en, hi, ur, sentence, sentence_en, level, tags_json, source, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          (id, cz, en, hi, ur, sentence, sentence_en, level, tags_json, details_json, source, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         card.id,
         card.cz,
         card.en,
@@ -130,6 +138,7 @@ export async function seedCards(db: AppDatabase, cards: Card[]): Promise<void> {
         card.sentenceEn,
         card.level,
         JSON.stringify(card.tags),
+        JSON.stringify({ pronunciation: card.pronunciation || "", synonyms: card.synonyms || "", antonyms: card.antonyms || "", grammar: card.grammar || null, googleCategory: card.googleCategory || "" }),
         "seed",
         now
       );
@@ -152,6 +161,7 @@ export async function loadCards(db: AppDatabase): Promise<Card[]> {
     level: row.level,
     tags: JSON.parse(row.tags_json),
     source: row.source,
+    ...(row.details_json ? JSON.parse(row.details_json) : {}),
     ...(overridesById.get(row.id) || {})
   }));
 }
