@@ -1,11 +1,16 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import * as Speech from "../../speech";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import MaterialIcons from "../../components/MaterialIcons";
 import type { Card } from "@czech-flashcards/shared";
-import { colors, radius, shadow, size, spacing, typography } from "../../theme/design";
+import { colors, radius, size, spacing, typography } from "../../theme/design";
+import { QuizEmptyState } from "./components/QuizEmptyState";
+import { QuizExitConfirmModal } from "./components/QuizExitConfirmModal";
+import { QuizFeedback } from "./components/QuizFeedback";
+import { QuizHeader } from "./components/QuizHeader";
 import { QuizOption } from "./components/QuizOption";
-import { ResultMetric } from "./components/ResultMetric";
+import { QuizProgress } from "./components/QuizProgress";
+import { QuizPromptCard } from "./components/QuizPromptCard";
+import { QuizResultScreen } from "./components/QuizResultScreen";
 import { buildQuestions } from "./quizQuestions";
 
 type Props = {
@@ -54,64 +59,11 @@ export function QuizScreen({ deck, onClose }: Props) {
   }
 
   if (questions.length === 0) {
-    return (
-      <View style={styles.empty}>
-        <View style={styles.emptyIcon}>
-          <MaterialIcons name="quiz" size={size.iconLarge} color={colors.warning} />
-        </View>
-        <Text style={styles.emptyTitle}>Quiz needs more cards</Text>
-        <Text style={styles.emptyCopy}>Choose a deck with at least four distinct translations to start a quiz.</Text>
-        <Pressable style={styles.secondaryButton} onPress={onClose} accessibilityRole="button">
-          <MaterialIcons name="arrow-back" size={size.icon} color={colors.primaryDeep} />
-          <Text style={styles.secondaryText}>Back home</Text>
-        </Pressable>
-      </View>
-    );
+    return <QuizEmptyState onClose={onClose} />;
   }
 
   if (finished) {
-    const missed = questions.length - score;
-    const finalAccuracy = Math.round((score / questions.length) * 100);
-    const feedback = score === questions.length
-      ? "Bezchybne. Every answer was correct."
-      : finalAccuracy >= 80
-        ? "Vyborne. Your recall is looking strong."
-        : finalAccuracy >= 50
-          ? "Dobra prace. A short review will help these words stick."
-          : "Keep going. Review the missed words, then take another round.";
-
-    return (
-      <ScrollView contentContainerStyle={styles.resultContent}>
-        <View style={styles.resultIcon}>
-          <MaterialIcons name="emoji-events" size={size.quizResultIcon} color={colors.warning} />
-        </View>
-        <Text style={styles.resultTitle}>Gratulujeme!</Text>
-        <Text style={styles.resultSubtitle}>Quiz complete</Text>
-
-        <View style={styles.resultCard}>
-          <Text style={styles.resultEyebrow}>Your score</Text>
-          <View style={styles.scoreLine}>
-            <Text style={[styles.resultScore, finalAccuracy >= 50 ? styles.scorePositive : styles.scoreNeedsReview]}>{score}</Text>
-            <Text style={styles.scoreTotal}>/ {questions.length}</Text>
-          </View>
-          <Text style={styles.resultFeedback}>{feedback}</Text>
-          <View style={styles.resultMetrics}>
-            <ResultMetric icon="check-circle" value={`${score}`} label="Correct" color={colors.success} />
-            <ResultMetric icon="cancel" value={`${missed}`} label="Missed" color={colors.danger} />
-            <ResultMetric icon="bolt" value={`${finalAccuracy}%`} label="Accuracy" color={colors.action} />
-          </View>
-        </View>
-
-        <Pressable style={styles.primaryButton} onPress={restartQuiz} accessibilityRole="button">
-          <MaterialIcons name="refresh" size={size.icon} color={colors.onPrimary} />
-          <Text style={styles.primaryText}>Try another quiz</Text>
-        </Pressable>
-        <Pressable style={styles.secondaryButton} onPress={onClose} accessibilityRole="button">
-          <MaterialIcons name="home" size={size.icon} color={colors.primaryDeep} />
-          <Text style={styles.secondaryText}>Return home</Text>
-        </Pressable>
-      </ScrollView>
-    );
+    return <QuizResultScreen score={score} total={questions.length} onRestart={restartQuiz} onClose={onClose} />;
   }
 
   const question = questions[index];
@@ -135,39 +87,9 @@ export function QuizScreen({ deck, onClose }: Props) {
 
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-      <View style={styles.topBar}>
-        <View style={styles.headerLeft}>
-          <Pressable style={styles.backButton} onPress={requestClose} accessibilityRole="button" accessibilityLabel="Back home">
-            <MaterialIcons name="arrow-back" size={size.iconLarge} color={colors.textStrong} />
-          </Pressable>
-          <View style={styles.headerCopy}>
-            <Text style={styles.topTitle}>Czech quiz</Text>
-          </View>
-        </View>
-        <View style={styles.scoreChip} accessibilityLabel={`${score} correct answers`}>
-          <MaterialIcons name="check-circle" size={size.iconSmall} color={colors.success} />
-          <Text style={styles.scoreChipText}>{score}</Text>
-        </View>
-      </View>
-
-      <View style={styles.progressSection}>
-        <View style={styles.progressLabels}>
-          <Text style={styles.progressTitle}>Question {index + 1} of {questions.length}</Text>
-          <Text style={styles.progressMeta}>{accuracy}% accurate</Text>
-        </View>
-        <View style={styles.progressTrack}>
-          <View style={[styles.progressFill, { width: `${((index + 1) / questions.length) * 100}%` }]} />
-        </View>
-      </View>
-
-      <View style={styles.promptCard}>
-        <Text style={styles.promptLabel}>Choose the matching meaning</Text>
-        <Text style={styles.word}>{question.card.cz}</Text>
-        <Pressable style={styles.audioLine} onPress={() => Speech.speak(question.card.cz, { language: "cs-CZ", rate: 0.86 })} accessibilityRole="button" accessibilityLabel={`Play ${question.card.cz}`}>
-          <MaterialIcons name="volume-up" size={size.iconSmall} color={colors.action} />
-          <Text style={styles.pronunciation}>[ {question.card.pronunciation || question.card.cz} ]</Text>
-        </Pressable>
-      </View>
+      <QuizHeader score={score} onBack={requestClose} />
+      <QuizProgress current={index + 1} total={questions.length} accuracy={accuracy} />
+      <QuizPromptCard card={question.card} />
 
       <View style={styles.options}>
         {question.options.map((option, optionIndex) => (
@@ -183,37 +105,14 @@ export function QuizScreen({ deck, onClose }: Props) {
         ))}
       </View>
 
-      {checked && (
-        <View style={[styles.feedbackPanel, isCorrect ? styles.feedbackCorrect : styles.feedbackWrong]}>
-          <MaterialIcons name={isCorrect ? "check-circle" : "info"} size={size.iconMedium} color={isCorrect ? colors.success : colors.danger} />
-          <View style={styles.feedbackCopy}>
-            <Text style={styles.feedbackTitle}>{isCorrect ? "Correct" : "Correct answer"}</Text>
-            <Text style={styles.feedbackText}>{isCorrect ? "Nice recall. Keep the momentum." : question.options[question.correctIndex]}</Text>
-          </View>
-        </View>
-      )}
+      {checked && <QuizFeedback correct={isCorrect} correctAnswer={question.options[question.correctIndex]} />}
 
       <Pressable disabled={selected == null} style={[styles.primaryButton, selected == null && styles.disabled]} onPress={next} accessibilityRole="button">
         <Text style={styles.primaryText}>{checked ? (index + 1 === questions.length ? "See results" : "Next question") : "Check answer"}</Text>
         <MaterialIcons name={checked ? "arrow-forward" : "check"} size={size.icon} color={colors.onPrimary} />
       </Pressable>
 
-      <Modal visible={showExitConfirm} transparent animationType="fade" onRequestClose={() => setShowExitConfirm(false)}>
-        <View style={styles.exitOverlay}>
-          <View style={styles.exitDialog}>
-            <Text style={styles.exitTitle}>Leave quiz?</Text>
-            <Text style={styles.exitCopy}>Your current quiz answers will be lost.</Text>
-            <View style={styles.exitActions}>
-              <Pressable style={styles.exitSecondary} onPress={() => setShowExitConfirm(false)} accessibilityRole="button">
-                <Text style={styles.exitSecondaryText}>Stay</Text>
-              </Pressable>
-              <Pressable style={styles.exitPrimary} onPress={confirmClose} accessibilityRole="button">
-                <Text style={styles.exitPrimaryText}>Leave</Text>
-              </Pressable>
-            </View>
-          </View>
-        </View>
-      </Modal>
+      <QuizExitConfirmModal visible={showExitConfirm} onCancel={() => setShowExitConfirm(false)} onConfirm={confirmClose} />
     </ScrollView>
   );
 }
@@ -221,60 +120,8 @@ export function QuizScreen({ deck, onClose }: Props) {
 const styles = StyleSheet.create({
   scroll: { flex: 1, backgroundColor: colors.background },
   content: { gap: spacing.xlPlus, paddingHorizontal: spacing.page, paddingTop: typography.bodyLarge, paddingBottom: spacing.screenBottom },
-  topBar: { minHeight: size.headerAction, flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  headerLeft: { flex: 1, flexDirection: "row", alignItems: "center", gap: spacing.lg },
-  backButton: { width: size.headerAction, height: size.headerAction, alignItems: "center", justifyContent: "center" },
-  headerCopy: { flex: 1, alignItems: "flex-start" },
-  topTitle: { color: colors.textStrong, fontSize: typography.screenTitle, fontWeight: typography.weightSemibold },
-  scoreChip: { width: size.headerAction, height: size.headerAction, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: spacing.xs, borderRadius: radius.md, backgroundColor: colors.mintSoft },
-  scoreChipText: { color: colors.success, fontSize: typography.body, fontWeight: typography.weightBold },
-  progressSection: { gap: spacing.smd },
-  progressLabels: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  progressTitle: { color: colors.textStrong, fontSize: typography.bodySmall, fontWeight: typography.weightSemibold },
-  progressMeta: { color: colors.textMuted, fontSize: typography.caption, fontWeight: typography.weightMedium },
-  progressTrack: { height: spacing.md, overflow: "hidden", borderRadius: radius.xs, backgroundColor: colors.progressTrackStrong },
-  progressFill: { height: "100%", borderRadius: radius.xs, backgroundColor: colors.primary },
-  promptCard: { gap: spacing.lg, borderWidth: spacing.hairline, borderColor: colors.borderSoft, borderRadius: radius.card, backgroundColor: colors.surface, padding: spacing.card, ...shadow.soft },
-  promptLabel: { color: colors.textSoft, fontSize: typography.body, fontWeight: typography.weightRegular, textAlign: "center" },
-  word: { color: colors.textStrong, fontSize: typography.word, lineHeight: typography.word + spacing.lg, fontWeight: typography.weightBold, textAlign: "center" },
-  audioLine: { alignSelf: "center", flexDirection: "row", alignItems: "center", gap: spacing.smd, borderRadius: radius.md, backgroundColor: colors.actionSoft, paddingHorizontal: spacing.lg, paddingVertical: spacing.smd },
-  pronunciation: { color: colors.action, fontSize: typography.bodySmall, fontWeight: typography.weightMedium },
   options: { gap: spacing.lg },
-  feedbackPanel: { flexDirection: "row", alignItems: "flex-start", gap: spacing.lg, borderWidth: spacing.hairline, borderRadius: radius.md, padding: spacing.xl },
-  feedbackCorrect: { borderColor: colors.success, backgroundColor: colors.mintSoft },
-  feedbackWrong: { borderColor: colors.dangerBorder, backgroundColor: colors.dangerSoft },
-  feedbackCopy: { flex: 1, gap: spacing.xs },
-  feedbackTitle: { color: colors.textStrong, fontSize: typography.body, fontWeight: typography.weightSemibold },
-  feedbackText: { color: colors.textSoft, fontSize: typography.bodySmall, fontWeight: typography.weightRegular },
-  exitOverlay: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: colors.modalOverlay, padding: spacing.page },
-  exitDialog: { width: "100%", maxWidth: 360, gap: spacing.xlPlus, borderRadius: radius.card, backgroundColor: colors.surface, padding: spacing.card, ...shadow.soft },
-  exitTitle: { color: colors.textStrong, fontSize: typography.title, fontWeight: typography.weightSemibold, textAlign: "center" },
-  exitCopy: { color: colors.textSoft, fontSize: typography.body, fontWeight: typography.weightRegular, lineHeight: typography.screenTitle, textAlign: "center" },
-  exitActions: { flexDirection: "row", gap: spacing.lg },
-  exitSecondary: { flex: 1, minHeight: size.touchTarget, alignItems: "center", justifyContent: "center", borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surfaceWarm },
-  exitPrimary: { flex: 1, minHeight: size.touchTarget, alignItems: "center", justifyContent: "center", borderRadius: radius.md, backgroundColor: colors.danger },
-  exitSecondaryText: { color: colors.textStrong, fontSize: typography.body, fontWeight: typography.weightSemibold },
-  exitPrimaryText: { color: colors.onPrimary, fontSize: typography.body, fontWeight: typography.weightSemibold },
   primaryButton: { minHeight: size.reviewButton, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: spacing.lg, borderRadius: radius.md, backgroundColor: colors.primaryDeep, paddingHorizontal: spacing.hero },
   primaryText: { color: colors.onPrimary, fontSize: typography.bodyLarge, fontWeight: typography.weightSemibold },
-  secondaryButton: { minHeight: size.reviewButton, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: spacing.lg, borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surface, paddingHorizontal: spacing.hero },
-  secondaryText: { color: colors.primaryDeep, fontSize: typography.bodyLarge, fontWeight: typography.weightSemibold },
-  disabled: { opacity: 0.42 },
-  empty: { flex: 1, alignItems: "center", justifyContent: "center", gap: spacing.xl, paddingHorizontal: spacing.hero, backgroundColor: colors.background },
-  emptyIcon: { width: size.quizResultIcon, height: size.quizResultIcon, alignItems: "center", justifyContent: "center", borderRadius: radius.card, backgroundColor: colors.goldSoft },
-  emptyTitle: { color: colors.textStrong, fontSize: typography.display, fontWeight: typography.weightBold, textAlign: "center" },
-  emptyCopy: { color: colors.textSoft, fontSize: typography.bodyLarge, lineHeight: typography.titleSmall + spacing.xs, textAlign: "center" },
-  resultContent: { flexGrow: 1, alignItems: "center", justifyContent: "center", gap: spacing.xlPlus, paddingHorizontal: spacing.page, paddingVertical: spacing.hero, backgroundColor: colors.background },
-  resultIcon: { width: size.quizResultIcon + spacing.card, height: size.quizResultIcon + spacing.card, alignItems: "center", justifyContent: "center", borderRadius: radius.card, backgroundColor: colors.goldSoft },
-  resultTitle: { color: colors.textStrong, fontSize: typography.display, fontWeight: typography.weightBold, textAlign: "center" },
-  resultSubtitle: { color: colors.textMuted, fontSize: typography.bodyLarge, fontWeight: typography.weightRegular, textAlign: "center" },
-  resultCard: { width: "100%", gap: spacing.lg, borderWidth: spacing.hairline, borderColor: colors.borderSoft, borderRadius: radius.card, backgroundColor: colors.surface, padding: spacing.card, ...shadow.soft },
-  resultEyebrow: { color: colors.primary, fontSize: typography.label, fontWeight: typography.weightSemibold, textAlign: "center", textTransform: "uppercase" },
-  scoreLine: { flexDirection: "row", alignItems: "baseline", justifyContent: "center" },
-  resultScore: { fontSize: typography.word, fontWeight: typography.weightBold },
-  scorePositive: { color: colors.success },
-  scoreNeedsReview: { color: colors.danger },
-  scoreTotal: { color: colors.textMuted, fontSize: typography.title, fontWeight: typography.weightMedium },
-  resultFeedback: { color: colors.textSoft, fontSize: typography.body, fontWeight: typography.weightRegular, lineHeight: typography.bodyLarge + spacing.xs, textAlign: "center" },
-  resultMetrics: { flexDirection: "row", borderTopWidth: spacing.hairline, borderTopColor: colors.borderSoft, paddingTop: spacing.xl }
+  disabled: { opacity: 0.42 }
 });

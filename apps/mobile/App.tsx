@@ -1,13 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import {
-  SafeAreaView,
-  StyleSheet,
-  StatusBar,
-  View
-} from "react-native";
 import { AppLoadingScreen } from "./src/components/AppLoadingScreen";
-import { AppModal } from "./src/components/AppModal";
-import { AppToast } from "./src/components/AppToast";
 import {
   applyReviewGrade,
   formatInterval,
@@ -16,11 +8,13 @@ import {
   parseCsvCards,
   slug,
   type Card,
-  type ReviewEvent,
   type ReviewGrade,
   type ReviewState
 } from "@czech-flashcards/shared";
 import seedPayload from "@czech-flashcards/shared/seed";
+import { AppShell } from "./src/app/AppShell";
+import type { Panel, Screen, UndoReview } from "./src/app/appTypes";
+import { buildAccountStudySummary, parseDailyProgress } from "./src/app/studySummary";
 import {
   addCustomCard,
   deleteCustomCard,
@@ -47,14 +41,6 @@ import {
 } from "./src/database";
 import { configureLocalNotifications } from "./src/notifications";
 import { createSupabaseClient, flushSyncQueue, restoreSyncSnapshot, signInWithPassword, signOut, signUpWithPassword, type SyncStatus } from "./src/sync";
-import { AccountPanel, type AccountStudySummary } from "./src/features/account/AccountPanel";
-import { GrammarEmptyState } from "./src/features/grammar/GrammarEmptyState";
-import { GrammarGuide } from "./src/features/grammar/GrammarGuide";
-import { HomeScreen } from "./src/features/home/HomeScreen";
-import { QuizScreen } from "./src/features/quiz/QuizScreen";
-import { SettingsPanel } from "./src/features/settings/SettingsPanel";
-import { SearchPanel } from "./src/features/search/SearchPanel";
-import { StudyScreen } from "./src/features/study/StudyScreen";
 import { useStudyAnimations } from "./src/features/study/useStudyAnimations";
 import {
   advanceRelearningQueue as advanceRelearningEntries,
@@ -66,14 +52,7 @@ import {
   takeRelearningCardFromQueue,
   type RelearningEntry
 } from "./src/features/study/studyQueue";
-import { AddWordPanel } from "./src/features/words/AddWordPanel";
-import { EditCardForm } from "./src/features/words/EditCardForm";
 import { downloadJson, pickTextFile } from "./src/services/fileTransfer";
-import { colors } from "./src/theme/design";
-
-type Panel = "search" | "add" | "edit" | "settings" | "account" | "grammar";
-type Screen = "home" | "study" | "quiz";
-type UndoReview = { card: Card; previousState: ReviewState; event: ReviewEvent; previousRelearningQueue: RelearningEntry[] };
 const RELEARNING_MIN_CARDS = 10;
 const RELEARNING_MAX_CARDS = 15;
 const RECENT_CARD_LIMIT = 18;
@@ -486,146 +465,66 @@ export default function App() {
     return <AppLoadingScreen />;
   }
 
-  const dueCount = deck.filter((card) => (states[card.id]?.dueAt || 0) <= Date.now()).length;
-  const studiedCount = deck.filter((card) => (states[card.id]?.seen || 0) > 0).length;
-  const masteredCount = deck.filter((card) => (states[card.id]?.knownStreak || 0) >= 4).length;
-  const learningCount = deck.filter((card) => {
-    const state = states[card.id];
-    return Boolean(state?.seen && (state.knownStreak || 0) < 4);
-  }).length;
   const customCards = cards.filter((card) => card.source === "custom");
-  const accountStudySummary: AccountStudySummary = {
-    deckTotal: deck.length,
-    studiedCount,
-    masteredCount,
-    learningCount,
-    dueCount,
-    customCount: customCards.length,
-    savedCount: savedCardIds.size,
-    examLevel: settings.examLevel.toUpperCase(),
-    syncStatus
-  };
-  const [reviewedToday, dailyGoal] = dailyProgress.split(" / ").map((value) => Number.parseInt(value, 10) || 0);
-  const sessionProgress = dailyGoal ? Math.min(1, reviewedToday / dailyGoal) : 0;
+  const accountStudySummary = buildAccountStudySummary(deck, cards, states, savedCardIds.size, settings, syncStatus);
+  const { reviewedToday, dailyGoal, sessionProgress } = parseDailyProgress(dailyProgress);
   const sessionTarget = Math.min(deck.length, Math.max(1, dailyGoal - reviewedToday + sessionReviews));
 
   return (
-    <SafeAreaView style={styles.shell}>
-      <StatusBar barStyle="dark-content" />
-      {screen === "home" && (
-        <HomeScreen
-          deck={deck}
-          allCards={cards}
-          states={states}
-          settings={settings}
-          savedCount={savedCardIds.size}
-          customCount={customCards.length}
-          dailyProgress={dailyProgress}
-          accountEmail={accountEmail}
-          syncStatus={syncStatus}
-          onStartStudy={startStudy}
-          onStartQuiz={() => setScreen("quiz")}
-          onSelectCategory={selectCategory}
-          onSearch={() => setPanel("search")}
-          onAdd={() => setPanel("add")}
-          onSettings={() => setPanel("settings")}
-          onAccount={() => setPanel("account")}
-        />
-      )}
-
-      {screen === "quiz" && <QuizScreen deck={deck} onClose={() => setScreen("home")} />}
-
-      {screen === "study" && (
-        <StudyScreen
-          current={current}
-          settings={settings}
-          savedCardIds={savedCardIds}
-          revealed={revealed}
-          flipping={studyAnimations.flipping}
-          grading={grading}
-          swipeDirection={studyAnimations.swipeDirection}
-          lastReviewCard={lastReview?.card || null}
-          sessionReviews={sessionReviews}
-          sessionTarget={sessionTarget}
-          reviewedToday={reviewedToday}
-          dailyGoal={dailyGoal}
-          sessionProgress={sessionProgress}
-          dragX={studyAnimations.dragX}
-          flipProgress={studyAnimations.flipProgress}
-          cardRotation={studyAnimations.cardRotation}
-          panHandlers={studyAnimations.panHandlers}
-          reviewInterval={reviewInterval}
-          onBack={() => setScreen("home")}
-          onOpenGrammar={() => setPanel("grammar")}
-          onFlipCard={studyAnimations.flipCard}
-          onToggleSaved={(cardId) => { void toggleSavedCard(cardId, true); }}
-          onEditCard={() => openCardEditor()}
-          onCompleteSwipe={studyAnimations.completeSwipe}
-          onUndoLastReview={() => { void undoLastReview(); }}
-          onGrade={(result) => { void grade(result); }}
-        />
-      )}
-
-      <AppModal visible={panel === "search"} title="Search words" onClose={() => setPanel(null)}>
-        <SearchPanel
-          cards={cards}
-          query={query}
-          meaningLanguage={settings.meaningLanguage}
-          savedCardIds={savedCardIds}
-          onQueryChange={setQuery}
-          onStudy={studySearchResult}
-          onToggleSaved={(card) => { void toggleSavedCard(card.id); }}
-          onEdit={openCardEditor}
-        />
-      </AppModal>
-
-      <AppModal visible={panel === "add"} title="Add your own word" onClose={() => setPanel(null)}>
-        <AddWordPanel onSubmit={addWord} cards={customCards} decks={settings.customDecks} onDelete={deleteWord} onEdit={openCardEditor} />
-      </AppModal>
-
-      <AppModal visible={panel === "edit"} title="Edit card" onClose={closeCardEditor}>
-        {editingCard && <EditCardForm key={editingCard.id} card={editingCard} onSubmit={saveCorrection} />}
-      </AppModal>
-
-      <AppModal visible={panel === "settings"} title="Settings" onClose={() => setPanel(null)}>
-        <SettingsPanel
-          settings={settings}
-          accountEmail={accountEmail}
-          syncStatus={syncStatus}
-          notice={settingsNotice}
-          onChange={(nextSettings) => { void persistSettings(nextSettings); }}
-          onSyncNow={() => { void syncNow(); }}
-          onAccount={() => setPanel("account")}
-          onRestoreJson={restoreJson}
-          onImportCsv={importCsv}
-          onShuffleDue={shuffleDueCards}
-          onReviewAllNow={() => { void reviewAllNow(); }}
-          onExportProgress={() => { void exportProgress(); }}
-          onExportDeck={exportCurrentDeck}
-        />
-      </AppModal>
-
-      <AppModal visible={panel === "account"} title="Account and sync" onClose={() => setPanel(null)}>
-        <AccountPanel
-          configured={Boolean(supabase)}
-          supabase={supabase}
-          accountEmail={accountEmail}
-          studySummary={accountStudySummary}
-          busy={authBusy}
-          onAuthenticate={authenticate}
-          onSignOut={signOutAccount}
-        />
-      </AppModal>
-
-      <AppModal visible={panel === "grammar"} title="B1 grammar guide" onClose={() => setPanel(null)}>
-        {current ? <GrammarGuide card={current} /> : <GrammarEmptyState />}
-      </AppModal>
-
-      <AppToast message={toastMessage} />
-    </SafeAreaView>
+    <AppShell
+      screen={screen}
+      panel={panel}
+      deck={deck}
+      cards={cards}
+      customCards={customCards}
+      states={states}
+      settings={settings}
+      savedCardIds={savedCardIds}
+      current={current}
+      revealed={revealed}
+      grading={grading}
+      lastReviewCard={lastReview?.card || null}
+      sessionReviews={sessionReviews}
+      sessionTarget={sessionTarget}
+      reviewedToday={reviewedToday}
+      dailyGoal={dailyGoal}
+      sessionProgress={sessionProgress}
+      studyAnimations={studyAnimations}
+      query={query}
+      syncStatus={syncStatus}
+      settingsNotice={settingsNotice}
+      toastMessage={toastMessage}
+      accountEmail={accountEmail}
+      authBusy={authBusy}
+      accountStudySummary={accountStudySummary}
+      supabase={supabase}
+      editingCard={editingCard}
+      dailyProgress={dailyProgress}
+      reviewInterval={reviewInterval}
+      onSetPanel={setPanel}
+      onSetScreen={setScreen}
+      onStartStudy={startStudy}
+      onSelectCategory={(category) => { void selectCategory(category); }}
+      onQueryChange={setQuery}
+      onStudySearchResult={studySearchResult}
+      onToggleSaved={(cardId, showFeedback) => { void toggleSavedCard(cardId, showFeedback); }}
+      onOpenCardEditor={openCardEditor}
+      onCloseCardEditor={closeCardEditor}
+      onUndoLastReview={() => { void undoLastReview(); }}
+      onGrade={(result) => { void grade(result); }}
+      onAddWord={(values) => { void addWord(values); }}
+      onDeleteWord={(cardId) => { void deleteWord(cardId); }}
+      onSaveCorrection={(values) => { void saveCorrection(values); }}
+      onChangeSettings={(nextSettings) => { void persistSettings(nextSettings); }}
+      onSyncNow={() => { void syncNow(); }}
+      onRestoreJson={restoreJson}
+      onImportCsv={importCsv}
+      onShuffleDue={shuffleDueCards}
+      onReviewAllNow={() => { void reviewAllNow(); }}
+      onExportProgress={() => { void exportProgress(); }}
+      onExportDeck={exportCurrentDeck}
+      onAuthenticate={authenticate}
+      onSignOut={signOutAccount}
+    />
   );
 }
-
-const styles = StyleSheet.create({
-  shell: { flex: 1, backgroundColor: colors.background }
-});

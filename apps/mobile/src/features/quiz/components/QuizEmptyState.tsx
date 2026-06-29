@@ -1,0 +1,29 @@
+import React from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import MaterialIcons from "../../../components/MaterialIcons";
+import { colors, radius, size, spacing, typography } from "../../../theme/design";
+
+export function QuizEmptyState({ onClose }: { onClose: () => void }) {
+  return (
+    <View style={styles.empty}>
+      <View style={styles.emptyIcon}>
+        <MaterialIcons name="quiz" size={size.iconLarge} color={colors.warning} />
+      </View>
+      <Text style={styles.emptyTitle}>Quiz needs more cards</Text>
+      <Text style={styles.emptyCopy}>Choose a deck with at least four distinct translations to start a quiz.</Text>
+      <Pressable style={styles.secondaryButton} onPress={onClose} accessibilityRole="button">
+        <MaterialIcons name="arrow-back" size={size.icon} color={colors.primaryDeep} />
+        <Text style={styles.secondaryText}>Back home</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  empty: { flex: 1, alignItems: "center", justifyContent: "center", gap: spacing.xl, paddingHorizontal: spacing.hero, backgroundColor: colors.background },
+  emptyIcon: { width: size.quizResultIcon, height: size.quizResultIcon, alignItems: "center", justifyContent: "center", borderRadius: radius.card, backgroundColor: colors.goldSoft },
+  emptyTitle: { color: colors.textStrong, fontSize: typography.display, fontWeight: typography.weightBold, textAlign: "center" },
+  emptyCopy: { color: colors.textSoft, fontSize: typography.bodyLarge, lineHeight: typography.titleSmall + spacing.xs, textAlign: "center" },
+  secondaryButton: { minHeight: size.reviewButton, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: spacing.lg, borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surface, paddingHorizontal: spacing.hero },
+  secondaryText: { color: colors.primaryDeep, fontSize: typography.bodyLarge, fontWeight: typography.weightSemibold }
+});

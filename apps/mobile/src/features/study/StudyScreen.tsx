@@ -2,25 +2,19 @@ import React from "react";
 import {
   Animated,
   GestureResponderHandlers,
-  Pressable,
   ScrollView,
   StyleSheet,
-  Text,
-  View
 } from "react-native";
 import type { Card, ReviewGrade } from "@czech-flashcards/shared";
-import * as Speech from "../../speech";
-import MaterialIcons from "../../components/MaterialIcons";
 import { GeminiTutorPanel } from "../tutor/GeminiTutorPanel";
 import type { StudySettings } from "../../database";
-import { colors, radius, size, spacing, typography } from "../../theme/design";
+import { spacing } from "../../theme/design";
 import { ReviewButtons } from "./components/ReviewButtons";
+import { StudyCard } from "./components/StudyCard";
 import { StudyHeader } from "./components/StudyHeader";
 import { StudyProgress } from "./components/StudyProgress";
-import { displaySelectedMeaning, pronunciationHint } from "./studyMeaning";
+import { displaySelectedMeaning } from "./studyMeaning";
 import { WordDetailsPanel } from "./WordDetailsPanel";
-
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 type SwipeDirection = "again" | "known";
 
@@ -89,143 +83,26 @@ export function StudyScreen({
       <StudyProgress sessionReviews={sessionReviews} sessionTarget={sessionTarget} reviewedToday={reviewedToday} dailyGoal={dailyGoal} sessionProgress={sessionProgress} />
 
       <ScrollView contentContainerStyle={styles.content} directionalLockEnabled>
-        <View style={styles.cardFrame} {...panHandlers}>
-          <Animated.View pointerEvents="box-none" style={[styles.cardMotion, { transform: [{ translateX: dragX }, { rotateZ: cardRotation }] }]}>
-            {swipeDirection && (
-              <Text style={[styles.swipeOverlay, swipeDirection === "known" ? styles.swipeKnown : styles.swipeAgain]}>
-                {swipeDirection === "known" ? "Known" : "Again"}
-              </Text>
-            )}
-            {current ? (
-              <>
-                <Pressable
-                  style={styles.cardSaveButton}
-                  onPressIn={(event) => event.stopPropagation()}
-                  onPress={(event) => { event.stopPropagation(); onToggleSaved(current.id); }}
-                  accessibilityRole="button"
-                  accessibilityState={{ selected: savedCardIds.has(current.id) }}
-                  accessibilityLabel={savedCardIds.has(current.id) ? `Remove ${current.cz} from My list` : `Add ${current.cz} to My list`}
-                >
-                  <MaterialIcons name={savedCardIds.has(current.id) ? "star" : "star-border"} size={size.icon} color={colors.action} />
-                </Pressable>
-                {revealed && !flipping && (
-                  <Pressable style={styles.cardEditButton} onPress={(event) => { event.stopPropagation(); onEditCard(); }} accessibilityRole="button" accessibilityLabel={`Edit ${current.cz}`}>
-                    <MaterialIcons name="edit" size={size.iconMedium} color={colors.actionMuted} />
-                  </Pressable>
-                )}
-                <AnimatedPressable
-                  onPress={onFlipCard}
-                  accessibilityRole="button"
-                  accessibilityLabel="Reveal meaning"
-                  style={[
-                    styles.cardFace,
-                    {
-                      transform: [
-                        { perspective: 1200 },
-                        { rotateY: flipProgress.interpolate({ inputRange: [0, 1], outputRange: ["0deg", "180deg"] }) }
-                      ]
-                    }
-                  ]}
-                >
-                  <Text style={styles.word}>{current.cz}</Text>
-                  <Pressable
-                    style={styles.pronunciationPill}
-                    onPress={(event) => { event.stopPropagation(); Speech.speak(current.cz, { language: "cs-CZ", rate: 0.86 }); }}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Play ${current.cz}`}
-                  >
-                    <MaterialIcons name="volume-up" size={size.iconSmall} color={colors.action} />
-                    <Text style={styles.pronunciationText}>{current.pronunciation || pronunciationHint(current.cz)}</Text>
-                  </Pressable>
-                  <View style={styles.swipeAffordance}>
-                    <Pressable
-                      disabled={grading}
-                      style={[styles.swipeAffordanceButton, styles.swipeAffordanceAgain, grading && styles.disabledButton]}
-                      onPress={(event) => { event.stopPropagation(); onCompleteSwipe("again"); }}
-                      accessibilityRole="button"
-                      accessibilityLabel="Mark again"
-                    >
-                      <MaterialIcons name="arrow-back" size={size.icon} color={colors.danger} />
-                      <Text style={[styles.swipeAffordanceText, styles.swipeAffordanceAgainText]}>Again</Text>
-                    </Pressable>
-                    <Pressable
-                      disabled={grading}
-                      style={[styles.swipeAffordanceButton, styles.swipeAffordanceKnown, grading && styles.disabledButton]}
-                      onPress={(event) => { event.stopPropagation(); onCompleteSwipe("known"); }}
-                      accessibilityRole="button"
-                      accessibilityLabel="Mark known"
-                    >
-                      <Text style={[styles.swipeAffordanceText, styles.swipeAffordanceKnownText]}>Known</Text>
-                      <MaterialIcons name="arrow-forward" size={size.icon} color={colors.success} />
-                    </Pressable>
-                  </View>
-                  <Text style={styles.hint}>Tap to reveal meaning</Text>
-                  {lastReviewCard && !revealed && (
-                    <Pressable
-                      disabled={grading}
-                      style={[styles.cardUndoButton, grading && styles.disabledButton]}
-                      onPress={(event) => { event.stopPropagation(); onUndoLastReview(); }}
-                      accessibilityRole="button"
-                      accessibilityLabel={`Undo review for ${lastReviewCard.cz}`}
-                    >
-                      <MaterialIcons name="undo" size={size.iconSmall} color={colors.primaryDeep} />
-                      <Text style={styles.cardUndoText}>Undo</Text>
-                    </Pressable>
-                  )}
-                </AnimatedPressable>
-                <AnimatedPressable
-                  onPress={onFlipCard}
-                  accessibilityRole="button"
-                  accessibilityLabel="Show Czech word"
-                  style={[
-                    styles.cardFace,
-                    styles.cardBack,
-                    {
-                      transform: [
-                        { perspective: 1200 },
-                        { rotateY: flipProgress.interpolate({ inputRange: [0, 1], outputRange: ["180deg", "360deg"] }) }
-                      ]
-                    }
-                  ]}
-                >
-                  <Text style={styles.backWord}>{current.cz}</Text>
-                  <View style={styles.answer}>
-                    <Text style={styles.contentLabel}>Translation</Text>
-                    <View style={styles.meaningRow}>
-                      <Text style={styles.meaning}>{current.en}</Text>
-                      {Boolean(currentSecondaryMeaning) && (
-                        <Text style={[styles.meaning, settings.meaningLanguage === "ur" && styles.rtl]}>
-                          {currentSecondaryMeaning}
-                        </Text>
-                      )}
-                    </View>
-                    {Boolean(current.sentence) && (
-                      <View style={styles.exampleBlock}>
-                        <Text style={styles.contentLabel}>In context</Text>
-                        <Pressable
-                          style={styles.exampleSpeech}
-                          onPress={(event) => { event.stopPropagation(); Speech.speak(current.sentence, { language: "cs-CZ", rate: 0.86 }); }}
-                          accessibilityRole="button"
-                          accessibilityLabel="Play Czech example"
-                        >
-                          <MaterialIcons name="volume-up" size={size.iconSmall} color={colors.action} />
-                          <Text style={styles.example} numberOfLines={2}>{current.sentence}</Text>
-                        </Pressable>
-                        {Boolean(current.sentenceEn) && <Text style={styles.muted} numberOfLines={2}>{current.sentenceEn}</Text>}
-                      </View>
-                    )}
-                  </View>
-                  <Text style={styles.hint}>Tap to see Czech</Text>
-                </AnimatedPressable>
-              </>
-            ) : (
-              <View style={styles.cardFace}>
-                <Text style={styles.word}>Done</Text>
-                <Text style={styles.hint}>No cards are due in this deck.</Text>
-              </View>
-            )}
-          </Animated.View>
-        </View>
+        <StudyCard
+          current={current}
+          currentSecondaryMeaning={currentSecondaryMeaning}
+          savedCardIds={savedCardIds}
+          revealed={revealed}
+          flipping={flipping}
+          grading={grading}
+          swipeDirection={swipeDirection}
+          lastReviewCard={lastReviewCard}
+          dragX={dragX}
+          flipProgress={flipProgress}
+          cardRotation={cardRotation}
+          panHandlers={panHandlers}
+          meaningLanguage={settings.meaningLanguage}
+          onFlipCard={onFlipCard}
+          onToggleSaved={onToggleSaved}
+          onEditCard={onEditCard}
+          onCompleteSwipe={onCompleteSwipe}
+          onUndoLastReview={onUndoLastReview}
+        />
 
         {revealed && current && <ReviewButtons grading={grading} reviewInterval={reviewInterval} onGrade={onGrade} />}
 
@@ -237,38 +114,5 @@ export function StudyScreen({
 }
 
 const styles = StyleSheet.create({
-  content: { gap: spacing.xlPlus, paddingHorizontal: spacing.page, paddingBottom: spacing.screenBottom },
-  cardFrame: { position: "relative", height: size.cardHeight },
-  cardMotion: { ...StyleSheet.absoluteFillObject },
-  cardFace: { position: "absolute", inset: 0, justifyContent: "center", backgroundColor: colors.surface, borderRadius: radius.card, padding: spacing.card, borderWidth: spacing.hairline, borderColor: colors.borderSoft, backfaceVisibility: "hidden" },
-  cardBack: { backgroundColor: colors.surfaceSecondary },
-  cardSaveButton: { position: "absolute", top: spacing.xlPlus, left: spacing.xlPlus, zIndex: spacing.sm, width: size.cardAction, height: size.cardAction, alignItems: "center", justifyContent: "center", borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surface },
-  cardEditButton: { position: "absolute", top: spacing.xlPlus, right: spacing.xlPlus, zIndex: spacing.sm, width: size.cardAction, height: size.cardAction, alignItems: "center", justifyContent: "center", borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surface },
-  cardUndoButton: { position: "absolute", bottom: spacing.xlPlus, alignSelf: "center", minHeight: size.touchTarget, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: spacing.smd, borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surfaceWarm, paddingHorizontal: spacing.xl },
-  cardUndoText: { color: colors.primaryDeep, fontSize: typography.bodySmall, fontWeight: typography.weightSemibold },
-  swipeOverlay: { position: "absolute", zIndex: spacing.lgPlus, left: -spacing.lgPlus, right: -spacing.lgPlus, top: "50%", borderWidth: spacing.sm, borderRadius: radius.md, paddingVertical: spacing.lg, backgroundColor: colors.stampSurface, fontSize: 62, fontWeight: "900", lineHeight: 68, textAlign: "center", textTransform: "uppercase" },
-  swipeKnown: { color: colors.successStrong, borderColor: colors.successStrong, transform: [{ translateY: -size.headerAction }, { rotate: "-18deg" }] },
-  swipeAgain: { color: colors.dangerStrong, borderColor: colors.dangerStrong, transform: [{ translateY: -size.headerAction }, { rotate: "18deg" }] },
-  word: { fontSize: typography.word, lineHeight: 56, color: colors.textStrong, fontWeight: typography.weightBold, textAlign: "center" },
-  pronunciationPill: { alignSelf: "center", flexDirection: "row", alignItems: "center", gap: spacing.md, marginTop: spacing.xlPlus, borderRadius: radius.md, backgroundColor: colors.actionSoft, paddingHorizontal: spacing.lg, paddingVertical: spacing.smd },
-  pronunciationText: { color: colors.action, fontSize: typography.bodySmall, fontWeight: typography.weightMedium },
-  backWord: { color: colors.primary, fontSize: typography.screenTitle, fontWeight: typography.weightSemibold, textAlign: "center", marginBottom: spacing.sm },
-  swipeAffordance: { flexDirection: "row", justifyContent: "space-between", gap: spacing.lg, marginTop: spacing.xlPlus },
-  swipeAffordanceButton: { flex: 1, minHeight: size.touchTarget, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: spacing.smd, borderRadius: radius.md, borderWidth: spacing.hairline, paddingHorizontal: spacing.md },
-  swipeAffordanceAgain: { borderColor: colors.dangerSoft, backgroundColor: colors.dangerSoft },
-  swipeAffordanceKnown: { borderColor: colors.mintSoft, backgroundColor: colors.mintSoft },
-  swipeAffordanceText: { fontSize: typography.bodySmall, fontWeight: typography.weightSemibold },
-  swipeAffordanceAgainText: { color: colors.danger },
-  swipeAffordanceKnownText: { color: colors.success },
-  answer: { gap: 7, marginTop: 12 },
-  contentLabel: { color: colors.action, fontSize: typography.caption, fontWeight: typography.weightSemibold, textTransform: "uppercase" },
-  meaningRow: { flexDirection: "row", alignItems: "flex-start", gap: 12 },
-  meaning: { flex: 1, flexShrink: 1, minWidth: 0, fontSize: typography.bodyLarge, lineHeight: 21, color: colors.textBody, fontWeight: typography.weightMedium },
-  rtl: { writingDirection: "rtl", textAlign: "right" },
-  exampleBlock: { gap: 5, marginTop: 5 },
-  exampleSpeech: { flexDirection: "row", alignItems: "center", gap: spacing.md, borderRadius: radius.md, backgroundColor: colors.actionSoft, paddingHorizontal: spacing.mdPlus, paddingVertical: spacing.smd },
-  example: { flex: 1, fontSize: typography.bodyLarge, lineHeight: 21, color: colors.textExample },
-  hint: { color: colors.textMuted, marginTop: typography.bodyLarge, textAlign: "center", fontWeight: typography.weightRegular },
-  muted: { color: colors.textMuted, lineHeight: 20 },
-  disabledButton: { opacity: 0.45 }
+  content: { gap: spacing.xlPlus, paddingHorizontal: spacing.page, paddingBottom: spacing.screenBottom }
 });

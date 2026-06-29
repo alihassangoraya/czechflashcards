@@ -1,0 +1,17 @@
+export const typography = {
+  micro: 10,
+  caption: 11,
+  label: 12,
+  bodySmall: 13,
+  body: 14,
+  bodyLarge: 16,
+  titleSmall: 17,
+  title: 18,
+  screenTitle: 21,
+  display: 28,
+  word: 48,
+  weightRegular: "400" as const,
+  weightMedium: "500" as const,
+  weightSemibold: "600" as const,
+  weightBold: "700" as const
+} as const;
