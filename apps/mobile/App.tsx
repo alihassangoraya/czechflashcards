@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { AppLoadingScreen } from "./src/components/AppLoadingScreen";
 import {
   filterDeck,
@@ -13,6 +13,7 @@ import { useCardManagement } from "./src/app/useCardManagement";
 import { useSettingsTools } from "./src/app/useSettingsTools";
 import { useStudySession } from "./src/app/useStudySession";
 import { useToast } from "./src/app/useToast";
+import { getInitialScreenFromLocation, screenFromPath, syncScreenPath } from "./src/app/webRoutes";
 import type { StudySettings } from "./src/database";
 import { createSupabaseClient } from "./src/sync";
 
@@ -40,10 +41,32 @@ export default function App() {
     signOutAccount
   } = useAppData(supabase);
   const { toastMessage, showToast } = useToast();
-  const [screen, setScreen] = useState<Screen>("home");
+  const [screen, setScreen] = useState<Screen>(() => getInitialScreenFromLocation());
   const [panel, setPanel] = useState<Panel | null>(null);
   const [query, setQuery] = useState("");
   const [settingsNotice, setSettingsNotice] = useState("");
+
+  useEffect(() => {
+    syncScreenPath(screen, true);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+
+    function handlePopState() {
+      setScreen(screenFromPath(window.location.pathname));
+      setPanel(null);
+    }
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  const navigateScreen = useCallback((nextScreen: Screen) => {
+    setScreen(nextScreen);
+    setPanel(null);
+    syncScreenPath(nextScreen);
+  }, []);
 
   const savedDeckIds = settings?.deckFilter === "saved" ? savedCardIds : null;
   const deck = useMemo(() => {
@@ -82,12 +105,12 @@ export default function App() {
     if (!settings) return;
     await persistSettings({ ...settings, deckFilter: category });
     studySession.resetSessionReviews();
-    setScreen("study");
+    navigateScreen("study");
   }
 
   function startStudy() {
     studySession.resetSessionReviews();
-    setScreen("study");
+    navigateScreen("study");
   }
 
   if (!db || !settings) {
@@ -131,13 +154,13 @@ export default function App() {
       dailyProgress={dailyProgress}
       reviewInterval={studySession.reviewInterval}
       onSetPanel={setPanel}
-      onSetScreen={setScreen}
+      onSetScreen={navigateScreen}
       onStartStudy={startStudy}
       onSelectCategory={(category) => { void selectCategory(category); }}
       onQueryChange={setQuery}
       onStudySearchResult={(card) => {
         cardManagement.studySearchResult(card);
-        setScreen("study");
+        navigateScreen("study");
       }}
       onToggleSaved={(cardId, showFeedback) => { void cardManagement.toggleSavedCard(cardId, showFeedback); }}
       onOpenCardEditor={cardManagement.openCardEditor}
