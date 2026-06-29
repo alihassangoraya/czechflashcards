@@ -6,11 +6,11 @@ import type { CustomDeck } from "../../database";
 import { colors, radius, size, spacing, typography } from "../../theme/design";
 
 type Values = { cz: string; en: string; hi: string; ur: string; sentence: string; sentenceEn: string; tag: string };
-type Props = { onSubmit: (values: Values) => void; cards: Card[]; decks: CustomDeck[]; onDelete: (cardId: string) => void };
+type Props = { onSubmit: (values: Values) => void; cards: Card[]; decks: CustomDeck[]; onDelete: (cardId: string) => void; onEdit: (card: Card) => void };
 
 const deckOptions = ["custom", "daily", "work", "travel", "health", "verbs"];
 
-export function AddWordPanel({ onSubmit, cards, decks, onDelete }: Props) {
+export function AddWordPanel({ onSubmit, cards, decks, onDelete, onEdit }: Props) {
   const [values, setValues] = useState<Values>({ cz: "", en: "", hi: "", ur: "", sentence: "", sentenceEn: "", tag: "custom" });
   const [showDetails, setShowDetails] = useState(false);
   const [error, setError] = useState("");
@@ -80,9 +80,14 @@ export function AddWordPanel({ onSubmit, cards, decks, onDelete }: Props) {
                 <Text style={styles.savedWord}>{card.cz}</Text>
                 <Text style={styles.savedMeaning}>{card.en}</Text>
               </View>
-              <Pressable style={styles.deleteButton} onPress={() => onDelete(card.id)} accessibilityRole="button" accessibilityLabel={`Delete ${card.cz}`}>
-                <MaterialIcons name="delete-outline" size={size.iconSmall} color={colors.danger} />
-              </Pressable>
+              <View style={styles.savedActions}>
+                <Pressable style={styles.editButton} onPress={() => onEdit(card)} accessibilityRole="button" accessibilityLabel={`Edit ${card.cz}`}>
+                  <MaterialIcons name="edit" size={size.iconSmall} color={colors.action} />
+                </Pressable>
+                <Pressable style={styles.deleteButton} onPress={() => onDelete(card.id)} accessibilityRole="button" accessibilityLabel={`Delete ${card.cz}`}>
+                  <MaterialIcons name="delete-outline" size={size.iconSmall} color={colors.danger} />
+                </Pressable>
+              </View>
             </View>
           ))}
         </View>
@@ -167,5 +172,7 @@ const styles = StyleSheet.create({
   savedCopy: { flex: 1, gap: spacing.xxs },
   savedWord: { color: colors.textStrong, fontSize: typography.body, fontWeight: typography.weightSemibold },
   savedMeaning: { color: colors.textMuted, fontSize: typography.bodySmall },
+  savedActions: { flexDirection: "row", alignItems: "center", gap: spacing.smd },
+  editButton: { width: size.cardAction, height: size.cardAction, alignItems: "center", justifyContent: "center", borderRadius: radius.sm, backgroundColor: colors.actionSoft },
   deleteButton: { width: size.cardAction, height: size.cardAction, alignItems: "center", justifyContent: "center", borderRadius: radius.sm, backgroundColor: colors.dangerSoft }
 });

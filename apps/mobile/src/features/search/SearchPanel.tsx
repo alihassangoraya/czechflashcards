@@ -14,9 +14,10 @@ type Props = {
   onQueryChange: (value: string) => void;
   onStudy: (card: Card) => void;
   onToggleSaved: (card: Card) => void;
+  onEdit: (card: Card) => void;
 };
 
-export function SearchPanel({ cards, query, meaningLanguage, savedCardIds, onQueryChange, onStudy, onToggleSaved }: Props) {
+export function SearchPanel({ cards, query, meaningLanguage, savedCardIds, onQueryChange, onStudy, onToggleSaved, onEdit }: Props) {
   const results = useMemo(() => searchCards(cards, query), [cards, query]);
   const trimmedQuery = query.trim();
 
@@ -80,6 +81,11 @@ export function SearchPanel({ cards, query, meaningLanguage, savedCardIds, onQue
                 <Text style={[styles.resultMeaning, meaningLanguage === "ur" && styles.rtl]}>{meaning}</Text>
               </Pressable>
               <View style={styles.resultActions}>
+                {card.source === "custom" && (
+                  <Pressable style={styles.resultAction} onPress={() => onEdit(card)} accessibilityRole="button" accessibilityLabel={`Edit ${card.cz}`}>
+                    <MaterialIcons name="edit" size={size.iconSmall} color={colors.action} />
+                  </Pressable>
+                )}
                 <Pressable style={styles.resultAction} onPress={() => Speech.speak(card.cz, { language: "cs-CZ", rate: 0.86 })} accessibilityRole="button" accessibilityLabel={`Play ${card.cz}`}>
                   <MaterialIcons name="volume-up" size={size.iconSmall} color={colors.action} />
                 </Pressable>

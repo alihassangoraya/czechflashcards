@@ -486,9 +486,9 @@ export default function App() {
     await refresh(db);
   }
 
-  function openCardEditor() {
-    if (!current) return;
-    setEditingCard(current);
+  function openCardEditor(card = current) {
+    if (!card) return;
+    setEditingCard(card);
     setPanel("edit");
   }
 
@@ -839,11 +839,12 @@ export default function App() {
           onQueryChange={setQuery}
           onStudy={studySearchResult}
           onToggleSaved={(card) => { void toggleSavedCard(card.id); }}
+          onEdit={openCardEditor}
         />
       </AppModal>
 
       <AppModal visible={panel === "add"} title="Add your own word" onClose={() => setPanel(null)}>
-        <AddWordPanel onSubmit={addWord} cards={customCards} decks={settings.customDecks} onDelete={deleteWord} />
+        <AddWordPanel onSubmit={addWord} cards={customCards} decks={settings.customDecks} onDelete={deleteWord} onEdit={openCardEditor} />
       </AppModal>
 
       <AppModal visible={panel === "edit"} title="Edit card" onClose={() => { setEditingCard(null); setPanel(null); }}>
