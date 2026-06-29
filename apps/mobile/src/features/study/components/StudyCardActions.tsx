@@ -9,10 +9,11 @@ type Props = {
   isSaved: boolean;
   showEdit: boolean;
   onToggleSaved: (cardId: string) => void;
+  onManageDecks: (card: Card) => void;
   onEditCard: () => void;
 };
 
-export function StudyCardActions({ current, isSaved, showEdit, onToggleSaved, onEditCard }: Props) {
+export function StudyCardActions({ current, isSaved, showEdit, onToggleSaved, onManageDecks, onEditCard }: Props) {
   return (
     <>
       <Pressable
@@ -24,6 +25,15 @@ export function StudyCardActions({ current, isSaved, showEdit, onToggleSaved, on
         accessibilityLabel={isSaved ? `Remove ${current.cz} from My list` : `Add ${current.cz} to My list`}
       >
         <MaterialIcons name={isSaved ? "star" : "star-border"} size={size.icon} color={colors.action} />
+      </Pressable>
+      <Pressable
+        style={styles.deckButton}
+        onPressIn={(event) => event.stopPropagation()}
+        onPress={(event) => { event.stopPropagation(); onManageDecks(current); }}
+        accessibilityRole="button"
+        accessibilityLabel={`Add ${current.cz} to a deck`}
+      >
+        <MaterialIcons name="folder" size={size.icon} color={colors.action} />
       </Pressable>
       {showEdit && (
         <Pressable style={styles.editButton} onPress={(event) => { event.stopPropagation(); onEditCard(); }} accessibilityRole="button" accessibilityLabel={`Edit ${current.cz}`}>
@@ -50,5 +60,6 @@ const actionBase = {
 
 const styles = StyleSheet.create({
   saveButton: { ...actionBase, left: spacing.xlPlus },
+  deckButton: { ...actionBase, left: spacing.xlPlus + size.cardAction + spacing.smd },
   editButton: { ...actionBase, right: spacing.xlPlus }
 });

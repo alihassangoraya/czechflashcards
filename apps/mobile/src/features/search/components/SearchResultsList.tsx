@@ -10,10 +10,11 @@ type Props = {
   savedCardIds: ReadonlySet<string>;
   onStudy: (card: Card) => void;
   onToggleSaved: (card: Card) => void;
+  onManageDecks: (card: Card) => void;
   onEdit: (card: Card) => void;
 };
 
-export function SearchResultsList({ results, meaningLanguage, savedCardIds, onStudy, onToggleSaved, onEdit }: Props) {
+export function SearchResultsList({ results, meaningLanguage, savedCardIds, onStudy, onToggleSaved, onManageDecks, onEdit }: Props) {
   return (
     <View style={styles.results}>
       {results.map((card) => (
@@ -24,6 +25,7 @@ export function SearchResultsList({ results, meaningLanguage, savedCardIds, onSt
           saved={savedCardIds.has(card.id)}
           onStudy={onStudy}
           onToggleSaved={onToggleSaved}
+          onManageDecks={onManageDecks}
           onEdit={onEdit}
         />
       ))}

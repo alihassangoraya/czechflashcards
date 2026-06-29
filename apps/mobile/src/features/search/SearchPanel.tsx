@@ -17,10 +17,11 @@ type Props = {
   onQueryChange: (value: string) => void;
   onStudy: (card: Card) => void;
   onToggleSaved: (card: Card) => void;
+  onManageDecks: (card: Card) => void;
   onEdit: (card: Card) => void;
 };
 
-export function SearchPanel({ cards, query, meaningLanguage, savedCardIds, onQueryChange, onStudy, onToggleSaved, onEdit }: Props) {
+export function SearchPanel({ cards, query, meaningLanguage, savedCardIds, onQueryChange, onStudy, onToggleSaved, onManageDecks, onEdit }: Props) {
   const results = useMemo(() => searchCards(cards, query), [cards, query]);
   const trimmedQuery = query.trim();
 
@@ -36,7 +37,7 @@ export function SearchPanel({ cards, query, meaningLanguage, savedCardIds, onQue
 
       {trimmedQuery && results.length === 0 && <SearchNoResults />}
 
-      <SearchResultsList results={results} meaningLanguage={meaningLanguage} savedCardIds={savedCardIds} onStudy={onStudy} onToggleSaved={onToggleSaved} onEdit={onEdit} />
+      <SearchResultsList results={results} meaningLanguage={meaningLanguage} savedCardIds={savedCardIds} onStudy={onStudy} onToggleSaved={onToggleSaved} onManageDecks={onManageDecks} onEdit={onEdit} />
     </View>
   );
 }

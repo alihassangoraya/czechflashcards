@@ -20,6 +20,7 @@ export type WebStore = {
   reviews: ReviewEvent[];
   dailyProgress: Record<string, DailyProgress>;
   customCards: Record<string, CustomCard>;
+  deckMemberships: Record<string, string[]>;
   overrides: Record<string, Card>;
   savedCardIds: string[];
   settings?: StudySettings;

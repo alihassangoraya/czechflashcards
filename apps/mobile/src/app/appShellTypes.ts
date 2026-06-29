@@ -20,7 +20,9 @@ export type AppShellProps = {
   states: Record<string, ReviewState>;
   settings: StudySettings;
   savedCardIds: Set<string>;
+  deckMemberships: Record<string, string[]>;
   current: Card | null;
+  deckManagementCard: Card | null;
   revealed: boolean;
   grading: boolean;
   lastReviewCard: Card | null;
@@ -48,6 +50,9 @@ export type AppShellProps = {
   onQueryChange: (value: string) => void;
   onStudySearchResult: (card: Card) => void;
   onToggleSaved: (cardId: string, showFeedback?: boolean) => void;
+  onAddCardToDeck: (deckId: string, cardId: string) => void;
+  onRemoveCardFromDeck: (deckId: string, cardId: string) => void;
+  onSetDeckManagementCard: (card: Card | null) => void;
   onOpenCardEditor: (card?: Card | null) => void;
   onCloseCardEditor: () => void;
   onUndoLastReview: () => void;

@@ -1,5 +1,6 @@
 import { normalizeCards, parseCsvCards, type Card } from "@czech-flashcards/shared";
 import {
+  addCardToCustomDeck,
   exportBackup,
   importCards,
   markCardsDueNow,
@@ -79,7 +80,11 @@ export function useSettingsTools({ db, deck, settings, setSettingsState, setSett
         return;
       }
       const count = await importCards(db, imported);
-      setSettingsNotice(`Imported ${count} cards.`);
+      const activeCustomDeck = settings?.customDecks.find((deck) => deck.id === settings.deckFilter);
+      if (activeCustomDeck) {
+        for (const card of imported) await addCardToCustomDeck(db, activeCustomDeck.id, card.id);
+      }
+      setSettingsNotice(activeCustomDeck ? `Imported ${count} cards into ${activeCustomDeck.name}.` : `Imported ${count} cards.`);
       await refresh(db);
     }, () => setSettingsNotice("CSV import is available in the web app. Native file picking needs a document picker module."));
   }

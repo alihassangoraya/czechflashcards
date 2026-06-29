@@ -37,13 +37,14 @@ type Props = {
   onStartStudy: () => void;
   onSelectCategory: (category: string) => void;
   onToggleSaved: (cardId: string, showFeedback?: boolean) => void;
+  onSetDeckManagementCard: (card: Card | null) => void;
   onOpenCardEditor: (card?: Card | null) => void;
   onUndoLastReview: () => void;
   onGrade: (grade: ReviewGrade) => void;
 };
 
 export function MainScreens(props: Props) {
-  const { screen, deck, cards, customCards, states, settings, savedCardIds, current, revealed, grading, lastReviewCard, sessionReviews, sessionTarget, reviewedToday, dailyGoal, sessionProgress, studyAnimations, accountEmail, syncStatus, dailyProgress, reviewInterval, onSetPanel, onSetScreen, onStartStudy, onSelectCategory, onToggleSaved, onOpenCardEditor, onUndoLastReview, onGrade } = props;
+  const { screen, deck, cards, customCards, states, settings, savedCardIds, current, revealed, grading, lastReviewCard, sessionReviews, sessionTarget, reviewedToday, dailyGoal, sessionProgress, studyAnimations, accountEmail, syncStatus, dailyProgress, reviewInterval, onSetPanel, onSetScreen, onStartStudy, onSelectCategory, onToggleSaved, onSetDeckManagementCard, onOpenCardEditor, onUndoLastReview, onGrade } = props;
 
   return (
     <>
@@ -94,6 +95,7 @@ export function MainScreens(props: Props) {
           onOpenGrammar={() => onSetPanel("grammar")}
           onFlipCard={studyAnimations.flipCard}
           onToggleSaved={(cardId) => onToggleSaved(cardId, true)}
+          onManageDecks={onSetDeckManagementCard}
           onEditCard={() => onOpenCardEditor()}
           onCompleteSwipe={studyAnimations.completeSwipe}
           onUndoLastReview={onUndoLastReview}

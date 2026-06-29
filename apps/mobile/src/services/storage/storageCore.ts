@@ -10,6 +10,7 @@ function emptyStore(): WebStore {
     reviews: [],
     dailyProgress: {},
     customCards: {},
+    deckMemberships: {},
     overrides: {},
     savedCardIds: [],
     syncQueue: [],

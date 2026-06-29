@@ -1,5 +1,6 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
+import type { Card } from "@czech-flashcards/shared";
 import type { StudySettings } from "../../database";
 import type { SyncStatus } from "../../sync";
 import { ChoiceSegment } from "./components/ChoiceSegment";
@@ -22,6 +23,8 @@ type Props = {
   accountEmail: string | null;
   syncStatus: SyncStatus;
   notice?: string;
+  cards: Card[];
+  deckMemberships: Record<string, string[]>;
   onChange: (settings: StudySettings) => void;
   onSyncNow: () => void;
   onAccount: () => void;
@@ -38,6 +41,8 @@ export function SettingsPanel({
   accountEmail,
   syncStatus,
   notice,
+  cards,
+  deckMemberships,
   onChange,
   onSyncNow,
   onAccount,
@@ -74,9 +79,28 @@ export function SettingsPanel({
         <DailyTargetStepper dailyGoal={settings.dailyGoal} onChange={(dailyGoal) => draft.update({ dailyGoal })} />
       </SettingsSection>
 
-      <CustomDeckSection deckName={draft.deckName} decks={settings.customDecks} activeDeckId={settings.deckFilter} onDeckNameChange={draft.setDeckName} onCreateDeck={draft.createDeck} onSelectDeck={(deckFilter) => draft.update({ deckFilter })} />
+      <CustomDeckSection
+        deckName={draft.deckName}
+        decks={settings.customDecks}
+        cards={cards}
+        deckMemberships={deckMemberships}
+        activeDeckId={settings.deckFilter}
+        editingDeckId={draft.editingDeckId}
+        editingDeckName={draft.editingDeckName}
+        deleteDeckId={draft.deleteDeckId}
+        onDeckNameChange={draft.setDeckName}
+        onCreateDeck={draft.createDeck}
+        onSelectDeck={(deckFilter) => draft.update({ deckFilter })}
+        onStartEditDeck={draft.startEditingDeck}
+        onEditingDeckNameChange={draft.setEditingDeckName}
+        onCancelEditDeck={draft.cancelEditingDeck}
+        onSaveEditDeck={draft.saveEditingDeck}
+        onRequestDeleteDeck={draft.setDeleteDeckId}
+        onCancelDeleteDeck={() => draft.setDeleteDeckId(null)}
+        onConfirmDeleteDeck={draft.deleteDeck}
+      />
       <ReminderSettingsSection notifications={settings.notifications} customReminderTime={draft.customReminderTime} onChange={draft.updateNotifications} onCustomReminderTimeChange={draft.setCustomReminderTime} onCommitCustomReminderTime={draft.commitCustomReminderTime} onSetReminderTime={draft.setReminderTime} />
-      <DataToolsSection notice={notice} onRestoreJson={onRestoreJson} onImportCsv={onImportCsv} onShuffleDue={onShuffleDue} onReviewAllNow={onReviewAllNow} onExportProgress={onExportProgress} onExportDeck={onExportDeck} />
+      <DataToolsSection activeDeckLabel={activeDeckLabel} notice={notice} onRestoreJson={onRestoreJson} onImportCsv={onImportCsv} onShuffleDue={onShuffleDue} onReviewAllNow={onReviewAllNow} onExportProgress={onExportProgress} onExportDeck={onExportDeck} />
       <SyncSettingsSection accountEmail={accountEmail} syncStatus={syncStatus} onSyncNow={onSyncNow} onAccount={onAccount} />
     </View>
   );

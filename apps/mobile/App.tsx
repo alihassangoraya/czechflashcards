@@ -1,12 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { AppLoadingScreen } from "./src/components/AppLoadingScreen";
-import {
-  filterDeck,
-  type Card,
-  type ReviewState
-} from "@czech-flashcards/shared";
+import { type Card, type ReviewState } from "@czech-flashcards/shared";
 import { AppShell } from "./src/app/AppShell";
 import type { Panel, Screen } from "./src/app/appTypes";
+import { filterStudyDeck } from "./src/app/deckFiltering";
 import { buildAccountStudySummary, parseDailyProgress } from "./src/app/studySummary";
 import { useAppData } from "./src/app/useAppData";
 import { useCardManagement } from "./src/app/useCardManagement";
@@ -25,6 +22,7 @@ export default function App() {
     db,
     cards,
     savedCardIds,
+    deckMemberships,
     states,
     settings,
     dailyProgress,
@@ -32,6 +30,7 @@ export default function App() {
     accountEmail,
     authBusy,
     setSavedCardIds,
+    setDeckMemberships,
     setStates,
     setSettingsState,
     refresh,
@@ -71,8 +70,8 @@ export default function App() {
   const savedDeckIds = settings?.deckFilter === "saved" ? savedCardIds : null;
   const deck = useMemo(() => {
     if (!settings) return [];
-    return filterDeck(cards, settings.examLevel, settings.deckFilter, savedDeckIds || EMPTY_SAVED_CARD_IDS);
-  }, [cards, savedDeckIds, settings]);
+    return filterStudyDeck(cards, settings, savedDeckIds || EMPTY_SAVED_CARD_IDS, deckMemberships);
+  }, [cards, deckMemberships, savedDeckIds, settings]);
   const studySession = useStudySession({ db, settings, deck, states, refresh });
   const cardManagement = useCardManagement({
     db,
@@ -81,6 +80,7 @@ export default function App() {
     panel,
     savedCardIds,
     setSavedCardIds,
+    setDeckMemberships,
     setCurrent: studySession.setCurrent,
     setRevealed: studySession.setRevealed,
     setPanel,
@@ -132,7 +132,9 @@ export default function App() {
       states={states}
       settings={settings}
       savedCardIds={savedCardIds}
+      deckMemberships={deckMemberships}
       current={studySession.current}
+      deckManagementCard={cardManagement.deckManagementCard}
       revealed={studySession.revealed}
       grading={studySession.grading}
       lastReviewCard={studySession.lastReview?.card || null}
@@ -163,6 +165,9 @@ export default function App() {
         navigateScreen("study");
       }}
       onToggleSaved={(cardId, showFeedback) => { void cardManagement.toggleSavedCard(cardId, showFeedback); }}
+      onAddCardToDeck={(deckId, cardId) => { void cardManagement.addCardToDeck(deckId, cardId); }}
+      onRemoveCardFromDeck={(deckId, cardId) => { void cardManagement.removeCardFromDeck(deckId, cardId); }}
+      onSetDeckManagementCard={cardManagement.setDeckManagementCard}
       onOpenCardEditor={cardManagement.openCardEditor}
       onCloseCardEditor={cardManagement.closeCardEditor}
       onUndoLastReview={() => { void studySession.undoLastReview(); }}

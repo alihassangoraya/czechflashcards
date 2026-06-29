@@ -27,6 +27,7 @@ type Props = {
   meaningLanguage: StudySettings["meaningLanguage"];
   onFlipCard: () => void;
   onToggleSaved: (cardId: string) => void;
+  onManageDecks: (card: Card) => void;
   onEditCard: () => void;
   onCompleteSwipe: (direction: SwipeDirection) => void;
   onUndoLastReview: () => void;
@@ -48,6 +49,7 @@ export function StudyCard({
   meaningLanguage,
   onFlipCard,
   onToggleSaved,
+  onManageDecks,
   onEditCard,
   onCompleteSwipe,
   onUndoLastReview
@@ -63,6 +65,7 @@ export function StudyCard({
               isSaved={savedCardIds.has(current.id)}
               showEdit={revealed && !flipping}
               onToggleSaved={onToggleSaved}
+              onManageDecks={onManageDecks}
               onEditCard={onEditCard}
             />
             <StudyCardFront

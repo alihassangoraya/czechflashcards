@@ -4,6 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   getDailyProgress,
   loadCards,
+  loadDeckMemberships,
   loadReviewStates,
   loadSavedCardIds,
   loadSettings,
@@ -23,6 +24,7 @@ export function useAppData(supabase: SupabaseClient | null) {
   const [db, setDb] = useState<AppDatabase | null>(null);
   const [cards, setCards] = useState<Card[]>([]);
   const [savedCardIds, setSavedCardIds] = useState<Set<string>>(new Set());
+  const [deckMemberships, setDeckMemberships] = useState<Record<string, string[]>>({});
   const [states, setStates] = useState<Record<string, ReviewState>>({});
   const [settings, setSettingsState] = useState<StudySettings | null>(null);
   const [dailyProgress, setDailyProgress] = useState("0 / 30");
@@ -34,6 +36,7 @@ export function useAppData(supabase: SupabaseClient | null) {
     if (!database) return;
     setCards(await loadCards(database));
     setSavedCardIds(await loadSavedCardIds(database));
+    setDeckMemberships(await loadDeckMemberships(database));
     setStates(await loadReviewStates(database));
     const progress = await getDailyProgress(database, undefined, dailyGoal);
     setDailyProgress(`${progress.reviewed} / ${progress.goal}`);
@@ -42,7 +45,9 @@ export function useAppData(supabase: SupabaseClient | null) {
   async function syncNow(database = db) {
     if (!database) return;
     const flushStatus = await flushSyncQueue(database, supabase);
-    setSyncStatus(flushStatus === "error" ? flushStatus : await restoreSyncSnapshot(database, supabase));
+    const restoreStatus = flushStatus === "error" ? flushStatus : await restoreSyncSnapshot(database, supabase);
+    setSyncStatus(restoreStatus);
+    if (restoreStatus === "synced") setSettingsState(await loadSettings(database));
     await refresh(database);
   }
 
@@ -84,7 +89,9 @@ export function useAppData(supabase: SupabaseClient | null) {
         setAccountEmail(data.session?.user.email || null);
       }
       const flushStatus = await flushSyncQueue(database, supabase);
-      setSyncStatus(flushStatus === "error" ? flushStatus : await restoreSyncSnapshot(database, supabase));
+      const restoreStatus = flushStatus === "error" ? flushStatus : await restoreSyncSnapshot(database, supabase);
+      setSyncStatus(restoreStatus);
+      if (restoreStatus === "synced") setSettingsState(await loadSettings(database));
     }
     void boot();
   }, []);
@@ -103,6 +110,7 @@ export function useAppData(supabase: SupabaseClient | null) {
     db,
     cards,
     savedCardIds,
+    deckMemberships,
     states,
     settings,
     dailyProgress,
@@ -111,6 +119,7 @@ export function useAppData(supabase: SupabaseClient | null) {
     authBusy,
     setCards,
     setSavedCardIds,
+    setDeckMemberships,
     setStates,
     setSettingsState,
     setSyncStatus,

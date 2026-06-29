@@ -1,9 +1,11 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import type { Card } from "@czech-flashcards/shared";
 import {
+  addCardToCustomDeck,
   addCustomCard,
   deleteCustomCard,
   loadSavedCardIds,
+  removeCardFromCustomDeck,
   setCardSaved,
   type AppDatabase
 } from "../database";
@@ -19,6 +21,7 @@ type Props = {
   panel: Panel | null;
   savedCardIds: Set<string>;
   setSavedCardIds: (savedCardIds: Set<string> | ((previous: Set<string>) => Set<string>)) => void;
+  setDeckMemberships: (deckMemberships: Record<string, string[]> | ((previous: Record<string, string[]>) => Record<string, string[]>)) => void;
   setCurrent: (card: Card | null) => void;
   setRevealed: (revealed: boolean) => void;
   setPanel: (panel: Panel | null) => void;
@@ -28,14 +31,17 @@ type Props = {
   showToast: (message: string) => void;
 };
 
-export function useCardManagement({ db, cards, current, panel, savedCardIds, setSavedCardIds, setCurrent, setRevealed, setPanel, setSessionReviews, refresh, forceCard, showToast }: Props) {
+export function useCardManagement({ db, cards, current, panel, savedCardIds, setSavedCardIds, setDeckMemberships, setCurrent, setRevealed, setPanel, setSessionReviews, refresh, forceCard, showToast }: Props) {
   const savingCardIds = useRef(new Set<string>());
+  const [deckManagementCard, setDeckManagementCardState] = useState<Card | null>(null);
   const editor = useCardEditor({ db, current, panel, setCurrent, setRevealed, setPanel, setSessionReviews, refresh, forceCard });
 
   async function addWord(values: WordValues) {
     if (!db) return;
     if (!values.cz.trim() || !values.en.trim()) return;
-    await addCustomCard(db, createCustomCard(values));
+    const card = createCustomCard(values);
+    await addCustomCard(db, card);
+    if (values.tag.startsWith("deck-")) await addCardToCustomDeck(db, values.tag, card.id);
     await refresh(db);
   }
 
@@ -69,11 +75,44 @@ export function useCardManagement({ db, cards, current, panel, savedCardIds, set
     }
   }
 
+  function setDeckManagementCard(card: Card | null) {
+    setDeckManagementCardState(card);
+    setPanel(card ? "deck" : null);
+  }
+
+  async function addCardToDeck(deckId: string, cardId: string) {
+    if (!db) return;
+    const card = cards.find((item) => item.id === cardId);
+    setDeckMemberships((previous) => {
+      const nextIds = new Set(previous[deckId] || []);
+      nextIds.add(cardId);
+      return { ...previous, [deckId]: [...nextIds] };
+    });
+    await addCardToCustomDeck(db, deckId, cardId);
+    showToast(`${card?.cz || "Card"} added to deck.`);
+  }
+
+  async function removeCardFromDeck(deckId: string, cardId: string) {
+    if (!db) return;
+    const card = cards.find((item) => item.id === cardId);
+    setDeckMemberships((previous) => {
+      const nextIds = new Set(previous[deckId] || []);
+      nextIds.delete(cardId);
+      return { ...previous, [deckId]: [...nextIds] };
+    });
+    await removeCardFromCustomDeck(db, deckId, cardId);
+    showToast(`${card?.cz || "Card"} removed from deck.`);
+  }
+
   return {
     editingCard: editor.editingCard,
+    deckManagementCard,
     addWord,
     deleteWord,
     toggleSavedCard,
+    addCardToDeck,
+    removeCardFromDeck,
+    setDeckManagementCard,
     saveCorrection: editor.saveCorrection,
     openCardEditor: editor.openCardEditor,
     closeCardEditor: editor.closeCardEditor,

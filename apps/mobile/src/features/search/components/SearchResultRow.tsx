@@ -12,10 +12,11 @@ type Props = {
   saved: boolean;
   onStudy: (card: Card) => void;
   onToggleSaved: (card: Card) => void;
+  onManageDecks: (card: Card) => void;
   onEdit: (card: Card) => void;
 };
 
-export function SearchResultRow({ card, meaningLanguage, saved, onStudy, onToggleSaved, onEdit }: Props) {
+export function SearchResultRow({ card, meaningLanguage, saved, onStudy, onToggleSaved, onManageDecks, onEdit }: Props) {
   const meaning = selectedMeaning(card, meaningLanguage);
 
   return (
@@ -36,6 +37,9 @@ export function SearchResultRow({ card, meaningLanguage, saved, onStudy, onToggl
         )}
         <Pressable style={styles.action} onPress={() => Speech.speak(card.cz, { language: "cs-CZ", rate: 0.86 })} accessibilityRole="button" accessibilityLabel={`Play ${card.cz}`}>
           <MaterialIcons name="volume-up" size={size.iconSmall} color={colors.action} />
+        </Pressable>
+        <Pressable style={styles.action} onPress={() => onManageDecks(card)} accessibilityRole="button" accessibilityLabel={`Add ${card.cz} to a deck`}>
+          <MaterialIcons name="folder" size={size.iconSmall} color={colors.action} />
         </Pressable>
         <Pressable style={[styles.action, saved && styles.savedAction]} onPress={() => onToggleSaved(card)} accessibilityRole="button" accessibilityLabel={saved ? `Remove ${card.cz} from My list` : `Add ${card.cz} to My list`}>
           <MaterialIcons name={saved ? "star" : "star-border"} size={size.iconSmall} color={saved ? colors.onPrimary : colors.action} />

@@ -4,6 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { AppModal } from "../components/AppModal";
 import type { StudySettings } from "../database";
 import { AccountPanel, type AccountStudySummary } from "../features/account/AccountPanel";
+import { DeckMembershipPanel } from "../features/decks/DeckMembershipPanel";
 import { GrammarEmptyState } from "../features/grammar/GrammarEmptyState";
 import { GrammarGuide } from "../features/grammar/GrammarGuide";
 import { SearchPanel } from "../features/search/SearchPanel";
@@ -23,7 +24,9 @@ type Props = {
   customCards: Card[];
   settings: StudySettings;
   savedCardIds: Set<string>;
+  deckMemberships: Record<string, string[]>;
   current: Card | null;
+  deckManagementCard: Card | null;
   editingCard: Card | null;
   query: string;
   syncStatus: SyncStatus;
@@ -36,6 +39,9 @@ type Props = {
   onQueryChange: (value: string) => void;
   onStudySearchResult: (card: Card) => void;
   onToggleSaved: (cardId: string, showFeedback?: boolean) => void;
+  onAddCardToDeck: (deckId: string, cardId: string) => void;
+  onRemoveCardFromDeck: (deckId: string, cardId: string) => void;
+  onSetDeckManagementCard: (card: Card | null) => void;
   onOpenCardEditor: (card?: Card | null) => void;
   onCloseCardEditor: () => void;
   onAddWord: (values: WordValues) => void;
@@ -54,12 +60,12 @@ type Props = {
 };
 
 export function AppPanels(props: Props) {
-  const { panel, cards, customCards, settings, savedCardIds, current, editingCard, query, syncStatus, settingsNotice, accountEmail, authBusy, accountStudySummary, supabase, onSetPanel, onQueryChange, onStudySearchResult, onToggleSaved, onOpenCardEditor, onCloseCardEditor, onAddWord, onDeleteWord, onSaveCorrection, onChangeSettings, onSyncNow, onRestoreJson, onImportCsv, onShuffleDue, onReviewAllNow, onExportProgress, onExportDeck, onAuthenticate, onSignOut } = props;
+  const { panel, cards, customCards, settings, savedCardIds, deckMemberships, current, deckManagementCard, editingCard, query, syncStatus, settingsNotice, accountEmail, authBusy, accountStudySummary, supabase, onSetPanel, onQueryChange, onStudySearchResult, onToggleSaved, onAddCardToDeck, onRemoveCardFromDeck, onSetDeckManagementCard, onOpenCardEditor, onCloseCardEditor, onAddWord, onDeleteWord, onSaveCorrection, onChangeSettings, onSyncNow, onRestoreJson, onImportCsv, onShuffleDue, onReviewAllNow, onExportProgress, onExportDeck, onAuthenticate, onSignOut } = props;
 
   return (
     <>
       <AppModal visible={panel === "search"} title="Search words" onClose={() => onSetPanel(null)}>
-        <SearchPanel cards={cards} query={query} meaningLanguage={settings.meaningLanguage} savedCardIds={savedCardIds} onQueryChange={onQueryChange} onStudy={onStudySearchResult} onToggleSaved={(card) => onToggleSaved(card.id)} onEdit={onOpenCardEditor} />
+        <SearchPanel cards={cards} query={query} meaningLanguage={settings.meaningLanguage} savedCardIds={savedCardIds} onQueryChange={onQueryChange} onStudy={onStudySearchResult} onToggleSaved={(card) => onToggleSaved(card.id)} onManageDecks={onSetDeckManagementCard} onEdit={onOpenCardEditor} />
       </AppModal>
 
       <AppModal visible={panel === "add"} title="Add your own word" onClose={() => onSetPanel(null)}>
@@ -73,6 +79,8 @@ export function AppPanels(props: Props) {
       <AppModal visible={panel === "settings"} title="Settings" onClose={() => onSetPanel(null)}>
         <SettingsPanel
           settings={settings}
+          cards={cards}
+          deckMemberships={deckMemberships}
           accountEmail={accountEmail}
           syncStatus={syncStatus}
           notice={settingsNotice}
@@ -94,6 +102,17 @@ export function AppPanels(props: Props) {
 
       <AppModal visible={panel === "grammar"} title="B1 grammar guide" onClose={() => onSetPanel(null)}>
         {current ? <GrammarGuide card={current} /> : <GrammarEmptyState />}
+      </AppModal>
+
+      <AppModal visible={panel === "deck"} title="Add to deck" onClose={() => onSetDeckManagementCard(null)}>
+        <DeckMembershipPanel
+          card={deckManagementCard}
+          decks={settings.customDecks}
+          deckMemberships={deckMemberships}
+          onAddToDeck={onAddCardToDeck}
+          onRemoveFromDeck={onRemoveCardFromDeck}
+          onOpenSettings={() => onSetPanel("settings")}
+        />
       </AppModal>
     </>
   );

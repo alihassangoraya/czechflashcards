@@ -41,6 +41,7 @@ type Props = {
   onOpenGrammar: () => void;
   onFlipCard: () => void;
   onToggleSaved: (cardId: string) => void;
+  onManageDecks: (card: Card) => void;
   onEditCard: () => void;
   onCompleteSwipe: (direction: SwipeDirection) => void;
   onUndoLastReview: () => void;
@@ -70,6 +71,7 @@ export function StudyScreen({
   onOpenGrammar,
   onFlipCard,
   onToggleSaved,
+  onManageDecks,
   onEditCard,
   onCompleteSwipe,
   onUndoLastReview,
@@ -99,6 +101,7 @@ export function StudyScreen({
           meaningLanguage={settings.meaningLanguage}
           onFlipCard={onFlipCard}
           onToggleSaved={onToggleSaved}
+          onManageDecks={onManageDecks}
           onEditCard={onEditCard}
           onCompleteSwipe={onCompleteSwipe}
           onUndoLastReview={onUndoLastReview}

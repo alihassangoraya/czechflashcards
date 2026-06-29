@@ -7,6 +7,7 @@ import { UtilityButton } from "./UtilityButton";
 
 type Props = {
   notice?: string;
+  activeDeckLabel: string;
   onRestoreJson: () => void;
   onImportCsv: () => void;
   onShuffleDue: () => void;
@@ -15,16 +16,16 @@ type Props = {
   onExportDeck: () => void;
 };
 
-export function DataToolsSection({ notice, onRestoreJson, onImportCsv, onShuffleDue, onReviewAllNow, onExportProgress, onExportDeck }: Props) {
+export function DataToolsSection({ notice, activeDeckLabel, onRestoreJson, onImportCsv, onShuffleDue, onReviewAllNow, onExportProgress, onExportDeck }: Props) {
   return (
     <SettingsSection icon="assignment" title="Data tools" description="Move your deck and progress in or out of this app.">
       <View style={styles.utilityGrid}>
         <UtilityButton icon="refresh" title="Restore JSON" detail="Load a progress backup" onPress={onRestoreJson} />
-        <UtilityButton icon="library-add" title="Import CSV" detail="Add words from a file" onPress={onImportCsv} />
+        <UtilityButton icon="library-add" title="Import CSV" detail={`Add to ${activeDeckLabel}`} onPress={onImportCsv} />
         <UtilityButton icon="swap-horiz" title="Shuffle due" detail="Mix ready cards" onPress={onShuffleDue} />
         <UtilityButton icon="today" title="Review all now" detail="Make this deck due" onPress={onReviewAllNow} />
         <UtilityButton icon="trending-up" title="Export progress" detail="Save a JSON backup" onPress={onExportProgress} />
-        <UtilityButton icon="folder" title="Export deck" detail="Save current deck" onPress={onExportDeck} />
+        <UtilityButton icon="folder" title="Export deck" detail={`Save ${activeDeckLabel}`} onPress={onExportDeck} />
       </View>
       {Boolean(notice) && (
         <View style={styles.notice}>

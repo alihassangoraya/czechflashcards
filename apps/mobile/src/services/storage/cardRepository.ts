@@ -56,6 +56,24 @@ export async function setCardSaved(db: AppDatabase, cardId: string, saved: boole
   await enqueueSync(db, saved ? "saved_card_added" : "saved_card_removed", saved ? { cardId, savedAt: Date.now() } : { cardId });
 }
 
+export async function addCardToCustomDeck(db: AppDatabase, deckId: string, cardId: string): Promise<void> {
+  const cardIds = new Set(db.store.deckMemberships[deckId] || []);
+  cardIds.add(cardId);
+  db.store.deckMemberships[deckId] = [...cardIds];
+  await enqueueSync(db, "deck_card_added", { deckId, cardId, addedAt: Date.now() });
+}
+
+export async function removeCardFromCustomDeck(db: AppDatabase, deckId: string, cardId: string): Promise<void> {
+  const cardIds = new Set(db.store.deckMemberships[deckId] || []);
+  cardIds.delete(cardId);
+  db.store.deckMemberships[deckId] = [...cardIds];
+  await enqueueSync(db, "deck_card_removed", { deckId, cardId, removedAt: Date.now() });
+}
+
+export async function loadDeckMemberships(db: AppDatabase): Promise<Record<string, string[]>> {
+  return db.store.deckMemberships;
+}
+
 export async function deleteCustomCard(db: AppDatabase, cardId: string): Promise<void> {
   const custom = db.store.customCards[cardId];
   if (custom) custom.deletedAt = Date.now();
