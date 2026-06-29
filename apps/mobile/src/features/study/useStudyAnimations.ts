@@ -23,10 +23,26 @@ export function useStudyAnimations({ current, revealed, grading, onRevealChange,
   useEffect(() => {
     flipProgress.stopAnimation();
     flipProgress.setValue(revealed ? 1 : 0);
+    dragX.stopAnimation();
+    dragX.setValue(0);
+    consumedSwipe.current = false;
+    swipeCompleting.current = false;
+    setSwipeDirection(null);
     setFlipping(false);
   }, [current?.id]);
 
   const cardRotation = dragX.interpolate({ inputRange: [-120, 0, 120], outputRange: ["-4deg", "0deg", "4deg"], extrapolate: "clamp" });
+
+  function resetCancelledSwipe() {
+    swipeCompleting.current = false;
+    consumedSwipe.current = false;
+    setSwipeDirection(null);
+    dragX.stopAnimation(() => {
+      Animated.spring(dragX, { toValue: 0, useNativeDriver: true, speed: 22, bounciness: 5 }).start(({ finished }) => {
+        if (finished) dragX.setValue(0);
+      });
+    });
+  }
 
   function completeSwipe(direction: SwipeDirection) {
     if (grading || swipeCompleting.current) return;
@@ -50,8 +66,11 @@ export function useStudyAnimations({ current, revealed, grading, onRevealChange,
   const panResponder = useMemo(() => PanResponder.create({
     onMoveShouldSetPanResponder: (_, gesture) => Math.abs(gesture.dx) > 12 && Math.abs(gesture.dx) > Math.abs(gesture.dy),
     onMoveShouldSetPanResponderCapture: (_, gesture) => Math.abs(gesture.dx) > 12 && Math.abs(gesture.dx) > Math.abs(gesture.dy),
-    onPanResponderGrant: () => dragX.stopAnimation(),
-    onPanResponderTerminationRequest: () => false,
+    onPanResponderGrant: () => {
+      if (swipeCompleting.current) return;
+      dragX.stopAnimation();
+    },
+    onPanResponderTerminationRequest: () => true,
     onPanResponderMove: (_, gesture) => {
       if (swipeCompleting.current) return;
       dragX.setValue(gesture.dx);
@@ -63,15 +82,13 @@ export function useStudyAnimations({ current, revealed, grading, onRevealChange,
         completeSwipe(direction);
         return;
       }
-      setSwipeDirection(null);
-      Animated.spring(dragX, { toValue: 0, useNativeDriver: true, speed: 22, bounciness: 5 }).start();
+      resetCancelledSwipe();
     },
     onPanResponderTerminate: () => {
       if (swipeCompleting.current) return;
-      setSwipeDirection(null);
-      Animated.spring(dragX, { toValue: 0, useNativeDriver: true, speed: 22, bounciness: 5 }).start();
+      resetCancelledSwipe();
     }
-  }), [current, grading, revealed]);
+  }), [current, grading]);
 
   function flipCard() {
     if (consumedSwipe.current) {
