@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Animated,
+  Easing,
   Modal,
   PanResponder,
   Pressable,
@@ -14,9 +16,11 @@ import {
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import * as Speech from "expo-speech";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import {
   applyReviewGrade,
   compareDueReviewStates,
+  formatInterval,
   filterDeck,
   normalizeCards,
   selectedMeaning,
@@ -49,8 +53,14 @@ import {
 } from "./src/database";
 import { configureLocalNotifications } from "./src/notifications";
 import { createSupabaseClient, flushSyncQueue, getFriendCode, loadFriendActivity, respondToFriendRequest, restoreSyncSnapshot, sendFriendRequest, signInWithPassword, signOut, signUpWithPassword, type FriendRequest, type FriendStreak, type SyncStatus } from "./src/sync";
+import { HomeScreen } from "./src/features/home/HomeScreen";
+import { QuizScreen } from "./src/features/quiz/QuizScreen";
+import { SettingsPanel } from "./src/features/settings/SettingsPanel";
+import { GeminiTutorPanel } from "./src/features/tutor/GeminiTutorPanel";
+import { colors, radius, shadow, size, spacing, typography } from "./src/theme/design";
 
-type Panel = "search" | "add" | "edit" | "settings" | "account";
+type Panel = "search" | "add" | "edit" | "settings" | "account" | "grammar";
+type Screen = "home" | "study" | "quiz";
 type RelearningEntry = { id: string; remaining: number };
 type UndoReview = { card: Card; previousState: ReviewState; event: ReviewEvent; previousRelearningQueue: RelearningEntry[] };
 const RELEARNING_MIN_CARDS = 10;
@@ -68,6 +78,7 @@ export default function App() {
   const [settings, setSettingsState] = useState<StudySettings | null>(null);
   const [current, setCurrent] = useState<Card | null>(null);
   const [revealed, setRevealed] = useState(false);
+  const [screen, setScreen] = useState<Screen>("home");
   const [panel, setPanel] = useState<Panel | null>(null);
   const [editingCard, setEditingCard] = useState<Card | null>(null);
   const [query, setQuery] = useState("");
@@ -78,11 +89,17 @@ export default function App() {
   const [lastReview, setLastReview] = useState<UndoReview | null>(null);
   const [grading, setGrading] = useState(false);
   const [swipeDirection, setSwipeDirection] = useState<"again" | "known" | null>(null);
-  const dragX = useRef(0);
+  const [sessionReviews, setSessionReviews] = useState(0);
+  const dragX = useRef(new Animated.Value(0)).current;
+  const consumedSwipe = useRef(false);
+  const swipeCompleting = useRef(false);
   const forcedCardId = useRef<string | null>(null);
   const revealForcedCard = useRef(false);
   const relearningQueue = useRef<RelearningEntry[]>([]);
   const recentCardIds = useRef<string[]>([]);
+  const savingCardIds = useRef(new Set<string>());
+  const flipProgress = useRef(new Animated.Value(0)).current;
+  const [flipping, setFlipping] = useState(false);
 
   useEffect(() => {
     async function boot() {
@@ -143,6 +160,12 @@ export default function App() {
     revealForcedCard.current = false;
   }, [deck, states]);
 
+  useEffect(() => {
+    flipProgress.stopAnimation();
+    flipProgress.setValue(revealed ? 1 : 0);
+    setFlipping(false);
+  }, [current?.id]);
+
   function scheduleRelearning(cardId: string) {
     const remaining = RELEARNING_MIN_CARDS + Math.floor(Math.random() * (RELEARNING_MAX_CARDS - RELEARNING_MIN_CARDS + 1));
     relearningQueue.current = relearningQueue.current.filter((entry) => entry.id !== cardId);
@@ -192,19 +215,71 @@ export default function App() {
   }
 
   const panResponder = useMemo(() => PanResponder.create({
-    onMoveShouldSetPanResponder: (_, gesture) => Math.abs(gesture.dx) > 18,
+    onMoveShouldSetPanResponder: (_, gesture) => Math.abs(gesture.dx) > 12 && Math.abs(gesture.dx) > Math.abs(gesture.dy),
+    onMoveShouldSetPanResponderCapture: (_, gesture) => Math.abs(gesture.dx) > 12 && Math.abs(gesture.dx) > Math.abs(gesture.dy),
+    onPanResponderGrant: () => dragX.stopAnimation(),
+    onPanResponderTerminationRequest: () => false,
     onPanResponderMove: (_, gesture) => {
-      dragX.current = gesture.dx;
+      if (swipeCompleting.current) return;
+      dragX.setValue(gesture.dx);
       setSwipeDirection(gesture.dx > 24 ? "known" : gesture.dx < -24 ? "again" : null);
     },
     onPanResponderRelease: (_, gesture) => {
+      const direction = gesture.dx > 90 ? "known" : gesture.dx < -90 ? "again" : null;
+      if (!grading && direction) {
+        consumedSwipe.current = true;
+        swipeCompleting.current = true;
+        setSwipeDirection(direction);
+        Animated.timing(dragX, {
+          toValue: direction === "known" ? 460 : -460,
+          duration: 230,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true
+        }).start(({ finished }) => {
+          dragX.setValue(0);
+          setSwipeDirection(null);
+          swipeCompleting.current = false;
+          if (finished) void grade(direction === "known" ? "good" : "again");
+        });
+        setTimeout(() => { consumedSwipe.current = false; }, 360);
+        return;
+      }
       setSwipeDirection(null);
-      if (!grading && gesture.dx > 90) void grade("good");
-      if (!grading && gesture.dx < -90) void grade("again");
-      dragX.current = 0;
+      Animated.spring(dragX, { toValue: 0, useNativeDriver: true, speed: 22, bounciness: 5 }).start();
     },
-    onPanResponderTerminate: () => setSwipeDirection(null)
+    onPanResponderTerminate: () => {
+      if (swipeCompleting.current) return;
+      setSwipeDirection(null);
+      Animated.spring(dragX, { toValue: 0, useNativeDriver: true, speed: 22, bounciness: 5 }).start();
+    }
   }), [current, db, grading, settings, states]);
+
+  function flipCard() {
+    if (consumedSwipe.current) {
+      consumedSwipe.current = false;
+      return;
+    }
+    if (!current || flipping) return;
+    const nextRevealed = !revealed;
+    setFlipping(true);
+    Animated.timing(flipProgress, {
+      toValue: nextRevealed ? 1 : 0,
+      duration: 400,
+      easing: Easing.inOut(Easing.cubic),
+      useNativeDriver: true
+    }).start(({ finished }) => {
+      if (finished) setRevealed(nextRevealed);
+      setFlipping(false);
+    });
+  }
+
+  function reviewInterval(grade: ReviewGrade): string {
+    if (!current) return "";
+    const state = states[current.id] || { cardId: current.id, knownStreak: 0, againCount: 0, dueAt: 0, seen: 0 };
+    const now = Date.now();
+    const next = applyReviewGrade(state, grade, now);
+    return formatInterval(next.event.nextDueAt - now);
+  }
 
   async function refresh(database = db) {
     if (!database) return;
@@ -220,6 +295,18 @@ export default function App() {
     setSettingsState(next);
     await saveSettings(db, next);
     await configureLocalNotifications(next.notifications);
+  }
+
+  async function selectCategory(category: string) {
+    if (!settings) return;
+    await persistSettings({ ...settings, deckFilter: category });
+    setSessionReviews(0);
+    setScreen("study");
+  }
+
+  function startStudy() {
+    setSessionReviews(0);
+    setScreen("study");
   }
 
   async function syncNow(database = db) {
@@ -259,6 +346,7 @@ export default function App() {
       advanceRelearningQueue(reviewedCard.id);
       if (result === "again") scheduleRelearning(reviewedCard.id);
       setLastReview({ card: reviewedCard, previousState: before, event: next.event, previousRelearningQueue });
+      setSessionReviews((value) => value + 1);
       await refresh(db);
     } finally {
       setGrading(false);
@@ -274,6 +362,7 @@ export default function App() {
       relearningQueue.current = lastReview.previousRelearningQueue.map((entry) => ({ ...entry }));
       await undoReviewResult(db, lastReview.previousState, lastReview.event, settings.dailyGoal);
       await refresh(db);
+      setSessionReviews((value) => Math.max(0, value - 1));
       setLastReview(null);
     } finally {
       setGrading(false);
@@ -307,10 +396,24 @@ export default function App() {
   }
 
   async function toggleSavedCard(cardId: string) {
-    if (!db) return;
-    const saved = !savedCardIds.has(cardId);
-    await setCardSaved(db, cardId, saved);
-    setSavedCardIds(await loadSavedCardIds(db));
+    if (!db || savingCardIds.current.has(cardId)) return;
+
+    savingCardIds.current.add(cardId);
+    const nextSaved = !savedCardIds.has(cardId);
+    setSavedCardIds((previous) => {
+      const next = new Set(previous);
+      if (nextSaved) next.add(cardId);
+      else next.delete(cardId);
+      return next;
+    });
+
+    try {
+      await setCardSaved(db, cardId, nextSaved);
+    } catch {
+      setSavedCardIds(await loadSavedCardIds(db));
+    } finally {
+      savingCardIds.current.delete(cardId);
+    }
   }
 
   async function saveCorrection(values: { cz: string; en: string; hi: string; ur: string; sentence: string; sentenceEn: string }) {
@@ -344,6 +447,8 @@ export default function App() {
     revealForcedCard.current = true;
     setCurrent(card);
     setRevealed(true);
+    setSessionReviews(0);
+    setScreen("study");
     setPanel(null);
   }
 
@@ -363,88 +468,195 @@ export default function App() {
     return Boolean(state?.seen && state.knownStreak === 0);
   }).length;
   const customCards = cards.filter((card) => card.source === "custom");
+  const [reviewedToday, dailyGoal] = dailyProgress.split(" / ").map((value) => Number.parseInt(value, 10) || 0);
+  const sessionProgress = dailyGoal ? Math.min(1, reviewedToday / dailyGoal) : 0;
+  const sessionTarget = Math.min(deck.length, Math.max(1, dailyGoal - reviewedToday + sessionReviews));
+  const cardRotation = dragX.interpolate({ inputRange: [-120, 0, 120], outputRange: ["-4deg", "0deg", "4deg"], extrapolate: "clamp" });
 
   return (
     <SafeAreaView style={styles.shell}>
       <StatusBar style="dark" />
-      <View style={styles.header}>
-        <View style={styles.brandRow}>
-          <Text style={styles.title}>Flashcards</Text>
-          <HeaderIcon icon="search" label="Search words" onPress={() => setPanel("search")} />
-        </View>
-        <View style={styles.headerActions}>
-          <HeaderIcon icon="add" label="Add custom word" primary onPress={() => setPanel("add")} />
-          <HeaderIcon icon="settings" label="Open settings" onPress={() => setPanel("settings")} />
-        </View>
-      </View>
+      {screen === "home" && (
+        <HomeScreen
+          deck={deck}
+          allCards={cards}
+          states={states}
+          settings={settings}
+          savedCount={savedCardIds.size}
+          customCount={customCards.length}
+          dailyProgress={dailyProgress}
+          accountEmail={accountEmail}
+          syncStatus={syncStatus}
+          onStartStudy={startStudy}
+          onStartQuiz={() => setScreen("quiz")}
+          onSelectCategory={selectCategory}
+          onSearch={() => setPanel("search")}
+          onAdd={() => setPanel("add")}
+          onSettings={() => setPanel("settings")}
+          onAccount={() => setPanel("account")}
+        />
+      )}
 
-      <ScrollView contentContainerStyle={styles.content}>
-        <Pressable style={styles.card} onPress={() => setRevealed(true)} {...panResponder.panHandlers}>
-          {swipeDirection && (
-            <Text style={[styles.swipeOverlay, swipeDirection === "known" ? styles.swipeKnown : styles.swipeAgain]}>
-              {swipeDirection === "known" ? "Known" : "Again"}
-            </Text>
-          )}
-          {current ? (
-            <>
-              <Pressable style={styles.cardSaveButton} onPress={() => void toggleSavedCard(current.id)} accessibilityRole="button" accessibilityLabel={savedCardIds.has(current.id) ? `Remove ${current.cz} from My list` : `Save ${current.cz} to My list`}>
-                <Text style={styles.cardSaveIcon}>{savedCardIds.has(current.id) ? "★" : "☆"}</Text>
+      {screen === "quiz" && <QuizScreen deck={deck} onClose={() => setScreen("home")} />}
+
+      {screen === "study" && (
+        <>
+          <View style={styles.header}>
+            <View style={styles.brandRow}>
+              <Pressable style={styles.backIcon} onPress={() => setScreen("home")} accessibilityRole="button" accessibilityLabel="Back home">
+                <MaterialIcons name="arrow-back" size={size.iconLarge} color={colors.textStrong} />
               </Pressable>
-              <Pressable style={styles.cardEditButton} onPress={openCardEditor} accessibilityRole="button" accessibilityLabel={`Edit ${current.cz}`}>
-                <Text style={styles.cardEditIcon}>✎</Text>
-              </Pressable>
-              <Text style={styles.word}>{current.cz}</Text>
-              {revealed && (
-                <View style={styles.answer}>
-                  <Text style={styles.meaning}>English: {current.en}</Text>
-                  <Text style={[styles.meaning, settings.meaningLanguage === "ur" && styles.rtl]}>
-                    {settings.meaningLanguage === "ur" ? "Urdu" : "Hindi"}: {selectedMeaning(current, settings.meaningLanguage)}
+              <View>
+                <Text style={styles.title}>Czech Flashcards</Text>
+              </View>
+            </View>
+            <View style={styles.headerActions}>
+              <HeaderIcon icon="school" label="Open grammar guide" onPress={() => setPanel("grammar")} />
+            </View>
+          </View>
+
+          <View style={styles.sessionProgressRow}>
+            <Text style={styles.sessionProgressText}>Card {sessionReviews + 1} of {sessionTarget} · Today {reviewedToday} / {dailyGoal}</Text>
+            <View style={styles.sessionProgressTrack}>
+              <View style={[styles.sessionProgressFill, { width: `${Math.max(3, sessionProgress * 100)}%` }]} />
+            </View>
+          </View>
+
+          <ScrollView contentContainerStyle={styles.content} directionalLockEnabled>
+            <View style={styles.cardFrame} {...panResponder.panHandlers}>
+              <Pressable style={styles.cardTapSurface} onPress={flipCard} accessibilityRole="button" accessibilityLabel={revealed ? "Show Czech word" : "Reveal meaning"}>
+              <Animated.View style={[styles.cardMotion, { transform: [{ translateX: dragX }, { rotateZ: cardRotation }] }]}>
+                {swipeDirection && (
+                  <Text style={[styles.swipeOverlay, swipeDirection === "known" ? styles.swipeKnown : styles.swipeAgain]}>
+                    {swipeDirection === "known" ? "Known" : "Again"}
                   </Text>
-                  {Boolean(current.sentence) && <Text style={styles.example}>{current.sentence}</Text>}
-                  {Boolean(current.sentenceEn) && <Text style={styles.muted}>{current.sentenceEn}</Text>}
-                </View>
-              )}
-              <Text style={styles.hint}>{revealed ? "Swipe left to review again or right when it feels familiar" : "Tap to reveal meaning"}</Text>
-            </>
-          ) : (
-            <>
-              <Text style={styles.word}>Done</Text>
-              <Text style={styles.hint}>No cards are due in this deck.</Text>
-            </>
-          )}
-        </Pressable>
+                )}
+                {current ? (
+                  <>
+                    <Pressable
+                      style={styles.cardSaveButton}
+                      onPressIn={(event) => event.stopPropagation()}
+                      onPress={(event) => { event.stopPropagation(); void toggleSavedCard(current.id); }}
+                      accessibilityRole="button"
+                      accessibilityState={{ selected: savedCardIds.has(current.id) }}
+                      accessibilityLabel={savedCardIds.has(current.id) ? `Remove ${current.cz} from My list` : `Save ${current.cz} to My list`}
+                    >
+                      <MaterialIcons name={savedCardIds.has(current.id) ? "bookmark" : "bookmark-border"} size={size.icon} color={colors.action} />
+                    </Pressable>
+                    {revealed && !flipping && (
+                      <Pressable style={styles.cardEditButton} onPress={(event) => { event.stopPropagation(); openCardEditor(); }} accessibilityRole="button" accessibilityLabel={`Edit ${current.cz}`}>
+                        <MaterialIcons name="edit" size={size.iconMedium} color={colors.actionMuted} />
+                      </Pressable>
+                    )}
+                    <Animated.View
+                      style={[
+                        styles.cardFace,
+                        {
+                          transform: [
+                            { perspective: 1200 },
+                            { rotateY: flipProgress.interpolate({ inputRange: [0, 1], outputRange: ["0deg", "180deg"] }) }
+                          ]
+                        }
+                      ]}
+                    >
+                      <Text style={styles.word}>{current.cz}</Text>
+                      <Pressable
+                        style={styles.pronunciationPill}
+                        onPress={(event) => { event.stopPropagation(); Speech.speak(current.cz, { language: "cs-CZ", rate: 0.86 }); }}
+                        accessibilityRole="button"
+                        accessibilityLabel={`Play ${current.cz}`}
+                      >
+                        <MaterialIcons name="volume-up" size={size.iconSmall} color={colors.action} />
+                        <Text style={styles.pronunciationText}>{pronunciationHint(current.cz)}</Text>
+                      </Pressable>
+                      <View style={styles.swipeAffordance}>
+                        <MaterialIcons name="arrow-back" size={size.icon} color={colors.danger} />
+                        <MaterialIcons name="arrow-forward" size={size.icon} color={colors.success} />
+                      </View>
+                      <Text style={styles.hint}>Tap to reveal meaning</Text>
+                    </Animated.View>
+                    <Animated.View
+                      style={[
+                        styles.cardFace,
+                        styles.cardBack,
+                        {
+                          transform: [
+                            { perspective: 1200 },
+                            { rotateY: flipProgress.interpolate({ inputRange: [0, 1], outputRange: ["180deg", "360deg"] }) }
+                          ]
+                        }
+                      ]}
+                    >
+                      <Text style={styles.backWord}>{current.cz}</Text>
+                      <View style={styles.answer}>
+                        <Text style={styles.contentLabel}>Translation</Text>
+                        <View style={styles.meaningRow}>
+                          <Text style={styles.meaning}>{current.en}</Text>
+                          <Text style={[styles.meaning, settings.meaningLanguage === "ur" && styles.rtl]}>
+                            {selectedMeaning(current, settings.meaningLanguage)}
+                          </Text>
+                        </View>
+                        {Boolean(current.sentence) && (
+                          <View style={styles.exampleBlock}>
+                            <Text style={styles.contentLabel}>In context</Text>
+                            <Pressable
+                              style={styles.exampleSpeech}
+                              onPress={(event) => { event.stopPropagation(); Speech.speak(current.sentence, { language: "cs-CZ", rate: 0.86 }); }}
+                              accessibilityRole="button"
+                              accessibilityLabel="Play Czech example"
+                            >
+                              <MaterialIcons name="volume-up" size={size.iconSmall} color={colors.action} />
+                              <Text style={styles.example} numberOfLines={2}>{current.sentence}</Text>
+                            </Pressable>
+                            {Boolean(current.sentenceEn) && <Text style={styles.muted} numberOfLines={2}>{current.sentenceEn}</Text>}
+                          </View>
+                        )}
+                      </View>
+                      <Text style={styles.hint}>Tap to see Czech</Text>
+                    </Animated.View>
+                  </>
+                ) : (
+                  <View style={styles.cardFace}>
+                    <Text style={styles.word}>Done</Text>
+                    <Text style={styles.hint}>No cards are due in this deck.</Text>
+                  </View>
+                )}
+              </Animated.View>
+              </Pressable>
+            </View>
 
-        <View style={styles.soundRow}>
-          <Pressable style={styles.secondaryButton} onPress={() => current && Speech.speak(current.cz, { language: "cs-CZ", rate: 0.86 })}>
-            <Text style={styles.secondaryButtonText}>Play word</Text>
-          </Pressable>
-          <Pressable style={styles.secondaryButton} onPress={() => current && Speech.speak(current.sentence, { language: "cs-CZ", rate: 0.86 })}>
-            <Text style={styles.secondaryButtonText}>Play example</Text>
-          </Pressable>
-        </View>
+            {revealed && current && (
+              <View style={styles.reviewRow}>
+                <Pressable disabled={grading} style={[styles.reviewButton, styles.reviewAgain, grading && styles.disabledButton]} onPress={() => void grade("again")}>
+                  <Text style={styles.reviewButtonText}>Again</Text>
+                  <Text style={styles.reviewIntervalText}>{reviewInterval("again")}</Text>
+                </Pressable>
+                <Pressable disabled={grading} style={[styles.reviewButton, styles.reviewHard, grading && styles.disabledButton]} onPress={() => void grade("hard")}>
+                  <Text style={styles.reviewButtonText}>Hard</Text>
+                  <Text style={styles.reviewIntervalText}>{reviewInterval("hard")}</Text>
+                </Pressable>
+                <Pressable disabled={grading} style={[styles.reviewButton, styles.reviewGood, grading && styles.disabledButton]} onPress={() => void grade("good")}>
+                  <Text style={styles.reviewButtonText}>Good</Text>
+                  <Text style={styles.reviewIntervalText}>{reviewInterval("good")}</Text>
+                </Pressable>
+                <Pressable disabled={grading} style={[styles.reviewButton, styles.reviewEasy, grading && styles.disabledButton]} onPress={() => void grade("easy")}>
+                  <Text style={styles.reviewEasyText}>Easy</Text>
+                  <Text style={styles.reviewIntervalText}>{reviewInterval("easy")}</Text>
+                </Pressable>
+              </View>
+            )}
 
-        {lastReview && (
-          <Pressable disabled={grading} style={[styles.undoButton, grading && styles.disabledButton]} onPress={undoLastReview} accessibilityRole="button" accessibilityLabel={`Undo review for ${lastReview.card.cz}`}>
-            <Text style={styles.undoText}>Undo</Text>
-          </Pressable>
-        )}
+            {revealed && <GeminiTutorPanel card={current} />}
 
-        <View style={styles.progressGrid}>
-          <Metric label="Known" value={String(knownCount)} />
-          <Metric label="Learning" value={String(learningCount)} />
-          <Metric label="Today" value={`${dailyProgress} reviewed`} />
-          <Metric label="Due" value={String(dueCount)} />
-          <Metric label="Deck size" value={String(deck.length)} />
-        </View>
+            {lastReview && (
+              <Pressable disabled={grading} style={[styles.undoButton, grading && styles.disabledButton]} onPress={undoLastReview} accessibilityRole="button" accessibilityLabel={`Undo review for ${lastReview.card.cz}`}>
+                <Text style={styles.undoText}>Undo</Text>
+              </Pressable>
+            )}
 
-        <View style={styles.studyGuide}>
-          <Text style={styles.guideLabel}>Study guide</Text>
-          <Text style={styles.guideText}>Tap the card to reveal its meanings and example.</Text>
-          <Text style={styles.guideText}>Swipe left to see a word again after 10-15 other cards; swipe right when it feels familiar.</Text>
-          <Text style={styles.guideText}>Use the sound buttons to hear Czech pronunciation.</Text>
-          <Text style={styles.guideText}>Use search to find a word, + to add one, and settings to choose your deck.</Text>
-        </View>
-      </ScrollView>
+          </ScrollView>
+        </>
+      )}
 
       <AppModal visible={panel === "search"} title="Search words" onClose={() => setPanel(null)}>
         <TextInput style={styles.input} value={query} onChangeText={setQuery} autoFocus placeholder="Search Czech, English, Hindi, or Urdu" />
@@ -476,43 +688,14 @@ export default function App() {
       </AppModal>
 
       <AppModal visible={panel === "settings"} title="Settings" onClose={() => setPanel(null)}>
-        <Text style={styles.fieldLabel}>Level</Text>
-        <Segment
-          value={settings.examLevel}
-          options={["a2", "b1"]}
-          onChange={(examLevel) => persistSettings({
-            ...settings,
-            examLevel,
-            deckFilter: settings.deckFilter === "a2-focus" || settings.deckFilter === "b1-focus"
-              ? `${examLevel}-focus`
-              : settings.deckFilter
-          })}
+        <SettingsPanel
+          settings={settings}
+          accountEmail={accountEmail}
+          syncStatus={syncStatus}
+          onChange={(nextSettings) => { void persistSettings(nextSettings); }}
+          onSyncNow={() => { void syncNow(); }}
+          onAccount={() => setPanel("account")}
         />
-        <Text style={styles.fieldLabel}>Meaning</Text>
-        <Segment value={settings.meaningLanguage} options={["hi", "ur"]} onChange={(meaningLanguage) => persistSettings({ ...settings, meaningLanguage })} />
-        <Text style={styles.fieldLabel}>Deck</Text>
-        <DeckPicker value={settings.deckFilter} onChange={(deckFilter) => persistSettings({ ...settings, deckFilter })} decks={settings.customDecks} />
-        <Text style={styles.fieldLabel}>My decks</Text>
-        <CustomDeckManager decks={settings.customDecks} onCreate={(deck) => persistSettings({ ...settings, customDecks: [...settings.customDecks, deck], deckFilter: deck.id })} />
-        <Text style={styles.fieldLabel}>Daily goal</Text>
-        <TextInput
-          style={styles.input}
-          keyboardType="number-pad"
-          value={String(settings.dailyGoal)}
-          onChangeText={(value) => persistSettings({ ...settings, dailyGoal: Math.max(1, Number(value) || 30) })}
-        />
-        <ToggleRow label="Daily reminder" value={settings.notifications.dailyReminderEnabled} onValueChange={(value) => persistSettings({ ...settings, notifications: { ...settings.notifications, dailyReminderEnabled: value } })} />
-        <ToggleRow label="Streak risk reminder" value={settings.notifications.streakRiskEnabled} onValueChange={(value) => persistSettings({ ...settings, notifications: { ...settings.notifications, streakRiskEnabled: value } })} />
-        <ToggleRow label="Review due reminder" value={settings.notifications.reviewDueEnabled} onValueChange={(value) => persistSettings({ ...settings, notifications: { ...settings.notifications, reviewDueEnabled: value } })} />
-        <View style={styles.syncPanel}>
-          <Text style={styles.sectionTitle}>Sync</Text>
-          <Text style={styles.muted}>{accountEmail ? `Signed in as ${accountEmail}` : "Guest-first mode is active. Sign in to back up this device."}</Text>
-          <Text style={styles.metric}>Status: {syncStatus}</Text>
-          <View style={styles.syncActions}>
-            <Pressable style={styles.secondaryAction} onPress={() => void syncNow()}><Text style={styles.secondaryActionText}>Sync now</Text></Pressable>
-            <Pressable style={styles.secondaryAction} onPress={() => setPanel("account")}><Text style={styles.secondaryActionText}>{accountEmail ? "Account" : "Sign in"}</Text></Pressable>
-          </View>
-        </View>
       </AppModal>
 
       <AppModal visible={panel === "account"} title="Account and sync" onClose={() => setPanel(null)}>
@@ -525,17 +708,67 @@ export default function App() {
           onSignOut={signOutAccount}
         />
       </AppModal>
+
+      <AppModal visible={panel === "grammar"} title="B1 grammar guide" onClose={() => setPanel(null)}>
+        {current ? <GrammarGuide card={current} /> : <Text style={styles.muted}>Choose a card to see its grammar notes.</Text>}
+      </AppModal>
     </SafeAreaView>
   );
 }
 
-function HeaderIcon({ icon, label, onPress, primary = false }: { icon: "search" | "add" | "settings"; label: string; onPress: () => void; primary?: boolean }) {
-  const symbols = { search: "⌕", add: "+", settings: "⚙" };
+function HeaderIcon({ icon, label, onPress, primary = false }: { icon: "search" | "add" | "settings" | "school"; label: string; onPress: () => void; primary?: boolean }) {
+  const symbols = { search: "search", add: "add", settings: "settings", school: "school" } as const;
   return (
     <Pressable style={[styles.headerIcon, primary && styles.headerIconPrimary]} onPress={onPress} accessibilityRole="button" accessibilityLabel={label}>
-      <Text style={[styles.headerIconText, primary && styles.headerIconPrimaryText]}>{symbols[icon]}</Text>
+      <MaterialIcons name={symbols[icon]} size={size.iconMedium} color={primary ? colors.onPrimary : colors.textStrong} />
     </Pressable>
   );
+}
+
+function GrammarGuide({ card }: { card: Card }) {
+  const verb = card.en.toLowerCase().startsWith("to ") || card.tags.includes("verbs") || card.cz.split(" ")[0].endsWith("t");
+  const word = card.cz.toLowerCase().trim();
+  const gender = word.endsWith("a") || word.endsWith("ost")
+    ? "Likely feminine"
+    : word.endsWith("o") || word.endsWith("e") || word.endsWith("ě")
+      ? "Likely neuter"
+      : "Likely masculine";
+
+  return (
+    <View style={styles.grammarGuide}>
+      <View style={styles.grammarBanner}>
+        <Text style={styles.grammarWord}>{card.cz}</Text>
+        <Text style={styles.grammarMeta}>{verb ? "Verb (sloveso)" : `Noun or adjective · ${gender}`}</Text>
+      </View>
+      {verb ? (
+        <>
+          <Text style={styles.grammarHeading}>Present tense</Text>
+          <Text style={styles.grammarCopy}>Czech verbs change with the subject. Learn this word with its full infinitive and listen for the ending in the example.</Text>
+          <View style={styles.grammarTable}>
+            <Text style={styles.grammarTableText}>já · ty · on/ona</Text>
+            <Text style={styles.grammarTableText}>my · vy · oni</Text>
+          </View>
+          <Text style={styles.grammarCopy}>Aspect matters at B1: imperfective verbs describe an action or habit; perfective verbs focus on a completed result.</Text>
+        </>
+      ) : (
+        <>
+          <Text style={styles.grammarHeading}>Cases and gender</Text>
+          <Text style={styles.grammarCopy}>{gender}. Czech endings change by case, so remember the word with a short phrase, not only on its own.</Text>
+          <View style={styles.grammarTable}>
+            <Text style={styles.grammarTableText}>1. nominative: basic form</Text>
+            <Text style={styles.grammarTableText}>4. accusative: direct object</Text>
+            <Text style={styles.grammarTableText}>6. locative: after v, na, o</Text>
+            <Text style={styles.grammarTableText}>7. instrumental: after s</Text>
+          </View>
+        </>
+      )}
+      {card.sentence ? <Text style={styles.grammarExample}>Example: {card.sentence}</Text> : null}
+    </View>
+  );
+}
+
+function pronunciationHint(word: string) {
+  return `[ ${word} ] · stress the first syllable`;
 }
 
 function Metric({ label, value }: { label: string; value: string }) {
@@ -784,95 +1017,130 @@ function ToggleRow({ label, value, onValueChange }: { label: string; value: bool
 }
 
 const styles = StyleSheet.create({
-  shell: { flex: 1, backgroundColor: "#f2f5ef", paddingHorizontal: 18 },
-  header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingTop: 16, paddingBottom: 16 },
-  brandRow: { flexDirection: "row", alignItems: "center", gap: 8 },
-  title: { color: "#17231f", fontSize: 25, fontWeight: "800" },
-  headerActions: { flexDirection: "row", gap: 8 },
-  headerIcon: { width: 42, height: 42, alignItems: "center", justifyContent: "center", borderRadius: 8, borderWidth: 1, borderColor: "#d8e2d7", backgroundColor: "#ffffff" },
-  headerIconPrimary: { borderColor: "#2f6f9f", backgroundColor: "#2f6f9f" },
-  headerIconText: { color: "#17231f", fontSize: 24, fontWeight: "700", lineHeight: 27 },
-  headerIconPrimaryText: { color: "#ffffff", fontSize: 30 },
-  content: { gap: 14, paddingBottom: 32 },
-  segment: { flex: 1, flexDirection: "row", backgroundColor: "#e4ebe3", borderRadius: 8, padding: 4 },
-  segmentItem: { flex: 1, alignItems: "center", paddingVertical: 8, borderRadius: 6 },
-  segmentActive: { backgroundColor: "#ffffff" },
-  segmentText: { color: "#53665e", fontWeight: "800" },
-  segmentActiveText: { color: "#17231f" },
+  shell: { flex: 1, backgroundColor: colors.background },
+  header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: spacing.page, paddingTop: typography.bodyLarge, paddingBottom: typography.bodyLarge },
+  brandRow: { flexDirection: "row", alignItems: "center", gap: spacing.lg },
+  title: { color: colors.textStrong, fontSize: typography.screenTitle, fontWeight: typography.weightSemibold },
+  sessionProgressRow: { width: 250, alignSelf: "center", gap: 5, marginTop: 1, marginBottom: 12 },
+  sessionProgressText: { color: colors.textSubtle, fontSize: typography.caption, fontWeight: typography.weightMedium, textAlign: "center" },
+  sessionProgressTrack: { height: spacing.sm, overflow: "hidden", borderRadius: spacing.xs, backgroundColor: colors.progressTrackStrong },
+  sessionProgressFill: { height: "100%", borderRadius: spacing.xs, backgroundColor: colors.primary },
+  headerActions: { flexDirection: "row", gap: spacing.lg },
+  backIcon: { width: size.headerAction, height: size.headerAction, alignItems: "center", justifyContent: "center" },
+  headerIcon: { width: size.headerAction, height: size.headerAction, alignItems: "center", justifyContent: "center", borderRadius: radius.md, borderWidth: spacing.hairline, borderColor: colors.border, backgroundColor: colors.surface },
+  headerIconPrimary: { borderColor: colors.action, backgroundColor: colors.action },
+  headerIconText: { color: colors.textStrong, fontSize: size.iconLarge, fontWeight: typography.weightBold, lineHeight: 27 },
+  headerIconPrimaryText: { color: colors.onPrimary, fontSize: 30 },
+  content: { gap: spacing.xlPlus, paddingHorizontal: spacing.page, paddingBottom: spacing.screenBottom },
+  segment: { flex: 1, flexDirection: "row", backgroundColor: colors.surfaceMuted, borderRadius: radius.md, padding: spacing.xs },
+  segmentItem: { flex: 1, alignItems: "center", paddingVertical: spacing.smd, borderRadius: radius.sm },
+  segmentActive: { backgroundColor: colors.surface },
+  segmentText: { color: colors.actionMuted, fontWeight: typography.weightSemibold },
+  segmentActiveText: { color: colors.textStrong },
   deckPicker: { gap: 8, paddingVertical: 2 },
-  deckManager: { gap: 8, backgroundColor: "#ffffff", borderWidth: 1, borderColor: "#d8e2d7", borderRadius: 8, padding: 12 },
+  deckManager: { gap: spacing.lg, backgroundColor: colors.surface, borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, padding: spacing.xl },
   deckCreateRow: { flexDirection: "row", gap: 8, alignItems: "center" },
   deckNameInput: { flex: 1 },
-  deckChip: { paddingVertical: 8, paddingHorizontal: 12, backgroundColor: "#e4ebe3", borderRadius: 8 },
-  deckChipActive: { backgroundColor: "#244d43" },
-  deckChipText: { color: "#244d43", fontWeight: "700" },
-  deckChipTextActive: { color: "#fff" },
-  card: { position: "relative", minHeight: 370, justifyContent: "center", backgroundColor: "#ffffff", borderRadius: 8, padding: 22, borderWidth: 1, borderColor: "#d8e2d7" },
-  cardSaveButton: { position: "absolute", top: 14, left: 14, zIndex: 4, width: 36, height: 36, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "#d8e2d7", borderRadius: 8, backgroundColor: "#ffffff" },
-  cardSaveIcon: { color: "#2f6f9f", fontSize: 22, fontWeight: "800", lineHeight: 24 },
-  cardEditButton: { position: "absolute", top: 14, right: 14, zIndex: 4, width: 36, height: 36, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "#d8e2d7", borderRadius: 8, backgroundColor: "#ffffff" },
-  cardEditIcon: { color: "#53665e", fontSize: 21, fontWeight: "800", lineHeight: 23 },
-  swipeOverlay: { position: "absolute", zIndex: 10, left: -10, right: -10, top: "50%", transform: [{ translateY: -42 }, { rotate: "-18deg" }], borderWidth: 4, borderRadius: 8, paddingVertical: 8, backgroundColor: "rgba(255, 255, 255, 0.92)", fontSize: 62, fontWeight: "900", lineHeight: 68, textAlign: "center", textTransform: "uppercase" },
-  swipeKnown: { color: "#167b55", borderColor: "#167b55" },
-  swipeAgain: { color: "#b33b32", borderColor: "#b33b32" },
-  word: { fontSize: 48, lineHeight: 56, color: "#17231f", fontWeight: "900", textAlign: "center" },
-  answer: { gap: 8, marginTop: 18 },
-  meaning: { fontSize: 18, color: "#22352f", fontWeight: "700" },
+  deckChip: { paddingVertical: spacing.md, paddingHorizontal: spacing.lgPlus, backgroundColor: colors.surfaceMuted, borderRadius: radius.md },
+  deckChipActive: { backgroundColor: colors.primaryDeep },
+  deckChipText: { color: colors.primaryDeep, fontWeight: typography.weightBold },
+  deckChipTextActive: { color: colors.onPrimary },
+  cardFrame: { position: "relative", height: size.cardHeight },
+  cardTapSurface: { ...StyleSheet.absoluteFillObject },
+  cardMotion: { ...StyleSheet.absoluteFillObject },
+  cardFace: { position: "absolute", inset: 0, justifyContent: "center", backgroundColor: colors.surface, borderRadius: radius.card, padding: spacing.card, borderWidth: spacing.hairline, borderColor: colors.borderSoft, backfaceVisibility: "hidden" },
+  cardBack: { backgroundColor: colors.surfaceSecondary },
+  cardSaveButton: { position: "absolute", top: spacing.xlPlus, left: spacing.xlPlus, zIndex: spacing.sm, width: size.cardAction, height: size.cardAction, alignItems: "center", justifyContent: "center", borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surface },
+  cardSaveIcon: { color: colors.action, fontSize: size.iconMedium, fontWeight: typography.weightSemibold, lineHeight: size.iconLarge },
+  cardEditButton: { position: "absolute", top: spacing.xlPlus, right: spacing.xlPlus, zIndex: spacing.sm, width: size.cardAction, height: size.cardAction, alignItems: "center", justifyContent: "center", borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surface },
+  cardEditIcon: { color: colors.actionMuted, fontSize: typography.screenTitle, fontWeight: typography.weightSemibold, lineHeight: 23 },
+  swipeOverlay: { position: "absolute", zIndex: spacing.lgPlus, left: -spacing.lgPlus, right: -spacing.lgPlus, top: "50%", transform: [{ translateY: -size.headerAction }, { rotate: "-18deg" }], borderWidth: spacing.sm, borderRadius: radius.md, paddingVertical: spacing.lg, backgroundColor: colors.stampSurface, fontSize: 62, fontWeight: "900", lineHeight: 68, textAlign: "center", textTransform: "uppercase" },
+  swipeKnown: { color: colors.successStrong, borderColor: colors.successStrong },
+  swipeAgain: { color: colors.dangerStrong, borderColor: colors.dangerStrong },
+  word: { fontSize: typography.word, lineHeight: 56, color: colors.textStrong, fontWeight: typography.weightBold, textAlign: "center" },
+  pronunciationPill: { alignSelf: "center", flexDirection: "row", alignItems: "center", gap: spacing.md, marginTop: spacing.xlPlus, borderRadius: radius.md, backgroundColor: colors.actionSoft, paddingHorizontal: spacing.lg, paddingVertical: spacing.smd },
+  pronunciationText: { color: colors.action, fontSize: typography.bodySmall, fontWeight: typography.weightMedium },
+  backWord: { color: colors.primary, fontSize: typography.screenTitle, fontWeight: typography.weightSemibold, textAlign: "center", marginBottom: spacing.sm },
+  swipeAffordance: { flexDirection: "row", justifyContent: "space-between", marginTop: 20, paddingHorizontal: 8 },
+  answer: { gap: 7, marginTop: 12 },
+  contentLabel: { color: colors.action, fontSize: typography.caption, fontWeight: typography.weightSemibold, textTransform: "uppercase" },
+  meaningRow: { flexDirection: "row", alignItems: "flex-start", gap: 12 },
+  meaning: { flex: 1, flexShrink: 1, minWidth: 0, fontSize: typography.bodyLarge, lineHeight: 21, color: colors.textBody, fontWeight: typography.weightMedium },
   rtl: { writingDirection: "rtl", textAlign: "right" },
-  example: { fontSize: 17, color: "#31463d", marginTop: 8 },
-  hint: { color: "#6d7f75", marginTop: 22, textAlign: "center", fontWeight: "700" },
-  muted: { color: "#6d7f75", lineHeight: 20 },
+  exampleBlock: { gap: 5, marginTop: 5 },
+  exampleSpeech: { flexDirection: "row", alignItems: "center", gap: spacing.md, borderRadius: radius.md, backgroundColor: colors.actionSoft, paddingHorizontal: spacing.mdPlus, paddingVertical: spacing.smd },
+  example: { flex: 1, fontSize: typography.bodyLarge, lineHeight: 21, color: colors.textExample },
+  hint: { color: colors.textMuted, marginTop: typography.bodyLarge, textAlign: "center", fontWeight: typography.weightRegular },
+  muted: { color: colors.textMuted, lineHeight: 20 },
+  grammarGuide: { gap: 12 },
+  grammarBanner: { gap: spacing.xs, borderRadius: radius.md, backgroundColor: colors.actionSoft, padding: spacing.xlPlus },
+  grammarWord: { color: colors.primaryDeep, fontSize: typography.screenTitle, fontWeight: typography.weightSemibold },
+  grammarMeta: { color: colors.actionMuted, fontSize: typography.bodySmall, fontWeight: typography.weightRegular },
+  grammarHeading: { color: colors.primaryDeep, fontSize: typography.titleSmall, fontWeight: typography.weightSemibold, marginTop: spacing.xxs },
+  grammarCopy: { color: colors.textSoft, fontSize: typography.body, lineHeight: 21, fontWeight: typography.weightRegular },
+  grammarTable: { gap: spacing.md, borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surface, padding: spacing.xl },
+  grammarTableText: { color: colors.textExample, fontSize: typography.bodySmall, lineHeight: 19, fontWeight: typography.weightRegular },
+  grammarExample: { color: colors.primary, fontSize: typography.body, lineHeight: 20, fontStyle: "italic", fontWeight: typography.weightRegular },
   soundRow: { flexDirection: "row", gap: 10 },
-  secondaryButton: { flex: 1, alignItems: "center", padding: 12, borderRadius: 8, borderWidth: 1, borderColor: "#d8e2d7", backgroundColor: "#ffffff" },
-  secondaryButtonText: { color: "#244d43", fontWeight: "800" },
-  undoButton: { alignSelf: "center", minWidth: 96, alignItems: "center", paddingVertical: 10, paddingHorizontal: 16, borderRadius: 8, borderWidth: 1, borderColor: "#9aa9a1", backgroundColor: "#ffffff" },
-  undoText: { color: "#244d43", fontWeight: "800" },
+  secondaryButton: { flex: 1, alignItems: "center", padding: spacing.xl, borderRadius: radius.md, borderWidth: spacing.hairline, borderColor: colors.border, backgroundColor: colors.surface },
+  secondaryButtonText: { color: colors.primaryDeep, fontWeight: typography.weightSemibold },
+  reviewRow: { flexDirection: "row", gap: 6 },
+  reviewButton: { flex: 1, minHeight: size.reviewButton, alignItems: "center", justifyContent: "center", gap: spacing.xxs, borderRadius: radius.xl, paddingHorizontal: spacing.sm },
+  reviewAgain: { backgroundColor: colors.danger },
+  reviewHard: { backgroundColor: colors.warning },
+  reviewGood: { backgroundColor: colors.primary },
+  reviewEasy: { backgroundColor: colors.success },
+  reviewButtonText: { color: colors.onPrimary, fontSize: typography.bodySmall, fontWeight: typography.weightBold },
+  reviewEasyText: { color: colors.onPrimary, fontSize: typography.bodySmall, fontWeight: typography.weightBold },
+  reviewIntervalText: { color: colors.onPrimaryMuted, fontSize: typography.micro, fontWeight: typography.weightMedium },
+  undoButton: { alignSelf: "center", minWidth: 96, alignItems: "center", paddingVertical: spacing.lgPlus, paddingHorizontal: typography.bodyLarge, borderRadius: radius.md, borderWidth: spacing.hairline, borderColor: colors.borderMuted, backgroundColor: colors.surface },
+  undoText: { color: colors.primaryDeep, fontWeight: typography.weightSemibold },
   disabledButton: { opacity: 0.45 },
   progressGrid: { flexDirection: "row", flexWrap: "wrap", gap: 10 },
-  metricCard: { width: "48%", minHeight: 78, justifyContent: "center", backgroundColor: "#ffffff", borderWidth: 1, borderColor: "#d8e2d7", borderRadius: 8, padding: 13 },
-  metricLabel: { color: "#6d7f75", fontSize: 12, fontWeight: "800", textTransform: "uppercase" },
-  metricValue: { color: "#20362f", fontSize: 19, fontWeight: "800", marginTop: 4 },
-  studyGuide: { gap: 8, backgroundColor: "#ffffff", borderWidth: 1, borderColor: "#d8e2d7", borderRadius: 8, padding: 14 },
-  guideLabel: { color: "#6d7f75", fontSize: 12, fontWeight: "800", textTransform: "uppercase" },
-  guideText: { color: "#51645b", lineHeight: 20, fontWeight: "600" },
-  metric: { color: "#20362f", fontWeight: "700" },
-  input: { backgroundColor: "#ffffff", borderWidth: 1, borderColor: "#d8e2d7", borderRadius: 8, padding: 14, fontSize: 16 },
-  row: { backgroundColor: "#ffffff", borderRadius: 8, padding: 14, borderWidth: 1, borderColor: "#d8e2d7" },
-  searchRow: { flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: "#ffffff", borderRadius: 8, padding: 8, borderWidth: 1, borderColor: "#d8e2d7" },
+  metricCard: { width: "48%", minHeight: 78, justifyContent: "center", backgroundColor: colors.surface, borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, padding: typography.bodySmall },
+  metricLabel: { color: colors.textMuted, fontSize: typography.label, fontWeight: typography.weightMedium, textTransform: "uppercase" },
+  metricValue: { color: colors.textDeep, fontSize: 19, fontWeight: typography.weightSemibold, marginTop: spacing.sm },
+  studyGuide: { gap: spacing.lg, backgroundColor: colors.surface, borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, padding: spacing.xlPlus },
+  guideLabel: { color: colors.textMuted, fontSize: typography.label, fontWeight: typography.weightMedium, textTransform: "uppercase" },
+  guideText: { color: colors.textSoft, lineHeight: 20, fontWeight: typography.weightSemibold },
+  metric: { color: colors.textDeep, fontWeight: typography.weightBold },
+  input: { backgroundColor: colors.surface, borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, padding: spacing.xlPlus, fontSize: typography.bodyLarge },
+  row: { backgroundColor: colors.surface, borderRadius: radius.md, padding: spacing.xlPlus, borderWidth: spacing.hairline, borderColor: colors.border },
+  searchRow: { flexDirection: "row", alignItems: "center", gap: spacing.lg, backgroundColor: colors.surface, borderRadius: radius.md, padding: spacing.lg, borderWidth: spacing.hairline, borderColor: colors.border },
   searchStudyRow: { flex: 1, padding: 6 },
-  searchSaveButton: { width: 38, height: 38, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "#2f6f9f", borderRadius: 8, backgroundColor: "#ffffff" },
-  searchSaveIcon: { color: "#2f6f9f", fontSize: 20, fontWeight: "800" },
-  rowTitle: { color: "#17231f", fontWeight: "800", fontSize: 16 },
+  searchSaveButton: { width: 38, height: 38, alignItems: "center", justifyContent: "center", borderWidth: spacing.hairline, borderColor: colors.action, borderRadius: radius.md, backgroundColor: colors.surface },
+  searchSaveIcon: { color: colors.action, fontSize: size.icon, fontWeight: typography.weightSemibold },
+  rowTitle: { color: colors.textStrong, fontWeight: typography.weightSemibold, fontSize: typography.bodyLarge },
   searchMeaningRow: { flexDirection: "row", alignItems: "center", gap: 6, marginTop: 4 },
   searchMeaningRtl: { justifyContent: "space-between" },
-  sectionTitle: { color: "#17231f", fontWeight: "900", fontSize: 18 },
-  fieldLabel: { color: "#6d7f75", fontSize: 12, fontWeight: "800", textTransform: "uppercase", marginTop: 4 },
+  sectionTitle: { color: colors.textStrong, fontWeight: typography.weightBold, fontSize: typography.title },
+  fieldLabel: { color: colors.textMuted, fontSize: typography.label, fontWeight: typography.weightMedium, textTransform: "uppercase", marginTop: spacing.sm },
   form: { gap: 14 },
-  formError: { color: "#b33b32", fontWeight: "700" },
+  formError: { color: colors.dangerStrong, fontWeight: typography.weightBold },
   customList: { gap: 8, marginTop: 4 },
-  customRow: { flexDirection: "row", alignItems: "center", gap: 12, backgroundColor: "#ffffff", borderWidth: 1, borderColor: "#d8e2d7", borderRadius: 8, padding: 12 },
+  customRow: { flexDirection: "row", alignItems: "center", gap: spacing.xl, backgroundColor: colors.surface, borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, padding: spacing.xl },
   customCopy: { flex: 1, gap: 2 },
-  deleteButton: { minWidth: 72, alignItems: "center", borderWidth: 1, borderColor: "#e5b8b3", borderRadius: 8, paddingVertical: 9, paddingHorizontal: 10, backgroundColor: "#ffffff" },
-  deleteButtonText: { color: "#b33b32", fontWeight: "800" },
-  primaryButton: { alignItems: "center", backgroundColor: "#244d43", borderRadius: 8, padding: 14 },
-  primaryButtonText: { color: "#fff", fontWeight: "900" },
-  secondaryAction: { alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "#2f6f9f", borderRadius: 8, paddingVertical: 11, paddingHorizontal: 14, backgroundColor: "#ffffff" },
-  secondaryActionText: { color: "#2f6f9f", fontWeight: "800" },
-  dangerButton: { alignItems: "center", backgroundColor: "#b33b32", borderRadius: 8, padding: 14 },
-  dangerButtonText: { color: "#ffffff", fontWeight: "900" },
-  friendPanel: { gap: 8, backgroundColor: "#ffffff", borderWidth: 1, borderColor: "#d8e2d7", borderRadius: 8, padding: 14 },
-  friendCode: { color: "#20362f", fontSize: 22, fontWeight: "900", letterSpacing: 1.5 },
-  friendRow: { gap: 8, borderTopWidth: 1, borderTopColor: "#e4ebe3", paddingTop: 10 },
-  friendActions: { flexDirection: "row", gap: 8 },
-  smallAction: { flex: 1, alignItems: "center", borderWidth: 1, borderColor: "#2f6f9f", borderRadius: 8, paddingVertical: 8, backgroundColor: "#ffffff" },
-  toggleRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", backgroundColor: "#ffffff", borderRadius: 8, padding: 14 },
-  syncPanel: { gap: 8, backgroundColor: "#ffffff", borderRadius: 8, padding: 14, borderWidth: 1, borderColor: "#d8e2d7" },
-  syncActions: { flexDirection: "row", gap: 8 },
-  modalOverlay: { flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(23, 33, 27, 0.42)" },
-  modalSheet: { maxHeight: "90%", backgroundColor: "#f2f5ef", borderTopLeftRadius: 8, borderTopRightRadius: 8 },
-  modalHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 18, paddingTop: 18, paddingBottom: 12, backgroundColor: "#ffffff", borderBottomWidth: 1, borderBottomColor: "#d8e2d7" },
-  modalTitle: { color: "#17231f", fontSize: 20, fontWeight: "900" },
-  closeButton: { width: 36, height: 36, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "#d8e2d7", borderRadius: 8, backgroundColor: "#ffffff" },
-  closeButtonText: { color: "#17231f", fontSize: 28, lineHeight: 30 },
-  modalContent: { gap: 14, padding: 18, paddingBottom: 32 }
+  deleteButton: { minWidth: 72, alignItems: "center", borderWidth: spacing.hairline, borderColor: colors.dangerBorder, borderRadius: radius.md, paddingVertical: 9, paddingHorizontal: spacing.lgPlus, backgroundColor: colors.surface },
+  deleteButtonText: { color: colors.dangerStrong, fontWeight: typography.weightSemibold },
+  primaryButton: { alignItems: "center", backgroundColor: colors.primaryDeep, borderRadius: radius.md, padding: spacing.xlPlus },
+  primaryButtonText: { color: colors.onPrimary, fontWeight: typography.weightSemibold },
+  secondaryAction: { alignItems: "center", justifyContent: "center", borderWidth: spacing.hairline, borderColor: colors.action, borderRadius: radius.md, paddingVertical: 11, paddingHorizontal: spacing.xlPlus, backgroundColor: colors.surface },
+  secondaryActionText: { color: colors.action, fontWeight: typography.weightSemibold },
+  dangerButton: { alignItems: "center", backgroundColor: colors.dangerStrong, borderRadius: radius.md, padding: spacing.xlPlus },
+  dangerButtonText: { color: colors.onPrimary, fontWeight: typography.weightSemibold },
+  friendPanel: { gap: spacing.lg, backgroundColor: colors.surface, borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, padding: spacing.xlPlus },
+  friendCode: { color: colors.textDeep, fontSize: size.iconMedium, fontWeight: typography.weightBold, letterSpacing: 1.5 },
+  friendRow: { gap: spacing.lg, borderTopWidth: spacing.hairline, borderTopColor: colors.surfaceMuted, paddingTop: spacing.lgPlus },
+  friendActions: { flexDirection: "row", gap: spacing.lg },
+  smallAction: { flex: 1, alignItems: "center", borderWidth: spacing.hairline, borderColor: colors.action, borderRadius: radius.md, paddingVertical: spacing.lg, backgroundColor: colors.surface },
+  toggleRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", backgroundColor: colors.surface, borderRadius: radius.md, padding: spacing.xlPlus },
+  syncPanel: { gap: spacing.lg, backgroundColor: colors.surface, borderRadius: radius.md, padding: spacing.xlPlus, borderWidth: spacing.hairline, borderColor: colors.border },
+  syncActions: { flexDirection: "row", gap: spacing.lg },
+  modalOverlay: { flex: 1, justifyContent: "flex-end", backgroundColor: colors.modalOverlay },
+  modalSheet: { maxHeight: "90%", backgroundColor: colors.sheet, borderTopLeftRadius: radius.md, borderTopRightRadius: radius.md },
+  modalHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: spacing.page, paddingTop: spacing.panel, paddingBottom: spacing.xl, backgroundColor: colors.surface, borderBottomWidth: spacing.hairline, borderBottomColor: colors.border },
+  modalTitle: { color: colors.textStrong, fontSize: size.icon, fontWeight: typography.weightBold },
+  closeButton: { width: size.cardAction, height: size.cardAction, alignItems: "center", justifyContent: "center", borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surface },
+  closeButtonText: { color: colors.textStrong, fontSize: typography.display, lineHeight: 30 },
+  modalContent: { gap: 14, padding: 15, paddingBottom: 28 }
 });

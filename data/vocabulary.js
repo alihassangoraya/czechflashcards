@@ -718,6 +718,32 @@ window.CZECH_B1_VOCAB.push(
   const teens = ["deset", "jedenáct", "dvanáct", "třináct", "čtrnáct", "patnáct", "šestnáct", "sedmnáct", "osmnáct", "devatenáct"];
   const tens = ["", "", "dvacet", "třicet", "čtyřicet", "padesát", "šedesát", "sedmdesát", "osmdesát", "devadesát"];
   const hundreds = ["", "sto", "dvě stě", "tři sta", "čtyři sta", "pět set", "šest set", "sedm set", "osm set", "devět set"];
+  const hindiUnderHundred = [
+    "शून्य", "एक", "दो", "तीन", "चार", "पाँच", "छह", "सात", "आठ", "नौ",
+    "दस", "ग्यारह", "बारह", "तेरह", "चौदह", "पंद्रह", "सोलह", "सत्रह", "अठारह", "उन्नीस",
+    "बीस", "इक्कीस", "बाईस", "तेईस", "चौबीस", "पच्चीस", "छब्बीस", "सत्ताईस", "अट्ठाईस", "उनतीस",
+    "तीस", "इकतीस", "बत्तीस", "तैंतीस", "चौंतीस", "पैंतीस", "छत्तीस", "सैंतीस", "अड़तीस", "उनतालीस",
+    "चालीस", "इकतालीस", "बयालीस", "तैंतालीस", "चवालीस", "पैंतालीस", "छियालीस", "सैंतालीस", "अड़तालीस", "उनचास",
+    "पचास", "इक्यावन", "बावन", "तिरपन", "चौवन", "पचपन", "छप्पन", "सत्तावन", "अट्ठावन", "उनसठ",
+    "साठ", "इकसठ", "बासठ", "तिरसठ", "चौंसठ", "पैंसठ", "छियासठ", "सड़सठ", "अड़सठ", "उनहत्तर",
+    "सत्तर", "इकहत्तर", "बहत्तर", "तिहत्तर", "चौहत्तर", "पचहत्तर", "छिहत्तर", "सतहत्तर", "अठहत्तर", "उन्नासी",
+    "अस्सी", "इक्यासी", "बयासी", "तिरासी", "चौरासी", "पचासी", "छियासी", "सतासी", "अट्ठासी", "नवासी",
+    "नब्बे", "इक्यानवे", "बानवे", "तिरानवे", "चौरानवे", "पचानवे", "छियानवे", "सत्तानवे", "अट्ठानवे", "निन्यानवे"
+  ];
+  const urduUnderHundred = [
+    "صفر", "ایک", "دو", "تین", "چار", "پانچ", "چھ", "سات", "آٹھ", "نو",
+    "دس", "گیارہ", "بارہ", "تیرہ", "چودہ", "پندرہ", "سولہ", "سترہ", "اٹھارہ", "انیس",
+    "بیس", "اکیس", "بائیس", "تئیس", "چوبیس", "پچیس", "چھبیس", "ستائیس", "اٹھائیس", "انتیس",
+    "تیس", "اکتیس", "بتیس", "تینتیس", "چونتیس", "پینتیس", "چھتیس", "سینتیس", "اڑتیس", "انتالیس",
+    "چالیس", "اکتالیس", "بیالیس", "تینتالیس", "چوالیس", "پینتالیس", "چھیالیس", "سینتالیس", "اڑتالیس", "انچاس",
+    "پچاس", "اکیاون", "باون", "ترپن", "چَوّن", "پچپن", "چھپن", "ستاون", "اٹھاون", "انسٹھ",
+    "ساٹھ", "اکسٹھ", "باسٹھ", "تریسٹھ", "چونسٹھ", "پینسٹھ", "چھیاسٹھ", "سڑسٹھ", "اڑسٹھ", "انہتر",
+    "ستر", "اکہتر", "بہتر", "تہتر", "چوہتر", "پچہتر", "چھہتر", "ستتر", "اٹھہتر", "اناسی",
+    "اسی", "اکیاسی", "بیاسی", "تراسی", "چوراسی", "پچاسی", "چھیاسی", "ستاسی", "اٹھاسی", "نواسی",
+    "نوے", "اکانوے", "بانوے", "ترانوے", "چورانوے", "پچانوے", "چھیانوے", "ستانوے", "اٹھانوے", "ننانوے"
+  ];
+  const hindiHundreds = ["", "एक सौ", "दो सौ", "तीन सौ", "चार सौ", "पाँच सौ", "छह सौ", "सात सौ", "आठ सौ", "नौ सौ"];
+  const urduHundreds = ["", "ایک سو", "دو سو", "تین سو", "چار سو", "پانچ سو", "چھ سو", "سات سو", "آٹھ سو", "نو سو"];
 
   function underThousand(number) {
     if (number < 10) return ones[number];
@@ -741,12 +767,26 @@ window.CZECH_B1_VOCAB.push(
     return `dva tisíce ${underThousand(number - 2000)}`;
   }
 
+  function composeNumber(number, underHundred, hundredsWords, thousand) {
+    if (number < 100) return underHundred[number];
+    if (number < 1000) {
+      const hundred = Math.floor(number / 100);
+      const rest = number % 100;
+      return rest ? `${hundredsWords[hundred]} ${underHundred[rest]}` : hundredsWords[hundred];
+    }
+    const thousands = Math.floor(number / 1000);
+    const rest = number % 1000;
+    const prefix = thousands === 1 ? thousand : `${underHundred[thousands]} ${thousand}`;
+    return rest ? `${prefix} ${composeNumber(rest, underHundred, hundredsWords, thousand)}` : prefix;
+  }
+
   for (let number = 0; number <= 2000; number += 1) {
     window.CZECH_B1_VOCAB.push({
       id: `number-${number}`,
       cz: czechNumber(number),
       en: `number ${number}`,
-      hi: `संख्या ${number}`,
+      hi: composeNumber(number, hindiUnderHundred, hindiHundreds, "हज़ार"),
+      ur: composeNumber(number, urduUnderHundred, urduHundreds, "ہزار"),
       sentence: `Číslo ${number} je ${czechNumber(number)}.`,
       sentenceEn: `The number ${number} is ${czechNumber(number)}.`,
       tags: ["numbers", "daily"]

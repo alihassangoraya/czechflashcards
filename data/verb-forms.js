@@ -2,12 +2,12 @@
   const deck = window.CZECH_B1_VOCAB || [];
   const seen = new Set(deck.map((card) => String(card.cz || "").trim().toLocaleLowerCase("cs-CZ")));
   const persons = [
-    { code: "ja", cs: "Já", en: "I" },
-    { code: "ty", cs: "Ty", en: "you" },
-    { code: "on", cs: "On/ona", en: "he/she" },
-    { code: "my", cs: "My", en: "we" },
-    { code: "vy", cs: "Vy", en: "you" },
-    { code: "oni", cs: "Oni", en: "they" }
+    { code: "ja", cs: "Já", en: "I", hi: "मैं", ur: "میں" },
+    { code: "ty", cs: "Ty", en: "you", hi: "तुम", ur: "تم" },
+    { code: "on", cs: "On/ona", en: "he/she", hi: "वह", ur: "وہ" },
+    { code: "my", cs: "My", en: "we", hi: "हम", ur: "ہم" },
+    { code: "vy", cs: "Vy", en: "you", hi: "आप", ur: "آپ" },
+    { code: "oni", cs: "Oni", en: "they", hi: "वे", ur: "وہ" }
   ];
 
   function cleanVerb(value) {
@@ -15,6 +15,61 @@
       .replace(/^to\s+/i, "")
       .replace(/[,;].*$/, "")
       .trim();
+  }
+
+  // Source cards predate dedicated Urdu fields. This keeps generated form
+  // meanings in Urdu script until each base verb gains a curated translation.
+  function toUrdu(value) {
+    return String(value || "")
+      .replace(/क्ष/g, "کش")
+      .replace(/ज्ञ/g, "گیہ")
+      .replace(/त्र/g, "تر")
+      .replace(/श्र/g, "شر")
+      .replace(/[ाआ]/g, "ا")
+      .replace(/[िीई]/g, "ی")
+      .replace(/[इ]/g, "ی")
+      .replace(/[ुूऊ]/g, "و")
+      .replace(/[उ]/g, "و")
+      .replace(/[ेैए]/g, "ے")
+      .replace(/[ोौओऔ]/g, "و")
+      .replace(/ऑ/g, "آ")
+      .replace(/अ/g, "ا")
+      .replace(/क/g, "ک")
+      .replace(/ख/g, "کھ")
+      .replace(/ग/g, "گ")
+      .replace(/घ/g, "گھ")
+      .replace(/च/g, "چ")
+      .replace(/छ/g, "چھ")
+      .replace(/ज/g, "ج")
+      .replace(/झ/g, "جھ")
+      .replace(/ट/g, "ٹ")
+      .replace(/ठ/g, "ٹھ")
+      .replace(/ड़/g, "ڑ")
+      .replace(/ढ़/g, "ڑھ")
+      .replace(/ड/g, "ڈ")
+      .replace(/ढ/g, "ڈھ")
+      .replace(/त/g, "ت")
+      .replace(/थ/g, "تھ")
+      .replace(/द/g, "د")
+      .replace(/ध/g, "دھ")
+      .replace(/न/g, "ن")
+      .replace(/ण/g, "ن")
+      .replace(/प/g, "پ")
+      .replace(/फ/g, "ف")
+      .replace(/ब/g, "ب")
+      .replace(/भ/g, "بھ")
+      .replace(/म/g, "م")
+      .replace(/य/g, "ی")
+      .replace(/र/g, "ر")
+      .replace(/ल/g, "ل")
+      .replace(/व/g, "و")
+      .replace(/श/g, "ش")
+      .replace(/ष/g, "ش")
+      .replace(/स/g, "س")
+      .replace(/ह/g, "ہ")
+      .replace(/ं|ँ/g, "ں")
+      .replace(/ः|्|़|ॉ/gi, "")
+      .replace(/[।]/g, ".");
   }
 
   const presentOverrides = {
@@ -157,14 +212,16 @@
     seen.add(key);
 
     const verbMeaning = cleanVerb(source.en);
+    const hindiMeaning = String(source.hi || "").trim();
+    const urduMeaning = String(source.ur || source.urdu || toUrdu(hindiMeaning)).trim();
     const sentence = `${person.cs} ${isNegative ? form : form}.`;
     const sentenceEn = `${englishForm(verbMeaning, person, isNegative)}.`;
     deck.push({
       id: `verb-form-${source.id || source.cz}-${person.code}-${isNegative ? "neg" : "pos"}-${key.replace(/\s+/g, "-")}`,
       cz: form,
       en: englishForm(verbMeaning, person, isNegative),
-      hi: `क्रिया रूप: ${person.en} ${isNegative ? "do not " : ""}${verbMeaning}`,
-      ur: `فعل کی شکل: ${person.en} ${isNegative ? "do not " : ""}${verbMeaning}`,
+      hi: `क्रिया रूप: ${person.hi} ${isNegative ? "नहीं " : ""}${hindiMeaning}`,
+      ur: `فعل کی شکل: ${person.ur} ${isNegative ? "نہیں " : ""}${urduMeaning}`,
       sentence,
       sentenceEn,
       tags: ["verbs", "forms"]
@@ -177,12 +234,14 @@
     seen.add(key);
 
     const verbMeaning = cleanVerb(source.en);
+    const hindiMeaning = String(source.hi || "").trim();
+    const urduMeaning = String(source.ur || source.urdu || toUrdu(hindiMeaning)).trim();
     deck.push({
       id: `verb-form-${source.id || source.cz}-imp-${isPlural ? "pl" : "sg"}-${isNegative ? "neg" : "pos"}-${key.replace(/\s+/g, "-")}`,
       cz: form,
       en: `${isNegative ? "do not " : ""}${verbMeaning}${isPlural ? " (plural/formal command)" : " (command)"}`,
-      hi: `आदेश रूप: ${isNegative ? "do not " : ""}${verbMeaning}`,
-      ur: `حکم کی شکل: ${isNegative ? "do not " : ""}${verbMeaning}`,
+      hi: `आदेश रूप: ${isNegative ? "मत " : ""}${hindiMeaning}`,
+      ur: `حکم کی شکل: ${isNegative ? "نہ " : ""}${urduMeaning}`,
       sentence: `${isNegative ? "Prosím, " : ""}${form}!`,
       sentenceEn: `${isNegative ? "Please do not " : "Please "}${verbMeaning}.`,
       tags: ["verbs", "forms"]

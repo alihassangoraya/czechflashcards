@@ -216,7 +216,9 @@ this repository. Read it before changing product behavior or deployment files.
 
 | Path | Ownership |
 | --- | --- |
-| `index.html`, `app.js`, `styles.css` | Static web app UI and browser-local study state. |
+| `apps/mobile` | Canonical Expo app UI for iOS, Android, and web. |
+| `apps/mobile/dist` | Generated web bundle served in development and deployment. Never hand-edit. |
+| `index.html`, `app.js`, `styles.css` | Legacy static implementation retained for migration reference only. |
 | `data/vocabulary.js` | Core vocabulary source. |
 | `data/extended-lemmas.js` | Extended vocabulary source and example sentences. |
 | `data/focus-decks.js` | A2/B1 Focus curation layer; tags two separate 1,000-word decks. |
@@ -224,7 +226,7 @@ this repository. Read it before changing product behavior or deployment files.
 | `sw.js`, `manifest.webmanifest` | Web PWA and offline cache behavior. |
 | `packages/shared/src` | Shared types, review scheduling, filtering, and CSV logic. |
 | `packages/shared/data/vocabulary.seed.json` | Generated mobile seed. Never hand-edit it. |
-| `apps/mobile/App.tsx` | Expo mobile UI and study flow. |
+| `apps/mobile/App.tsx` | Shared Expo UI and study flow for iOS, Android, and web. |
 | `apps/mobile/src/database.ts` | SQLite schema, offline cards, corrections, review state, and sync queue. |
 | `apps/mobile/src/notifications.ts` | Local-notification scheduling. |
 | `apps/mobile/src/sync.ts` | Optional Supabase sync queue delivery. |
@@ -295,17 +297,18 @@ For a learner-facing feature, make this sequence the default:
 
 ### PWA and Deployment Rules
 
-- Keep `sw.js` aligned with the root assets needed to open the web app offline.
-  Bump `CACHE_NAME` whenever cached asset behavior changes so existing users
-  receive the new version after their next visit.
-- Service workers require HTTPS in production. Do not describe an HTTP IP URL
-  as offline-ready.
+- The deployed web application is the Expo export in `apps/mobile/dist`; run
+  `npm run build:web` before deployment. Do not deploy the legacy root
+  `index.html`, `app.js`, or `styles.css` as the application UI.
+- Cloudflare Worker assets are configured to serve `apps/mobile/dist`, keeping
+  the web release on the same UI code as iOS and Android.
 - The production static process is `czech-flashcards`, served by PM2 from
-  `/var/www/czech-flashcards` on port `8045`.
+  `/var/www/czech-flashcards/apps/mobile/dist` on port `8045`.
 - Keep the domain-facing reverse proxy on `80/443`; Cloudflare should point the
   domain to that proxy rather than expose the PM2 port to end users.
-- Before a deployment, run `npm run check`, then deploy the root web assets and
-  the full `data/` directory together. Verify `/` and `/sw.js` return `200`.
+- Before a deployment, run `npm run check`, `npm run build:web`, and
+  `npm --prefix apps/mobile run typecheck`. Deploy `apps/mobile/dist` and
+  verify `/` returns `200`.
 - The sole Git remote is `origin`:
   `https://github.com/alihassangoraya/czechflashcards.git`.
 

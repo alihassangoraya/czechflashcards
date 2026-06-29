@@ -23,11 +23,13 @@
           "color": "#2f5d50"
         }
       ],
-      "expo-asset"
+      "expo-asset",
+      "expo-font"
     ],
     "extra": {
       "supabaseUrl": "",
-      "supabaseAnonKey": ""
+      "supabaseAnonKey": "",
+      "geminiApiKey": ""
     }
   }
 }

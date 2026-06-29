@@ -106,7 +106,13 @@ export async function openAppDatabase(): Promise<AppDatabase> {
 
 export async function seedCards(db: AppDatabase, cards: Card[]): Promise<void> {
   const existing = await db.getFirstAsync<{ count: number }>("SELECT COUNT(*) as count FROM cards WHERE source IN ('seed', 'legacy-web')");
-  if ((existing?.count || 0) >= cards.length) return;
+  const untranslatedNumbers = await db.getFirstAsync<{ count: number }>(
+    "SELECT COUNT(*) as count FROM cards WHERE id LIKE 'number-%' AND (hi LIKE 'संख्या %' OR ur = '')"
+  );
+  const mixedLanguageMeanings = await db.getFirstAsync<{ count: number }>(
+    "SELECT COUNT(*) as count FROM cards WHERE source IN ('seed', 'legacy-web') AND (hi GLOB '*[A-Za-z]*' OR ur GLOB '*[A-Za-z]*')"
+  );
+  if ((existing?.count || 0) >= cards.length && !(untranslatedNumbers?.count || 0) && !(mixedLanguageMeanings?.count || 0)) return;
 
   const now = Date.now();
   await db.withTransactionAsync(async () => {
