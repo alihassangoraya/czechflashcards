@@ -103,7 +103,6 @@ export function QuizScreen({ deck, onClose }: Props) {
 
   const question = questions[index];
   const isCorrect = selected === question.correctIndex;
-  const category = question.card.tags.find((tag) => !["extended", "forms", "numbers", "daily", "noun", "verb", "adjective"].includes(tag)) || question.card.tags[0] || "practice";
 
   function next() {
     if (!checked) {
@@ -130,7 +129,6 @@ export function QuizScreen({ deck, onClose }: Props) {
           </Pressable>
           <View style={styles.headerCopy}>
             <Text style={styles.topTitle}>Czech quiz</Text>
-            <Text style={styles.topMeta}>Multiple choice</Text>
           </View>
         </View>
         <View style={styles.scoreChip} accessibilityLabel={`${score} correct answers`}>
@@ -150,20 +148,12 @@ export function QuizScreen({ deck, onClose }: Props) {
       </View>
 
       <View style={styles.promptCard}>
-        <View style={styles.promptTopline}>
-          <View style={styles.modeChip}>
-            <MaterialIcons name="translate" size={size.iconSmall} color={colors.primaryDeep} />
-            <Text style={styles.modeChipText}>Czech to English</Text>
-          </View>
-          <Text style={styles.categoryText}>{titleCase(category)}</Text>
-        </View>
         <Text style={styles.promptLabel}>Choose the matching meaning</Text>
         <Text style={styles.word}>{question.card.cz}</Text>
         <Pressable style={styles.audioLine} onPress={() => Speech.speak(question.card.cz, { language: "cs-CZ", rate: 0.86 })} accessibilityRole="button" accessibilityLabel={`Play ${question.card.cz}`}>
           <MaterialIcons name="volume-up" size={size.iconSmall} color={colors.action} />
           <Text style={styles.pronunciation}>[ {question.card.pronunciation || question.card.cz} ]</Text>
         </Pressable>
-        {Boolean(question.card.sentence) && <Text style={styles.example}>{question.card.sentence}</Text>}
       </View>
 
       <View style={styles.options}>
@@ -247,10 +237,6 @@ function shuffle<T>(items: T[]): T[] {
   return result;
 }
 
-function titleCase(value: string) {
-  return value ? `${value.charAt(0).toUpperCase()}${value.slice(1)}` : "Practice";
-}
-
 const styles = StyleSheet.create({
   scroll: { flex: 1, backgroundColor: colors.background },
   content: { gap: spacing.xlPlus, paddingHorizontal: spacing.page, paddingTop: typography.bodyLarge, paddingBottom: spacing.screenBottom },
@@ -259,7 +245,6 @@ const styles = StyleSheet.create({
   backButton: { width: size.headerAction, height: size.headerAction, alignItems: "center", justifyContent: "center" },
   headerCopy: { flex: 1, alignItems: "flex-start" },
   topTitle: { color: colors.textStrong, fontSize: typography.screenTitle, fontWeight: typography.weightSemibold },
-  topMeta: { color: colors.textMuted, fontSize: typography.caption, fontWeight: typography.weightMedium },
   scoreChip: { width: size.headerAction, height: size.headerAction, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: spacing.xs, borderRadius: radius.md, backgroundColor: colors.mintSoft },
   scoreChipText: { color: colors.success, fontSize: typography.body, fontWeight: typography.weightBold },
   progressSection: { gap: spacing.smd },
@@ -269,15 +254,10 @@ const styles = StyleSheet.create({
   progressTrack: { height: spacing.md, overflow: "hidden", borderRadius: radius.xs, backgroundColor: colors.progressTrackStrong },
   progressFill: { height: "100%", borderRadius: radius.xs, backgroundColor: colors.primary },
   promptCard: { gap: spacing.lg, borderWidth: spacing.hairline, borderColor: colors.borderSoft, borderRadius: radius.card, backgroundColor: colors.surface, padding: spacing.card, ...shadow.soft },
-  promptTopline: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: spacing.lg },
-  modeChip: { flexDirection: "row", alignItems: "center", gap: spacing.smd, borderRadius: radius.md, backgroundColor: colors.primarySoft, paddingHorizontal: spacing.lg, paddingVertical: spacing.smd },
-  modeChipText: { color: colors.primaryDeep, fontSize: typography.caption, fontWeight: typography.weightSemibold },
-  categoryText: { color: colors.textMuted, fontSize: typography.caption, fontWeight: typography.weightMedium },
   promptLabel: { color: colors.textSoft, fontSize: typography.body, fontWeight: typography.weightRegular, textAlign: "center" },
   word: { color: colors.textStrong, fontSize: typography.word, lineHeight: typography.word + spacing.lg, fontWeight: typography.weightBold, textAlign: "center" },
   audioLine: { alignSelf: "center", flexDirection: "row", alignItems: "center", gap: spacing.smd, borderRadius: radius.md, backgroundColor: colors.actionSoft, paddingHorizontal: spacing.lg, paddingVertical: spacing.smd },
   pronunciation: { color: colors.action, fontSize: typography.bodySmall, fontWeight: typography.weightMedium },
-  example: { color: colors.textExample, fontSize: typography.bodySmall, fontWeight: typography.weightMedium, lineHeight: typography.bodyLarge, textAlign: "center" },
   options: { gap: spacing.lg },
   option: { minHeight: size.quizOptionHeight, flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: spacing.lg, borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surface, paddingHorizontal: spacing.xl },
   optionInner: { flex: 1, flexDirection: "row", alignItems: "center", gap: spacing.lg },
