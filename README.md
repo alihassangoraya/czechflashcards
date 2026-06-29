@@ -1,8 +1,8 @@
 # Czech A2/B1 Flashcards
 
-An offline-first Czech flashcard product for A2 and B1 study. It has a static
-progressive web app and an Expo React Native mobile app that share vocabulary
-data and spaced-review logic.
+An offline-first Czech flashcard product for A2 and B1 study. It has a Vite
+React Native Web app and a React Native mobile app that share vocabulary data
+and spaced-review logic.
 
 Meanings are available in English, Hindi, and Urdu. Urdu is the default
 secondary meaning language.
@@ -41,14 +41,14 @@ The active repository is [`alihassangoraya/czechflashcards`](https://github.com/
 
 ### Mobile app
 
-- Expo + TypeScript app in `apps/mobile`.
+- React Native + TypeScript app in `apps/mobile`, with Vite for the web build.
 - Same shared seed vocabulary, review intervals, deck semantics, card editing,
   search, both Focus 1000 decks, saved-word list, custom words, swipe study
   flow, daily goals, and Urdu/Hindi setting as the web app.
-- SQLite-backed offline storage for cards, review state, daily progress, custom
-  cards, card corrections, settings, and a sync queue.
-- Local notification scheduling for daily reminders, streak-risk reminders,
-  and review-due reminders, subject to device permission.
+- AsyncStorage-backed offline storage for cards, review state, daily progress,
+  custom cards, card corrections, settings, and a sync queue.
+- Notification preferences are stored with settings. Native notification
+  scheduling belongs in the bare React Native platform layer.
 - Guest-first use works without an account or network connection.
 
 ### Shared and backend foundation
@@ -75,7 +75,7 @@ The current validated study data contains:
 - `2061` unique non-number Czech word lemmas.
 - `1159` generated Czech verb-form cards.
 - `2001` generated number cards from `0` to `2000`.
-- `5221` cards in the complete shared seed.
+- `6268` cards in the complete shared seed.
 
 All card examples are checked for missing translations, encoding issues, and
 known generic/template-style sentences.
@@ -88,15 +88,10 @@ npm start
 
 Open `http://127.0.0.1:5173`.
 
-The web app has no build step. Its production files are:
+The deployed web app is generated from the shared React Native UI:
 
-```text
-index.html
-styles.css
-app.js
-sw.js
-manifest.webmanifest
-data/
+```bash
+npm run build:web
 ```
 
 ## Mobile Development
@@ -115,17 +110,17 @@ npm run web
 npm run typecheck
 ```
 
-To enable the Supabase client, set the following Expo variables:
+To enable the Supabase client, set the following environment variables:
 
 ```text
-EXPO_PUBLIC_SUPABASE_URL=...
-EXPO_PUBLIC_SUPABASE_ANON_KEY=...
+VITE_SUPABASE_URL=...
+VITE_SUPABASE_ANON_KEY=...
 ```
 
 Apply both migrations in `supabase/migrations` to the matching Supabase project
 before enabling authenticated sync. In Supabase Auth, enable Email sign-in and
 choose whether new accounts require email confirmation. The mobile account
-screen remains safely guest-only until both Expo variables are present.
+screen remains safely guest-only until both variables are present.
 
 ## Custom Vocabulary and Import
 
@@ -216,7 +211,7 @@ this repository. Read it before changing product behavior or deployment files.
 
 | Path | Ownership |
 | --- | --- |
-| `apps/mobile` | Canonical Expo app UI for iOS, Android, and web. |
+| `apps/mobile` | Canonical React Native app UI for iOS, Android, and web. |
 | `apps/mobile/dist` | Generated web bundle served in development and deployment. Never hand-edit. |
 | `index.html`, `app.js`, `styles.css` | Legacy static implementation retained for migration reference only. |
 | `data/vocabulary.js` | Core vocabulary source. |
@@ -226,9 +221,9 @@ this repository. Read it before changing product behavior or deployment files.
 | `sw.js`, `manifest.webmanifest` | Web PWA and offline cache behavior. |
 | `packages/shared/src` | Shared types, review scheduling, filtering, and CSV logic. |
 | `packages/shared/data/vocabulary.seed.json` | Generated mobile seed. Never hand-edit it. |
-| `apps/mobile/App.tsx` | Shared Expo UI and study flow for iOS, Android, and web. |
-| `apps/mobile/src/database.ts` | SQLite schema, offline cards, corrections, review state, and sync queue. |
-| `apps/mobile/src/notifications.ts` | Local-notification scheduling. |
+| `apps/mobile/App.tsx` | Shared React Native UI and study flow for iOS, Android, and web. |
+| `apps/mobile/src/database.ts` | AsyncStorage-backed offline cards, corrections, review state, and sync queue. |
+| `apps/mobile/src/notifications.ts` | Native notification placeholder for the bare React Native layer. |
 | `apps/mobile/src/sync.ts` | Optional Supabase sync queue delivery. |
 | `supabase/migrations` | Auth, sync, streak, notification, and friendship database foundation. |
 | `scripts/export-shared-seed.js` | Generates the shared mobile vocabulary seed. |
@@ -272,7 +267,7 @@ For a learner-facing feature, make this sequence the default:
    UI pattern.
 2. Implement the web behavior in the static app.
 3. Implement the equivalent mobile behavior in `apps/mobile` and persist it in
-   SQLite when it affects study data, settings, or offline actions.
+   the shared app database when it affects study data, settings, or offline actions.
 4. Put shared review/data behavior in `packages/shared` rather than duplicating
    scheduling logic.
 5. Keep controls compact and touch-friendly. Use an icon button for familiar
@@ -286,7 +281,7 @@ For a learner-facing feature, make this sequence the default:
 - The web app stores progress, custom words, and card corrections in browser
   local storage. It also stores the learner's saved-word list. Progress exports
   must include all of them.
-- The mobile app uses SQLite as the source of truth while offline or signed out.
+- The mobile app uses the app database as the source of truth while offline or signed out.
 - Mobile review, custom-card, correction, and settings changes must be queued
   for future sync rather than discarded when Supabase is unavailable.
 - Supabase is an optional authenticated sync layer, not a prerequisite for
@@ -297,7 +292,7 @@ For a learner-facing feature, make this sequence the default:
 
 ### PWA and Deployment Rules
 
-- The deployed web application is the Expo export in `apps/mobile/dist`; run
+- The deployed web application is the Vite build in `apps/mobile/dist`; run
   `npm run build:web` before deployment. Do not deploy the legacy root
   `index.html`, `app.js`, or `styles.css` as the application UI.
 - Cloudflare Worker assets are configured to serve `apps/mobile/dist`, keeping

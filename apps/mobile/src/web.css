@@ -1,0 +1,21 @@
+@font-face {
+  font-family: "MaterialIcons";
+  src: url("../assets/fonts/MaterialIcons.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  background: #f6f0e6;
+}
+
+#root {
+  display: flex;
+}

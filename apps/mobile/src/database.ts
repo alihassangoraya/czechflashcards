@@ -1,8 +1,6 @@
-import * as SQLite from "expo-sqlite";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { Card, DailyProgress, NotificationPreferences, ReviewEvent, ReviewState } from "@czech-flashcards/shared";
 import { createReviewState } from "@czech-flashcards/shared";
-
-export type AppDatabase = SQLite.SQLiteDatabase;
 
 export type CustomDeck = { id: string; name: string };
 
@@ -15,6 +13,24 @@ export type StudySettings = {
   notifications: NotificationPreferences;
 };
 
+type CustomCard = { card: Card; deletedAt?: number };
+type SyncEntry = { id: number; type: string; payload: unknown; createdAt: number; syncedAt?: number };
+type WebStore = {
+  cards: Card[];
+  reviewStates: Record<string, ReviewState>;
+  reviews: ReviewEvent[];
+  dailyProgress: Record<string, DailyProgress>;
+  customCards: Record<string, CustomCard>;
+  overrides: Record<string, Card>;
+  savedCardIds: string[];
+  settings?: StudySettings;
+  syncQueue: SyncEntry[];
+  nextSyncId: number;
+};
+
+export type AppDatabase = { store: WebStore };
+
+const STORAGE_KEY = "czech-flashcards.web-store.v1";
 const DEFAULT_SETTINGS: StudySettings = {
   examLevel: "b1",
   deckFilter: "b1-focus",
@@ -29,210 +45,71 @@ const DEFAULT_SETTINGS: StudySettings = {
   }
 };
 
-export async function openAppDatabase(): Promise<AppDatabase> {
-  const db = await SQLite.openDatabaseAsync("czech-flashcards.db");
-  await db.execAsync(`
-    PRAGMA journal_mode = WAL;
-    CREATE TABLE IF NOT EXISTS cards (
-      id TEXT PRIMARY KEY,
-      cz TEXT NOT NULL,
-      en TEXT NOT NULL,
-      hi TEXT NOT NULL,
-      ur TEXT NOT NULL,
-      sentence TEXT NOT NULL,
-      sentence_en TEXT NOT NULL,
-      level TEXT NOT NULL,
-      tags_json TEXT NOT NULL,
-      details_json TEXT NOT NULL DEFAULT '{}',
-      source TEXT NOT NULL,
-      updated_at INTEGER NOT NULL
-    );
-    CREATE TABLE IF NOT EXISTS user_cards (
-      card_id TEXT PRIMARY KEY,
-      known_streak INTEGER NOT NULL DEFAULT 0,
-      again_count INTEGER NOT NULL DEFAULT 0,
-      due_at INTEGER NOT NULL DEFAULT 0,
-      seen INTEGER NOT NULL DEFAULT 0,
-      updated_at INTEGER NOT NULL
-    );
-    CREATE TABLE IF NOT EXISTS reviews (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      card_id TEXT NOT NULL,
-      grade TEXT NOT NULL,
-      reviewed_at INTEGER NOT NULL,
-      was_new INTEGER NOT NULL,
-      next_due_at INTEGER NOT NULL,
-      synced_at INTEGER
-    );
-    CREATE TABLE IF NOT EXISTS daily_progress (
-      date TEXT PRIMARY KEY,
-      reviewed INTEGER NOT NULL DEFAULT 0,
-      new_cards INTEGER NOT NULL DEFAULT 0,
-      goal INTEGER NOT NULL,
-      completed INTEGER NOT NULL DEFAULT 0,
-      synced_at INTEGER
-    );
-    CREATE TABLE IF NOT EXISTS custom_cards (
-      id TEXT PRIMARY KEY,
-      payload_json TEXT NOT NULL,
-      deleted_at INTEGER,
-      synced_at INTEGER
-    );
-    CREATE TABLE IF NOT EXISTS card_overrides (
-      id TEXT PRIMARY KEY,
-      payload_json TEXT NOT NULL,
-      updated_at INTEGER NOT NULL,
-      synced_at INTEGER
-    );
-    CREATE TABLE IF NOT EXISTS saved_cards (
-      card_id TEXT PRIMARY KEY,
-      saved_at INTEGER NOT NULL,
-      synced_at INTEGER
-    );
-    CREATE TABLE IF NOT EXISTS sync_queue (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      type TEXT NOT NULL,
-      payload_json TEXT NOT NULL,
-      created_at INTEGER NOT NULL,
-      synced_at INTEGER
-    );
-    CREATE TABLE IF NOT EXISTS settings (
-      key TEXT PRIMARY KEY,
-      value_json TEXT NOT NULL,
-      updated_at INTEGER NOT NULL
-    );
-  `);
-  const columns = await db.getAllAsync<{ name: string }>("PRAGMA table_info(cards)");
-  if (!columns.some((column) => column.name === "details_json")) {
-    await db.execAsync("ALTER TABLE cards ADD COLUMN details_json TEXT NOT NULL DEFAULT '{}'");
-  }
-  return db;
-}
-
-export async function seedCards(db: AppDatabase, cards: Card[]): Promise<void> {
-  const existing = await db.getFirstAsync<{ count: number }>("SELECT COUNT(*) as count FROM cards WHERE source IN ('seed', 'legacy-web')");
-  const untranslatedNumbers = await db.getFirstAsync<{ count: number }>(
-    "SELECT COUNT(*) as count FROM cards WHERE id LIKE 'number-%' AND (hi LIKE 'संख्या %' OR ur = '')"
-  );
-  const mixedLanguageMeanings = await db.getFirstAsync<{ count: number }>(
-    "SELECT COUNT(*) as count FROM cards WHERE source IN ('seed', 'legacy-web') AND (hi GLOB '*[A-Za-z]*' OR ur GLOB '*[A-Za-z]*')"
-  );
-  const missingWordDetails = await db.getFirstAsync<{ count: number }>(
-    "SELECT COUNT(*) as count FROM cards WHERE source IN ('seed', 'legacy-web') AND id LIKE 'google-%' AND details_json = '{}'"
-  );
-  if ((existing?.count || 0) >= cards.length && !(untranslatedNumbers?.count || 0) && !(mixedLanguageMeanings?.count || 0) && !(missingWordDetails?.count || 0)) return;
-
-  const now = Date.now();
-  await db.withTransactionAsync(async () => {
-    for (const card of cards) {
-      await db.runAsync(
-        `INSERT OR REPLACE INTO cards
-          (id, cz, en, hi, ur, sentence, sentence_en, level, tags_json, details_json, source, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        card.id,
-        card.cz,
-        card.en,
-        card.hi,
-        card.ur,
-        card.sentence,
-        card.sentenceEn,
-        card.level,
-        JSON.stringify(card.tags),
-        JSON.stringify({ pronunciation: card.pronunciation || "", synonyms: card.synonyms || "", antonyms: card.antonyms || "", grammar: card.grammar || null, googleCategory: card.googleCategory || "" }),
-        "seed",
-        now
-      );
-    }
-  });
-}
-
-export async function loadCards(db: AppDatabase): Promise<Card[]> {
-  const rows = await db.getAllAsync<any>("SELECT * FROM cards WHERE id NOT IN (SELECT id FROM custom_cards WHERE deleted_at IS NOT NULL)");
-  const overrides = await db.getAllAsync<{ id: string; payload_json: string }>("SELECT id, payload_json FROM card_overrides");
-  const overridesById = new Map(overrides.map((row) => [row.id, JSON.parse(row.payload_json)]));
-  return rows.map((row) => ({
-    id: row.id,
-    cz: row.cz,
-    en: row.en,
-    hi: row.hi,
-    ur: row.ur,
-    sentence: row.sentence,
-    sentenceEn: row.sentence_en,
-    level: row.level,
-    tags: JSON.parse(row.tags_json),
-    source: row.source,
-    ...(row.details_json ? JSON.parse(row.details_json) : {}),
-    ...(overridesById.get(row.id) || {})
-  }));
-}
-
-export async function getReviewState(db: AppDatabase, cardId: string): Promise<ReviewState> {
-  const row = await db.getFirstAsync<any>("SELECT * FROM user_cards WHERE card_id = ?", cardId);
-  if (!row) return createReviewState(cardId);
+function emptyStore(): WebStore {
   return {
-    cardId,
-    knownStreak: row.known_streak,
-    againCount: row.again_count,
-    dueAt: row.due_at,
-    seen: row.seen
+    cards: [],
+    reviewStates: {},
+    reviews: [],
+    dailyProgress: {},
+    customCards: {},
+    overrides: {},
+    savedCardIds: [],
+    syncQueue: [],
+    nextSyncId: 1
   };
 }
 
+function normalizeStore(value: Partial<WebStore> | null): WebStore {
+  return { ...emptyStore(), ...value, nextSyncId: value?.nextSyncId || 1 };
+}
+
+export async function persistDatabase(db: AppDatabase): Promise<void> {
+  await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(db.store));
+}
+
+export async function openAppDatabase(): Promise<AppDatabase> {
+  const raw = await AsyncStorage.getItem(STORAGE_KEY);
+  return { store: normalizeStore(raw ? JSON.parse(raw) : null) };
+}
+
+export async function seedCards(db: AppDatabase, cards: Card[]): Promise<void> {
+  const byId = new Map(db.store.cards.map((card) => [card.id, card]));
+  for (const card of cards) {
+    if (!db.store.customCards[card.id]) byId.set(card.id, card);
+  }
+  db.store.cards = [...byId.values()];
+  await persistDatabase(db);
+}
+
+export async function loadCards(db: AppDatabase): Promise<Card[]> {
+  return db.store.cards
+    .filter((card) => !db.store.customCards[card.id]?.deletedAt)
+    .map((card) => db.store.overrides[card.id] || card);
+}
+
+export async function getReviewState(db: AppDatabase, cardId: string): Promise<ReviewState> {
+  return db.store.reviewStates[cardId] || createReviewState(cardId);
+}
+
 export async function loadReviewStates(db: AppDatabase): Promise<Record<string, ReviewState>> {
-  const rows = await db.getAllAsync<any>("SELECT * FROM user_cards");
-  return Object.fromEntries(rows.map((row) => [row.card_id, {
-    cardId: row.card_id,
-    knownStreak: row.known_streak,
-    againCount: row.again_count,
-    dueAt: row.due_at,
-    seen: row.seen
-  }]));
+  return { ...db.store.reviewStates };
 }
 
 export async function saveReviewResult(db: AppDatabase, state: ReviewState, event: ReviewEvent, dailyGoal: number): Promise<DailyProgress> {
   const date = localDateKey(new Date(event.reviewedAt));
-  const now = Date.now();
-  await db.withTransactionAsync(async () => {
-    await db.runAsync(
-      `INSERT INTO user_cards (card_id, known_streak, again_count, due_at, seen, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?)
-       ON CONFLICT(card_id) DO UPDATE SET
-        known_streak = excluded.known_streak,
-        again_count = excluded.again_count,
-        due_at = excluded.due_at,
-        seen = excluded.seen,
-        updated_at = excluded.updated_at`,
-      state.cardId,
-      state.knownStreak,
-      state.againCount,
-      state.dueAt,
-      state.seen,
-      now
-    );
-    await db.runAsync(
-      "INSERT INTO reviews (card_id, grade, reviewed_at, was_new, next_due_at) VALUES (?, ?, ?, ?, ?)",
-      event.cardId,
-      event.grade,
-      event.reviewedAt,
-      event.wasNew ? 1 : 0,
-      event.nextDueAt
-    );
-    await db.runAsync(
-      `INSERT INTO daily_progress (date, reviewed, new_cards, goal, completed)
-       VALUES (?, 1, ?, ?, ?)
-       ON CONFLICT(date) DO UPDATE SET
-        reviewed = reviewed + 1,
-        new_cards = new_cards + excluded.new_cards,
-        goal = excluded.goal,
-        completed = CASE WHEN reviewed + 1 >= excluded.goal THEN 1 ELSE completed END`,
-      date,
-      event.wasNew ? 1 : 0,
-      dailyGoal,
-      dailyGoal <= 1 ? 1 : 0
-    );
-    await enqueueSync(db, "review_recorded", { event, state, date, dailyGoal });
-  });
-  return getDailyProgress(db, date, dailyGoal);
+  const previous = db.store.dailyProgress[date] || { date, reviewed: 0, newCards: 0, goal: dailyGoal, completed: false };
+  const progress: DailyProgress = {
+    date,
+    reviewed: previous.reviewed + 1,
+    newCards: previous.newCards + (event.wasNew ? 1 : 0),
+    goal: dailyGoal,
+    completed: previous.reviewed + 1 >= dailyGoal
+  };
+  db.store.reviewStates[state.cardId] = state;
+  db.store.reviews.push(event);
+  db.store.dailyProgress[date] = progress;
+  await enqueueSync(db, "review_recorded", { event, state, date, dailyGoal });
+  return progress;
 }
 
 export async function undoReviewResult(
@@ -242,162 +119,80 @@ export async function undoReviewResult(
   dailyGoal: number
 ): Promise<DailyProgress> {
   const date = localDateKey(new Date(event.reviewedAt));
-  const now = Date.now();
-  await db.withTransactionAsync(async () => {
-    if (!previousState.seen && !previousState.knownStreak && !previousState.againCount && !previousState.dueAt) {
-      await db.runAsync("DELETE FROM user_cards WHERE card_id = ?", previousState.cardId);
-    } else {
-      await db.runAsync(
-        `INSERT INTO user_cards (card_id, known_streak, again_count, due_at, seen, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?)
-         ON CONFLICT(card_id) DO UPDATE SET
-          known_streak = excluded.known_streak,
-          again_count = excluded.again_count,
-          due_at = excluded.due_at,
-          seen = excluded.seen,
-          updated_at = excluded.updated_at`,
-        previousState.cardId,
-        previousState.knownStreak,
-        previousState.againCount,
-        previousState.dueAt,
-        previousState.seen,
-        now
-      );
-    }
-
-    await db.runAsync(
-      `DELETE FROM reviews
-       WHERE id = (
-         SELECT id FROM reviews
-         WHERE card_id = ? AND reviewed_at = ?
-         ORDER BY id DESC LIMIT 1
-       )`,
-      event.cardId,
-      event.reviewedAt
-    );
-    await db.runAsync(
-      `UPDATE daily_progress SET
-        reviewed = MAX(0, reviewed - 1),
-        new_cards = MAX(0, new_cards - ?),
-        goal = ?,
-        completed = CASE WHEN MAX(0, reviewed - 1) >= ? THEN 1 ELSE 0 END,
-        synced_at = NULL
-       WHERE date = ?`,
-      event.wasNew ? 1 : 0,
-      dailyGoal,
-      dailyGoal,
-      date
-    );
-    await db.runAsync(
-      `DELETE FROM sync_queue
-       WHERE id = (
-         SELECT id FROM sync_queue
-         WHERE type = 'review_recorded'
-           AND synced_at IS NULL
-           AND instr(payload_json, ?) > 0
-           AND instr(payload_json, ?) > 0
-         ORDER BY id DESC LIMIT 1
-       )`,
-      `"cardId":"${event.cardId}"`,
-      `"reviewedAt":${event.reviewedAt}`
-    );
-  });
-  return getDailyProgress(db, date, dailyGoal);
+  const previous = db.store.dailyProgress[date] || { date, reviewed: 0, newCards: 0, goal: dailyGoal, completed: false };
+  const progress: DailyProgress = {
+    date,
+    reviewed: Math.max(0, previous.reviewed - 1),
+    newCards: Math.max(0, previous.newCards - (event.wasNew ? 1 : 0)),
+    goal: dailyGoal,
+    completed: Math.max(0, previous.reviewed - 1) >= dailyGoal
+  };
+  if (!previousState.seen && !previousState.knownStreak && !previousState.againCount && !previousState.dueAt) {
+    delete db.store.reviewStates[previousState.cardId];
+  } else {
+    db.store.reviewStates[previousState.cardId] = previousState;
+  }
+  const reviewIndex = db.store.reviews.findLastIndex((review) => review.cardId === event.cardId && review.reviewedAt === event.reviewedAt);
+  if (reviewIndex >= 0) db.store.reviews.splice(reviewIndex, 1);
+  const queueIndex = db.store.syncQueue.findLastIndex((entry) => entry.type === "review_recorded" && !entry.syncedAt);
+  if (queueIndex >= 0) db.store.syncQueue.splice(queueIndex, 1);
+  db.store.dailyProgress[date] = progress;
+  await persistDatabase(db);
+  return progress;
 }
 
 export async function getDailyProgress(db: AppDatabase, date = localDateKey(), goal = DEFAULT_SETTINGS.dailyGoal): Promise<DailyProgress> {
-  const row = await db.getFirstAsync<any>("SELECT * FROM daily_progress WHERE date = ?", date);
-  if (!row) return { date, reviewed: 0, newCards: 0, goal, completed: false };
-  return {
-    date,
-    reviewed: row.reviewed,
-    newCards: row.new_cards,
-    goal: row.goal,
-    completed: Boolean(row.completed)
-  };
+  return db.store.dailyProgress[date] || { date, reviewed: 0, newCards: 0, goal, completed: false };
 }
 
 export async function addCustomCard(db: AppDatabase, card: Card): Promise<void> {
-  const now = Date.now();
-  await db.withTransactionAsync(async () => {
-    await db.runAsync(
-      `INSERT OR REPLACE INTO cards
-        (id, cz, en, hi, ur, sentence, sentence_en, level, tags_json, source, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'custom', ?)`,
-      card.id,
-      card.cz,
-      card.en,
-      card.hi,
-      card.ur,
-      card.sentence,
-      card.sentenceEn,
-      card.level,
-      JSON.stringify(card.tags),
-      now
-    );
-    await db.runAsync("INSERT OR REPLACE INTO custom_cards (id, payload_json) VALUES (?, ?)", card.id, JSON.stringify(card));
-    await enqueueSync(db, "custom_card_upserted", { card });
-  });
+  const index = db.store.cards.findIndex((entry) => entry.id === card.id);
+  if (index >= 0) db.store.cards[index] = card;
+  else db.store.cards.push(card);
+  db.store.customCards[card.id] = { card };
+  await enqueueSync(db, "custom_card_upserted", { card });
 }
 
 export async function saveCardCorrection(db: AppDatabase, card: Card): Promise<void> {
-  const now = Date.now();
-  await db.withTransactionAsync(async () => {
-    await db.runAsync(
-      "INSERT OR REPLACE INTO card_overrides (id, payload_json, updated_at) VALUES (?, ?, ?)",
-      card.id,
-      JSON.stringify(card),
-      now
-    );
-    await enqueueSync(db, "card_correction_upserted", { card });
-  });
+  db.store.overrides[card.id] = card;
+  await enqueueSync(db, "card_correction_upserted", { card });
 }
 
 export async function loadSavedCardIds(db: AppDatabase): Promise<Set<string>> {
-  const rows = await db.getAllAsync<{ card_id: string }>("SELECT card_id FROM saved_cards");
-  return new Set(rows.map((row) => row.card_id));
+  return new Set(db.store.savedCardIds);
 }
 
 export async function setCardSaved(db: AppDatabase, cardId: string, saved: boolean): Promise<void> {
-  await db.withTransactionAsync(async () => {
-    if (saved) {
-      const savedAt = Date.now();
-      await db.runAsync("INSERT OR REPLACE INTO saved_cards (card_id, saved_at, synced_at) VALUES (?, ?, NULL)", cardId, savedAt);
-      await enqueueSync(db, "saved_card_added", { cardId, savedAt });
-    } else {
-      await db.runAsync("DELETE FROM saved_cards WHERE card_id = ?", cardId);
-      await enqueueSync(db, "saved_card_removed", { cardId });
-    }
-  });
+  const savedCardIds = new Set(db.store.savedCardIds);
+  if (saved) savedCardIds.add(cardId);
+  else savedCardIds.delete(cardId);
+  db.store.savedCardIds = [...savedCardIds];
+  await enqueueSync(db, saved ? "saved_card_added" : "saved_card_removed", saved ? { cardId, savedAt: Date.now() } : { cardId });
 }
 
 export async function deleteCustomCard(db: AppDatabase, cardId: string): Promise<void> {
-  const deletedAt = Date.now();
-  await db.withTransactionAsync(async () => {
-    await db.runAsync("UPDATE custom_cards SET deleted_at = ? WHERE id = ?", deletedAt, cardId);
-    await db.runAsync("DELETE FROM saved_cards WHERE card_id = ?", cardId);
-    await enqueueSync(db, "custom_card_deleted", { cardId, deletedAt });
-  });
+  const custom = db.store.customCards[cardId];
+  if (custom) custom.deletedAt = Date.now();
+  db.store.savedCardIds = db.store.savedCardIds.filter((id) => id !== cardId);
+  await enqueueSync(db, "custom_card_deleted", { cardId, deletedAt: Date.now() });
 }
 
 export async function loadSettings(db: AppDatabase): Promise<StudySettings> {
-  const row = await db.getFirstAsync<{ value_json: string }>("SELECT value_json FROM settings WHERE key = 'study'");
-  return row ? { ...DEFAULT_SETTINGS, ...JSON.parse(row.value_json) } : DEFAULT_SETTINGS;
+  return {
+    ...DEFAULT_SETTINGS,
+    ...db.store.settings,
+    notifications: { ...DEFAULT_SETTINGS.notifications, ...db.store.settings?.notifications }
+  };
 }
 
 export async function saveSettings(db: AppDatabase, settings: StudySettings): Promise<void> {
-  await db.runAsync(
-    `INSERT INTO settings (key, value_json, updated_at)
-     VALUES ('study', ?, ?)
-     ON CONFLICT(key) DO UPDATE SET value_json = excluded.value_json, updated_at = excluded.updated_at`,
-    JSON.stringify(settings),
-    Date.now()
-  );
+  db.store.settings = settings;
   await enqueueSync(db, "settings_updated", { settings });
 }
 
 export async function enqueueSync(db: AppDatabase, type: string, payload: unknown): Promise<void> {
-  await db.runAsync("INSERT INTO sync_queue (type, payload_json, created_at) VALUES (?, ?, ?)", type, JSON.stringify(payload), Date.now());
+  db.store.syncQueue.push({ id: db.store.nextSyncId++, type, payload, createdAt: Date.now() });
+  await persistDatabase(db);
 }
 
 export function localDateKey(date = new Date()): string {

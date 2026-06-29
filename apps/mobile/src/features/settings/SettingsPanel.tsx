@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from "react-native";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import MaterialIcons from "../../components/MaterialIcons";
 import type { CustomDeck, StudySettings } from "../../database";
 import type { SyncStatus } from "../../sync";
 import { colors, radius, size, spacing, typography } from "../../theme/design";

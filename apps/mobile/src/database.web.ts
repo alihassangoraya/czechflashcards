@@ -63,7 +63,7 @@ function normalizeStore(value: Partial<WebStore> | null): WebStore {
   return { ...emptyStore(), ...value, nextSyncId: value?.nextSyncId || 1 };
 }
 
-async function persist(db: AppDatabase): Promise<void> {
+export async function persistDatabase(db: AppDatabase): Promise<void> {
   await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(db.store));
 }
 
@@ -78,7 +78,7 @@ export async function seedCards(db: AppDatabase, cards: Card[]): Promise<void> {
     if (!db.store.customCards[card.id]) byId.set(card.id, card);
   }
   db.store.cards = [...byId.values()];
-  await persist(db);
+  await persistDatabase(db);
 }
 
 export async function loadCards(db: AppDatabase): Promise<Card[]> {
@@ -137,7 +137,7 @@ export async function undoReviewResult(
   const queueIndex = db.store.syncQueue.findLastIndex((entry) => entry.type === "review_recorded" && !entry.syncedAt);
   if (queueIndex >= 0) db.store.syncQueue.splice(queueIndex, 1);
   db.store.dailyProgress[date] = progress;
-  await persist(db);
+  await persistDatabase(db);
   return progress;
 }
 
@@ -192,7 +192,7 @@ export async function saveSettings(db: AppDatabase, settings: StudySettings): Pr
 
 export async function enqueueSync(db: AppDatabase, type: string, payload: unknown): Promise<void> {
   db.store.syncQueue.push({ id: db.store.nextSyncId++, type, payload, createdAt: Date.now() });
-  await persist(db);
+  await persistDatabase(db);
 }
 
 export function localDateKey(date = new Date()): string {

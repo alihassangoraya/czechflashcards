@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import MaterialIcons from "../../components/MaterialIcons";
 import type { Card } from "@czech-flashcards/shared";
 import type { CustomDeck } from "../../database";
 import { colors, radius, size, spacing, typography } from "../../theme/design";

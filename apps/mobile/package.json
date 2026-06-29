@@ -2,37 +2,30 @@
   "name": "@czech-flashcards/mobile",
   "version": "0.1.0",
   "private": true,
-  "main": "node_modules/expo/AppEntry.js",
+  "main": "index.js",
   "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web",
-    "build:web": "expo export --platform web",
+    "start": "vite --host 0.0.0.0",
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "web": "vite --host 0.0.0.0",
+    "build:web": "vite build",
     "check:theme": "node ../../scripts/check-mobile-theme.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@czech-flashcards/shared": "file:../../packages/shared",
-    "@expo/metro-runtime": "~4.0.1",
     "@opentelemetry/api": "^1.9.1",
     "@react-native-async-storage/async-storage": "^2.1.0",
     "@supabase/supabase-js": "^2.45.0",
-    "expo": "~52.0.0",
-    "expo-asset": "~11.0.5",
-    "expo-constants": "~17.0.0",
-    "expo-font": "~13.0.4",
-    "expo-notifications": "~0.29.0",
-    "expo-speech": "~13.0.0",
-    "expo-sqlite": "~15.0.0",
-    "expo-status-bar": "~2.0.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-native": "0.76.0",
     "react-native-web": "~0.19.13"
   },
   "devDependencies": {
+    "@react-native/babel-preset": "0.76.0",
     "@types/react": "~18.3.12",
-    "typescript": "~5.6.3"
+    "typescript": "~5.6.3",
+    "vite": "^5.4.19"
   }
 }

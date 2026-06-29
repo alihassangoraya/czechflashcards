@@ -1,6 +1,6 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import type { AppDatabase } from "./database";
+import { persistDatabase, type AppDatabase } from "./database";
 import { env } from "./env";
 
 export type SyncStatus = "guest" | "not-configured" | "idle" | "synced" | "error";
@@ -82,26 +82,23 @@ export async function flushSyncQueue(db: AppDatabase, supabase: SupabaseClient |
   const { data: userData, error: userError } = await supabase.auth.getUser();
   if (userError || !userData.user) return "guest";
 
-  const rows = await db.getAllAsync<any>("SELECT * FROM sync_queue WHERE synced_at IS NULL ORDER BY id ASC LIMIT 100");
+  const rows = db.store.syncQueue.filter((entry) => !entry.syncedAt).sort((left, right) => left.id - right.id).slice(0, 100);
   if (!rows.length) return "idle";
 
   const payload = rows.map((row) => ({
     user_id: userData.user.id,
     local_id: row.id,
     event_type: row.type,
-    payload: JSON.parse(row.payload_json),
-    created_at_ms: row.created_at
+    payload: row.payload,
+    created_at_ms: row.createdAt
   }));
 
   const { error } = await supabase.from("sync_events").insert(payload);
   if (error) return "error";
 
   const now = Date.now();
-  await db.withTransactionAsync(async () => {
-    for (const row of rows) {
-      await db.runAsync("UPDATE sync_queue SET synced_at = ? WHERE id = ?", now, row.id);
-    }
-  });
+  for (const row of rows) row.syncedAt = now;
+  await persistDatabase(db);
   return "synced";
 }
 
@@ -113,31 +110,28 @@ export async function restoreSyncSnapshot(db: AppDatabase, supabase: SupabaseCli
   if (error || !data) return "error";
 
   const snapshot = data as Record<string, any[]>;
-  const now = Date.now();
-  await db.withTransactionAsync(async () => {
-    for (const row of snapshot.user_cards || []) {
-      await db.runAsync(
-        `INSERT INTO user_cards (card_id, known_streak, again_count, due_at, seen, updated_at) VALUES (?, ?, ?, ?, ?, ?)
-         ON CONFLICT(card_id) DO UPDATE SET known_streak = excluded.known_streak, again_count = excluded.again_count,
-           due_at = excluded.due_at, seen = excluded.seen, updated_at = excluded.updated_at`,
-        row.card_id, row.known_streak, row.again_count, Date.parse(row.due_at) || 0, row.seen, Date.parse(row.updated_at) || now
-      );
-    }
-    for (const row of snapshot.custom_cards || []) {
-      const card = { id: row.id, cz: row.cz, en: row.en, hi: row.hi, ur: row.ur, sentence: row.sentence, sentenceEn: row.sentence_en, level: row.level, tags: row.tags, source: "custom" };
-      await db.runAsync(
-        `INSERT OR REPLACE INTO cards (id, cz, en, hi, ur, sentence, sentence_en, level, tags_json, source, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'custom', ?)`,
-        card.id, card.cz, card.en, card.hi, card.ur, card.sentence, card.sentenceEn, card.level, JSON.stringify(card.tags), now
-      );
-      await db.runAsync("INSERT OR REPLACE INTO custom_cards (id, payload_json, deleted_at, synced_at) VALUES (?, ?, NULL, ?)", card.id, JSON.stringify(card), now);
-    }
-    for (const row of snapshot.saved_cards || []) {
-      await db.runAsync("INSERT OR REPLACE INTO saved_cards (card_id, saved_at, synced_at) VALUES (?, ?, ?)", row.card_id, Date.parse(row.saved_at) || now, now);
-    }
-    for (const row of snapshot.card_overrides || []) {
-      await db.runAsync("INSERT OR REPLACE INTO card_overrides (id, payload_json, updated_at, synced_at) VALUES (?, ?, ?, ?)", row.card_id, JSON.stringify(row.payload), Date.parse(row.updated_at) || now, now);
-    }
-  });
+  for (const row of snapshot.user_cards || []) {
+    db.store.reviewStates[row.card_id] = {
+      cardId: row.card_id,
+      knownStreak: row.known_streak,
+      againCount: row.again_count,
+      dueAt: Date.parse(row.due_at) || 0,
+      seen: row.seen
+    };
+  }
+  for (const row of snapshot.custom_cards || []) {
+    const card = { id: row.id, cz: row.cz, en: row.en, hi: row.hi, ur: row.ur, sentence: row.sentence, sentenceEn: row.sentence_en, level: row.level, tags: row.tags, source: "custom" as const };
+    const cardIndex = db.store.cards.findIndex((entry) => entry.id === card.id);
+    if (cardIndex >= 0) db.store.cards[cardIndex] = card;
+    else db.store.cards.push(card);
+    db.store.customCards[card.id] = { card };
+  }
+  const savedIds = new Set(db.store.savedCardIds);
+  for (const row of snapshot.saved_cards || []) savedIds.add(row.card_id);
+  db.store.savedCardIds = [...savedIds];
+  for (const row of snapshot.card_overrides || []) {
+    db.store.overrides[row.card_id] = row.payload;
+  }
+  await persistDatabase(db);
   return "synced";
 }

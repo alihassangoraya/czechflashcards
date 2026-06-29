@@ -9,14 +9,14 @@ import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
+  StatusBar,
   Switch,
   Text,
   TextInput,
   View
 } from "react-native";
-import { StatusBar } from "expo-status-bar";
-import * as Speech from "expo-speech";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import * as Speech from "./src/speech";
+import MaterialIcons from "./src/components/MaterialIcons";
 import {
   applyReviewGrade,
   compareDueReviewStates,
@@ -477,7 +477,7 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.shell}>
-      <StatusBar style="dark" />
+      <StatusBar barStyle="dark-content" />
       {screen === "home" && (
         <HomeScreen
           deck={deck}

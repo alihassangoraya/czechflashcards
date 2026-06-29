@@ -2,7 +2,7 @@
   "name": "czech-b1-flashcards",
   "version": "1.0.0",
   "private": true,
-  "description": "Czech A2/B1 flashcards with shared Expo mobile and web UI, plus shared study logic.",
+  "description": "Czech A2/B1 flashcards with shared React Native mobile and web UI, plus shared study logic.",
   "workspaces": [
     "apps/mobile",
     "packages/shared"

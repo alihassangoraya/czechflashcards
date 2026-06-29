@@ -7,6 +7,11 @@ declare module "@czech-flashcards/shared/seed" {
   export default payload;
 }
 
+declare module "*.jpg" {
+  const source: string;
+  export default source;
+}
+
 declare const process: {
   env: Record<string, string | undefined>;
 };

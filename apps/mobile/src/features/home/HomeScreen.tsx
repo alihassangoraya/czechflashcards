@@ -1,11 +1,10 @@
 import React from "react";
 import { ImageBackground, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from "react-native";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import MaterialIcons, { type MaterialIconName } from "../../components/MaterialIcons";
 import type { Card, ReviewState } from "@czech-flashcards/shared";
 import type { StudySettings } from "../../database";
 import { colors, radius, shadow, size, spacing, typography } from "../../theme/design";
-
-type MaterialIconName = React.ComponentProps<typeof MaterialIcons>["name"];
+import pragueHero from "../../../assets/images/prague_hero_banner.jpg";
 
 type Props = {
   deck: Card[];
@@ -81,7 +80,7 @@ export function HomeScreen({
   return (
     <View style={styles.screen}>
     <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
-      <ImageBackground source={require("../../../assets/images/prague_hero_banner.jpg")} style={[styles.hero, isWideLayout && styles.heroWide]} imageStyle={styles.heroImage} resizeMode="cover">
+      <ImageBackground source={pragueHero as never} style={[styles.hero, isWideLayout && styles.heroWide]} imageStyle={styles.heroImage} resizeMode="cover">
         <View style={styles.heroOverlay} />
         <View style={styles.heroTop}>
           <Text style={styles.levelPill}>{settings.examLevel.toUpperCase()} · {labelForDeck(settings.deckFilter)}</Text>

@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
-import * as Speech from "expo-speech";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import * as Speech from "../../speech";
+import MaterialIcons from "../../components/MaterialIcons";
 import type { Card, MeaningLanguage } from "@czech-flashcards/shared";
 import { selectedMeaning } from "@czech-flashcards/shared";
 import { colors, radius, size, spacing, typography } from "../../theme/design";
