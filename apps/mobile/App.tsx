@@ -1,9 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
-  Animated,
-  Easing,
-  PanResponder,
   SafeAreaView,
   StyleSheet,
   StatusBar,
@@ -58,6 +55,7 @@ import { QuizScreen } from "./src/features/quiz/QuizScreen";
 import { SettingsPanel } from "./src/features/settings/SettingsPanel";
 import { SearchPanel } from "./src/features/search/SearchPanel";
 import { StudyScreen } from "./src/features/study/StudyScreen";
+import { useStudyAnimations } from "./src/features/study/useStudyAnimations";
 import {
   advanceRelearningQueue as advanceRelearningEntries,
   chooseVariedDueCard,
@@ -105,20 +103,21 @@ export default function App() {
   const [authBusy, setAuthBusy] = useState(false);
   const [lastReview, setLastReview] = useState<UndoReview | null>(null);
   const [grading, setGrading] = useState(false);
-  const [swipeDirection, setSwipeDirection] = useState<"again" | "known" | null>(null);
   const [sessionReviews, setSessionReviews] = useState(0);
-  const dragX = useRef(new Animated.Value(0)).current;
-  const consumedSwipe = useRef(false);
-  const swipeCompleting = useRef(false);
   const forcedCardId = useRef<string | null>(null);
   const revealForcedCard = useRef(false);
   const shuffledDueQueue = useRef<string[]>([]);
   const relearningQueue = useRef<RelearningEntry[]>([]);
   const recentCardIds = useRef<string[]>([]);
   const savingCardIds = useRef(new Set<string>());
-  const flipProgress = useRef(new Animated.Value(0)).current;
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [flipping, setFlipping] = useState(false);
+  const studyAnimations = useStudyAnimations({
+    current,
+    revealed,
+    grading,
+    onRevealChange: setRevealed,
+    onSwipeGrade: (result) => { void grade(result); }
+  });
 
   useEffect(() => {
     async function boot() {
@@ -180,12 +179,6 @@ export default function App() {
     revealForcedCard.current = false;
   }, [deck, states]);
 
-  useEffect(() => {
-    flipProgress.stopAnimation();
-    flipProgress.setValue(revealed ? 1 : 0);
-    setFlipping(false);
-  }, [current?.id]);
-
   useEffect(() => () => {
     if (toastTimer.current) clearTimeout(toastTimer.current);
   }, []);
@@ -206,70 +199,6 @@ export default function App() {
 
   function rememberShownCard(card: Card | null) {
     recentCardIds.current = rememberShownCardId(recentCardIds.current, card, RECENT_CARD_LIMIT);
-  }
-
-  function completeSwipe(direction: "again" | "known") {
-    if (grading || swipeCompleting.current) return;
-    consumedSwipe.current = true;
-    swipeCompleting.current = true;
-    setSwipeDirection(direction);
-    Animated.timing(dragX, {
-      toValue: direction === "known" ? 460 : -460,
-      duration: 230,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: true
-    }).start(({ finished }) => {
-      dragX.setValue(0);
-      setSwipeDirection(null);
-      swipeCompleting.current = false;
-      if (finished) void grade(direction === "known" ? "good" : "again");
-    });
-    setTimeout(() => { consumedSwipe.current = false; }, 360);
-  }
-
-  const panResponder = useMemo(() => PanResponder.create({
-    onMoveShouldSetPanResponder: (_, gesture) => Math.abs(gesture.dx) > 12 && Math.abs(gesture.dx) > Math.abs(gesture.dy),
-    onMoveShouldSetPanResponderCapture: (_, gesture) => Math.abs(gesture.dx) > 12 && Math.abs(gesture.dx) > Math.abs(gesture.dy),
-    onPanResponderGrant: () => dragX.stopAnimation(),
-    onPanResponderTerminationRequest: () => false,
-    onPanResponderMove: (_, gesture) => {
-      if (swipeCompleting.current) return;
-      dragX.setValue(gesture.dx);
-      setSwipeDirection(gesture.dx > 24 ? "known" : gesture.dx < -24 ? "again" : null);
-    },
-    onPanResponderRelease: (_, gesture) => {
-      const direction = gesture.dx > 90 ? "known" : gesture.dx < -90 ? "again" : null;
-      if (!grading && direction) {
-        completeSwipe(direction);
-        return;
-      }
-      setSwipeDirection(null);
-      Animated.spring(dragX, { toValue: 0, useNativeDriver: true, speed: 22, bounciness: 5 }).start();
-    },
-    onPanResponderTerminate: () => {
-      if (swipeCompleting.current) return;
-      setSwipeDirection(null);
-      Animated.spring(dragX, { toValue: 0, useNativeDriver: true, speed: 22, bounciness: 5 }).start();
-    }
-  }), [current, db, grading, settings, states]);
-
-  function flipCard() {
-    if (consumedSwipe.current) {
-      consumedSwipe.current = false;
-      return;
-    }
-    if (!current || flipping) return;
-    const nextRevealed = !revealed;
-    setFlipping(true);
-    Animated.timing(flipProgress, {
-      toValue: nextRevealed ? 1 : 0,
-      duration: 400,
-      easing: Easing.inOut(Easing.cubic),
-      useNativeDriver: true
-    }).start(({ finished }) => {
-      if (finished) setRevealed(nextRevealed);
-      setFlipping(false);
-    });
   }
 
   function reviewInterval(grade: ReviewGrade): string {
@@ -584,7 +513,6 @@ export default function App() {
   const [reviewedToday, dailyGoal] = dailyProgress.split(" / ").map((value) => Number.parseInt(value, 10) || 0);
   const sessionProgress = dailyGoal ? Math.min(1, reviewedToday / dailyGoal) : 0;
   const sessionTarget = Math.min(deck.length, Math.max(1, dailyGoal - reviewedToday + sessionReviews));
-  const cardRotation = dragX.interpolate({ inputRange: [-120, 0, 120], outputRange: ["-4deg", "0deg", "4deg"], extrapolate: "clamp" });
 
   return (
     <SafeAreaView style={styles.shell}>
@@ -618,26 +546,26 @@ export default function App() {
           settings={settings}
           savedCardIds={savedCardIds}
           revealed={revealed}
-          flipping={flipping}
+          flipping={studyAnimations.flipping}
           grading={grading}
-          swipeDirection={swipeDirection}
+          swipeDirection={studyAnimations.swipeDirection}
           lastReviewCard={lastReview?.card || null}
           sessionReviews={sessionReviews}
           sessionTarget={sessionTarget}
           reviewedToday={reviewedToday}
           dailyGoal={dailyGoal}
           sessionProgress={sessionProgress}
-          dragX={dragX}
-          flipProgress={flipProgress}
-          cardRotation={cardRotation}
-          panHandlers={panResponder.panHandlers}
+          dragX={studyAnimations.dragX}
+          flipProgress={studyAnimations.flipProgress}
+          cardRotation={studyAnimations.cardRotation}
+          panHandlers={studyAnimations.panHandlers}
           reviewInterval={reviewInterval}
           onBack={() => setScreen("home")}
           onOpenGrammar={() => setPanel("grammar")}
-          onFlipCard={flipCard}
+          onFlipCard={studyAnimations.flipCard}
           onToggleSaved={(cardId) => { void toggleSavedCard(cardId, true); }}
           onEditCard={() => openCardEditor()}
-          onCompleteSwipe={completeSwipe}
+          onCompleteSwipe={studyAnimations.completeSwipe}
           onUndoLastReview={() => { void undoLastReview(); }}
           onGrade={(result) => { void grade(result); }}
         />
