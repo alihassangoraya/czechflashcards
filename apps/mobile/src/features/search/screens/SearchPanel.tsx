@@ -1,13 +1,13 @@
 import React, { useMemo } from "react";
 import { StyleSheet, View } from "react-native";
 import type { Card, MeaningLanguage } from "@czech-flashcards/shared";
-import { spacing } from "../../theme/design";
-import { SearchField } from "./components/SearchField";
-import { SearchNoResults } from "./components/SearchNoResults";
-import { SearchPrompt } from "./components/SearchPrompt";
-import { SearchResultMeta } from "./components/SearchResultMeta";
-import { SearchResultsList } from "./components/SearchResultsList";
-import { searchCards } from "./searchCards";
+import { spacing } from "../../../theme/design";
+import { SearchField } from "../components/SearchField";
+import { SearchNoResults } from "../components/SearchNoResults";
+import { SearchPrompt } from "../components/SearchPrompt";
+import { SearchResultMeta } from "../components/SearchResultMeta";
+import { SearchResultsList } from "../components/SearchResultsList";
+import { searchCards } from "../searchCards";
 
 type Props = {
   cards: Card[];

@@ -1,17 +1,17 @@
 import React from "react";
 import { ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
 import type { Card, ReviewState } from "@czech-flashcards/shared";
-import type { MaterialIconName } from "../../components/MaterialIcons";
-import type { StudySettings } from "../../database";
-import { useI18n } from "../../i18n/I18nProvider";
-import type { TranslationKey } from "../../i18n/translations";
-import { colors, spacing, typography } from "../../theme/design";
-import { DailyGoalCard } from "./components/DailyGoalCard";
-import { DeckGrid } from "./components/DeckGrid";
-import { HomeHero } from "./components/HomeHero";
-import { StudyGuide } from "./components/StudyGuide";
-import { baseDecks, countForDeck, type Category } from "./homeContent";
-import { deckLabel } from "../settings/settingsFormat";
+import type { MaterialIconName } from "../../../components/MaterialIcons";
+import type { StudySettings } from "../../../database";
+import { useI18n } from "../../../i18n/I18nProvider";
+import type { TranslationKey } from "../../../i18n/translations";
+import { colors, spacing, typography } from "../../../theme/design";
+import { DailyGoalCard } from "../components/DailyGoalCard";
+import { DeckGrid } from "../components/DeckGrid";
+import { HomeHero } from "../components/HomeHero";
+import { StudyGuide } from "../components/StudyGuide";
+import { baseDecks, countForDeck, type Category } from "../homeContent";
+import { deckLabel } from "../../settings/settingsFormat";
 
 type Props = {
   deck: Card[];

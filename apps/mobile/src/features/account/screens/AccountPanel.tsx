@@ -7,15 +7,15 @@ import {
   sendFriendRequest,
   type FriendRequest,
   type FriendStreak
-} from "../../sync";
-import { createSupabaseClient } from "../../sync";
-import { colors, spacing, typography } from "../../theme/design";
-import type { AccountStudySummary } from "./accountTypes";
-import { AccountAuthForm } from "./components/AccountAuthForm";
-import { AccountStudyPanel } from "./components/AccountStudyPanel";
-import { SignedInAccount } from "./components/SignedInAccount";
+} from "../../../sync";
+import { createSupabaseClient } from "../../../sync";
+import { colors, spacing, typography } from "../../../theme/design";
+import type { AccountStudySummary } from "../accountTypes";
+import { AccountAuthForm } from "../components/AccountAuthForm";
+import { AccountStudyPanel } from "../components/AccountStudyPanel";
+import { SignedInAccount } from "../components/SignedInAccount";
 
-export type { AccountStudySummary } from "./accountTypes";
+export type { AccountStudySummary } from "../accountTypes";
 
 export function AccountPanel({ configured, supabase, accountEmail, studySummary, busy, onAuthenticate, onSignOut }: {
   configured: boolean;

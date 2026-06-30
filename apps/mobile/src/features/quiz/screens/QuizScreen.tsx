@@ -1,18 +1,18 @@
 import React from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import MaterialIcons from "../../components/MaterialIcons";
+import MaterialIcons from "../../../components/MaterialIcons";
 import type { Card } from "@czech-flashcards/shared";
-import { useI18n } from "../../i18n/I18nProvider";
-import { colors, radius, size, spacing, typography } from "../../theme/design";
-import { QuizEmptyState } from "./components/QuizEmptyState";
-import { QuizExitConfirmModal } from "./components/QuizExitConfirmModal";
-import { QuizFeedback } from "./components/QuizFeedback";
-import { QuizHeader } from "./components/QuizHeader";
-import { QuizOption } from "./components/QuizOption";
-import { QuizProgress } from "./components/QuizProgress";
-import { QuizPromptCard } from "./components/QuizPromptCard";
-import { QuizResultScreen } from "./components/QuizResultScreen";
-import { useQuizSession } from "./useQuizSession";
+import { useI18n } from "../../../i18n/I18nProvider";
+import { colors, radius, size, spacing, typography } from "../../../theme/design";
+import { QuizEmptyState } from "../components/QuizEmptyState";
+import { QuizExitConfirmModal } from "../components/QuizExitConfirmModal";
+import { QuizFeedback } from "../components/QuizFeedback";
+import { QuizHeader } from "../components/QuizHeader";
+import { QuizOption } from "../components/QuizOption";
+import { QuizProgress } from "../components/QuizProgress";
+import { QuizPromptCard } from "../components/QuizPromptCard";
+import { QuizResultScreen } from "../components/QuizResultScreen";
+import { useQuizSession } from "../useQuizSession";
 
 type Props = {
   deck: Card[];

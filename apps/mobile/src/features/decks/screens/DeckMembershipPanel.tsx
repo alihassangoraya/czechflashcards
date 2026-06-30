@@ -1,9 +1,9 @@
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import type { Card } from "@czech-flashcards/shared";
-import type { CustomDeck } from "../../database";
-import MaterialIcons from "../../components/MaterialIcons";
-import { colors, radius, size, spacing, typography } from "../../theme/design";
+import type { CustomDeck } from "../../../database";
+import MaterialIcons from "../../../components/MaterialIcons";
+import { colors, radius, size, spacing, typography } from "../../../theme/design";
 
 type Props = {
   card: Card | null;

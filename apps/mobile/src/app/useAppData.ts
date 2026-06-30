@@ -2,23 +2,16 @@ import { useEffect, useState } from "react";
 import type { Card, ReviewState } from "@czech-flashcards/shared";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import {
-  getDailyProgress,
-  loadCards,
-  loadDeckMemberships,
-  loadReviewStates,
-  loadSavedCardIds,
   loadSettings,
-  openAppDatabase,
   saveSettings,
-  seedCards,
   type AppDatabase,
   type StudySettings
 } from "../database";
 import { configureLocalNotifications } from "../notifications";
-import { flushSyncQueue, restoreSyncSnapshot, signInWithPassword, signOut, signUpWithPassword, type SyncStatus } from "../sync";
-import { seedCardsNormalized, seedVersion } from "./appSeed";
-
-type AuthMode = "sign-in" | "sign-up";
+import type { SyncStatus } from "../sync";
+import { loadAppDataSnapshot, openSeededDatabase, type AppDataSnapshot } from "./appDataSnapshot";
+import { syncAppDatabase } from "./appDataSync";
+import { useAuthActions } from "./useAuthActions";
 
 export function useAppData(supabase: SupabaseClient | null) {
   const [db, setDb] = useState<AppDatabase | null>(null);
@@ -30,24 +23,25 @@ export function useAppData(supabase: SupabaseClient | null) {
   const [dailyProgress, setDailyProgress] = useState("0 / 30");
   const [syncStatus, setSyncStatus] = useState<SyncStatus>("not-configured");
   const [accountEmail, setAccountEmail] = useState<string | null>(null);
-  const [authBusy, setAuthBusy] = useState(false);
+
+  function applySnapshot(snapshot: AppDataSnapshot) {
+    setCards(snapshot.cards);
+    setSavedCardIds(snapshot.savedCardIds);
+    setDeckMemberships(snapshot.deckMemberships);
+    setStates(snapshot.states);
+    setDailyProgress(snapshot.dailyProgress);
+  }
 
   async function refresh(database = db, dailyGoal = settings?.dailyGoal || 30) {
     if (!database) return;
-    setCards(await loadCards(database));
-    setSavedCardIds(await loadSavedCardIds(database));
-    setDeckMemberships(await loadDeckMemberships(database));
-    setStates(await loadReviewStates(database));
-    const progress = await getDailyProgress(database, undefined, dailyGoal);
-    setDailyProgress(`${progress.reviewed} / ${progress.goal}`);
+    applySnapshot(await loadAppDataSnapshot(database, dailyGoal));
   }
 
   async function syncNow(database = db) {
     if (!database) return;
-    const flushStatus = await flushSyncQueue(database, supabase);
-    const restoreStatus = flushStatus === "error" ? flushStatus : await restoreSyncSnapshot(database, supabase);
-    setSyncStatus(restoreStatus);
-    if (restoreStatus === "synced") setSettingsState(await loadSettings(database));
+    const result = await syncAppDatabase(database, supabase);
+    setSyncStatus(result.status);
+    if (result.settings) setSettingsState(result.settings);
     await refresh(database);
   }
 
@@ -58,27 +52,11 @@ export function useAppData(supabase: SupabaseClient | null) {
     await configureLocalNotifications(next.notifications);
   }
 
-  async function authenticate(mode: AuthMode, email: string, password: string, displayName: string) {
-    setAuthBusy(true);
-    const error = mode === "sign-in"
-      ? await signInWithPassword(supabase, email, password)
-      : await signUpWithPassword(supabase, email, password, displayName);
-    setAuthBusy(false);
-    if (!error) await syncNow();
-    return error;
-  }
-
-  async function signOutAccount() {
-    setAuthBusy(true);
-    const error = await signOut(supabase);
-    setAuthBusy(false);
-    return error;
-  }
+  const auth = useAuthActions(supabase, async () => syncNow());
 
   useEffect(() => {
     async function boot() {
-      const database = await openAppDatabase();
-      await seedCards(database, seedCardsNormalized, seedVersion);
+      const database = await openSeededDatabase();
       const nextSettings = await loadSettings(database);
       setDb(database);
       setSettingsState(nextSettings);
@@ -88,10 +66,9 @@ export function useAppData(supabase: SupabaseClient | null) {
         const { data } = await supabase.auth.getSession();
         setAccountEmail(data.session?.user.email || null);
       }
-      const flushStatus = await flushSyncQueue(database, supabase);
-      const restoreStatus = flushStatus === "error" ? flushStatus : await restoreSyncSnapshot(database, supabase);
-      setSyncStatus(restoreStatus);
-      if (restoreStatus === "synced") setSettingsState(await loadSettings(database));
+      const syncResult = await syncAppDatabase(database, supabase);
+      setSyncStatus(syncResult.status);
+      if (syncResult.settings) setSettingsState(syncResult.settings);
     }
     void boot();
   }, []);
@@ -116,7 +93,7 @@ export function useAppData(supabase: SupabaseClient | null) {
     dailyProgress,
     syncStatus,
     accountEmail,
-    authBusy,
+    authBusy: auth.authBusy,
     setCards,
     setSavedCardIds,
     setDeckMemberships,
@@ -126,7 +103,7 @@ export function useAppData(supabase: SupabaseClient | null) {
     refresh,
     persistSettings,
     syncNow,
-    authenticate,
-    signOutAccount
+    authenticate: auth.authenticate,
+    signOutAccount: auth.signOutAccount
   };
 }

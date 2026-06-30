@@ -6,15 +6,15 @@ import {
   StyleSheet,
 } from "react-native";
 import type { Card, ReviewGrade } from "@czech-flashcards/shared";
-import { GeminiTutorPanel } from "../tutor/GeminiTutorPanel";
-import type { StudySettings } from "../../database";
-import { spacing } from "../../theme/design";
-import { ReviewButtons } from "./components/ReviewButtons";
-import { StudyCard } from "./components/StudyCard";
-import { StudyHeader } from "./components/StudyHeader";
-import { StudyProgress } from "./components/StudyProgress";
-import { displaySelectedMeaning } from "./studyMeaning";
-import { WordDetailsPanel } from "./WordDetailsPanel";
+import { GeminiTutorPanel } from "../../tutor/GeminiTutorPanel";
+import type { StudySettings } from "../../../database";
+import { spacing } from "../../../theme/design";
+import { ReviewButtons } from "../components/ReviewButtons";
+import { StudyCard } from "../components/StudyCard";
+import { StudyHeader } from "../components/StudyHeader";
+import { StudyProgress } from "../components/StudyProgress";
+import { displaySelectedMeaning } from "../studyMeaning";
+import { WordDetailsPanel } from "../WordDetailsPanel";
 
 type SwipeDirection = "again" | "known";
 

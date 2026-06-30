@@ -1,10 +1,10 @@
 import React from "react";
 import type { Card, ReviewGrade, ReviewState } from "@czech-flashcards/shared";
 import type { StudySettings } from "../database";
-import { AuthScreen } from "../features/account/AuthScreen";
-import { HomeScreen } from "../features/home/HomeScreen";
-import { QuizScreen } from "../features/quiz/QuizScreen";
-import { StudyScreen } from "../features/study/StudyScreen";
+import { AuthScreen } from "../features/account/screens/AuthScreen";
+import { HomeScreen } from "../features/home/screens/HomeScreen";
+import { QuizScreen } from "../features/quiz/screens/QuizScreen";
+import { StudyScreen } from "../features/study/screens/StudyScreen";
 import { useStudyAnimations } from "../features/study/useStudyAnimations";
 import type { SyncStatus } from "../sync";
 import type { Panel, Screen } from "./appTypes";

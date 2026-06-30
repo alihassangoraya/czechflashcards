@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import type { Card } from "@czech-flashcards/shared";
-import { useI18n } from "../../i18n/I18nProvider";
-import { colors, radius, spacing, typography } from "../../theme/design";
+import { useI18n } from "../../../i18n/I18nProvider";
+import { colors, radius, spacing, typography } from "../../../theme/design";
 
 type Values = { cz: string; en: string; hi: string; ur: string; sentence: string; sentenceEn: string };
 

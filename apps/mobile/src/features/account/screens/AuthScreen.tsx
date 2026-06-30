@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import MaterialIcons from "../../components/MaterialIcons";
-import { colors, radius, size, spacing, typography } from "../../theme/design";
-import { AccountAuthForm } from "./components/AccountAuthForm";
+import MaterialIcons from "../../../components/MaterialIcons";
+import { colors, radius, size, spacing, typography } from "../../../theme/design";
+import { AccountAuthForm } from "../components/AccountAuthForm";
 
 type AuthMode = "sign-in" | "sign-up";
 

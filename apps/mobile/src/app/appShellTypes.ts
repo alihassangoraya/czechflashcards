@@ -1,7 +1,7 @@
 import type { Card, ReviewGrade, ReviewState } from "@czech-flashcards/shared";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { StudySettings } from "../database";
-import type { AccountPanel, AccountStudySummary } from "../features/account/AccountPanel";
+import type { AccountPanel, AccountStudySummary } from "../features/account/screens/AccountPanel";
 import type { useStudyAnimations } from "../features/study/useStudyAnimations";
 import type { SyncStatus } from "../sync";
 import type { Panel, Screen } from "./appTypes";

@@ -1,18 +1,18 @@
 import React, { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import MaterialIcons from "../../components/MaterialIcons";
+import MaterialIcons from "../../../components/MaterialIcons";
 import type { Card } from "@czech-flashcards/shared";
-import type { CustomDeck } from "../../database";
-import { useI18n } from "../../i18n/I18nProvider";
-import { colors, radius, size, spacing, typography } from "../../theme/design";
-import { initialAddWordValues, type AddWordValues } from "./addWordTypes";
-import { AddWordDetailsToggle } from "./components/AddWordDetailsToggle";
-import { AddWordIntro } from "./components/AddWordIntro";
-import { AddWordOptionalDetails } from "./components/AddWordOptionalDetails";
-import { CustomWordsList } from "./components/CustomWordsList";
-import { FormField } from "./components/FormField";
-import { FormSection } from "./components/FormSection";
-import { WordDeckPicker } from "./components/WordDeckPicker";
+import type { CustomDeck } from "../../../database";
+import { useI18n } from "../../../i18n/I18nProvider";
+import { colors, radius, size, spacing, typography } from "../../../theme/design";
+import { initialAddWordValues, type AddWordValues } from "../addWordTypes";
+import { AddWordDetailsToggle } from "../components/AddWordDetailsToggle";
+import { AddWordIntro } from "../components/AddWordIntro";
+import { AddWordOptionalDetails } from "../components/AddWordOptionalDetails";
+import { CustomWordsList } from "../components/CustomWordsList";
+import { FormField } from "../components/FormField";
+import { FormSection } from "../components/FormSection";
+import { WordDeckPicker } from "../components/WordDeckPicker";
 
 type Props = { onSubmit: (values: AddWordValues) => void; cards: Card[]; decks: CustomDeck[]; onDelete: (cardId: string) => void; onEdit: (card: Card) => void };
 
