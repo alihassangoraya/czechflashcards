@@ -1,4 +1,4 @@
-import type { StudySettings } from "../../../database";
+import type { StudySettings } from "../../storage/storagePublicApi";
 import type { CardOverrideSnapshotRow } from "./cardOverrideSnapshotRow";
 import type { CustomCardSnapshotRow } from "./customCardSnapshotRow";
 import type { SavedCardSnapshotRow } from "./savedCardSnapshotRow";

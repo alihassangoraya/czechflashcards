@@ -1,4 +1,4 @@
-import type { AppDatabase } from "../../database";
+import type { AppDatabase } from "../storage/storagePublicApi";
 import type { UserDeckCardSnapshotRow, UserDeckSnapshotRow } from "./snapshotTypes";
 
 export function applyDeckSnapshot(

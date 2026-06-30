@@ -1,5 +1,5 @@
 import type { Card } from "@czech-flashcards/shared";
-import type { AppDatabase } from "../../database";
+import type { AppDatabase } from "../storage/storagePublicApi";
 import type { CustomCardSnapshotRow } from "./snapshotTypes";
 
 function toCustomCard(row: CustomCardSnapshotRow): Card {

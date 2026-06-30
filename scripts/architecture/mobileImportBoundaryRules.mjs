@@ -19,3 +19,12 @@ export function inspectFeatureImports({ lines, rel }, violations) {
     }
   });
 }
+
+export function inspectServiceFacadeImports({ lines, rel }, violations) {
+  if (!rel.startsWith("services/")) return;
+  lines.forEach((line, index) => {
+    if (line.match(/from\s+["'](?:\.\.\/)+(?:database|sync)["']/)) {
+      violations.serviceFacadeImports.push(`${rel}:${index + 1}: ${line.trim()}`);
+    }
+  });
+}

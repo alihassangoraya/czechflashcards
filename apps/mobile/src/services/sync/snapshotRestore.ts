@@ -1,4 +1,4 @@
-import type { AppDatabase } from "../../database";
+import type { AppDatabase } from "../storage/storagePublicApi";
 import { applyCustomCardSnapshot } from "./snapshotCustomCardRestore";
 import { applyDeckSnapshot } from "./snapshotDeckRestore";
 import { applyCardOverrideSnapshot } from "./snapshotOverrideRestore";

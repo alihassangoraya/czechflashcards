@@ -1,4 +1,4 @@
-import type { AppDatabase } from "../../database";
+import type { AppDatabase } from "../storage/storagePublicApi";
 import type { UserCardSnapshotRow } from "./snapshotTypes";
 
 export function applyReviewStateSnapshot(db: AppDatabase, rows: UserCardSnapshotRow[] = []) {

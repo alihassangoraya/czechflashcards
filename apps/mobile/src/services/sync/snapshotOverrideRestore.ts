@@ -1,4 +1,4 @@
-import type { AppDatabase } from "../../database";
+import type { AppDatabase } from "../storage/storagePublicApi";
 import type { CardOverrideSnapshotRow } from "./snapshotTypes";
 
 export function applyCardOverrideSnapshot(db: AppDatabase, rows: CardOverrideSnapshotRow[] = []) {

@@ -1,4 +1,4 @@
-import { persistDatabase, type AppDatabase } from "../../database";
+import { persistDatabase, type AppDatabase } from "../storage/storagePublicApi";
 import { applySyncSnapshot } from "./snapshotRestore";
 import type { AppSupabaseClient } from "./supabaseClient";
 import type { SyncSnapshot } from "./snapshotTypes";
