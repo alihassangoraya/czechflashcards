@@ -11,6 +11,7 @@ export function createMobileArchitectureViolations() {
     lineCounts: [],
     localContractPicks: [],
     localeSections: [],
+    localeSettingsSections: [],
     materialIconPrivateImports: [],
     materialIconPropTypes: [],
     rawCollectionTypes: [],

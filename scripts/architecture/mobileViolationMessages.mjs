@@ -17,6 +17,7 @@ export const mobileViolationMessages = [
   ["duplicateTypes", "Mobile architecture check failed. Reuse canonical shared type aliases:"],
   ["rawCollectionTypes", "Mobile architecture check failed. Use canonical collection type aliases:"],
   ["localeSections", "Mobile architecture check failed. Keep i18n catalogs split into matching feature sections:"],
+  ["localeSettingsSections", "Mobile architecture check failed. Keep settings translations split into matching subsections:"],
   ["rootAppData", "Mobile architecture check failed. App data boot/sync/state modules must live under app/data/:"],
   ["rootAppCards", "Mobile architecture check failed. App card-management modules must live under app/cards/:"],
   ["rootAppHandlers", "Mobile architecture check failed. App shell handlers must live under app/shellHandlers/:"],
