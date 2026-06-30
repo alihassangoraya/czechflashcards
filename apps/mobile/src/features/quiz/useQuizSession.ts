@@ -1,79 +1,58 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import type { Card } from "@czech-flashcards/shared";
+import { deriveQuizMetrics } from "./quizSessionMetrics";
 import { buildQuestions } from "./quizQuestions";
+import { useQuizAnswerState } from "./useQuizAnswerState";
+import { useQuizRound } from "./useQuizRound";
 
 export function useQuizSession(deck: Card[], onClose: () => void) {
-  const [round, setRound] = useState(0);
+  const { restartQuiz, round } = useQuizRound();
   const questions = useMemo(() => buildQuestions(deck), [deck, round]);
-  const [index, setIndex] = useState(0);
-  const [selected, setSelected] = useState<number | null>(null);
-  const [checked, setChecked] = useState(false);
-  const [score, setScore] = useState(0);
-  const [finished, setFinished] = useState(false);
-  const [showExitConfirm, setShowExitConfirm] = useState(false);
-
-  useEffect(() => {
-    setIndex(0);
-    setSelected(null);
-    setChecked(false);
-    setScore(0);
-    setFinished(false);
-    setShowExitConfirm(false);
-  }, [deck, round]);
-
-  const question = questions[index];
-  const answeredCount = index + (checked ? 1 : 0);
-  const accuracy = answeredCount ? Math.round((score / answeredCount) * 100) : 0;
-  const hasProgress = index > 0 || selected !== null || checked || score > 0;
-  const isCorrect = Boolean(question && selected === question.correctIndex);
-
-  function restartQuiz() {
-    setRound((value) => value + 1);
-  }
+  const state = useQuizAnswerState(deck, round);
+  const question = questions[state.index];
+  const metrics = deriveQuizMetrics({ checked: state.checked, index: state.index, question, score: state.score, selected: state.selected });
 
   function requestClose() {
-    if (hasProgress && !finished) {
-      setShowExitConfirm(true);
+    if (metrics.hasProgress && !state.finished) {
+      state.setShowExitConfirm(true);
       return;
     }
     onClose();
   }
 
   function confirmClose() {
-    setShowExitConfirm(false);
+    state.setShowExitConfirm(false);
     onClose();
   }
 
   function next() {
     if (!question) return;
-    if (!checked) {
-      if (selected == null) return;
-      setChecked(true);
-      if (selected === question.correctIndex) setScore((value) => value + 1);
+    if (!state.checked) {
+      if (state.selected == null) return;
+      state.setChecked(true);
+      if (state.selected === question.correctIndex) state.setScore((value) => value + 1);
       return;
     }
-    if (index + 1 >= questions.length) {
-      setFinished(true);
+    if (state.index + 1 >= questions.length) {
+      state.setFinished(true);
       return;
     }
-    setIndex((value) => value + 1);
-    setSelected(null);
-    setChecked(false);
+    state.moveToNextQuestion();
   }
 
   return {
     questions,
     question,
-    index,
-    selected,
-    checked,
-    score,
-    finished,
-    accuracy,
-    isCorrect,
-    showExitConfirm,
-    setSelected,
-    setShowExitConfirm,
+    index: state.index,
+    selected: state.selected,
+    checked: state.checked,
+    score: state.score,
+    finished: state.finished,
+    accuracy: metrics.accuracy,
+    isCorrect: metrics.isCorrect,
+    showExitConfirm: state.showExitConfirm,
+    setSelected: state.setSelected,
+    setShowExitConfirm: state.setShowExitConfirm,
     restartQuiz,
     requestClose,
     confirmClose,
