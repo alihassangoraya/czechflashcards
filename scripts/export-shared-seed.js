@@ -1,69 +1,7 @@
 const fs = require("fs");
 const path = require("path");
-const vm = require("vm");
-const { enrichWithGoogleVocabulary } = require("./google-vocabulary");
-const { applyLegacyUrduOverrides } = require("./legacy-urdu-overrides");
-
-const root = path.resolve(__dirname, "..");
-const outFile = path.join(root, "packages", "shared", "data", "vocabulary.seed.json");
-const seedVersion = "google-b1-enriched-v3";
-const baseSourceFiles = [
-  "data/vocabulary.js",
-  "data/extended-lemmas.js",
-  "data/focus-decks.js",
-  "data/b1-verb-pack.js"
-];
-const generatedSourceFiles = [
-  "data/verb-forms.js",
-  "data/google-vocabulary-details.json"
-];
-const sourceFiles = [...baseSourceFiles, ...generatedSourceFiles];
-
-function loadCards() {
-  const context = { window: {} };
-  context.globalThis = context;
-  vm.createContext(context);
-
-  for (const file of baseSourceFiles) {
-    vm.runInContext(fs.readFileSync(path.join(root, file), "utf8"), context, { filename: file });
-  }
-
-  context.window.CZECH_B1_VOCAB = enrichWithGoogleVocabulary(context.window.CZECH_B1_VOCAB || []);
-  context.window.CZECH_B1_VOCAB = applyLegacyUrduOverrides(context.window.CZECH_B1_VOCAB);
-  vm.runInContext(fs.readFileSync(path.join(root, "data", "verb-forms.js"), "utf8"), context, { filename: "data/verb-forms.js" });
-
-  return context.window.CZECH_B1_VOCAB || [];
-}
-
-function normalizeForSeed(card, index) {
-  return {
-    id: card.id || `${String(card.cz || "card").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}-${index}`,
-    cz: String(card.cz || "").trim(),
-    en: String(card.en || "").trim(),
-    hi: String(card.hi || "").trim(),
-    ur: String(card.ur || card.urdu || "").trim(),
-    sentence: String(card.sentence || "").trim(),
-    sentenceEn: String(card.sentenceEn || card.exampleEn || "").trim(),
-    level: card.level || null,
-    tags: Array.isArray(card.tags) ? card.tags : String(card.tags || "daily").split(/[,\s]+/).filter(Boolean),
-    source: card.source || "legacy-web",
-    pronunciation: String(card.pronunciation || "").trim(),
-    synonyms: String(card.synonyms || "").trim(),
-    antonyms: String(card.antonyms || "").trim(),
-    grammar: card.grammar || null,
-    googleCategory: String(card.googleCategory || "").trim()
-  };
-}
-
-function buildPayload() {
-  return JSON.stringify({
-    schemaVersion: 1,
-    seedVersion,
-    generatedFrom: sourceFiles,
-    generatedAt: "deterministic",
-    cards: loadCards().map(normalizeForSeed)
-  }, null, 2) + "\n";
-}
+const { outFile } = require("./shared-seed/seedConfig");
+const { buildPayload } = require("./shared-seed/seedPayload");
 
 const payload = buildPayload();
 if (process.argv.includes("--check")) {
