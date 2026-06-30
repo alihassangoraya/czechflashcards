@@ -4,6 +4,7 @@ export const hiCoreTranslations = {
   "language.czech": "चेक",
   "language.hindi": "हिंदी",
   "language.urdu": "उर्दू",
+  "language.ukrainian": "यूक्रेनी",
   "common.backHome": "होम पर वापस",
   "common.close": "{title} बंद करें",
   "common.cards": "कार्ड",

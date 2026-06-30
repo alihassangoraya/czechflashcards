@@ -1,0 +1,18 @@
+export const ukProgressTranslations = {
+  "progress.title": "Панель прогресу",
+  "progress.studyStreak": "Серія навчання",
+  "progress.masteredVocab": "Засвоєна лексика",
+  "progress.weeklyReviews": "Повторення за тиждень",
+  "progress.daysInARow": "днів поспіль",
+  "progress.goalStreak": "{count} днів із виконаною ціллю поспіль",
+  "progress.wordsMastered": "засвоєних слів",
+  "progress.cardsThisWeek": "карток цього тижня",
+  "progress.dailyGoal": "Денна навчальна ціль",
+  "progress.goalDone": "Ціль на сьогодні виконано.",
+  "progress.goalRemaining": "Сьогодні залишилось {count} карток.",
+  "progress.sevenDayActivity": "Активність за 7 днів",
+  "progress.masteryDistribution": "Розподіл засвоєння",
+  "progress.mastered": "Засвоєно",
+  "progress.learning": "Вивчається",
+  "progress.unseen": "Не розпочато"
+} as const;

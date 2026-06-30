@@ -1,0 +1,21 @@
+export const ukStudyFlashcardTranslations = {
+  "study.openGrammar": "Відкрити граматичний гід",
+  "study.markAgain": "Позначити для повторення",
+  "study.markKnown": "Позначити як відоме",
+  "review.again": "Again",
+  "review.hard": "Hard",
+  "review.good": "Good",
+  "review.easy": "Easy",
+  "study.translation": "Переклад",
+  "study.sessionProgress": "Картка {current} з {total} · Сьогодні {reviewedToday} / {dailyGoal}",
+  "study.inContext": "У контексті",
+  "study.playExample": "Відтворити чеський приклад",
+  "study.done": "Готово",
+  "study.noDue": "У цій колоді немає карток для повторення.",
+  "study.revealMeaning": "Показати значення",
+  "study.tapReveal": "Торкнися, щоб побачити значення",
+  "study.tapCzech": "Торкнися, щоб побачити чеське слово",
+  "study.showCzech": "Показати чеське слово",
+  "study.undo": "Скасувати",
+  "study.known": "Відоме"
+} as const;

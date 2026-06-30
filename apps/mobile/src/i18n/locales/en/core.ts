@@ -4,6 +4,7 @@ export const enCoreTranslations = {
   "language.czech": "Czech",
   "language.hindi": "Hindi",
   "language.urdu": "Urdu",
+  "language.ukrainian": "Ukrainian",
   "common.backHome": "Back home",
   "common.close": "Close {title}",
   "common.cards": "cards",

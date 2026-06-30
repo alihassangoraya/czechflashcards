@@ -4,6 +4,7 @@ export const csCoreTranslations = {
   "language.czech": "Čeština",
   "language.hindi": "Hindština",
   "language.urdu": "Urdština",
+  "language.ukrainian": "Ukrajinština",
   "common.backHome": "Zpět domů",
   "common.close": "Zavřít {title}",
   "common.cards": "kartiček",

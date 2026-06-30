@@ -17,7 +17,8 @@ export function AppLanguageSettingGroup({ appLanguage, onChange }: Props) {
     en: t("language.english"),
     cs: t("language.czech"),
     hi: t("language.hindi"),
-    ur: t("language.urdu")
+    ur: t("language.urdu"),
+    uk: t("language.ukrainian")
   };
 
   return (

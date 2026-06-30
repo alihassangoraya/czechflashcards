@@ -7,7 +7,7 @@ export type StudySettings = {
   examLevel: "a2" | "b1";
   deckFilter: string;
   meaningLanguage: "hi" | "ur";
-  appLanguage: "en" | "cs" | "hi" | "ur";
+  appLanguage: "en" | "cs" | "hi" | "ur" | "uk";
   themeMode: ThemeMode;
   dailyGoal: number;
   customDecks: CustomDeck[];

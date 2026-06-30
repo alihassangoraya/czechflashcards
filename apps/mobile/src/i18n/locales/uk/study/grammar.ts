@@ -1,0 +1,20 @@
+export const ukStudyGrammarTranslations = {
+  "grammar.likelyFeminine": "Ймовірно жіночий рід",
+  "grammar.likelyNeuter": "Ймовірно середній рід",
+  "grammar.likelyMasculine": "Ймовірно чоловічий рід",
+  "grammar.verbMeta": "Дієслово (sloveso)",
+  "grammar.nounMeta": "Іменник або прикметник · {gender}",
+  "grammar.presentTense": "Теперішній час",
+  "grammar.verbCopy": "Чеські дієслова змінюються залежно від підмета. Вчи слово з повним інфінітивом і слухай закінчення в прикладі.",
+  "grammar.subjectsSingular": "ja · ty · on/ona",
+  "grammar.subjectsPlural": "my · vy · oni",
+  "grammar.aspectCopy": "Вид важливий на B1: недоконані дієслова описують дію або звичку; доконані підкреслюють завершений результат.",
+  "grammar.casesGender": "Відмінки і рід",
+  "grammar.caseCopy": "{gender}. У чеській закінчення змінюються за відмінками, тому запам'ятовуй слово з короткою фразою.",
+  "grammar.caseNom": "1. називний: базова форма",
+  "grammar.caseAcc": "4. знахідний: прямий додаток",
+  "grammar.caseLoc": "6. місцевий: після v, na, o",
+  "grammar.caseIns": "7. орудний: після s",
+  "grammar.example": "Приклад: {sentence}",
+  "grammar.empty": "Вибери картку, щоб побачити граматичні нотатки."
+} as const;

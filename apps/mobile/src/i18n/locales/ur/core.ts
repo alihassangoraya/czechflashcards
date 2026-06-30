@@ -4,6 +4,7 @@ export const urCoreTranslations = {
   "language.czech": "چیک",
   "language.hindi": "ہندی",
   "language.urdu": "اردو",
+  "language.ukrainian": "یوکرینی",
   "common.backHome": "ہوم پر واپس",
   "common.close": "{title} بند کریں",
   "common.cards": "کارڈز",
