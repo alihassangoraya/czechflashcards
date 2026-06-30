@@ -3,8 +3,8 @@ export function inspectLocalRouteAndModalPicks({ lines, rel }, violations) {
     inspectLocalPicks(lines, rel, violations, "Pick<MainScreenProps", "move route prop picks into app/screens/routeTypes.ts");
   }
 
-  if (rel.startsWith("app/panels/") && rel !== "app/panels/modalTypes.ts") {
-    inspectLocalPicks(lines, rel, violations, "Pick<AppPanelProps", "move modal prop picks into app/panels/modalTypes.ts");
+  if (rel.startsWith("app/panels/") && !rel.startsWith("app/panels/modalTypes/")) {
+    inspectLocalPicks(lines, rel, violations, "Pick<AppPanelProps", "move modal prop picks into app/panels/modalTypes/");
   }
 
   if (rel.startsWith("app/shellHandlers/") && rel !== "app/shellHandlers/handlerTypes.ts") {
