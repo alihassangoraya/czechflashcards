@@ -7,6 +7,7 @@ import { colors, spacing, typography } from "../../../theme/design";
 import { CardBackFaceContainer } from "./CardFaceContainer";
 import { CardExampleBlock } from "./CardExampleBlock";
 import { CardTranslationBlock } from "./CardTranslationBlock";
+import { StudyCardHint } from "./StudyCardHint";
 
 type Props = {
   current: Card;
@@ -26,7 +27,7 @@ export function StudyCardBack({ current, currentSecondaryMeaning, flipProgress, 
         <CardTranslationBlock card={current} secondaryMeaning={currentSecondaryMeaning} meaningLanguage={meaningLanguage} />
         <CardExampleBlock card={current} />
       </View>
-      <Text style={[styles.hint, { textAlign }]}>{t("study.tapCzech")}</Text>
+      <StudyCardHint textAlign={textAlign}>{t("study.tapCzech")}</StudyCardHint>
     </CardBackFaceContainer>
   );
 }
@@ -39,12 +40,5 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: spacing.sm
   },
-  answer: { gap: spacing.mdPlus, marginTop: spacing.xl },
-  hint: {
-    color: colors.textMuted,
-    fontSize: typography.cardHint,
-    marginTop: typography.bodyLarge,
-    textAlign: "center",
-    fontWeight: typography.weightRegular
-  }
+  answer: { gap: spacing.mdPlus, marginTop: spacing.xl }
 });

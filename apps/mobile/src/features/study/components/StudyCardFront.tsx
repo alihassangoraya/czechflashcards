@@ -7,6 +7,7 @@ import type { SwipeDirection } from "../animations/animationTypes";
 import { CardUndoButton } from "./CardUndoButton";
 import { CardFrontFaceContainer } from "./CardFaceContainer";
 import { PronunciationPill } from "./PronunciationPill";
+import { StudyCardHint } from "./StudyCardHint";
 import { StudySwipeActions } from "./StudySwipeActions";
 
 type Props = {
@@ -27,7 +28,7 @@ export function StudyCardFront({ current, flipProgress, grading, lastReviewCard,
       <Text style={styles.word}>{current.cz}</Text>
       <PronunciationPill card={current} />
       <StudySwipeActions grading={grading} onCompleteSwipe={onCompleteSwipe} />
-      <Text style={[styles.hint, { textAlign }]}>{t("study.tapReveal")}</Text>
+      <StudyCardHint textAlign={textAlign}>{t("study.tapReveal")}</StudyCardHint>
       {lastReviewCard && <CardUndoButton grading={grading} lastReviewCard={lastReviewCard} onUndoLastReview={onUndoLastReview} />}
     </CardFrontFaceContainer>
   );
@@ -40,11 +41,5 @@ const styles = StyleSheet.create({
     color: colors.textStrong,
     fontWeight: typography.weightBold,
     textAlign: "center"
-  },
-  hint: {
-    color: colors.textMuted,
-    marginTop: typography.bodyLarge,
-    textAlign: "center",
-    fontWeight: typography.weightRegular
   }
 });
