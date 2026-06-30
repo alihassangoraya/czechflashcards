@@ -1,9 +1,8 @@
-import { useState } from "react";
-import type { ReviewGrade } from "@czech-flashcards/shared";
 import type { AppDatabase, StudySettings } from "../../database";
 import type { StudyQueue } from "../studyQueue/useStudyQueue";
-import type { UndoReview } from "./reviewTypes";
-import { gradeStudyCard, undoStudyReview } from "./reviewWorkflow";
+import { useGradeStudyAction } from "./useGradeStudyAction";
+import { useReviewSessionState } from "./useReviewSessionState";
+import { useUndoStudyAction } from "./useUndoStudyAction";
 
 type Input = {
   db: AppDatabase | null;
@@ -13,53 +12,16 @@ type Input = {
 };
 
 export function useStudyReviewActions({ db, settings, queue, refresh }: Input) {
-  const [lastReview, setLastReview] = useState<UndoReview | null>(null);
-  const [grading, setGrading] = useState(false);
-  const [sessionReviews, setSessionReviews] = useState(0);
-
-  async function grade(result: ReviewGrade): Promise<void> {
-    await gradeStudyCard({
-      db,
-      settings,
-      card: queue.current,
-      grade: result,
-      grading,
-      previousRelearningQueue: queue.snapshotRelearningQueue(),
-      setGrading,
-      onReviewed: (review, cardId, grade) => {
-        queue.recordReviewedCard(cardId, grade);
-        setLastReview(review);
-        setSessionReviews((value) => value + 1);
-      },
-      refresh
-    });
-  }
-
-  async function undoLastReview(): Promise<void> {
-    await undoStudyReview({
-      db,
-      settings,
-      lastReview,
-      grading,
-      setGrading,
-      onBeforeRestore: (review) => {
-        queue.forceCard(review.card.id, true);
-        queue.restoreRelearningQueue(review.previousRelearningQueue);
-      },
-      onRestored: () => {
-        setSessionReviews((value) => Math.max(0, value - 1));
-        setLastReview(null);
-      },
-      refresh
-    });
-  }
+  const reviewState = useReviewSessionState();
+  const grade = useGradeStudyAction({ db, settings, queue, refresh, reviewState });
+  const undoLastReview = useUndoStudyAction({ db, settings, queue, refresh, reviewState });
 
   return {
-    grading,
-    lastReview,
-    sessionReviews,
-    setSessionReviews,
-    resetSessionReviews: () => setSessionReviews(0),
+    grading: reviewState.grading,
+    lastReview: reviewState.lastReview,
+    sessionReviews: reviewState.sessionReviews,
+    setSessionReviews: reviewState.setSessionReviews,
+    resetSessionReviews: reviewState.resetSessionReviews,
     grade,
     undoLastReview
   };
