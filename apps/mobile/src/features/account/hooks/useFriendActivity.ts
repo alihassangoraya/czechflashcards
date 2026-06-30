@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 import {
   getFriendCode,
-  loadFriendActivity,
-  respondToFriendRequest,
-  sendFriendRequest,
   type FriendRequest,
   type FriendStreak
 } from "../../../sync";
 import type { createSupabaseClient } from "../../../sync";
 import { useI18n } from "../../../i18n/I18nProvider";
+import { fetchFriendActivity, submitFriendRequest, submitFriendResponse } from "./friendActivityActions";
 
 type Params = {
   accountEmail: string | null;
@@ -24,19 +22,19 @@ export function useFriendActivity({ accountEmail, supabase, setMessage }: Params
   const [friends, setFriends] = useState<FriendStreak[]>([]);
 
   async function refreshFriends() {
-    const activity = await loadFriendActivity(supabase);
+    const activity = await fetchFriendActivity(supabase);
     setFriendRequests(activity.requests);
     setFriends(activity.friends);
   }
 
   async function sendFriend() {
-    setMessage((await sendFriendRequest(supabase, friendCode)) || t("account.friendSent"));
+    setMessage((await submitFriendRequest(supabase, friendCode)) || t("account.friendSent"));
     setFriendCode("");
     await refreshFriends();
   }
 
   async function respondToRequest(requestId: string, accepted: boolean) {
-    setMessage((await respondToFriendRequest(supabase, requestId, accepted)) || (accepted ? t("account.friendAdded") : t("account.friendDeclined")));
+    setMessage((await submitFriendResponse(supabase, requestId, accepted)) || (accepted ? t("account.friendAdded") : t("account.friendDeclined")));
     await refreshFriends();
   }
 
