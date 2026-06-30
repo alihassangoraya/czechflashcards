@@ -41,6 +41,7 @@ const featureRootComponentViolations = [];
 const duplicateTypeViolations = [];
 const canonicalTypeFiles = new Map([
   ["AuthMode", "services/sync/syncTypes.ts"],
+  ["StudyAnimations", "app/studyAnimationTypes.ts"],
   ["SwipeDirection", "features/study/animations/animationTypes.ts"]
 ]);
 for (const file of files) {

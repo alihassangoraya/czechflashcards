@@ -1,5 +1,5 @@
 import { addCardToCustomDeck, addCustomCard, deleteCustomCard, type AppDatabase } from "../database";
-import type { WordValues } from "./appShellTypes";
+import type { AddWordValues } from "./appShellTypes";
 import { createCustomCard } from "./cardFactory";
 
 type Props = {
@@ -8,7 +8,7 @@ type Props = {
 };
 
 export function useCustomWordActions({ db, refresh }: Props) {
-  async function addWord(values: WordValues) {
+  async function addWord(values: AddWordValues) {
     if (!db) return;
     if (!values.cz.trim() || !values.en.trim()) return;
     const card = createCustomCard(values);

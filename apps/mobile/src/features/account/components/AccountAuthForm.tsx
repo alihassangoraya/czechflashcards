@@ -1,5 +1,6 @@
 import React from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import type { AuthMode } from "../../../sync";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, spacing, typography } from "../../../theme/design";
 
@@ -7,14 +8,14 @@ type Props = {
   busy: boolean;
   displayName: string;
   email: string;
-  mode?: "sign-in" | "sign-up";
+  mode?: AuthMode;
   password: string;
   message: string;
   onChangeDisplayName: (value: string) => void;
   onChangeEmail: (value: string) => void;
   onChangePassword: (value: string) => void;
-  onSwitchMode?: (mode: "sign-in" | "sign-up") => void;
-  onSubmit: (mode: "sign-in" | "sign-up") => void;
+  onSwitchMode?: (mode: AuthMode) => void;
+  onSubmit: (mode: AuthMode) => void;
 };
 
 export function AccountAuthForm({ busy, displayName, email, mode, password, message, onChangeDisplayName, onChangeEmail, onChangePassword, onSwitchMode, onSubmit }: Props) {

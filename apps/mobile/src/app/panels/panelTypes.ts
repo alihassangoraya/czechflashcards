@@ -3,7 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { StudySettings } from "../../database";
 import type { AccountPanel, AccountStudySummary } from "../../features/account";
 import type { SyncStatus } from "../../sync";
-import type { CorrectionValues, WordValues } from "../appShellTypes";
+import type { AddWordValues, CorrectionValues } from "../appShellTypes";
 import type { Panel } from "../appTypes";
 
 export type AccountPanelProps = React.ComponentProps<typeof AccountPanel>;
@@ -34,7 +34,7 @@ export type AppPanelProps = {
   onSetDeckManagementCard: (card: Card | null) => void;
   onOpenCardEditor: (card?: Card | null) => void;
   onCloseCardEditor: () => void;
-  onAddWord: (values: WordValues) => void;
+  onAddWord: (values: AddWordValues) => void;
   onDeleteWord: (cardId: string) => void;
   onSaveCorrection: (values: CorrectionValues) => void;
   onChangeSettings: (settings: StudySettings) => void;

@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import { createSupabaseClient } from "../../../sync";
+import { createSupabaseClient, type AuthMode } from "../../../sync";
 import { spacing } from "../../../theme/design";
 import type { AccountStudySummary } from "../accountTypes";
 import { AccountAuthForm } from "../components/AccountAuthForm";
@@ -17,7 +17,7 @@ export function AccountPanel({ configured, supabase, accountEmail, studySummary,
   accountEmail: string | null;
   studySummary: AccountStudySummary;
   busy: boolean;
-  onAuthenticate: (mode: "sign-in" | "sign-up", email: string, password: string, displayName: string) => Promise<string | null>;
+  onAuthenticate: (mode: AuthMode, email: string, password: string, displayName: string) => Promise<string | null>;
   onSignOut: () => Promise<string | null>;
 }) {
   const account = useAccountPanel({ accountEmail, supabase, onAuthenticate, onSignOut });

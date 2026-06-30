@@ -8,6 +8,8 @@ export type AddWordValues = {
   tag: string;
 };
 
+export type CorrectionValues = Omit<AddWordValues, "tag">;
+
 export const initialAddWordValues: AddWordValues = {
   cz: "",
   en: "",

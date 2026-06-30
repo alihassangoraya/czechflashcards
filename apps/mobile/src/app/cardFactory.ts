@@ -1,7 +1,7 @@
 import { slug, type Card } from "@czech-flashcards/shared";
-import type { CorrectionValues, WordValues } from "./appShellTypes";
+import type { AddWordValues, CorrectionValues } from "./appShellTypes";
 
-export function createCustomCard(values: WordValues): Card {
+export function createCustomCard(values: AddWordValues): Card {
   return {
     id: `custom-${Date.now()}-${slug(values.cz)}`,
     cz: values.cz.trim(),

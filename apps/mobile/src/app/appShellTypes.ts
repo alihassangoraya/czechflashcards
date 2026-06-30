@@ -2,13 +2,12 @@ import type { Card, ReviewGrade, ReviewState } from "@czech-flashcards/shared";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { StudySettings } from "../database";
 import type { AccountPanel, AccountStudySummary } from "../features/account";
-import type { useStudyAnimations } from "../features/study";
+import type { AddWordValues, CorrectionValues } from "../features/words";
 import type { SyncStatus } from "../sync";
 import type { Panel, Screen } from "./appTypes";
+import type { StudyAnimations } from "./studyAnimationTypes";
 
-export type StudyAnimations = ReturnType<typeof useStudyAnimations>;
-export type WordValues = { cz: string; en: string; hi: string; ur: string; sentence: string; sentenceEn: string; tag: string };
-export type CorrectionValues = Omit<WordValues, "tag">;
+export type { AddWordValues, CorrectionValues, StudyAnimations };
 export type AccountPanelProps = React.ComponentProps<typeof AccountPanel>;
 
 export type AppShellProps = {
@@ -58,7 +57,7 @@ export type AppShellProps = {
   onCloseCardEditor: () => void;
   onUndoLastReview: () => void;
   onGrade: (grade: ReviewGrade) => void;
-  onAddWord: (values: WordValues) => void;
+  onAddWord: (values: AddWordValues) => void;
   onDeleteWord: (cardId: string) => void;
   onSaveCorrection: (values: CorrectionValues) => void;
   onChangeSettings: (settings: StudySettings) => void;
