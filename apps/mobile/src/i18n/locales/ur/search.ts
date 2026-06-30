@@ -16,4 +16,9 @@ export const urSearchTranslations = {
   "search.addToDeck": "{word} کو ڈیک میں شامل کریں",
   "search.addToMyList": "{word} کو میری فہرست میں شامل کریں",
   "search.removeFromMyList": "{word} کو میری فہرست سے ہٹائیں",
+  "search.actionEdit": "ایڈٹ",
+  "search.actionAudio": "آڈیو",
+  "search.actionDeck": "ڈیک",
+  "search.actionSave": "محفوظ",
+  "search.actionSaved": "محفوظ",
 } as const;

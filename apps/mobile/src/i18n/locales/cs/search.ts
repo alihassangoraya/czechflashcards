@@ -16,4 +16,9 @@ export const csSearchTranslations = {
   "search.addToDeck": "Přidat {word} do balíčku",
   "search.addToMyList": "Přidat {word} do mého seznamu",
   "search.removeFromMyList": "Odebrat {word} z mého seznamu",
+  "search.actionEdit": "Upravit",
+  "search.actionAudio": "Audio",
+  "search.actionDeck": "Balíček",
+  "search.actionSave": "Uložit",
+  "search.actionSaved": "Uloženo",
 } as const;

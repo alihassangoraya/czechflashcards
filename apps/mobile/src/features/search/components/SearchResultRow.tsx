@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import type { Card, MeaningLanguage } from "@czech-flashcards/shared";
-import { colors, radius, spacing } from "../../../theme/design";
+import { colors, radius, shadow, spacing } from "../../../theme/design";
 import { SearchResultActions } from "./SearchResultActions";
 import { SearchResultSummary } from "./SearchResultSummary";
 
@@ -25,5 +25,13 @@ export function SearchResultRow({ card, meaningLanguage, saved, onStudy, onToggl
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: "row", alignItems: "center", gap: spacing.lg, borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surface, padding: spacing.xl }
+  row: {
+    gap: spacing.lg,
+    borderWidth: spacing.hairline,
+    borderColor: colors.borderSoft,
+    borderRadius: radius.md,
+    backgroundColor: colors.surface,
+    padding: spacing.xl,
+    ...shadow.soft
+  }
 });

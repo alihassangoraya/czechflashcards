@@ -16,4 +16,9 @@ export const hiSearchTranslations = {
   "search.addToDeck": "{word} को डेक में जोड़ें",
   "search.addToMyList": "{word} को मेरी सूची में जोड़ें",
   "search.removeFromMyList": "{word} को मेरी सूची से हटाएँ",
+  "search.actionEdit": "संपादित",
+  "search.actionAudio": "ऑडियो",
+  "search.actionDeck": "डेक",
+  "search.actionSave": "सेव",
+  "search.actionSaved": "सेव्ड",
 } as const;

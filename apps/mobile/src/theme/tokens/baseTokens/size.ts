@@ -12,6 +12,8 @@ export const size = {
   progressBarMinHeight: 8,
   progressChartHeight: 180,
   progressMetricMinWidth: 150,
+  searchActionMaxWidth: 132,
+  searchResultMinWidth: 180,
   studyProgressMaxWidth: 326,
   modalMaxWidth: 360,
   studyGuideColumnMinWidth: 260,

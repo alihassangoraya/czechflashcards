@@ -16,4 +16,9 @@ export const ukSearchTranslations = {
   "search.addToDeck": "Додати {word} до колоди",
   "search.addToMyList": "Додати {word} до мого списку",
   "search.removeFromMyList": "Видалити {word} з мого списку",
+  "search.actionEdit": "Редаг.",
+  "search.actionAudio": "Аудіо",
+  "search.actionDeck": "Колода",
+  "search.actionSave": "Зберегти",
+  "search.actionSaved": "Збережено",
 } as const;

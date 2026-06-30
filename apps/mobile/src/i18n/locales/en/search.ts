@@ -16,4 +16,9 @@ export const enSearchTranslations = {
   "search.addToDeck": "Add {word} to a deck",
   "search.addToMyList": "Add {word} to My list",
   "search.removeFromMyList": "Remove {word} from My list",
+  "search.actionEdit": "Edit",
+  "search.actionAudio": "Audio",
+  "search.actionDeck": "Deck",
+  "search.actionSave": "Save",
+  "search.actionSaved": "Saved",
 } as const;
