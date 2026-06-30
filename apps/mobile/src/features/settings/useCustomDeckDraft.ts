@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { StudySettings } from "../../database";
-import { slug } from "./settingsFormat";
+import { buildCreateDeckPatch, buildDeleteDeckPatch, buildRenameDeckPatch } from "./customDeckDraftModel";
 
 type Params = {
   settings: StudySettings;
@@ -14,10 +14,9 @@ export function useCustomDeckDraft({ settings, update }: Params) {
   const [deleteDeckId, setDeleteDeckId] = useState<string | null>(null);
 
   function createDeck() {
-    const name = normalizeDeckName(deckName);
-    if (!name || settings.customDecks.some((deck) => deck.name.toLowerCase() === name.toLowerCase())) return;
-    const deck = { id: `deck-${slug(name)}-${Date.now()}`, name };
-    update({ customDecks: [...settings.customDecks, deck], deckFilter: deck.id });
+    const patch = buildCreateDeckPatch(settings, deckName);
+    if (!patch) return;
+    update(patch);
     setDeckName("");
   }
 
@@ -36,20 +35,14 @@ export function useCustomDeckDraft({ settings, update }: Params) {
 
   function saveEditingDeck() {
     if (!editingDeckId) return;
-    const name = normalizeDeckName(editingDeckName);
-    if (!name) return;
-    const duplicate = settings.customDecks.some((deck) => deck.id !== editingDeckId && deck.name.toLowerCase() === name.toLowerCase());
-    if (duplicate) return;
-    update({ customDecks: settings.customDecks.map((deck) => deck.id === editingDeckId ? { ...deck, name } : deck) });
+    const patch = buildRenameDeckPatch(settings, editingDeckId, editingDeckName);
+    if (!patch) return;
+    update(patch);
     cancelEditingDeck();
   }
 
   function deleteDeck(deckId: string) {
-    const nextDecks = settings.customDecks.filter((deck) => deck.id !== deckId);
-    update({
-      customDecks: nextDecks,
-      deckFilter: settings.deckFilter === deckId ? `${settings.examLevel}-focus` : settings.deckFilter
-    });
+    update(buildDeleteDeckPatch(settings, deckId));
     if (editingDeckId === deckId) cancelEditingDeck();
     setDeleteDeckId(null);
   }
@@ -68,8 +61,4 @@ export function useCustomDeckDraft({ settings, update }: Params) {
     saveEditingDeck,
     deleteDeck
   };
-}
-
-function normalizeDeckName(value: string) {
-  return value.trim().replace(/\s+/g, " ");
 }
