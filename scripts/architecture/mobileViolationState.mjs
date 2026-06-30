@@ -26,6 +26,7 @@ export function createMobileArchitectureViolations() {
     rootSourceFiles: [],
     rootServices: [],
     serviceFacadeImports: [],
+    serviceNamespaceImports: [],
     rootPlatformServices: [],
     appDeepFeatureImports: [],
     appDataStateComposition: [],

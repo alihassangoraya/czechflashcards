@@ -28,6 +28,7 @@ export const mobileViolationMessages = [
   ["rootContractFiles", "Mobile architecture check failed. App contract composition must live inside contract folders:"],
   ["rootSourceFiles", "Mobile architecture check failed. Mobile src root must stay limited to entrypoint and compatibility facades:"],
   ["serviceFacadeImports", "Mobile architecture check failed. Service modules must import sibling service APIs, not root compatibility facades:"],
+  ["serviceNamespaceImports", "Mobile architecture check failed. Import named service APIs instead of namespace service modules:"],
   ["rootServices", "Mobile architecture check failed. Service implementations must live in domain service folders:"],
   ["rootPlatformServices", "Mobile architecture check failed. Mobile platform service implementations must live under services/:"]
 ];

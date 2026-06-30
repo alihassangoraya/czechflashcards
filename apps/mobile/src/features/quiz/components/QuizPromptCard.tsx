@@ -1,7 +1,7 @@
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import type { Card } from "@czech-flashcards/shared";
-import * as Speech from "../../../services/speech";
+import { speak } from "../../../services/speech";
 import { MaterialIcons } from "../../../components/MaterialIcons";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, shadow, size, spacing, typography } from "../../../theme/design";
@@ -13,7 +13,7 @@ export function QuizPromptCard({ card }: { card: Card }) {
     <View style={styles.promptCard}>
       <Text style={[styles.promptLabel, { textAlign }]}>{t("quiz.chooseMeaning")}</Text>
       <Text style={styles.word}>{card.cz}</Text>
-      <Pressable style={styles.audioLine} onPress={() => Speech.speak(card.cz, { language: "cs-CZ", rate: 0.86 })} accessibilityRole="button" accessibilityLabel={t("quiz.playWord", { word: card.cz })}>
+      <Pressable style={styles.audioLine} onPress={() => speak(card.cz, { language: "cs-CZ", rate: 0.86 })} accessibilityRole="button" accessibilityLabel={t("quiz.playWord", { word: card.cz })}>
         <MaterialIcons name="volume-up" size={size.iconSmall} color={colors.action} />
         <Text style={styles.pronunciation}>[ {card.pronunciation || card.cz} ]</Text>
       </Pressable>

@@ -3,7 +3,7 @@ import { inspectWildcardExports } from "./mobileBarrelRules.mjs";
 import { inspectDefaultExports } from "./mobileExportRules.mjs";
 import { inspectFeatureHookPlacement, inspectFeaturePlacement, inspectFeatureText } from "./mobileFeatureRules.mjs";
 import { inspectMaterialIconPropTypes } from "./mobileIconRules.mjs";
-import { inspectAppImports, inspectFeatureImports, inspectServiceFacadeImports } from "./mobileImportBoundaryRules.mjs";
+import { inspectAppImports, inspectFeatureImports, inspectServiceFacadeImports, inspectServiceNamespaceImports } from "./mobileImportBoundaryRules.mjs";
 import { inspectLineCount } from "./mobileLineCountRules.mjs";
 import { inspectRootAppModules } from "./mobileRootAppRules.mjs";
 import { inspectRootSourceFile } from "./mobileRootSourceRules.mjs";
@@ -22,6 +22,7 @@ export function inspectMobileFile(source, violations) {
   inspectAppImports(source, violations);
   inspectFeatureImports(source, violations);
   inspectServiceFacadeImports(source, violations);
+  inspectServiceNamespaceImports(source, violations);
   inspectRootSourceFile(source, violations);
   inspectRootAppModules(source, violations);
   inspectRootServices(source, violations);

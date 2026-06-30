@@ -28,3 +28,11 @@ export function inspectServiceFacadeImports({ lines, rel }, violations) {
     }
   });
 }
+
+export function inspectServiceNamespaceImports({ lines, rel }, violations) {
+  lines.forEach((line, index) => {
+    if (line.match(/import\s+\*\s+as\s+\w+\s+from\s+["'](?:\.\.\/)+services\//)) {
+      violations.serviceNamespaceImports.push(`${rel}:${index + 1}: ${line.trim()}`);
+    }
+  });
+}
