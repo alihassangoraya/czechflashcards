@@ -57,3 +57,5 @@ export function buildAppShellDataProps({ data, navigation, deck, studySession, c
     reviewInterval: studySession.reviewInterval
   };
 }
+
+export type AppShellDataProps = ReturnType<typeof buildAppShellDataProps>;

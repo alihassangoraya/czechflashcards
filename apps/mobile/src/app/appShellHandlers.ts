@@ -64,3 +64,5 @@ export function buildAppShellHandlers({ data, settings, navigation, studySession
     }
   };
 }
+
+export type AppShellHandlers = ReturnType<typeof buildAppShellHandlers>;
