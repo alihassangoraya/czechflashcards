@@ -18,13 +18,18 @@ async function collect(directory) {
 
 await collect(join(mobileRoot, "src/features"));
 await collect(join(mobileRoot, "src/components"));
+await collect(join(mobileRoot, "src/app"));
 
 const literalColor = /#[0-9a-f]{3,8}\b|rgba?\(/i;
 const literalFontWeight = /fontWeight:\s*["'][^"']+["']/;
 const literalTypographyMetric = /(fontSize|lineHeight):\s*\d/;
+const literalLayoutMetric = /\b(gap|rowGap|columnGap|margin|marginTop|marginBottom|marginHorizontal|marginVertical|marginLeft|marginRight|padding|paddingTop|paddingBottom|paddingHorizontal|paddingVertical|paddingLeft|paddingRight|width|height|minWidth|maxWidth|minHeight|maxHeight|borderRadius|borderWidth|borderTopWidth|borderBottomWidth|top|left|right|bottom|zIndex):\s*(-?\d+(?:\.\d+)?)/;
+const literalIconSize = /\bsize=\{(\d+(?:\.\d+)?)\}/;
 const colorViolations = [];
 const fontWeightViolations = [];
 const typographyMetricViolations = [];
+const layoutMetricViolations = [];
+const iconSizeViolations = [];
 
 for (const file of files) {
   const content = await readFile(file, "utf8");
@@ -32,6 +37,10 @@ for (const file of files) {
     if (literalColor.test(line)) colorViolations.push(`${file}:${index + 1}`);
     if (!fontWeightAllowList.has(file) && literalFontWeight.test(line)) fontWeightViolations.push(`${file}:${index + 1}`);
     if (!fontWeightAllowList.has(file) && literalTypographyMetric.test(line)) typographyMetricViolations.push(`${file}:${index + 1}`);
+    const layoutMatch = line.match(literalLayoutMetric);
+    if (layoutMatch && Number(layoutMatch[2]) !== 0) layoutMetricViolations.push(`${file}:${index + 1}`);
+    const iconSizeMatch = line.match(literalIconSize);
+    if (iconSizeMatch && Number(iconSizeMatch[1]) !== 0) iconSizeViolations.push(`${file}:${index + 1}`);
   });
 }
 
@@ -50,6 +59,18 @@ if (fontWeightViolations.length) {
 if (typographyMetricViolations.length) {
   console.error("Move UI font sizes and line heights into apps/mobile/src/theme/design.ts:");
   console.error(typographyMetricViolations.join("\n"));
+  process.exit(1);
+}
+
+if (layoutMetricViolations.length) {
+  console.error("Move UI spacing and dimension values into apps/mobile/src/theme/design.ts:");
+  console.error(layoutMetricViolations.join("\n"));
+  process.exit(1);
+}
+
+if (iconSizeViolations.length) {
+  console.error("Move UI icon sizes into apps/mobile/src/theme/design.ts:");
+  console.error(iconSizeViolations.join("\n"));
   process.exit(1);
 }
 

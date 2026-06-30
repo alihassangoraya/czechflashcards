@@ -34,7 +34,7 @@ export function QuizExitConfirmModal({ visible, onCancel, onConfirm }: Props) {
 
 const styles = StyleSheet.create({
   exitOverlay: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: colors.modalOverlay, padding: spacing.page },
-  exitDialog: { width: "100%", maxWidth: 360, gap: spacing.xlPlus, borderRadius: radius.card, backgroundColor: colors.surface, padding: spacing.card, ...shadow.soft },
+  exitDialog: { width: "100%", maxWidth: size.modalMaxWidth, gap: spacing.xlPlus, borderRadius: radius.card, backgroundColor: colors.surface, padding: spacing.card, ...shadow.soft },
   exitTitle: { color: colors.textStrong, fontSize: typography.title, fontWeight: typography.weightSemibold, textAlign: "center" },
   exitCopy: { color: colors.textSoft, fontSize: typography.body, fontWeight: typography.weightRegular, lineHeight: typography.screenTitle, textAlign: "center" },
   exitActions: { flexDirection: "row", gap: spacing.lg },

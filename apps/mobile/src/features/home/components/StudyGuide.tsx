@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
   studyGuide: { gap: spacing.lg, marginHorizontal: spacing.page, borderRadius: radius.xl, borderWidth: spacing.hairline, borderColor: colors.borderSoft, backgroundColor: colors.surface, padding: spacing.page },
   guideTitle: { color: colors.mutedSlate, fontSize: typography.bodySmall, fontWeight: typography.weightBold, textTransform: "uppercase" },
   guideGrid: { flexDirection: "row", flexWrap: "wrap", columnGap: spacing.xlPlus, rowGap: spacing.lg },
-  guideItem: { width: "47%", minWidth: 260, flexGrow: 1, flexDirection: "row", alignItems: "flex-start", gap: spacing.smd },
+  guideItem: { width: "47%", minWidth: size.studyGuideColumnMinWidth, flexGrow: 1, flexDirection: "row", alignItems: "flex-start", gap: spacing.smd },
   guideBullet: { width: size.iconMedium, alignItems: "center", paddingTop: spacing.xxs },
   guideText: { flex: 1, color: colors.mutedSlate, fontSize: typography.bodySmall, lineHeight: typography.bodyLarge, fontWeight: typography.weightSemibold }
 });

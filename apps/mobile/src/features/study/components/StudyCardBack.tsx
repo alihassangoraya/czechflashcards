@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: spacing.sm
   },
-  answer: { gap: 7, marginTop: 12 },
+  answer: { gap: spacing.mdPlus, marginTop: spacing.xl },
   hint: {
     color: colors.textMuted,
     fontSize: typography.cardHint,

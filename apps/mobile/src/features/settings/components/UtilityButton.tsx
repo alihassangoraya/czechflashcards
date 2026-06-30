@@ -25,7 +25,7 @@ export function UtilityButton({ icon, title, detail, onPress }: Props) {
 }
 
 const styles = StyleSheet.create({
-  utilityButton: { width: "48%", minWidth: 132, flexGrow: 1, minHeight: size.reviewButton, flexDirection: "row", alignItems: "center", gap: spacing.smd, borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surface, paddingHorizontal: spacing.lg, paddingVertical: spacing.md },
+  utilityButton: { width: "48%", minWidth: size.settingsUtilityMinWidth, flexGrow: 1, minHeight: size.reviewButton, flexDirection: "row", alignItems: "center", gap: spacing.smd, borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surface, paddingHorizontal: spacing.lg, paddingVertical: spacing.md },
   utilityIcon: { width: size.cardAction, height: size.cardAction, alignItems: "center", justifyContent: "center", borderRadius: radius.sm, backgroundColor: colors.primarySoft },
   utilityCopy: { flex: 1, minWidth: 0, gap: spacing.xxs },
   utilityTitle: { color: colors.textStrong, fontSize: typography.bodySmall, fontWeight: typography.weightSemibold },

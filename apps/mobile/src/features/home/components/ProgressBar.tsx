@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import { colors, radius, spacing } from "../../../theme/design";
+import { colors, radius, size, spacing } from "../../../theme/design";
 
 export function ProgressBar({ value, color, compact = false }: { value: number; color: string; compact?: boolean }) {
   return (
@@ -12,6 +12,6 @@ export function ProgressBar({ value, color, compact = false }: { value: number; 
 
 const styles = StyleSheet.create({
   progressTrack: { height: spacing.lg, overflow: "hidden", borderRadius: spacing.sm, backgroundColor: colors.progressTrack },
-  progressCompact: { height: 6 },
+  progressCompact: { height: size.progressCompactHeight },
   progressFill: { height: "100%", borderRadius: radius.xs }
 });

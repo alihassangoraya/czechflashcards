@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     fontWeight: typography.weightSemibold,
     textTransform: "uppercase"
   },
-  exampleBlock: { gap: 5, marginTop: 5 },
+  exampleBlock: { gap: spacing.smd, marginTop: spacing.smd },
   exampleSpeech: {
     flexDirection: "row",
     alignItems: "center",

@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 import type { ReviewGrade } from "@czech-flashcards/shared";
 import { useI18n } from "../../../i18n/I18nProvider";
-import { colors } from "../../../theme/design";
+import { colors, spacing } from "../../../theme/design";
 import { ReviewButton } from "./ReviewButton";
 
 type Props = {
@@ -25,7 +25,7 @@ export function ReviewButtons({ grading, reviewInterval, onGrade }: Props) {
 }
 
 const styles = StyleSheet.create({
-  reviewRow: { flexDirection: "row", gap: 6 },
+  reviewRow: { flexDirection: "row", gap: spacing.md },
   reviewAgain: { backgroundColor: colors.danger },
   reviewHard: { backgroundColor: colors.warning },
   reviewGood: { backgroundColor: colors.primary },

@@ -42,11 +42,11 @@ export function HomeHero({ activeDeckLabel, examLevel, dueCount, accountEmail, w
       </View>
       <View style={styles.heroActions}>
         <Pressable style={styles.reviewAction} onPress={onStartStudy} accessibilityRole="button" accessibilityLabel={dueCount > 0 ? t("common.reviewDue", { count: dueCount }) : t("common.startReview")}>
-          <MaterialIcons name="play-arrow" size={20} color={colors.charcoalText} />
+          <MaterialIcons name="play-arrow" size={size.icon} color={colors.charcoalText} />
           <Text style={styles.reviewActionText}>{dueCount > 0 ? t("common.reviewDue", { count: dueCount }) : t("common.startReview")}</Text>
         </Pressable>
         <Pressable style={styles.quizAction} onPress={onStartQuiz} accessibilityRole="button" accessibilityLabel={t("home.startQuiz")}>
-          <MaterialIcons name="psychology" size={19} color={colors.onPrimary} />
+          <MaterialIcons name="psychology" size={size.iconSmall} color={colors.onPrimary} />
           <Text style={styles.quizActionText}>{t("common.quiz")}</Text>
         </Pressable>
       </View>
@@ -62,13 +62,13 @@ const styles = StyleSheet.create({
   heroTop: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   levelPill: { overflow: "hidden", borderRadius: radius.md, backgroundColor: colors.heroPill, color: colors.heroText, paddingHorizontal: spacing.md, paddingVertical: spacing.xxs, fontSize: typography.caption, fontWeight: typography.weightSemibold },
   heroIconGroup: { flexDirection: "row", alignItems: "center", gap: spacing.xs },
-  heroCopy: { gap: 2 },
+  heroCopy: { gap: spacing.xxs },
   heroEyebrow: { color: colors.heroTextMuted, fontSize: typography.label, fontWeight: typography.weightMedium },
   heroTitle: { color: colors.heroText, fontSize: typography.display, lineHeight: typography.heroLine, fontWeight: typography.weightBold },
   heroSubtitle: { color: colors.heroTextSecondary, fontSize: typography.body, fontWeight: typography.weightRegular },
-  heroActions: { flexDirection: "row", gap: 8 },
-  reviewAction: { flex: 1, minHeight: 40, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: spacing.md, borderRadius: radius.lg, backgroundColor: colors.surface, paddingHorizontal: spacing.lgPlus },
+  heroActions: { flexDirection: "row", gap: spacing.lg },
+  reviewAction: { flex: 1, minHeight: size.actionMinHeight, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: spacing.md, borderRadius: radius.lg, backgroundColor: colors.surface, paddingHorizontal: spacing.lgPlus },
   reviewActionText: { color: colors.text, fontSize: typography.body, fontWeight: typography.weightSemibold },
-  quizAction: { minWidth: 80, minHeight: 40, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: spacing.smd, borderRadius: radius.lg, borderWidth: spacing.hairline, borderColor: colors.heroOutline, backgroundColor: colors.heroControl, paddingHorizontal: spacing.lgPlus },
+  quizAction: { minWidth: size.quizOptionHeight, minHeight: size.actionMinHeight, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: spacing.smd, borderRadius: radius.lg, borderWidth: spacing.hairline, borderColor: colors.heroOutline, backgroundColor: colors.heroControl, paddingHorizontal: spacing.lgPlus },
   quizActionText: { color: colors.onPrimary, fontSize: typography.body, fontWeight: typography.weightSemibold }
 });

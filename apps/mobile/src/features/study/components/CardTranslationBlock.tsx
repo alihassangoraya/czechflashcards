@@ -30,14 +30,14 @@ export function CardTranslationBlock({ card, secondaryMeaning, meaningLanguage }
 }
 
 const styles = StyleSheet.create({
-  answer: { gap: 7, marginTop: 12 },
+  answer: { gap: spacing.mdPlus, marginTop: spacing.xl },
   contentLabel: {
     color: colors.action,
     fontSize: typography.caption,
     fontWeight: typography.weightSemibold,
     textTransform: "uppercase"
   },
-  meaningRow: { flexDirection: "row", alignItems: "flex-start", gap: 12 },
+  meaningRow: { flexDirection: "row", alignItems: "flex-start", gap: spacing.xl },
   meaning: {
     flex: 1,
     flexShrink: 1,
