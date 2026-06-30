@@ -5,7 +5,7 @@ import {
   type RelearningEntry
 } from "../features/study";
 import { useI18n } from "../i18n/I18nProvider";
-import { buildShuffledDueQueue } from "./studyQueue/dueShuffleQueue";
+import { buildDueShuffleNotice } from "./studyQueue/dueShuffleNotice";
 import { recordRelearningReview, restoreRelearningQueue as restoreRelearningEntries, snapshotRelearningQueue as snapshotRelearningEntries } from "./studyQueue/relearningQueue";
 import { selectNextStudyCard } from "./studyQueue/studyQueueSelection";
 import { RECENT_CARD_LIMIT } from "./studyQueue/studyQueueConstants";
@@ -58,10 +58,10 @@ export function useStudyQueue(deck: Card[], states: Record<string, ReviewState>)
   }
 
   function shuffleDueCards(onNotice: (message: string) => void) {
-    const due = deck.filter((card) => (states[card.id]?.dueAt || 0) <= Date.now());
-    shuffledDueQueue.current = buildShuffledDueQueue(due, current);
+    const result = buildDueShuffleNotice({ deck, states, current, translate: t });
+    shuffledDueQueue.current = result.queue;
     forcedCardId.current = null;
-    onNotice(due.length ? t("settings.notice.shuffledDue", { count: due.length }) : t("settings.notice.noDueToShuffle"));
+    onNotice(result.notice);
   }
 
   function clearShuffledDueQueue() {
@@ -85,3 +85,5 @@ export function useStudyQueue(deck: Card[], states: Record<string, ReviewState>)
     clearShuffledDueQueue
   };
 }
+
+export type StudyQueue = ReturnType<typeof useStudyQueue>;

@@ -1,6 +1,6 @@
 import { applyReviewGrade, type Card, type ReviewGrade } from "@czech-flashcards/shared";
 import { getReviewState, saveReviewResult, undoReviewResult, type AppDatabase } from "../../database";
-import type { UndoReview } from "../appTypes";
+import type { UndoReview } from "./reviewTypes";
 
 type SaveReviewInput = {
   db: AppDatabase;
