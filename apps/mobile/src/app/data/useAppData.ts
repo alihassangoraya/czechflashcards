@@ -1,13 +1,13 @@
 import { useEffect } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { AppDatabase, StudySettings } from "../database";
+import type { AppDatabase, StudySettings } from "../../database";
 import { useAppDataAuthSession } from "./appDataAuthSession";
 import { bootAppData } from "./appDataBoot";
 import { refreshAppData } from "./appDataRefresh";
 import { persistAppSettings } from "./appDataSettings";
 import { syncAppDataNow } from "./appDataSyncNow";
 import { useAppDataState } from "./appDataState";
-import { useAuthActions } from "./useAuthActions";
+import { useAuthActions } from "../useAuthActions";
 
 export function useAppData(supabase: SupabaseClient | null) {
   const state = useAppDataState();

@@ -1,5 +1,5 @@
 import type { StudySettings } from "../../database";
-import type { AppData } from "../useAppData";
+import type { AppData } from "../data/useAppData";
 import type { AppNavigation } from "../useAppNavigation";
 import type { CardManagement } from "../useCardManagement";
 import type { SettingsTools } from "../useSettingsTools";

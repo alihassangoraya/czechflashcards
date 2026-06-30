@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { AppDatabase } from "../database";
+import type { AppDatabase } from "../../database";
 import type { AppDataState } from "./appDataState";
 
 export function useAppDataAuthSession(

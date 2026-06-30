@@ -8,7 +8,7 @@ import {
   openAppDatabase,
   seedCards,
   type AppDatabase
-} from "../database";
+} from "../../database";
 import { loadSeedCards } from "./appSeed";
 
 export type AppDataSnapshot = {

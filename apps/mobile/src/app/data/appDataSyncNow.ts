@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { AppDatabase } from "../database";
+import type { AppDatabase } from "../../database";
 import { refreshAppData } from "./appDataRefresh";
 import { syncAppDatabase } from "./appDataSync";
 import type { AppDataState } from "./appDataState";

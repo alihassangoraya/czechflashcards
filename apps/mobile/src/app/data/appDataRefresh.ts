@@ -1,4 +1,4 @@
-import type { AppDatabase } from "../database";
+import type { AppDatabase } from "../../database";
 import { loadAppDataSnapshot } from "./appDataSnapshot";
 import type { AppDataState } from "./appDataState";
 

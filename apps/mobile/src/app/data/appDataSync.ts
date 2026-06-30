@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { loadSettings, type AppDatabase, type StudySettings } from "../database";
-import { flushSyncQueue, restoreSyncSnapshot, type SyncStatus } from "../sync";
+import { loadSettings, type AppDatabase, type StudySettings } from "../../database";
+import { flushSyncQueue, restoreSyncSnapshot, type SyncStatus } from "../../sync";
 
 export type AppSyncResult = {
   status: SyncStatus;

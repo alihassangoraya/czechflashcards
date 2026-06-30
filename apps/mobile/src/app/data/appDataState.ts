@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { Card, ReviewState } from "@czech-flashcards/shared";
-import type { AppDatabase, StudySettings } from "../database";
-import type { SyncStatus } from "../sync";
+import type { AppDatabase, StudySettings } from "../../database";
+import type { SyncStatus } from "../../sync";
 import type { AppDataSnapshot } from "./appDataSnapshot";
 
 export function useAppDataState() {

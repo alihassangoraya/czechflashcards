@@ -2,7 +2,7 @@ import { normalizeCards, parseCsvCards } from "@czech-flashcards/shared";
 import { addCardToCustomDeck, importCards, restoreBackup, seedCards } from "../../database";
 import { useI18n } from "../../i18n/I18nProvider";
 import { pickTextFile } from "../../services/fileTransfer";
-import { loadSeedCards } from "../appSeed";
+import { loadSeedCards } from "../data/appSeed";
 import type { SettingsImportContext } from "./settingsToolTypes";
 
 export function useSettingsImportActions({ db, settings, setSettingsState, setSettingsNotice, refresh }: SettingsImportContext) {
