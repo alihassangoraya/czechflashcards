@@ -1,17 +1,14 @@
 import React from "react";
 import { ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
 import type { Card, ReviewState } from "@czech-flashcards/shared";
-import type { MaterialIconName } from "../../../components/MaterialIcons";
 import type { StudySettings } from "../../../database";
 import { useI18n } from "../../../i18n/I18nProvider";
-import type { TranslationKey } from "../../../i18n/translations";
-import { colors, spacing, typography } from "../../../theme/design";
+import { spacing, typography } from "../../../theme/design";
 import { DailyGoalCard } from "../components/DailyGoalCard";
 import { DeckGrid } from "../components/DeckGrid";
 import { HomeHero } from "../components/HomeHero";
 import { StudyGuide } from "../components/StudyGuide";
-import { baseDecks, countForDeck, type Category } from "../homeContent";
-import { deckLabel } from "../../settings";
+import { buildHomeScreenModel } from "../homeScreenModel";
 
 type Props = {
   deck: Card[];
@@ -53,25 +50,16 @@ export function HomeScreen({
   const { t } = useI18n();
   const { width } = useWindowDimensions();
   const isWideLayout = width >= 768;
-  const now = Date.now();
-  const dueCount = deck.filter((card) => (states[card.id]?.dueAt || 0) <= now).length;
-  const [reviewedToday, goalToday] = dailyProgress.split(" / ").map((value) => Number.parseInt(value, 10) || 0);
-  const dailyGoal = goalToday || settings.dailyGoal;
-  const dailyRatio = dailyGoal ? Math.min(1, reviewedToday / dailyGoal) : 0;
-  const visibleCards = allCards.filter((card) => settings.examLevel === "b1" || card.level === "a2" || card.tags.includes("custom") || String(card.id).startsWith("import-"));
-  const categories: Category[] = [
-    ...baseDecks.map((category) => ({ ...category, count: countForDeck(category.id, visibleCards, savedCount, customCount) })),
-    ...settings.customDecks.map((customDeck, index) => ({
-      id: customDeck.id,
-      title: customDeck.name,
-      icon: "folder" as MaterialIconName,
-      color: index % 2 ? colors.bohemianBlue : colors.softMint,
-      count: visibleCards.filter((card) => card.tags.includes(customDeck.id)).length
-    }))
-  ];
-  const activeDeckLabel = settings.customDecks.some((deck) => deck.id === settings.deckFilter)
-    ? deckLabel(settings.deckFilter, settings.customDecks)
-    : t(`deck.${settings.deckFilter}` as TranslationKey);
+  const { activeDeckLabel, categories, dailyGoalProgress, dueCount } = buildHomeScreenModel({
+    deck,
+    allCards,
+    states,
+    settings,
+    savedCount,
+    customCount,
+    dailyProgress,
+    translate: t
+  });
 
   return (
     <View style={styles.screen}>
@@ -89,7 +77,7 @@ export function HomeScreen({
         onSettings={onSettings}
         onAccount={onAccount}
       />
-      <DailyGoalCard reviewedToday={reviewedToday} dailyGoal={dailyGoal} ratio={dailyRatio} />
+      <DailyGoalCard reviewedToday={dailyGoalProgress.reviewedToday} dailyGoal={dailyGoalProgress.dailyGoal} ratio={dailyGoalProgress.dailyRatio} />
       <DeckGrid categories={categories} selectedDeckId={settings.deckFilter} currentDeckCount={deck.length} onSelectCategory={onSelectCategory} />
       <StudyGuide />
     </ScrollView>
