@@ -19,7 +19,7 @@ export const ignoredMobileDirectories = new Set(["assets", "dist", "node_modules
 
 export const canonicalTypeFiles = new Map([
   ["AppSupabaseClient", "services/sync/supabaseClient.ts"],
-  ["AuthMode", "services/sync/syncTypes.ts"],
+  ["AuthMode", "services/sync/syncTypes/authMode.ts"],
   ["CardOverrides", "services/storage/storageTypes/collectionTypes.ts"],
   ["CustomCards", "services/storage/storageTypes/collectionTypes.ts"],
   ["DailyProgressLog", "services/storage/storageTypes/collectionTypes.ts"],
