@@ -1,19 +1,11 @@
 import { useState } from "react";
 import type { Card } from "@czech-flashcards/shared";
-import { addCardToCustomDeck, removeCardFromCustomDeck, type AppDatabase } from "../../database";
 import { useI18n } from "../../i18n/I18nProvider";
-import type { Panel } from "../appTypes";
-import { addDeckMembership, removeDeckMembership, type DeckMemberships } from "./deckMembershipState";
+import { addDeckMembership, removeDeckMembership } from "./deckMembershipState";
+import { persistDeckMembershipAdd, persistDeckMembershipRemoval } from "./deckMembershipPersistence";
+import type { DeckMembershipActionProps } from "./deckMembershipTypes";
 
-type Props = {
-  db: AppDatabase | null;
-  cards: Card[];
-  setDeckMemberships: (deckMemberships: DeckMemberships | ((previous: DeckMemberships) => DeckMemberships)) => void;
-  setPanel: (panel: Panel | null) => void;
-  showToast: (message: string) => void;
-};
-
-export function useDeckMembershipActions({ db, cards, setDeckMemberships, setPanel, showToast }: Props) {
+export function useDeckMembershipActions({ db, cards, setDeckMemberships, setPanel, showToast }: DeckMembershipActionProps) {
   const { t } = useI18n();
   const [deckManagementCard, setDeckManagementCardState] = useState<Card | null>(null);
 
@@ -26,7 +18,7 @@ export function useDeckMembershipActions({ db, cards, setDeckMemberships, setPan
     if (!db) return;
     const card = cards.find((item) => item.id === cardId);
     setDeckMemberships((previous) => addDeckMembership(previous, deckId, cardId));
-    await addCardToCustomDeck(db, deckId, cardId);
+    await persistDeckMembershipAdd({ db, deckId, cardId });
     showToast(t("toast.deckAdded", { word: card?.cz || t("toast.cardFallback") }));
   }
 
@@ -34,7 +26,7 @@ export function useDeckMembershipActions({ db, cards, setDeckMemberships, setPan
     if (!db) return;
     const card = cards.find((item) => item.id === cardId);
     setDeckMemberships((previous) => removeDeckMembership(previous, deckId, cardId));
-    await removeCardFromCustomDeck(db, deckId, cardId);
+    await persistDeckMembershipRemoval({ db, deckId, cardId });
     showToast(t("toast.deckRemoved", { word: card?.cz || t("toast.cardFallback") }));
   }
 
