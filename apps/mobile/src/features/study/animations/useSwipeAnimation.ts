@@ -1,11 +1,9 @@
 import { useMemo, useRef } from "react";
 import { Animated } from "react-native";
 import type { Card, ReviewGrade } from "@czech-flashcards/shared";
-import type { SwipeDirection } from "./animationTypes";
-import { animateSwipeAway } from "./swipeAnimations";
 import { swipeConfig } from "./swipeConfig";
-import { gradeFromSwipe } from "./swipeMath";
 import { createSwipePanResponder } from "./swipePanResponder";
+import { useSwipeCompletion } from "./useSwipeCompletion";
 import { useSwipeAnimationState } from "./useSwipeAnimationState";
 
 type Params = {
@@ -20,15 +18,15 @@ export function useSwipeAnimation({ current, grading, onSwipeGrade }: Params) {
 
   const cardRotation = dragX.interpolate({ inputRange: [-swipeConfig.rotationRange, 0, swipeConfig.rotationRange], outputRange: ["-4deg", "0deg", "4deg"], extrapolate: "clamp" });
 
-  function completeSwipe(direction: SwipeDirection) {
-    if (grading || swipeState.swipeCompleting.current) return;
-    swipeState.startSwipeCompletion(direction);
-    animateSwipeAway(dragX, direction, (finished) => {
-      swipeState.finishSwipeCompletion();
-      if (finished) onSwipeGrade(gradeFromSwipe(direction));
-    });
-    setTimeout(swipeState.releaseConsumedSwipe, swipeConfig.releaseDelay);
-  }
+  const completeSwipe = useSwipeCompletion({
+    dragX,
+    grading,
+    onSwipeGrade,
+    finishSwipeCompletion: swipeState.finishSwipeCompletion,
+    releaseConsumedSwipe: swipeState.releaseConsumedSwipe,
+    startSwipeCompletion: swipeState.startSwipeCompletion,
+    swipeCompleting: swipeState.swipeCompleting
+  });
 
   const panResponder = useMemo(() => createSwipePanResponder({
     completeSwipe,
@@ -37,7 +35,7 @@ export function useSwipeAnimation({ current, grading, onSwipeGrade }: Params) {
     resetCancelledSwipe: swipeState.resetCancelledSwipe,
     setSwipeDirection: swipeState.setSwipeDirection,
     swipeCompleting: swipeState.swipeCompleting
-  }), [current, grading]);
+  }), [completeSwipe, dragX, grading, swipeState.resetCancelledSwipe, swipeState.setSwipeDirection, swipeState.swipeCompleting]);
 
   return {
     cardRotation,
