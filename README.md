@@ -240,10 +240,13 @@ this repository. Read it before changing product behavior or deployment files.
 | `sw.js`, `manifest.webmanifest` | Web PWA and offline cache behavior. |
 | `packages/shared/src` | Shared types, review scheduling, filtering, and CSV logic. |
 | `packages/shared/data/vocabulary.seed.json` | Generated mobile seed. Never hand-edit it. |
-| `apps/mobile/App.tsx` | Shared React Native UI and study flow for iOS, Android, and web. |
-| `apps/mobile/src/database.ts` | AsyncStorage-backed offline cards, corrections, review state, and sync queue. |
-| `apps/mobile/src/notifications.ts` | Native notification placeholder for the bare React Native layer. |
-| `apps/mobile/src/sync.ts` | Optional Supabase sync queue delivery. |
+| `apps/mobile/App.tsx` | Root React Native app entry; delegates to focused app controllers and feature screens. |
+| `apps/mobile/src/app` | App composition, routing, modals, data loading, study sessions, and shell handlers. |
+| `apps/mobile/src/features` | Feature-owned screens, components, hooks, and UI models. |
+| `apps/mobile/src/services/storage` | Offline card, review, settings, backup, and sync-queue repositories. |
+| `apps/mobile/src/services/notifications` | Platform notification scheduling boundary. |
+| `apps/mobile/src/services/sync` | Optional Supabase auth, friendship, snapshot, and queue sync services. |
+| `apps/mobile/src/theme` | Central design tokens used by all mobile/web UI components. |
 | `supabase/migrations` | Auth, sync, streak, notification, and friendship database foundation. |
 | `scripts/export-shared-seed.js` | Generates the shared mobile vocabulary seed. |
 | `scripts/import-google-vocabulary.mjs` | Extracts the Google-project Kotlin B1 seed into enriched JSON. |
@@ -295,8 +298,8 @@ For a learner-facing feature, make this sequence the default:
 
 1. Inspect the existing web and mobile implementations before choosing an API or
    UI pattern.
-2. Implement the web behavior in the static app.
-3. Implement the equivalent mobile behavior in `apps/mobile` and persist it in
+2. Implement the behavior in `apps/mobile` for iOS, Android, and web.
+3. Persist it in
    the shared app database when it affects study data, settings, or offline actions.
 4. Put shared review/data behavior in `packages/shared` rather than duplicating
    scheduling logic.
@@ -308,10 +311,8 @@ For a learner-facing feature, make this sequence the default:
 
 ### Offline and Sync Rules
 
-- The web app stores progress, custom words, and card corrections in browser
-  local storage. It also stores the learner's saved-word list. Progress exports
-  must include all of them.
-- The mobile app uses the app database as the source of truth while offline or signed out.
+- The shared app database stores progress, custom words, corrections, saved
+  words, settings, and sync queue entries while offline or signed out.
 - Mobile review, custom-card, correction, and settings changes must be queued
   for future sync rather than discarded when Supabase is unavailable.
 - Supabase is an optional authenticated sync layer, not a prerequisite for
