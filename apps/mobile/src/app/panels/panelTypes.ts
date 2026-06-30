@@ -1,12 +1,10 @@
 import type { Card } from "@czech-flashcards/shared";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { StudySettings } from "../../database";
-import type { AccountPanel, AccountStudySummary } from "../../features/account";
+import type { AccountPanelProps, AccountStudySummary } from "../../features/account";
 import type { SyncStatus } from "../../sync";
 import type { AddWordValues, CorrectionValues } from "../appShellTypes";
 import type { Panel } from "../appTypes";
-
-export type AccountPanelProps = React.ComponentProps<typeof AccountPanel>;
 
 export type AppPanelProps = {
   panel: Panel | null;
