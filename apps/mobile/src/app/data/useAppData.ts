@@ -1,37 +1,21 @@
 import { useEffect } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { AppDatabase, StudySettings } from "../../database";
 import { useAppDataAuthSession } from "./appDataAuthSession";
 import { bootAppData } from "./appDataBoot";
-import { refreshAppData } from "./appDataRefresh";
-import { persistAppSettings } from "./appDataSettings";
-import { syncAppDataNow } from "./appDataSyncNow";
+import { useAppDataActions } from "./useAppDataActions";
 import { useAppDataState } from "./appDataState";
 import { useAuthActions } from "./useAuthActions";
 
 export function useAppData(supabase: SupabaseClient | null) {
   const state = useAppDataState();
-  const { db, settings } = state;
-
-  async function refresh(database = db, dailyGoal = settings?.dailyGoal || 30): Promise<void> {
-    await refreshAppData(state, database, dailyGoal);
-  }
-
-  async function syncNow(database: AppDatabase | null = db): Promise<void> {
-    await syncAppDataNow(state, database, supabase, settings?.dailyGoal || 30);
-  }
-
-  async function persistSettings(next: StudySettings): Promise<void> {
-    await persistAppSettings(state, db, next);
-  }
-
+  const { persistSettings, refresh, syncNow } = useAppDataActions({ state, supabase });
   const auth = useAuthActions(supabase, async () => syncNow());
 
   useEffect(() => {
     void bootAppData(state, supabase);
   }, []);
 
-  useAppDataAuthSession(state, supabase, db, syncNow);
+  useAppDataAuthSession(state, supabase, state.db, syncNow);
 
   return {
     db: state.db,
