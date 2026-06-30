@@ -2,7 +2,7 @@ import React from "react";
 import { ScreenProgress } from "../../../components/ScreenProgress";
 import { useI18n } from "../../../i18n/I18nProvider";
 
-type Props = {
+export type StudyProgressProps = {
   sessionReviews: number;
   sessionTarget: number;
   reviewedToday: number;
@@ -10,7 +10,7 @@ type Props = {
   sessionProgress: number;
 };
 
-export function StudyProgress({ sessionReviews, sessionTarget, reviewedToday, dailyGoal, sessionProgress }: Props) {
+export function StudyProgress({ sessionReviews, sessionTarget, reviewedToday, dailyGoal, sessionProgress }: StudyProgressProps) {
   const { t } = useI18n();
 
   return (

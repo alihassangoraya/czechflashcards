@@ -2,8 +2,14 @@ import type { Card, ReviewGrade } from "@czech-flashcards/shared";
 import type { Animated, GestureResponderHandlers } from "react-native";
 import type { StudySettings } from "../../database";
 import type { SwipeDirection } from "./animations/animationTypes";
+import type { StudyProgressProps } from "./components/StudyProgress";
 
-export type StudyScreenProps = {
+type StudyHeaderProps = {
+  onBack: () => void;
+  onOpenGrammar: () => void;
+};
+
+export type StudyContentProps = {
   current: Card | null;
   settings: StudySettings;
   savedCardIds: Set<string>;
@@ -12,18 +18,11 @@ export type StudyScreenProps = {
   grading: boolean;
   swipeDirection: SwipeDirection | null;
   lastReviewCard: Card | null;
-  sessionReviews: number;
-  sessionTarget: number;
-  reviewedToday: number;
-  dailyGoal: number;
-  sessionProgress: number;
   dragX: Animated.Value;
   flipProgress: Animated.Value;
   cardRotation: Animated.AnimatedInterpolation<string | number>;
   panHandlers: GestureResponderHandlers;
   reviewInterval: (grade: ReviewGrade) => string;
-  onBack: () => void;
-  onOpenGrammar: () => void;
   onFlipCard: () => void;
   onToggleSaved: (cardId: string) => void;
   onManageDecks: (card: Card) => void;
@@ -33,13 +32,4 @@ export type StudyScreenProps = {
   onGrade: (grade: ReviewGrade) => void;
 };
 
-type StudyHeaderProgressKey =
-  | "dailyGoal"
-  | "onBack"
-  | "onOpenGrammar"
-  | "reviewedToday"
-  | "sessionProgress"
-  | "sessionReviews"
-  | "sessionTarget";
-
-export type StudyContentProps = Omit<StudyScreenProps, StudyHeaderProgressKey>;
+export type StudyScreenProps = StudyHeaderProps & StudyProgressProps & StudyContentProps;
