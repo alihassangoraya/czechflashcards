@@ -1,7 +1,7 @@
 import React from "react";
 import type { StudySettings } from "../../../database";
 import { useI18n } from "../../../i18n/I18nProvider";
-import { languageOptions, type LanguageCode } from "../../../i18n/translations";
+import { AppLanguageSettingGroup } from "./AppLanguageSettingGroup";
 import { ChoiceSegment } from "./ChoiceSegment";
 import { DailyTargetStepper } from "./DailyTargetStepper";
 import { DeckPicker } from "./DeckPicker";
@@ -18,19 +18,10 @@ type Props = {
 
 export function StudyPlanSection({ settings, activeDeckLabel, onUpdate, onExamLevelChange }: Props) {
   const { t } = useI18n();
-  const languageLabels: Record<LanguageCode, string> = {
-    en: t("language.english"),
-    cs: t("language.czech"),
-    hi: t("language.hindi"),
-    ur: t("language.urdu")
-  };
 
   return (
     <SettingsSection icon="school" title={t("settings.studyPlan")} description={t("settings.studyPlanDescription")}>
-      <SettingGroup>
-        <PreferenceRow icon="translate" title={t("settings.appLanguage")} value={languageLabels[settings.appLanguage]} />
-        <ChoiceSegment value={settings.appLanguage} options={languageOptions} labels={languageLabels} onChange={(appLanguage) => onUpdate({ appLanguage })} />
-      </SettingGroup>
+      <AppLanguageSettingGroup appLanguage={settings.appLanguage} onChange={(appLanguage) => onUpdate({ appLanguage })} />
 
       <SettingGroup>
         <PreferenceRow icon="flag" title={t("settings.examLevel")} value={settings.examLevel.toUpperCase()} />
