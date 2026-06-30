@@ -1,12 +1,12 @@
 import React from "react";
-import { ScrollView, StyleSheet } from "react-native";
+import { ScrollView } from "react-native";
 import { ScreenHeader } from "../../../components/ScreenHeader";
 import { useI18n } from "../../../i18n/I18nProvider";
-import { spacing } from "../../../theme/design";
 import { AuthPanel } from "../components/AuthPanel";
 import type { AuthScreenProps } from "../authScreenTypes";
 import { useAccountCredentials } from "../hooks/useAccountCredentials";
 import { useAuthSubmit } from "../hooks/useAuthSubmit";
+import { authScreenStyles as styles } from "./authScreenStyles";
 
 export function AuthScreen({ configured, initialMode, busy, onBack, onSwitchMode, onAuthenticate }: AuthScreenProps) {
   const { t } = useI18n();
@@ -37,7 +37,3 @@ export function AuthScreen({ configured, initialMode, busy, onBack, onSwitchMode
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: { flexGrow: 1, paddingHorizontal: spacing.page, paddingBottom: spacing.screenBottom }
-});

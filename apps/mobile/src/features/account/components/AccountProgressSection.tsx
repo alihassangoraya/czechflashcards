@@ -1,8 +1,9 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { useI18n } from "../../../i18n/I18nProvider";
-import { colors, spacing, typography } from "../../../theme/design";
+import { colors } from "../../../theme/design";
 import type { AccountStudySummary } from "../accountTypes";
+import { accountProgressStyles as styles } from "./accountProgressStyles";
 import { AccountStat } from "./AccountStat";
 
 type Props = {
@@ -31,12 +32,3 @@ export function AccountProgressSection({ summary }: Props) {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  progressHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: spacing.lg },
-  sectionTitle: { color: colors.textStrong, fontSize: typography.bodyLarge, fontWeight: typography.weightSemibold },
-  sectionMeta: { color: colors.textMuted, fontSize: typography.bodySmall, fontWeight: typography.weightMedium },
-  progressTrack: { height: spacing.lg, overflow: "hidden", borderRadius: spacing.sm, backgroundColor: colors.progressTrack },
-  progressFill: { height: "100%", borderRadius: spacing.sm, backgroundColor: colors.success },
-  statsRow: { flexDirection: "row", justifyContent: "space-between", gap: spacing.md }
-});

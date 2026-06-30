@@ -39,5 +39,3 @@ export function useQuizAnswerState(deck: Card[], round: number) {
     showExitConfirm
   };
 }
-
-export type QuizAnswerState = ReturnType<typeof useQuizAnswerState>;

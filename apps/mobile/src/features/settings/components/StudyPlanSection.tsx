@@ -1,5 +1,4 @@
 import React from "react";
-import type { StudySettings } from "../../../database";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { AppLanguageSettingGroup } from "./AppLanguageSettingGroup";
 import { ChoiceSegment } from "./ChoiceSegment";
@@ -8,15 +7,9 @@ import { DeckPicker } from "./DeckPicker";
 import { PreferenceRow } from "./PreferenceRow";
 import { SettingGroup } from "./SettingGroup";
 import { SettingsSection } from "./SettingsSection";
+import type { StudyPlanSectionProps } from "./studyPlanSectionTypes";
 
-type Props = {
-  settings: StudySettings;
-  activeDeckLabel: string;
-  onUpdate: (settings: Partial<StudySettings>) => void;
-  onExamLevelChange: (examLevel: StudySettings["examLevel"]) => void;
-};
-
-export function StudyPlanSection({ settings, activeDeckLabel, onUpdate, onExamLevelChange }: Props) {
+export function StudyPlanSection({ settings, activeDeckLabel, onUpdate, onExamLevelChange }: StudyPlanSectionProps) {
   const { t } = useI18n();
 
   return (

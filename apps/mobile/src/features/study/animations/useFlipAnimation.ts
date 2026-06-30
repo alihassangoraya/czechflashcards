@@ -1,16 +1,9 @@
-import { useEffect, useRef, useState, type MutableRefObject } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Animated, Easing } from "react-native";
-import type { Card } from "@czech-flashcards/shared";
 import { motion } from "../../../theme/design";
+import type { FlipAnimationParams } from "./flipAnimationTypes";
 
-type Params = {
-  consumedSwipe: MutableRefObject<boolean>;
-  current: Card | null;
-  revealed: boolean;
-  onRevealChange: (revealed: boolean) => void;
-};
-
-export function useFlipAnimation({ consumedSwipe, current, revealed, onRevealChange }: Params) {
+export function useFlipAnimation({ consumedSwipe, current, revealed, onRevealChange }: FlipAnimationParams) {
   const flipProgress = useRef(new Animated.Value(0)).current;
   const [flipping, setFlipping] = useState(false);
 

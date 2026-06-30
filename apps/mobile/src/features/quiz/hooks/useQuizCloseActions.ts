@@ -1,4 +1,4 @@
-import type { QuizAnswerState } from "./useQuizAnswerState";
+import type { QuizAnswerState } from "./quizAnswerStateTypes";
 
 type Params = {
   hasProgress: boolean;

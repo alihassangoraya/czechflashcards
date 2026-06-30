@@ -9,7 +9,6 @@ import { useSwipeFlags } from "./useSwipeFlags";
 export function useSwipeAnimationState({ current, dragX }: SwipeAnimationStateParams) {
   const { clearSwipeCompleting, consumedSwipe, markSwipeCompleting, releaseConsumedSwipe, resetSwipeFlags, swipeCompleting } = useSwipeFlags();
   const { resetSwipeDirection, setSwipeDirection, swipeDirection } = useSwipeDirectionState();
-
   useResetSwipeOnCardChange({ current, dragX, resetFlags: resetSwipeFlags, resetSwipeDirection });
 
   const resetCancelledSwipe = useCallback(() => {
@@ -28,7 +27,6 @@ export function useSwipeAnimationState({ current, dragX }: SwipeAnimationStatePa
     setSwipeDirection(null);
     clearSwipeCompleting();
   }, [clearSwipeCompleting, dragX]);
-
   return {
     consumedSwipe,
     finishSwipeCompletion,

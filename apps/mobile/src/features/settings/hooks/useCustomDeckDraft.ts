@@ -1,7 +1,6 @@
 import { buildCreateDeckPatch, buildDeleteDeckPatch, buildRenameDeckPatch } from "../customDeckDraftModel";
 import type { CustomDeckDraftParams } from "./customDeckDraftTypes";
 import { useCustomDeckDraftState } from "./useCustomDeckDraftState";
-
 export function useCustomDeckDraft({ settings, update }: CustomDeckDraftParams) {
   const draft = useCustomDeckDraftState();
 
@@ -31,7 +30,6 @@ export function useCustomDeckDraft({ settings, update }: CustomDeckDraftParams) 
     if (draft.editingDeckId === deckId) draft.cancelEditingDeck();
     draft.setDeleteDeckId(null);
   }
-
   return {
     ...draft,
     createDeck,

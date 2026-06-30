@@ -2,7 +2,7 @@ import type { AppDatabase, StudySettings } from "../../database";
 import type { AppSupabaseClient } from "../../sync";
 import { refreshAppData } from "./appDataRefresh";
 import { persistAppSettings } from "./appDataSettings";
-import type { AppDataState } from "./appDataState";
+import type { AppDataState } from "./appDataStateTypes";
 import { syncAppDataNow } from "./appDataSyncNow";
 
 type Params = {

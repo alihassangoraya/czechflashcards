@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import type { AppDatabase } from "../../database";
 import type { AppSupabaseClient } from "../../sync";
-import type { AppDataState } from "./appDataState";
+import type { AppDataState } from "./appDataStateTypes";
 
 export function useAppDataAuthSession(
   state: AppDataState,

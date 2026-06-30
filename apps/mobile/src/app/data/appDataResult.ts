@@ -1,4 +1,4 @@
-import type { AppDataState } from "./appDataState";
+import type { AppDataState } from "./appDataStateTypes";
 import type { AppDataActions } from "./useAppDataActions";
 import type { AuthActions } from "./useAuthActions";
 

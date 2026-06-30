@@ -3,16 +3,9 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import MaterialIcons from "../../../components/MaterialIcons";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
-import type { Category } from "../homeContent";
+import type { DeckCategoryCardProps } from "./deckCategoryCardTypes";
 
-type Props = {
-  category: Category;
-  selected: boolean;
-  title: string;
-  onSelect: (categoryId: string) => void;
-};
-
-export function DeckCategoryCard({ category, selected, title, onSelect }: Props) {
+export function DeckCategoryCard({ category, selected, title, onSelect }: DeckCategoryCardProps) {
   const { t, textAlign } = useI18n();
 
   return (

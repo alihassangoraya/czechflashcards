@@ -1,39 +1,16 @@
 import React from "react";
 import { View } from "react-native";
-import type { CustomDeck } from "../../../database";
 import { useI18n } from "../../../i18n/I18nProvider";
+import { buildCustomDeckRowLabels } from "./customDeckRowLabels";
 import { CustomDeckRowActions } from "./CustomDeckRowActions";
 import { CustomDeckSelectArea } from "./CustomDeckSelectArea";
 import { customDeckRowStyles as styles } from "./customDeckRowStyles";
+import type { CustomDeckRowProps } from "./customDeckRowTypes";
 
-type Props = {
-  deck: CustomDeck;
-  count: number;
-  active: boolean;
-  editing: boolean;
-  deleting: boolean;
-  editingDeckName: string;
-  onSelectDeck: (deckId: string) => void;
-  onStartEditDeck: (deckId: string) => void;
-  onEditingDeckNameChange: (value: string) => void;
-  onCancelEditDeck: () => void;
-  onSaveEditDeck: () => void;
-  onRequestDeleteDeck: (deckId: string) => void;
-  onCancelDeleteDeck: () => void;
-  onConfirmDeleteDeck: (deckId: string) => void;
-};
-
-export function CustomDeckRow({ deck, count, active, editing, deleting, editingDeckName, onSelectDeck, onStartEditDeck, onEditingDeckNameChange, onCancelEditDeck, onSaveEditDeck, onRequestDeleteDeck, onCancelDeleteDeck, onConfirmDeleteDeck }: Props) {
+export function CustomDeckRow({ deck, count, active, editing, deleting, editingDeckName, onSelectDeck, onStartEditDeck, onEditingDeckNameChange, onCancelEditDeck, onSaveEditDeck, onRequestDeleteDeck, onCancelDeleteDeck, onConfirmDeleteDeck }: CustomDeckRowProps) {
   const { t } = useI18n();
   const countLabel = `${count} ${count === 1 ? t("settings.wordSingular") : t("settings.wordPlural")}`;
-  const labels = {
-    cancelEdit: t("settings.cancelDeckEdit", { deck: deck.name }),
-    deleteDeck: t("settings.deleteDeck", { deck: deck.name }),
-    deleteQuestion: t("settings.deleteQuestion"),
-    keepDeck: t("settings.keepDeck", { deck: deck.name }),
-    renameDeck: t("settings.renameDeck", { deck: deck.name }),
-    saveDeck: t("settings.saveDeck", { deck: deck.name })
-  };
+  const labels = buildCustomDeckRowLabels(t, deck);
 
   return (
     <View style={[styles.customDeckRow, active && styles.customDeckRowActive]}>

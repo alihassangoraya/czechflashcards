@@ -2,8 +2,7 @@ import { useState } from "react";
 import type { Card } from "@czech-flashcards/shared";
 import type { AppDatabase, DeckMemberships, ReviewStates, SavedCardIds, StudySettings } from "../../database";
 import type { SyncStatus } from "../../sync";
-import { applyAppDataSnapshot } from "./appDataSnapshotApply";
-import type { AppDataSnapshot } from "./appDataSnapshotTypes";
+import { useAppDataSnapshotApplier } from "./useAppDataSnapshotApplier";
 
 export function useAppDataState() {
   const [db, setDb] = useState<AppDatabase | null>(null);
@@ -16,9 +15,7 @@ export function useAppDataState() {
   const [syncStatus, setSyncStatus] = useState<SyncStatus>("not-configured");
   const [accountEmail, setAccountEmail] = useState<string | null>(null);
 
-  function applySnapshot(snapshot: AppDataSnapshot) {
-    applyAppDataSnapshot(snapshot, { setCards, setSavedCardIds, setDeckMemberships, setStates, setDailyProgress });
-  }
+  const applySnapshot = useAppDataSnapshotApplier({ setCards, setSavedCardIds, setDeckMemberships, setStates, setDailyProgress });
 
   return {
     db,
@@ -41,4 +38,3 @@ export function useAppDataState() {
     applySnapshot
   };
 }
-export type AppDataState = ReturnType<typeof useAppDataState>;

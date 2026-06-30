@@ -1,20 +1,10 @@
-import type { Card, ReviewGrade } from "@czech-flashcards/shared";
-import type { ReviewStates } from "../../database";
-import type { TranslationKey } from "../../i18n/translations";
+import type { ReviewGrade } from "@czech-flashcards/shared";
 import { buildDueShuffleNotice } from "./dueShuffleNotice";
 import { recordRelearningReview, restoreRelearningQueue as restoreRelearningEntries, snapshotRelearningQueue as snapshotRelearningEntries } from "./relearningQueue";
 import type { RelearningEntry } from "./relearningTypes";
-import type { StudyQueueRefs } from "./studyQueueRefs";
+import type { StudyQueueActionInput } from "./studyQueueActionTypes";
 
-type Input = {
-  deck: Card[];
-  states: ReviewStates;
-  current: Card | null;
-  refs: StudyQueueRefs;
-  translate: (key: TranslationKey) => string;
-};
-
-export function buildStudyQueueActions({ deck, states, current, refs, translate }: Input) {
+export function buildStudyQueueActions({ deck, states, current, refs, translate }: StudyQueueActionInput) {
   return {
     forceCard(cardId: string, reveal = false) {
       refs.forcedCardId.current = cardId;

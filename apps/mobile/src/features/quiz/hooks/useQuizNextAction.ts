@@ -1,5 +1,5 @@
 import type { Question } from "../quizQuestions";
-import type { QuizAnswerState } from "./useQuizAnswerState";
+import type { QuizAnswerState } from "./quizAnswerStateTypes";
 
 type Params = {
   question: Question | undefined;

@@ -1,17 +1,13 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import MaterialIcons from "../../../components/MaterialIcons";
 import { useI18n } from "../../../i18n/I18nProvider";
-import { colors, radius, size, spacing, typography } from "../../../theme/design";
+import { colors, size } from "../../../theme/design";
+import { dailyGoalCardStyles as styles } from "./dailyGoalCardStyles";
+import type { DailyGoalCardProps } from "./dailyGoalCardTypes";
 import { ProgressBar } from "./ProgressBar";
 
-type Props = {
-  reviewedToday: number;
-  dailyGoal: number;
-  ratio: number;
-};
-
-export function DailyGoalCard({ reviewedToday, dailyGoal, ratio }: Props) {
+export function DailyGoalCard({ reviewedToday, dailyGoal, ratio }: DailyGoalCardProps) {
   const { t, textAlign } = useI18n();
   const complete = ratio >= 1;
   return (
@@ -30,13 +26,3 @@ export function DailyGoalCard({ reviewedToday, dailyGoal, ratio }: Props) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  sectionHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: spacing.lgPlus },
-  todayCard: { flexDirection: "row", alignItems: "center", gap: spacing.xl, marginHorizontal: spacing.page, borderRadius: radius.xl, borderWidth: spacing.hairline, borderColor: colors.borderSoft, backgroundColor: colors.surfaceWarm, padding: spacing.xlPlus },
-  todayIcon: { width: size.dailyGoalIcon, height: size.dailyGoalIcon, alignItems: "center", justifyContent: "center", borderRadius: radius.lg, backgroundColor: colors.goldSoft },
-  todayCopy: { flex: 1, gap: spacing.smd },
-  todayTitle: { color: colors.charcoalText, fontSize: typography.bodyLarge, fontWeight: typography.weightBold },
-  todayCount: { color: colors.bohemianGold, fontSize: typography.categoryTitle, fontWeight: typography.weightSemibold },
-  todayMeta: { color: colors.mutedSlate, fontSize: typography.bodySmall, fontWeight: typography.weightRegular }
-});

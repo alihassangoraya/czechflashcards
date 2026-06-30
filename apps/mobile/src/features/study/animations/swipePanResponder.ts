@@ -1,19 +1,9 @@
-import type { MutableRefObject } from "react";
 import { Animated, PanResponder } from "react-native";
-import type { SwipeDirection } from "./animationTypes";
 import { swipeConfig } from "./swipeConfig";
 import { directionFromDrag, shouldCaptureHorizontalSwipe } from "./swipeMath";
+import type { SwipePanResponderParams } from "./swipePanResponderTypes";
 
-type Params = {
-  dragX: Animated.Value;
-  grading: boolean;
-  swipeCompleting: MutableRefObject<boolean>;
-  completeSwipe: (direction: SwipeDirection) => void;
-  resetCancelledSwipe: () => void;
-  setSwipeDirection: (direction: SwipeDirection | null) => void;
-};
-
-export function createSwipePanResponder({ dragX, grading, swipeCompleting, completeSwipe, resetCancelledSwipe, setSwipeDirection }: Params) {
+export function createSwipePanResponder({ dragX, grading, swipeCompleting, completeSwipe, resetCancelledSwipe, setSwipeDirection }: SwipePanResponderParams) {
   return PanResponder.create({
     onMoveShouldSetPanResponder: (_, gesture) => shouldCaptureHorizontalSwipe(gesture.dx, gesture.dy),
     onMoveShouldSetPanResponderCapture: (_, gesture) => shouldCaptureHorizontalSwipe(gesture.dx, gesture.dy),

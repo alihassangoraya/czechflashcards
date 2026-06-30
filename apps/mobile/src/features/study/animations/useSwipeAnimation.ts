@@ -9,7 +9,6 @@ import { useSwipeAnimationState } from "./useSwipeAnimationState";
 export function useSwipeAnimation({ current, grading, onSwipeGrade }: SwipeAnimationParams) {
   const dragX = useRef(new Animated.Value(0)).current;
   const swipeState = useSwipeAnimationState({ current, dragX });
-
   const cardRotation = createSwipeRotation(dragX);
 
   const completeSwipe = useSwipeCompletion({
@@ -21,7 +20,6 @@ export function useSwipeAnimation({ current, grading, onSwipeGrade }: SwipeAnima
     startSwipeCompletion: swipeState.startSwipeCompletion,
     swipeCompleting: swipeState.swipeCompleting
   });
-
   const panResponder = useMemo(() => createSwipePanResponder({
     completeSwipe,
     dragX,
@@ -30,7 +28,6 @@ export function useSwipeAnimation({ current, grading, onSwipeGrade }: SwipeAnima
     setSwipeDirection: swipeState.setSwipeDirection,
     swipeCompleting: swipeState.swipeCompleting
   }), [completeSwipe, dragX, grading, swipeState.resetCancelledSwipe, swipeState.setSwipeDirection, swipeState.swipeCompleting]);
-
   return {
     cardRotation,
     completeSwipe,
