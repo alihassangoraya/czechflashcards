@@ -1,5 +1,5 @@
-import type { AppSupabaseClient } from "../../sync";
-import type { AuthMode } from "./accountAuth";
+import type { AppSupabaseClient } from "../../../sync";
+import type { AuthMode } from "../models/accountAuth";
 import type { AccountStudySummary } from "./accountTypes";
 
 export type AccountPanelProps = {

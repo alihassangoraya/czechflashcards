@@ -2,7 +2,7 @@ import React from "react";
 import { Text, View } from "react-native";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { colors } from "../../../theme/design";
-import type { AccountStudySummary } from "../accountTypes";
+import type { AccountStudySummary } from "../types/accountTypes";
 import { accountProgressStyles as styles } from "./accountProgressStyles";
 import { AccountStat } from "./AccountStat";
 

@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useI18n } from "../../../i18n/I18nProvider";
-import { isValidEmail, type AuthMode } from "../accountAuth";
+import { isValidEmail, type AuthMode } from "../models/accountAuth";
 import type { AccountCredentials } from "./useAccountCredentials";
 
 type Params = {

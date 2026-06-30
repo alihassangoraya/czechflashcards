@@ -1,4 +1,4 @@
-import type { AuthMode } from "../accountAuth";
+import type { AuthMode } from "../models/accountAuth";
 
 export type AuthPanelProps = {
   busy: boolean;

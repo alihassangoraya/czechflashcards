@@ -3,7 +3,7 @@ import { ScrollView } from "react-native";
 import { ScreenHeader } from "../../../components/ScreenHeader";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { AuthPanel } from "../components/AuthPanel";
-import type { AuthScreenProps } from "../authScreenTypes";
+import type { AuthScreenProps } from "../types/authScreenTypes";
 import { useAccountCredentials } from "../hooks/useAccountCredentials";
 import { useAuthSubmit } from "../hooks/useAuthSubmit";
 import { authScreenStyles as styles } from "./authScreenStyles";

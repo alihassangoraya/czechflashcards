@@ -1,6 +1,6 @@
 import type { MaterialIconName } from "../../../components/MaterialIcons";
 import type { TranslationKey } from "../../../i18n/translations";
-import type { AccountStudySummary } from "../accountTypes";
+import type { AccountStudySummary } from "../types/accountTypes";
 
 export type AccountBadge = {
   icon: MaterialIconName;

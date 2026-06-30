@@ -1,11 +1,11 @@
 import React from "react";
-import type { AccountPanelProps } from "../accountPanelTypes";
+import type { AccountPanelProps } from "../types/accountPanelTypes";
 import { OfflineAccountPanel } from "../components/OfflineAccountPanel";
 import { SignedInAccountContent } from "../components/SignedInAccountContent";
 import { SignedOutAccountContent } from "../components/SignedOutAccountContent";
 import { useAccountPanel } from "../hooks/useAccountPanel";
 
-export type { AccountStudySummary } from "../accountTypes";
+export type { AccountStudySummary } from "../types/accountTypes";
 
 export function AccountPanel({ configured, supabase, accountEmail, studySummary, busy, onAuthenticate, onSignOut }: AccountPanelProps) {
   const account = useAccountPanel({ accountEmail, supabase, onAuthenticate, onSignOut });
