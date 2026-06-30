@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Animated, PanResponder } from "react-native";
+import { Animated } from "react-native";
 import type { Card, ReviewGrade } from "@czech-flashcards/shared";
 import type { SwipeDirection } from "./animationTypes";
 import { animateSwipeAway, springCardBack } from "./swipeAnimations";
 import { swipeConfig } from "./swipeConfig";
-import { directionFromDrag, gradeFromSwipe, shouldCaptureHorizontalSwipe } from "./swipeMath";
+import { gradeFromSwipe } from "./swipeMath";
+import { createSwipePanResponder } from "./swipePanResponder";
 
 type Params = {
   current: Card | null;
@@ -49,31 +50,13 @@ export function useSwipeAnimation({ current, grading, onSwipeGrade }: Params) {
     setTimeout(() => { consumedSwipe.current = false; }, swipeConfig.releaseDelay);
   }
 
-  const panResponder = useMemo(() => PanResponder.create({
-    onMoveShouldSetPanResponder: (_, gesture) => shouldCaptureHorizontalSwipe(gesture.dx, gesture.dy),
-    onMoveShouldSetPanResponderCapture: (_, gesture) => shouldCaptureHorizontalSwipe(gesture.dx, gesture.dy),
-    onPanResponderGrant: () => {
-      if (swipeCompleting.current) return;
-      dragX.stopAnimation();
-    },
-    onPanResponderTerminationRequest: () => true,
-    onPanResponderMove: (_, gesture) => {
-      if (swipeCompleting.current) return;
-      dragX.setValue(gesture.dx);
-      setSwipeDirection(directionFromDrag(gesture.dx, swipeConfig.directionPreviewDistance));
-    },
-    onPanResponderRelease: (_, gesture) => {
-      const direction = directionFromDrag(gesture.dx, swipeConfig.completionDistance);
-      if (!grading && direction) {
-        completeSwipe(direction);
-        return;
-      }
-      resetCancelledSwipe();
-    },
-    onPanResponderTerminate: () => {
-      if (swipeCompleting.current) return;
-      resetCancelledSwipe();
-    }
+  const panResponder = useMemo(() => createSwipePanResponder({
+    completeSwipe,
+    dragX,
+    grading,
+    resetCancelledSwipe,
+    setSwipeDirection,
+    swipeCompleting
   }), [current, grading]);
 
   return {
