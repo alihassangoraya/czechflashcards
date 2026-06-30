@@ -1,6 +1,6 @@
 import type { Card, ReviewState } from "@czech-flashcards/shared";
 import type { SyncStatus } from "../sync";
-import type { AccountStudySummary } from "../features/account/screens/AccountPanel";
+import type { AccountStudySummary } from "../features/account";
 import type { StudySettings } from "../database";
 
 export function buildAccountStudySummary(deck: Card[], cards: Card[], states: Record<string, ReviewState>, savedCount: number, settings: StudySettings, syncStatus: SyncStatus): AccountStudySummary {

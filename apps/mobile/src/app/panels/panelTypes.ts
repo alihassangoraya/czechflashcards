@@ -1,53 +1,31 @@
-import type { Card, ReviewGrade, ReviewState } from "@czech-flashcards/shared";
+import type { Card } from "@czech-flashcards/shared";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { StudySettings } from "../database";
-import type { AccountPanel, AccountStudySummary } from "../features/account";
-import type { useStudyAnimations } from "../features/study";
-import type { SyncStatus } from "../sync";
-import type { Panel, Screen } from "./appTypes";
+import type { StudySettings } from "../../database";
+import type { AccountPanel, AccountStudySummary } from "../../features/account";
+import type { SyncStatus } from "../../sync";
+import type { CorrectionValues, WordValues } from "../appShellTypes";
+import type { Panel } from "../appTypes";
 
-export type StudyAnimations = ReturnType<typeof useStudyAnimations>;
-export type WordValues = { cz: string; en: string; hi: string; ur: string; sentence: string; sentenceEn: string; tag: string };
-export type CorrectionValues = Omit<WordValues, "tag">;
 export type AccountPanelProps = React.ComponentProps<typeof AccountPanel>;
 
-export type AppShellProps = {
-  screen: Screen;
+export type AppPanelProps = {
   panel: Panel | null;
-  deck: Card[];
   cards: Card[];
   customCards: Card[];
-  states: Record<string, ReviewState>;
   settings: StudySettings;
   savedCardIds: Set<string>;
   deckMemberships: Record<string, string[]>;
   current: Card | null;
   deckManagementCard: Card | null;
-  revealed: boolean;
-  grading: boolean;
-  lastReviewCard: Card | null;
-  sessionReviews: number;
-  sessionTarget: number;
-  reviewedToday: number;
-  dailyGoal: number;
-  sessionProgress: number;
-  studyAnimations: StudyAnimations;
+  editingCard: Card | null;
   query: string;
   syncStatus: SyncStatus;
   settingsNotice: string;
-  toastMessage: string;
   accountEmail: string | null;
   authBusy: boolean;
   accountStudySummary: AccountStudySummary;
   supabase: SupabaseClient | null;
-  editingCard: Card | null;
-  dailyProgress: string;
-  reviewInterval: (grade: ReviewGrade) => string;
   onSetPanel: (panel: Panel | null) => void;
-  onSetScreen: (screen: Screen) => void;
-  onAuthenticate: AccountPanelProps["onAuthenticate"];
-  onStartStudy: () => void;
-  onSelectCategory: (category: string) => void;
   onQueryChange: (value: string) => void;
   onStudySearchResult: (card: Card) => void;
   onToggleSaved: (cardId: string, showFeedback?: boolean) => void;
@@ -56,8 +34,6 @@ export type AppShellProps = {
   onSetDeckManagementCard: (card: Card | null) => void;
   onOpenCardEditor: (card?: Card | null) => void;
   onCloseCardEditor: () => void;
-  onUndoLastReview: () => void;
-  onGrade: (grade: ReviewGrade) => void;
   onAddWord: (values: WordValues) => void;
   onDeleteWord: (cardId: string) => void;
   onSaveCorrection: (values: CorrectionValues) => void;
@@ -69,5 +45,6 @@ export type AppShellProps = {
   onReviewAllNow: () => void;
   onExportProgress: () => void;
   onExportDeck: () => void;
+  onAuthenticate: AccountPanelProps["onAuthenticate"];
   onSignOut: AccountPanelProps["onSignOut"];
 };

@@ -1,0 +1,42 @@
+import type { Card, ReviewGrade, ReviewState } from "@czech-flashcards/shared";
+import type { StudySettings } from "../../database";
+import type { useStudyAnimations } from "../../features/study";
+import type { SyncStatus } from "../../sync";
+import type { Panel, Screen } from "../appTypes";
+
+export type StudyAnimations = ReturnType<typeof useStudyAnimations>;
+
+export type MainScreenProps = {
+  screen: Screen;
+  deck: Card[];
+  cards: Card[];
+  customCards: Card[];
+  states: Record<string, ReviewState>;
+  settings: StudySettings;
+  savedCardIds: Set<string>;
+  current: Card | null;
+  revealed: boolean;
+  grading: boolean;
+  lastReviewCard: Card | null;
+  sessionReviews: number;
+  sessionTarget: number;
+  reviewedToday: number;
+  dailyGoal: number;
+  sessionProgress: number;
+  studyAnimations: StudyAnimations;
+  accountEmail: string | null;
+  syncStatus: SyncStatus;
+  authBusy: boolean;
+  dailyProgress: string;
+  reviewInterval: (grade: ReviewGrade) => string;
+  onSetPanel: (panel: Panel | null) => void;
+  onSetScreen: (screen: Screen) => void;
+  onAuthenticate: (mode: "sign-in" | "sign-up", email: string, password: string, displayName: string) => Promise<string | null>;
+  onStartStudy: () => void;
+  onSelectCategory: (category: string) => void;
+  onToggleSaved: (cardId: string, showFeedback?: boolean) => void;
+  onSetDeckManagementCard: (card: Card | null) => void;
+  onOpenCardEditor: (card?: Card | null) => void;
+  onUndoLastReview: () => void;
+  onGrade: (grade: ReviewGrade) => void;
+};
