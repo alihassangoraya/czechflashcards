@@ -6,12 +6,10 @@ const root = fileURLToPath(new URL("..", import.meta.url));
 const srcRoot = join(root, "apps/mobile/src");
 const defaultMaxLines = 100;
 const maxLinesByPath = new Map([
-  ["i18n/locales/en.ts", 340],
-  ["i18n/locales/cs.ts", 220],
-  ["i18n/locales/hi.ts", 220],
-  ["i18n/locales/ur.ts", 220],
   ["theme/tokens/colors.ts", 120]
 ]);
+const localeLanguages = ["en", "cs", "hi", "ur"];
+const localeSections = ["account", "core", "home", "quiz", "search", "settings", "study", "words"];
 const hardcodedTextAllowList = new Set([
   "features/home/homeContent.ts",
   "features/words/wordDecks.ts",
@@ -40,6 +38,7 @@ const featureRootComponentViolations = [];
 const duplicateTypeViolations = [];
 const studyDomainFeatureImportViolations = [];
 const inlineScreenPropsViolations = [];
+const localeSectionViolations = [];
 const canonicalTypeFiles = new Map([
   ["AuthMode", "services/sync/syncTypes.ts"],
   ["StudyAnimations", "app/studyAnimationTypes.ts"],
@@ -95,6 +94,16 @@ for (const file of files) {
   }
 }
 
+const localeFileSet = new Set(files.map((file) => relative(srcRoot, file)));
+for (const language of localeLanguages) {
+  for (const section of localeSections) {
+    const sectionPath = `i18n/locales/${language}/${section}.ts`;
+    if (!localeFileSet.has(sectionPath)) {
+      localeSectionViolations.push(`${sectionPath}: missing locale section`);
+    }
+  }
+}
+
 let failed = false;
 
 if (hardcodedTextViolations.length) {
@@ -143,6 +152,12 @@ if (duplicateTypeViolations.length) {
   failed = true;
   console.error("Mobile architecture check failed. Reuse canonical shared type aliases:");
   console.error(duplicateTypeViolations.join("\n"));
+}
+
+if (localeSectionViolations.length) {
+  failed = true;
+  console.error("Mobile architecture check failed. Keep i18n catalogs split into matching feature sections:");
+  console.error(localeSectionViolations.join("\n"));
 }
 
 if (failed) process.exit(1);
