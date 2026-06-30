@@ -1,14 +1,14 @@
-import type { SupabaseClient } from "./supabaseClient";
+import type { AppSupabaseClient } from "./supabaseClient";
 
 const notConfiguredMessage = "Supabase is not configured for this build.";
 
-export async function signInWithPassword(supabase: SupabaseClient | null, email: string, password: string): Promise<string | null> {
+export async function signInWithPassword(supabase: AppSupabaseClient, email: string, password: string): Promise<string | null> {
   if (!supabase) return notConfiguredMessage;
   const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
   return error?.message || null;
 }
 
-export async function signUpWithPassword(supabase: SupabaseClient | null, email: string, password: string, displayName: string): Promise<string | null> {
+export async function signUpWithPassword(supabase: AppSupabaseClient, email: string, password: string, displayName: string): Promise<string | null> {
   if (!supabase) return notConfiguredMessage;
   const { error } = await supabase.auth.signUp({
     email: email.trim(),
@@ -18,7 +18,7 @@ export async function signUpWithPassword(supabase: SupabaseClient | null, email:
   return error?.message || null;
 }
 
-export async function signOut(supabase: SupabaseClient | null): Promise<string | null> {
+export async function signOut(supabase: AppSupabaseClient): Promise<string | null> {
   if (!supabase) return notConfiguredMessage;
   const { error } = await supabase.auth.signOut();
   return error?.message || null;

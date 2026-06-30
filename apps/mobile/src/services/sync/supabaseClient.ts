@@ -3,8 +3,9 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { env } from "../../env";
 
 let client: SupabaseClient | null | undefined;
+export type AppSupabaseClient = SupabaseClient | null;
 
-export function createSupabaseClient(): SupabaseClient | null {
+export function createSupabaseClient(): AppSupabaseClient {
   if (client !== undefined) return client;
   if (!env.supabaseUrl || !env.supabaseAnonKey) {
     client = null;

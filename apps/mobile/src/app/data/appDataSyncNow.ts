@@ -1,5 +1,5 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
 import type { AppDatabase } from "../../database";
+import type { AppSupabaseClient } from "../../sync";
 import { refreshAppData } from "./appDataRefresh";
 import { syncAppDatabase } from "./appDataSync";
 import type { AppDataState } from "./appDataState";
@@ -7,7 +7,7 @@ import type { AppDataState } from "./appDataState";
 export async function syncAppDataNow(
   state: AppDataState,
   database: AppDatabase | null,
-  supabase: SupabaseClient | null,
+  supabase: AppSupabaseClient,
   dailyGoal = 30
 ): Promise<void> {
   if (!database) return;

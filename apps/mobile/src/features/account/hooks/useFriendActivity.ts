@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
-import { getFriendCode } from "../../../sync";
-import type { createSupabaseClient } from "../../../sync";
+import { getFriendCode, type AppSupabaseClient } from "../../../sync";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { submitFriendRequest, submitFriendResponse } from "./friendActivityActions";
 import { useFriendActivityList } from "./useFriendActivityList";
 
 type Params = {
   accountEmail: string | null;
-  supabase: ReturnType<typeof createSupabaseClient>;
+  supabase: AppSupabaseClient;
   setMessage: (message: string) => void;
 };
 

@@ -1,10 +1,10 @@
 import { persistDatabase, type AppDatabase } from "../../database";
 import { applySyncSnapshot } from "./snapshotRestore";
-import type { SupabaseClient } from "./supabaseClient";
+import type { AppSupabaseClient } from "./supabaseClient";
 import type { SyncSnapshot } from "./snapshotTypes";
 import type { SyncStatus } from "./syncTypes";
 
-export async function restoreSyncSnapshot(db: AppDatabase, supabase: SupabaseClient | null): Promise<SyncStatus> {
+export async function restoreSyncSnapshot(db: AppDatabase, supabase: AppSupabaseClient): Promise<SyncStatus> {
   if (!supabase) return "not-configured";
   const { data: userData, error: userError } = await supabase.auth.getUser();
   if (userError || !userData.user) return "guest";

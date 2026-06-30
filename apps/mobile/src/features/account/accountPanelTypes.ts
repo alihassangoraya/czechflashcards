@@ -1,10 +1,10 @@
-import type { createSupabaseClient } from "../../sync";
+import type { AppSupabaseClient } from "../../sync";
 import type { AuthMode } from "./accountAuth";
 import type { AccountStudySummary } from "./accountTypes";
 
 export type AccountPanelProps = {
   configured: boolean;
-  supabase: ReturnType<typeof createSupabaseClient>;
+  supabase: AppSupabaseClient;
   accountEmail: string | null;
   studySummary: AccountStudySummary;
   busy: boolean;

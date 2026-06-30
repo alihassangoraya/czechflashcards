@@ -1,9 +1,9 @@
 import { useState } from "react";
-import type { FriendRequest, FriendStreak, createSupabaseClient } from "../../../sync";
+import type { AppSupabaseClient, FriendRequest, FriendStreak } from "../../../sync";
 import { fetchFriendActivity } from "./friendActivityActions";
 
 type Params = {
-  supabase: ReturnType<typeof createSupabaseClient>;
+  supabase: AppSupabaseClient;
 };
 
 export function useFriendActivityList({ supabase }: Params) {

@@ -1,12 +1,12 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
 import { loadSettings } from "../../database";
+import type { AppSupabaseClient } from "../../sync";
 import { configureLocalNotifications } from "../../services/notifications";
 import { openSeededDatabase } from "./appDatabaseBootstrap";
 import { syncAppDatabase } from "./appDataSync";
 import { refreshAppData } from "./appDataRefresh";
 import type { AppDataState } from "./appDataState";
 
-export async function bootAppData(state: AppDataState, supabase: SupabaseClient | null): Promise<void> {
+export async function bootAppData(state: AppDataState, supabase: AppSupabaseClient): Promise<void> {
   const database = await openSeededDatabase();
   const settings = await loadSettings(database);
   state.setDb(database);

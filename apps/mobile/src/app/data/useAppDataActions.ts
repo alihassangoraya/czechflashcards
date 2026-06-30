@@ -1,5 +1,5 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
 import type { AppDatabase, StudySettings } from "../../database";
+import type { AppSupabaseClient } from "../../sync";
 import { refreshAppData } from "./appDataRefresh";
 import { persistAppSettings } from "./appDataSettings";
 import type { AppDataState } from "./appDataState";
@@ -7,7 +7,7 @@ import { syncAppDataNow } from "./appDataSyncNow";
 
 type Params = {
   state: AppDataState;
-  supabase: SupabaseClient | null;
+  supabase: AppSupabaseClient;
 };
 
 export function useAppDataActions({ state, supabase }: Params) {

@@ -1,11 +1,11 @@
 import { useEffect } from "react";
-import type { SupabaseClient } from "@supabase/supabase-js";
 import type { AppDatabase } from "../../database";
+import type { AppSupabaseClient } from "../../sync";
 import type { AppDataState } from "./appDataState";
 
 export function useAppDataAuthSession(
   state: AppDataState,
-  supabase: SupabaseClient | null,
+  supabase: AppSupabaseClient,
   database: AppDatabase | null,
   syncNow: (database: AppDatabase) => Promise<void>
 ): void {

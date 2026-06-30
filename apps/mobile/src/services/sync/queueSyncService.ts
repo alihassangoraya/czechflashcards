@@ -1,8 +1,8 @@
 import { persistDatabase, type AppDatabase } from "../../database";
-import type { SupabaseClient } from "./supabaseClient";
+import type { AppSupabaseClient } from "./supabaseClient";
 import type { SyncStatus } from "./syncTypes";
 
-export async function flushSyncQueue(db: AppDatabase, supabase: SupabaseClient | null): Promise<SyncStatus> {
+export async function flushSyncQueue(db: AppDatabase, supabase: AppSupabaseClient): Promise<SyncStatus> {
   if (!supabase) return "not-configured";
   const { data: userData, error: userError } = await supabase.auth.getUser();
   if (userError || !userData.user) return "guest";

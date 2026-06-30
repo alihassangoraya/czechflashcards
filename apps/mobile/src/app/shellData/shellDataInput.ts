@@ -1,5 +1,5 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Card } from "@czech-flashcards/shared";
+import type { AppSupabaseClient } from "../../sync";
 import type { AppData } from "../data/useAppData";
 import type { AppNavigation } from "../navigation/useAppNavigation";
 import type { CardManagement } from "../cards/useCardManagement";
@@ -11,6 +11,6 @@ export type AppShellDataInput = {
   deck: Card[];
   studySession: StudySession;
   cardManagement: CardManagement;
-  supabase: SupabaseClient | null;
+  supabase: AppSupabaseClient;
   toastMessage: string;
 };

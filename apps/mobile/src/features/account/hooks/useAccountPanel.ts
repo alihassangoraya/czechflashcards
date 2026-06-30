@@ -1,4 +1,4 @@
-import type { createSupabaseClient } from "../../../sync";
+import type { AppSupabaseClient } from "../../../sync";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { type AuthMode } from "../accountAuth";
 import { useAccountCredentials } from "./useAccountCredentials";
@@ -6,7 +6,7 @@ import { useFriendActivity } from "./useFriendActivity";
 
 type Params = {
   accountEmail: string | null;
-  supabase: ReturnType<typeof createSupabaseClient>;
+  supabase: AppSupabaseClient;
   onAuthenticate: (mode: AuthMode, email: string, password: string, displayName: string) => Promise<string | null>;
   onSignOut: () => Promise<string | null>;
 };

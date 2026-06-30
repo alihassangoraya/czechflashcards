@@ -1,5 +1,5 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
 import type { AppShellProps } from "./appShellTypes";
+import type { AppSupabaseClient } from "../sync";
 import { buildAppShellDataProps } from "./shellData";
 import { buildAppShellHandlers } from "./shellHandlers";
 import { useAppData } from "./data/useAppData";
@@ -10,7 +10,7 @@ import { useSettingsTools } from "./settingsTools/useSettingsTools";
 import { useStudySession } from "./study/useStudySession";
 import { useToast } from "./feedback/useToast";
 
-export function useAppController(supabase: SupabaseClient | null): AppShellProps | null {
+export function useAppController(supabase: AppSupabaseClient): AppShellProps | null {
   const data = useAppData(supabase);
   const { toastMessage, showToast } = useToast();
   const navigation = useAppNavigation(data.accountEmail);

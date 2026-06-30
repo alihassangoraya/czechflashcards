@@ -1,12 +1,12 @@
 import { useEffect } from "react";
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type { AppSupabaseClient } from "../../sync";
 import { useAppDataAuthSession } from "./appDataAuthSession";
 import { bootAppData } from "./appDataBoot";
 import { useAppDataActions } from "./useAppDataActions";
 import { useAppDataState } from "./appDataState";
 import { useAuthActions } from "./useAuthActions";
 
-export function useAppData(supabase: SupabaseClient | null) {
+export function useAppData(supabase: AppSupabaseClient) {
   const state = useAppDataState();
   const { persistSettings, refresh, syncNow } = useAppDataActions({ state, supabase });
   const auth = useAuthActions(supabase, async () => syncNow());

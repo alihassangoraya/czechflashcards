@@ -1,8 +1,7 @@
 import type { Card } from "@czech-flashcards/shared";
-import type { SupabaseClient } from "@supabase/supabase-js";
 import type { DeckMemberships, SavedCardIds, StudySettings } from "../../database";
 import type { AccountPanelProps, AccountStudySummary } from "../../features/account";
-import type { SyncStatus } from "../../sync";
+import type { AppSupabaseClient, SyncStatus } from "../../sync";
 import type { AddWordValues, CorrectionValues } from "../appShellTypes";
 import type { Panel } from "../appTypes";
 
@@ -22,7 +21,7 @@ export type AppPanelProps = {
   accountEmail: string | null;
   authBusy: boolean;
   accountStudySummary: AccountStudySummary;
-  supabase: SupabaseClient | null;
+  supabase: AppSupabaseClient;
   onSetPanel: (panel: Panel | null) => void;
   onQueryChange: (value: string) => void;
   onStudySearchResult: (card: Card) => void;

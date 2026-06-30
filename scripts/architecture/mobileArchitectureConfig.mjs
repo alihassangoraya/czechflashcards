@@ -19,6 +19,7 @@ export const ignoredMobileDirectories = new Set(["assets", "dist", "node_modules
 export const allowedRootServiceFiles = new Set(["services/fileTransfer.ts"]);
 
 export const canonicalTypeFiles = new Map([
+  ["AppSupabaseClient", "services/sync/supabaseClient.ts"],
   ["AuthMode", "services/sync/syncTypes.ts"],
   ["CardOverrides", "services/storage/storageTypes.ts"],
   ["CustomCards", "services/storage/storageTypes.ts"],
@@ -54,5 +55,9 @@ export const rawCollectionTypeRules = [
   {
     pattern: /\bsavedCardIds:\s*(?:Readonly)?Set<string>/,
     message: "use SavedCardIds instead of a raw saved-card set"
+  },
+  {
+    pattern: /(?:ReturnType<typeof createSupabaseClient>|SupabaseClient\s*\|\s*null)/,
+    message: "use AppSupabaseClient instead of a raw Supabase client union"
   }
 ];
