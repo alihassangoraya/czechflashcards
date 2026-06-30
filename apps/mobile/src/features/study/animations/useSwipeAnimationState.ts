@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Animated } from "react-native";
 import type { Card } from "@czech-flashcards/shared";
 import type { SwipeDirection } from "./animationTypes";
 import { springCardBack } from "./swipeAnimations";
+import { useResetSwipeOnCardChange } from "./useResetSwipeOnCardChange";
 
 type Params = {
   current: Card | null;
@@ -14,20 +15,22 @@ export function useSwipeAnimationState({ current, dragX }: Params) {
   const swipeCompleting = useRef(false);
   const [swipeDirection, setSwipeDirection] = useState<SwipeDirection | null>(null);
 
-  useEffect(() => {
-    dragX.stopAnimation();
-    dragX.setValue(0);
+  const resetFlags = useCallback(() => {
     consumedSwipe.current = false;
     swipeCompleting.current = false;
+  }, []);
+
+  const resetSwipeDirection = useCallback(() => {
     setSwipeDirection(null);
-  }, [current?.id]);
+  }, []);
+
+  useResetSwipeOnCardChange({ current, dragX, resetFlags, resetSwipeDirection });
 
   const resetCancelledSwipe = useCallback(() => {
-    swipeCompleting.current = false;
-    consumedSwipe.current = false;
-    setSwipeDirection(null);
+    resetFlags();
+    resetSwipeDirection();
     springCardBack(dragX);
-  }, [dragX]);
+  }, [dragX, resetFlags, resetSwipeDirection]);
 
   const startSwipeCompletion = useCallback((direction: SwipeDirection) => {
     consumedSwipe.current = true;
