@@ -1,8 +1,8 @@
 import { useState } from "react";
 import type { Card } from "@czech-flashcards/shared";
-import { addCardToCustomDeck, removeCardFromCustomDeck, type AppDatabase } from "../database";
-import { useI18n } from "../i18n/I18nProvider";
-import type { Panel } from "./appTypes";
+import { addCardToCustomDeck, removeCardFromCustomDeck, type AppDatabase } from "../../database";
+import { useI18n } from "../../i18n/I18nProvider";
+import type { Panel } from "../appTypes";
 
 type Props = {
   db: AppDatabase | null;

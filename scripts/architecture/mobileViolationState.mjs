@@ -8,6 +8,7 @@ export function createMobileArchitectureViolations() {
     lineCounts: [],
     localeSections: [],
     rootAppData: [],
+    rootAppCards: [],
     rootAppHandlers: [],
     rootAppShellData: [],
     rootServices: [],

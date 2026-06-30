@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import type { Card } from "@czech-flashcards/shared";
-import type { StudySettings } from "../database";
+import type { StudySettings } from "../../database";
 import { filterStudyDeck } from "./deckFiltering";
 
 const EMPTY_SAVED_CARD_IDS = new Set<string>();

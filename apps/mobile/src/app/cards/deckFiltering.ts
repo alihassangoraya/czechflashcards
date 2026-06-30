@@ -1,5 +1,5 @@
 import { filterDeck, type Card } from "@czech-flashcards/shared";
-import type { StudySettings } from "../database";
+import type { StudySettings } from "../../database";
 
 export function filterStudyDeck(
   cards: Card[],

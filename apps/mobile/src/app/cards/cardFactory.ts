@@ -1,5 +1,5 @@
 import { slug, type Card } from "@czech-flashcards/shared";
-import type { AddWordValues, CorrectionValues } from "./appShellTypes";
+import type { AddWordValues, CorrectionValues } from "../appShellTypes";
 
 export function createCustomCard(values: AddWordValues): Card {
   return {

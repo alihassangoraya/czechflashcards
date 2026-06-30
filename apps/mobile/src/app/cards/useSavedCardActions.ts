@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import type { Card } from "@czech-flashcards/shared";
-import { loadSavedCardIds, setCardSaved, type AppDatabase } from "../database";
-import { useI18n } from "../i18n/I18nProvider";
+import { loadSavedCardIds, setCardSaved, type AppDatabase } from "../../database";
+import { useI18n } from "../../i18n/I18nProvider";
 
 type Props = {
   db: AppDatabase | null;

@@ -1,7 +1,7 @@
 import type { StudySettings } from "../../database";
 import type { AppData } from "../data/useAppData";
 import type { AppNavigation } from "../useAppNavigation";
-import type { CardManagement } from "../useCardManagement";
+import type { CardManagement } from "../cards/useCardManagement";
 import type { SettingsTools } from "../useSettingsTools";
 import type { StudySession } from "../useStudySession";
 

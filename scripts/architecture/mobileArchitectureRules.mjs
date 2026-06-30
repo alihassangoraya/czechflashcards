@@ -13,6 +13,7 @@ export function inspectMobileFile(source, violations) {
   inspectAppImports(source, violations);
   inspectFeatureImports(source, violations);
   inspectRootAppData(source, violations);
+  inspectRootAppCards(source, violations);
   inspectRootAppHandlers(source, violations);
   inspectRootAppShellData(source, violations);
   inspectRootServices(source, violations);
@@ -69,6 +70,12 @@ function inspectFeatureImports({ lines, rel }, violations) {
 function inspectRootAppData({ rel }, violations) {
   if (rel.match(/^app\/(?:appData.*|appSeed|useAppData)\.ts$/)) {
     violations.rootAppData.push(`${rel}: move app data modules into app/data/`);
+  }
+}
+
+function inspectRootAppCards({ rel }, violations) {
+  if (rel.match(/^app\/(?:cardFactory|deckFiltering|use(?:Card|CustomWord|DeckMembership|FilteredStudyDeck|SavedCard).*)\.ts$/)) {
+    violations.rootAppCards.push(`${rel}: move app card-management modules into app/cards/`);
   }
 }
 

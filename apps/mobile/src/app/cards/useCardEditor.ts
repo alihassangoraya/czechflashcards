@@ -1,8 +1,8 @@
 import { useState } from "react";
 import type { Card } from "@czech-flashcards/shared";
-import { addCustomCard, saveCardCorrection, type AppDatabase } from "../database";
-import type { Panel } from "./appTypes";
-import type { CorrectionValues } from "./appShellTypes";
+import { addCustomCard, saveCardCorrection, type AppDatabase } from "../../database";
+import type { Panel } from "../appTypes";
+import type { CorrectionValues } from "../appShellTypes";
 import { applyCardCorrection } from "./cardFactory";
 
 type Props = {

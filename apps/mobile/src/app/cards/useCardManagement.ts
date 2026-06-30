@@ -1,6 +1,6 @@
 import type { Card } from "@czech-flashcards/shared";
-import type { AppDatabase } from "../database";
-import type { Panel } from "./appTypes";
+import type { AppDatabase } from "../../database";
+import type { Panel } from "../appTypes";
 import { useCardEditor } from "./useCardEditor";
 import { useCustomWordActions } from "./useCustomWordActions";
 import { useDeckMembershipActions } from "./useDeckMembershipActions";

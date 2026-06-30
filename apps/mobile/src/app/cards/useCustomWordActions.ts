@@ -1,5 +1,5 @@
-import { addCardToCustomDeck, addCustomCard, deleteCustomCard, type AppDatabase } from "../database";
-import type { AddWordValues } from "./appShellTypes";
+import { addCardToCustomDeck, addCustomCard, deleteCustomCard, type AppDatabase } from "../../database";
+import type { AddWordValues } from "../appShellTypes";
 import { createCustomCard } from "./cardFactory";
 
 type Props = {
