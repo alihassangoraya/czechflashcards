@@ -1,6 +1,7 @@
 export function createMobileArchitectureViolations() {
   return {
     duplicateTypes: [],
+    defaultExports: [],
     featureRootComponents: [],
     featureRootHooks: [],
     featureToAppImports: [],

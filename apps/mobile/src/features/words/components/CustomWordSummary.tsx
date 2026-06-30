@@ -1,6 +1,6 @@
 import React from "react";
 import { Text, View } from "react-native";
-import MaterialIcons from "../../../components/MaterialIcons";
+import { MaterialIcons } from "../../../components/MaterialIcons";
 import { colors, size } from "../../../theme/design";
 import { customCardDeckLabel } from "../wordDecks";
 import { customWordSummaryStyles as styles } from "./customWordSummaryStyles";

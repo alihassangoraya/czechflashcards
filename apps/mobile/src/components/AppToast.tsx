@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import MaterialIcons from "./MaterialIcons";
+import { MaterialIcons } from "./MaterialIcons";
 import { colors, radius, shadow, size, spacing, typography } from "../theme/design";
 
 export function AppToast({ message }: { message: string }) {

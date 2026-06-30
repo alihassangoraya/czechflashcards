@@ -1,6 +1,6 @@
 import React from "react";
 import { Pressable, StyleSheet, Text } from "react-native";
-import MaterialIcons from "../../../components/MaterialIcons";
+import { MaterialIcons } from "../../../components/MaterialIcons";
 import * as Speech from "../../../services/speech";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
 

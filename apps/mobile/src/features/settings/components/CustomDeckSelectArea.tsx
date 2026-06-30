@@ -1,7 +1,7 @@
 import React from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 import type { CustomDeck } from "../../../database";
-import MaterialIcons from "../../../components/MaterialIcons";
+import { MaterialIcons } from "../../../components/MaterialIcons";
 import { colors, size } from "../../../theme/design";
 import { customDeckRowStyles as styles } from "./customDeckRowStyles";
 

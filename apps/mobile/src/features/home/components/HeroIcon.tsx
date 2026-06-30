@@ -1,6 +1,6 @@
 import React from "react";
 import { Pressable, StyleSheet } from "react-native";
-import MaterialIcons, { type MaterialIconName } from "../../../components/MaterialIcons";
+import { MaterialIcons, type MaterialIconName } from "../../../components/MaterialIcons";
 import { colors, radius, size } from "../../../theme/design";
 
 export function HeroIcon({ icon, label, onPress }: { icon: MaterialIconName; label: string; onPress: () => void }) {

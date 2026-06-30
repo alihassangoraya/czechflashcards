@@ -1,6 +1,6 @@
 import React from "react";
 import { Pressable, StyleSheet } from "react-native";
-import MaterialIcons, { type MaterialIconName } from "./MaterialIcons";
+import { MaterialIcons, type MaterialIconName } from "./MaterialIcons";
 import { colors, radius, size, spacing } from "../theme/design";
 
 export function HeaderIcon({ icon, label, onPress, primary = false }: { icon: MaterialIconName; label: string; onPress: () => void; primary?: boolean }) {

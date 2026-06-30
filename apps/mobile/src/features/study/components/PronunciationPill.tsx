@@ -1,7 +1,7 @@
 import React from "react";
 import { Pressable, StyleSheet, Text } from "react-native";
 import type { Card } from "@czech-flashcards/shared";
-import MaterialIcons from "../../../components/MaterialIcons";
+import { MaterialIcons } from "../../../components/MaterialIcons";
 import * as Speech from "../../../services/speech";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
 import { pronunciationHint } from "../studyMeaning";

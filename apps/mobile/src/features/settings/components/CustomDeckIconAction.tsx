@@ -1,6 +1,6 @@
 import React from "react";
 import { Pressable } from "react-native";
-import MaterialIcons, { type MaterialIconName } from "../../../components/MaterialIcons";
+import { MaterialIcons, type MaterialIconName } from "../../../components/MaterialIcons";
 import { size } from "../../../theme/design";
 import { customDeckRowStyles as styles } from "./customDeckRowStyles";
 

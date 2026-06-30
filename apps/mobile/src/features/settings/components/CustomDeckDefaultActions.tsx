@@ -1,7 +1,7 @@
 import React from "react";
 import { View } from "react-native";
 import type { CustomDeck } from "../../../database";
-import MaterialIcons from "../../../components/MaterialIcons";
+import { MaterialIcons } from "../../../components/MaterialIcons";
 import { colors, size } from "../../../theme/design";
 import type { CustomDeckActionLabels } from "./customDeckActionTypes";
 import { CustomDeckIconAction } from "./CustomDeckIconAction";

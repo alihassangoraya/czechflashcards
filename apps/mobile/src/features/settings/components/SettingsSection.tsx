@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import MaterialIcons, { type MaterialIconName } from "../../../components/MaterialIcons";
+import { MaterialIcons, type MaterialIconName } from "../../../components/MaterialIcons";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
 
 type Props = {

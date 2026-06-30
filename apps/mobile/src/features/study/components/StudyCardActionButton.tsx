@@ -1,6 +1,6 @@
 import React from "react";
 import { Pressable, type StyleProp, type ViewStyle } from "react-native";
-import MaterialIcons, { type MaterialIconName } from "../../../components/MaterialIcons";
+import { MaterialIcons, type MaterialIconName } from "../../../components/MaterialIcons";
 import { colors, size } from "../../../theme/design";
 
 type Props = {

@@ -12,7 +12,7 @@ type Props = {
   style?: TextStyle;
 };
 
-export default function MaterialIcons({ name, size = 24, color = "currentColor", style }: Props) {
+export function MaterialIcons({ name, size = 24, color = "currentColor", style }: Props) {
   return (
     <Text
       aria-hidden

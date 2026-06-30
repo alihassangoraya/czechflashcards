@@ -1,6 +1,6 @@
 import React from "react";
 import { Pressable, Text, View } from "react-native";
-import MaterialIcons from "../../../components/MaterialIcons";
+import { MaterialIcons } from "../../../components/MaterialIcons";
 import { colors, size } from "../../../theme/design";
 import { quizOptionStyles as styles } from "./quizOptionStyles";
 import type { QuizOptionProps } from "./quizOptionTypes";
