@@ -7,7 +7,7 @@ import { StudyCardActions } from "./StudyCardActions";
 import { StudyCardBack } from "./StudyCardBack";
 import { StudyCardFront } from "./StudyCardFront";
 
-type Props = {
+export type StudyCardFacesProps = {
   current: Card;
   currentSecondaryMeaning: string;
   flipProgress: Animated.Value;
@@ -25,7 +25,7 @@ type Props = {
   onUndoLastReview: () => void;
 };
 
-export function StudyCardFaces({ current, currentSecondaryMeaning, flipProgress, flipping, grading, isSaved, lastReviewCard, meaningLanguage, revealed, onCompleteSwipe, onEditCard, onFlipCard, onManageDecks, onToggleSaved, onUndoLastReview }: Props) {
+export function StudyCardFaces({ current, currentSecondaryMeaning, flipProgress, flipping, grading, isSaved, lastReviewCard, meaningLanguage, revealed, onCompleteSwipe, onEditCard, onFlipCard, onManageDecks, onToggleSaved, onUndoLastReview }: StudyCardFacesProps) {
   return (
     <>
       <StudyCardActions
