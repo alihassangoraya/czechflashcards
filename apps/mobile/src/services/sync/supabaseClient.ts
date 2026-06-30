@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import { env } from "../../env";
+import { env } from "../config/env";
 
 let client: SupabaseClient | null | undefined;
 export type AppSupabaseClient = SupabaseClient | null;

@@ -1,4 +1,4 @@
-import { env } from "../../env";
+import { env } from "../config/env";
 import type { GeminiResponse } from "./geminiTypes";
 
 const GEMINI_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent";
