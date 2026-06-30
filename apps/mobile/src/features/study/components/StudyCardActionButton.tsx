@@ -1,10 +1,10 @@
 import React from "react";
 import { Pressable, type StyleProp, type ViewStyle } from "react-native";
-import MaterialIcons from "../../../components/MaterialIcons";
+import MaterialIcons, { type MaterialIconName } from "../../../components/MaterialIcons";
 import { colors, size } from "../../../theme/design";
 
 type Props = {
-  icon: React.ComponentProps<typeof MaterialIcons>["name"];
+  icon: MaterialIconName;
   label: string;
   style: StyleProp<ViewStyle>;
   onPress: () => void;

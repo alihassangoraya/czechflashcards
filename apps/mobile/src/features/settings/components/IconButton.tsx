@@ -1,10 +1,10 @@
 import React from "react";
 import { Pressable, StyleSheet } from "react-native";
-import MaterialIcons from "../../../components/MaterialIcons";
+import MaterialIcons, { type MaterialIconName } from "../../../components/MaterialIcons";
 import { colors, radius, size, spacing } from "../../../theme/design";
 
 type Props = {
-  icon: React.ComponentProps<typeof MaterialIcons>["name"];
+  icon: MaterialIconName;
   label: string;
   disabled?: boolean;
   onPress: () => void;

@@ -1,11 +1,11 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import MaterialIcons from "../../../components/MaterialIcons";
+import MaterialIcons, { type MaterialIconName } from "../../../components/MaterialIcons";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
 
 type Props = {
-  icon: React.ComponentProps<typeof MaterialIcons>["name"];
+  icon: MaterialIconName;
   title: string;
   required?: boolean;
   children: React.ReactNode;

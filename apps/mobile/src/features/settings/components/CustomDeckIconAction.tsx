@@ -1,11 +1,11 @@
 import React from "react";
 import { Pressable } from "react-native";
-import MaterialIcons from "../../../components/MaterialIcons";
+import MaterialIcons, { type MaterialIconName } from "../../../components/MaterialIcons";
 import { size } from "../../../theme/design";
 import { customDeckRowStyles as styles } from "./customDeckRowStyles";
 
 type Props = {
-  icon: React.ComponentProps<typeof MaterialIcons>["name"];
+  icon: MaterialIconName;
   color: string;
   label: string;
   onPress: () => void;

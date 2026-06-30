@@ -7,6 +7,7 @@ import {
   rawCollectionTypeRules
 } from "./mobileArchitectureConfig.mjs";
 import { inspectLocalRouteAndModalPicks } from "./mobileContractRules.mjs";
+import { inspectMaterialIconPropTypes } from "./mobileIconRules.mjs";
 import { inspectRootAppModules } from "./mobileRootAppRules.mjs";
 
 export function inspectMobileFile(source, violations) {
@@ -19,6 +20,7 @@ export function inspectMobileFile(source, violations) {
   inspectRootAppModules(source, violations);
   inspectRootServices(source, violations);
   inspectRootPlatformServices(source, violations);
+  inspectMaterialIconPropTypes(source, violations);
   inspectCanonicalTypes(source, violations);
   inspectRawCollectionTypes(source, violations);
   inspectLocalRouteAndModalPicks(source, violations);
