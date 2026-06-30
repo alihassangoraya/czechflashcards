@@ -1,7 +1,8 @@
 import type { AppDatabase, StudySettings } from "./storageTypes";
 import { persistDatabase } from "./storageCore";
 import { loadSettings } from "./settingsRepository";
-import { assertBackupPayload, normalizeBackupStore } from "./backupNormalizer";
+import { assertBackupPayload } from "./backupPayload";
+import { normalizeBackupStore } from "./backupNormalizer";
 
 export function exportBackup(db: AppDatabase): Record<string, unknown> {
   return {

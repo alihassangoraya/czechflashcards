@@ -1,24 +1,9 @@
-import type { Card, DailyProgress, ReviewState } from "@czech-flashcards/shared";
+import type { Card } from "@czech-flashcards/shared";
 import { normalizeCards } from "@czech-flashcards/shared";
 import type { CustomCard, StudySettings, WebStore } from "./storageTypes";
 import { DEFAULT_SETTINGS } from "./storageTypes";
 import { normalizeStore } from "./storageCore";
-
-export type BackupPayload = Partial<WebStore> & {
-  store?: Partial<WebStore>;
-  progress?: Record<string, ReviewState>;
-  reviewStates?: Record<string, ReviewState>;
-  importedCards?: Card[];
-  customCards?: Card[];
-  editedCards?: Record<string, Card>;
-  savedCardIds?: string[];
-  dailyLog?: Record<string, DailyProgress>;
-  dailyProgress?: Record<string, DailyProgress>;
-  dailyGoal?: number;
-  examLevel?: StudySettings["examLevel"];
-  meaningLanguage?: StudySettings["meaningLanguage"];
-  settings?: StudySettings;
-};
+import type { BackupPayload } from "./backupPayload";
 
 export function normalizeBackupStore(current: WebStore, backup: BackupPayload): WebStore {
   const source = backup.store || backup;
@@ -35,11 +20,6 @@ export function normalizeBackupStore(current: WebStore, backup: BackupPayload): 
     savedCardIds: normalizeSavedCardIds(backup.savedCardIds || source.savedCardIds),
     settings: normalizeRestoredSettings(backup.settings || source.settings, backup)
   });
-}
-
-export function assertBackupPayload(payload: unknown): BackupPayload {
-  if (!payload || typeof payload !== "object") throw new Error("Backup file is not valid JSON.");
-  return payload as BackupPayload;
 }
 
 function normalizeCustomCards(value: unknown): Record<string, CustomCard> {
