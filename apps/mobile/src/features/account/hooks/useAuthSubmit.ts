@@ -1,13 +1,11 @@
 import { useCallback } from "react";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { isValidEmail, type AuthMode } from "../accountAuth";
-import type { useAccountCredentials } from "./useAccountCredentials";
-
-type Credentials = ReturnType<typeof useAccountCredentials>;
+import type { AccountCredentials } from "./useAccountCredentials";
 
 type Params = {
   configured: boolean;
-  credentials: Credentials;
+  credentials: AccountCredentials;
   onAuthenticate: (mode: AuthMode, email: string, password: string, displayName: string) => Promise<string | null>;
 };
 

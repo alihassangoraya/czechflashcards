@@ -17,3 +17,5 @@ export function useAccountCredentials() {
     setMessage
   };
 }
+
+export type AccountCredentials = ReturnType<typeof useAccountCredentials>;
