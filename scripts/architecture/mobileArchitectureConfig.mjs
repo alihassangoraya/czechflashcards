@@ -16,7 +16,6 @@ export const hardcodedTextAllowList = new Set([
 ]);
 
 export const ignoredMobileDirectories = new Set(["assets", "dist", "node_modules"]);
-export const allowedRootServiceFiles = new Set(["services/fileTransfer.ts"]);
 
 export const canonicalTypeFiles = new Map([
   ["AppSupabaseClient", "services/sync/supabaseClient.ts"],

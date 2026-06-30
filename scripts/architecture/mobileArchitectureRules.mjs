@@ -1,5 +1,4 @@
 import {
-  allowedRootServiceFiles,
   canonicalTypeFiles,
   defaultMaxLines,
   hardcodedTextAllowList,
@@ -80,7 +79,7 @@ function inspectFeatureImports({ lines, rel }, violations) {
 }
 
 function inspectRootServices({ rel }, violations) {
-  if (rel.match(/^services\/[^/]+\.(ts|tsx)$/) && !allowedRootServiceFiles.has(rel)) {
+  if (rel.match(/^services\/[^/]+\.(ts|tsx)$/)) {
     violations.rootServices.push(`${rel}: move service logic into a domain folder under services/`);
   }
 }
