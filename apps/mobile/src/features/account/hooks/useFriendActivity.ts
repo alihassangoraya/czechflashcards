@@ -10,7 +10,6 @@ export function useFriendActivity({ accountEmail, supabase, setMessage }: Friend
   const [friendCode, setFriendCode] = useState("");
   const [myFriendCode, setMyFriendCode] = useState<string | null>(null);
   const { friendRequests, friends, refreshFriends } = useFriendActivityList({ supabase });
-
   async function sendFriend() {
     setMessage((await submitFriendRequest(supabase, friendCode)) || t("account.friendSent"));
     setFriendCode("");

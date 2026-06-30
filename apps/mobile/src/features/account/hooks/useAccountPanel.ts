@@ -36,5 +36,3 @@ export function useAccountPanel({ accountEmail, supabase, onAuthenticate, onSign
     signOut
   };
 }
-
-export type AccountPanelState = ReturnType<typeof useAccountPanel>;

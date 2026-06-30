@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { Card } from "@czech-flashcards/shared";
+import { resetQuizAnswerState } from "./quizAnswerReset";
 
 export function useQuizAnswerState(deck: Card[], round: number) {
   const [index, setIndex] = useState(0);
@@ -10,12 +11,7 @@ export function useQuizAnswerState(deck: Card[], round: number) {
   const [showExitConfirm, setShowExitConfirm] = useState(false);
 
   useEffect(() => {
-    setIndex(0);
-    setSelected(null);
-    setChecked(false);
-    setScore(0);
-    setFinished(false);
-    setShowExitConfirm(false);
+    resetQuizAnswerState({ setIndex, setSelected, setChecked, setScore, setFinished, setShowExitConfirm });
   }, [deck, round]);
 
   function moveToNextQuestion() {

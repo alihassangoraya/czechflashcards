@@ -1,10 +1,11 @@
 import React from "react";
-import { Pressable, StyleSheet, Text } from "react-native";
+import { Pressable, Text } from "react-native";
 import MaterialIcons from "../../../components/MaterialIcons";
 import { useI18n } from "../../../i18n/I18nProvider";
-import { colors, radius, size, spacing, typography } from "../../../theme/design";
+import { colors, size } from "../../../theme/design";
 import { AddWordDetailsToggle } from "./AddWordDetailsToggle";
 import { AddWordOptionalDetails } from "./AddWordOptionalDetails";
+import { addWordFormStyles as styles } from "./addWordFormStyles";
 import type { AddWordFormProps } from "./addWordFormTypes";
 import { FormField } from "./FormField";
 import { FormSection } from "./FormSection";
@@ -32,9 +33,3 @@ export function AddWordForm({ form, decks }: AddWordFormProps) {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  error: { color: colors.dangerStrong, fontSize: typography.bodySmall, fontWeight: typography.weightMedium },
-  submitButton: { minHeight: size.reviewButton, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: spacing.smd, borderRadius: radius.md, backgroundColor: colors.primaryDeep },
-  submitText: { color: colors.onPrimary, fontSize: typography.bodyLarge, fontWeight: typography.weightSemibold }
-});

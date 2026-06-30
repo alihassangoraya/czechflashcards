@@ -1,12 +1,5 @@
 import type { Screen } from "../appTypes";
-
-const screenPaths: Record<Screen, string> = {
-  home: "/",
-  login: "/login",
-  quiz: "/quiz",
-  register: "/register",
-  study: "/flashcards"
-};
+import { screenPaths } from "./screenPaths";
 
 function canUseBrowserHistory() {
   return typeof window !== "undefined" && Boolean(window.history);

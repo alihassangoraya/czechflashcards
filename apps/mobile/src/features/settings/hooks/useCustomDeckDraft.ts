@@ -3,7 +3,6 @@ import type { CustomDeckDraftParams } from "./customDeckDraftTypes";
 import { useCustomDeckDraftState } from "./useCustomDeckDraftState";
 export function useCustomDeckDraft({ settings, update }: CustomDeckDraftParams) {
   const draft = useCustomDeckDraftState();
-
   function createDeck() {
     const patch = buildCreateDeckPatch(settings, draft.deckName);
     if (!patch) return;

@@ -1,17 +1,12 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-import type { Card } from "@czech-flashcards/shared";
-import type { CustomDeck } from "../../../database";
+import { Text, View } from "react-native";
 import MaterialIcons from "../../../components/MaterialIcons";
-import { colors, radius, size, spacing, typography } from "../../../theme/design";
+import { colors, size } from "../../../theme/design";
 import { customCardDeckLabel } from "../wordDecks";
+import { customWordSummaryStyles as styles } from "./customWordSummaryStyles";
+import type { CustomWordSummaryProps } from "./customWordSummaryTypes";
 
-type Props = {
-  card: Card;
-  decks: CustomDeck[];
-};
-
-export function CustomWordSummary({ card, decks }: Props) {
+export function CustomWordSummary({ card, decks }: CustomWordSummaryProps) {
   return (
     <>
       <View style={styles.accent}>
@@ -29,13 +24,3 @@ export function CustomWordSummary({ card, decks }: Props) {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  accent: { width: size.cardAction, height: size.cardAction, alignItems: "center", justifyContent: "center", borderRadius: radius.sm, backgroundColor: colors.primarySoft },
-  copy: { flex: 1, gap: spacing.xs },
-  titleRow: { flexDirection: "row", alignItems: "center", gap: spacing.smd },
-  word: { color: colors.textStrong, fontSize: typography.body, fontWeight: typography.weightSemibold },
-  deckPill: { maxWidth: size.cardHeight / 2, borderRadius: radius.card, backgroundColor: colors.surfaceMuted, paddingHorizontal: spacing.smd, paddingVertical: spacing.xxs },
-  deckText: { color: colors.textSoft, fontSize: typography.caption, fontWeight: typography.weightSemibold },
-  meaning: { color: colors.textMuted, fontSize: typography.bodySmall, lineHeight: typography.bodyLarge }
-});

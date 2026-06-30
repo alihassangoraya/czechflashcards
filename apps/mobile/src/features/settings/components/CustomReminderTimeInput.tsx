@@ -1,16 +1,12 @@
 import React from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { Text, TextInput, View } from "react-native";
 import MaterialIcons from "../../../components/MaterialIcons";
 import { useI18n } from "../../../i18n/I18nProvider";
-import { colors, radius, size, spacing, typography } from "../../../theme/design";
+import { colors, size } from "../../../theme/design";
+import { customReminderTimeInputStyles as styles } from "./customReminderTimeInputStyles";
+import type { CustomReminderTimeInputProps } from "./customReminderTimeInputTypes";
 
-type Props = {
-  customReminderTime: string;
-  onChange: (value: string) => void;
-  onCommit: () => void;
-};
-
-export function CustomReminderTimeInput({ customReminderTime, onChange, onCommit }: Props) {
+export function CustomReminderTimeInput({ customReminderTime, onChange, onCommit }: CustomReminderTimeInputProps) {
   const { t, textAlign, direction } = useI18n();
 
   return (
@@ -33,9 +29,3 @@ export function CustomReminderTimeInput({ customReminderTime, onChange, onCommit
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  customRow: { minHeight: size.touchTarget, flexDirection: "row", alignItems: "center", gap: spacing.smd, borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surfaceWarm, paddingHorizontal: spacing.lg },
-  input: { minWidth: size.timeInputMinWidth, color: colors.textStrong, fontSize: typography.body, fontWeight: typography.weightSemibold, paddingVertical: spacing.smd },
-  hint: { flex: 1, color: colors.textMuted, fontSize: typography.caption, fontWeight: typography.weightMedium }
-});

@@ -14,7 +14,6 @@ export function useAppDataState() {
   const [dailyProgress, setDailyProgress] = useState("0 / 30");
   const [syncStatus, setSyncStatus] = useState<SyncStatus>("not-configured");
   const [accountEmail, setAccountEmail] = useState<string | null>(null);
-
   const applySnapshot = useAppDataSnapshotApplier({ setCards, setSavedCardIds, setDeckMemberships, setStates, setDailyProgress });
 
   return {

@@ -16,7 +16,6 @@ export function useSwipeAnimationState({ current, dragX }: SwipeAnimationStatePa
     resetSwipeDirection();
     springCardBack(dragX);
   }, [dragX, resetSwipeFlags, resetSwipeDirection]);
-
   const startSwipeCompletion = useCallback((direction: SwipeDirection) => {
     markSwipeCompleting();
     setSwipeDirection(direction);

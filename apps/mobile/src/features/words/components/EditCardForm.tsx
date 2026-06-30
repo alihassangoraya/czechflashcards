@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { useI18n } from "../../../i18n/I18nProvider";
-import { colors, radius, spacing, typography } from "../../../theme/design";
 import { editCardFields } from "./editCardFields";
+import { editCardFormStyles as styles } from "./editCardFormStyles";
 import type { EditCardFieldKey, EditCardFormProps, EditCardFormValues } from "./editCardFormTypes";
 import { EditCardInput } from "./EditCardInput";
 
@@ -32,9 +32,3 @@ export function EditCardForm({ card, onSubmit }: EditCardFormProps) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  form: { gap: spacing.xlPlus },
-  primaryButton: { alignItems: "center", backgroundColor: colors.primaryDeep, borderRadius: radius.md, padding: spacing.xlPlus },
-  primaryButtonText: { color: colors.onPrimary, fontWeight: typography.weightSemibold }
-});
