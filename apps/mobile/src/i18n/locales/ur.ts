@@ -113,6 +113,7 @@ export const ur = {
     "search.addToDeck": "{word} کو ڈیک میں شامل کریں",
     "search.addToMyList": "{word} کو میری فہرست میں شامل کریں",
     "search.removeFromMyList": "{word} کو میری فہرست سے ہٹائیں",
+    "study.sessionProgress": "کارڈ {current} / {total} · آج {reviewedToday} / {dailyGoal}",
     "study.translation": "ترجمہ",
     "study.inContext": "سیاق و سباق میں",
     "study.playExample": "چیک مثال چلائیں",

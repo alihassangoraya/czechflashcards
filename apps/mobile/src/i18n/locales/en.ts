@@ -114,6 +114,7 @@ export const en = {
     "search.addToMyList": "Add {word} to My list",
     "search.removeFromMyList": "Remove {word} from My list",
     "study.translation": "Translation",
+    "study.sessionProgress": "Card {current} of {total} · Today {reviewedToday} / {dailyGoal}",
     "study.inContext": "In context",
     "study.playExample": "Play Czech example",
     "study.done": "Done",

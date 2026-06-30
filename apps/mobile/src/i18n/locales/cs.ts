@@ -113,6 +113,7 @@ export const cs = {
     "search.addToDeck": "Přidat {word} do balíčku",
     "search.addToMyList": "Přidat {word} do mého seznamu",
     "search.removeFromMyList": "Odebrat {word} z mého seznamu",
+    "study.sessionProgress": "Kartička {current} z {total} · Dnes {reviewedToday} / {dailyGoal}",
     "study.translation": "Překlad",
     "study.inContext": "V kontextu",
     "study.playExample": "Přehrát český příklad",

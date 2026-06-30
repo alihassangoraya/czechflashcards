@@ -1,6 +1,6 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { colors, radius, size, spacing, typography } from "../../../theme/design";
+import { ScreenProgress } from "../../../components/ScreenProgress";
+import { useI18n } from "../../../i18n/I18nProvider";
 
 type Props = {
   sessionReviews: number;
@@ -11,36 +11,13 @@ type Props = {
 };
 
 export function StudyProgress({ sessionReviews, sessionTarget, reviewedToday, dailyGoal, sessionProgress }: Props) {
+  const { t } = useI18n();
+
   return (
-    <View style={styles.sessionProgressRow}>
-      <Text style={styles.sessionProgressText}>Card {sessionReviews + 1} of {sessionTarget} · Today {reviewedToday} / {dailyGoal}</Text>
-      <View style={styles.sessionProgressTrack}>
-        <View style={[styles.sessionProgressFill, { width: `${Math.max(3, sessionProgress * 100)}%` }]} />
-      </View>
-    </View>
+    <ScreenProgress
+      centered
+      title={t("study.sessionProgress", { current: sessionReviews + 1, total: sessionTarget, reviewedToday, dailyGoal })}
+      progress={sessionProgress}
+    />
   );
 }
-
-const styles = StyleSheet.create({
-  sessionProgressRow: {
-    width: "100%",
-    maxWidth: size.studyProgressMaxWidth,
-    alignSelf: "center",
-    gap: spacing.smd,
-    marginTop: spacing.xs,
-    marginBottom: spacing.xl
-  },
-  sessionProgressText: {
-    color: colors.textSubtle,
-    fontSize: typography.bodySmall,
-    fontWeight: typography.weightMedium,
-    textAlign: "center"
-  },
-  sessionProgressTrack: {
-    height: spacing.md,
-    overflow: "hidden",
-    borderRadius: radius.xs,
-    backgroundColor: colors.progressTrackStrong
-  },
-  sessionProgressFill: { height: "100%", borderRadius: radius.xs, backgroundColor: colors.primary }
-});

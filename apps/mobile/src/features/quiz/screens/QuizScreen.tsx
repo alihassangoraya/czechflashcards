@@ -34,40 +34,42 @@ export function QuizScreen({ deck, onClose }: Props) {
   const question = quiz.question;
 
   return (
-    <ScrollView style={styles.scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+    <>
       <QuizHeader score={quiz.score} onBack={quiz.requestClose} />
-      <QuizProgress current={quiz.index + 1} total={quiz.questions.length} accuracy={quiz.accuracy} />
-      <QuizPromptCard card={question.card} />
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+        <QuizProgress current={quiz.index + 1} total={quiz.questions.length} accuracy={quiz.accuracy} />
+        <QuizPromptCard card={question.card} />
 
-      <View style={styles.options}>
-        {question.options.map((option, optionIndex) => (
-          <QuizOption
-            key={`${option}-${optionIndex}`}
-            option={option}
-            letter={String.fromCharCode(65 + optionIndex)}
-            selected={quiz.selected === optionIndex}
-            correct={question.correctIndex === optionIndex}
-            checked={quiz.checked}
-            onPress={() => quiz.setSelected(optionIndex)}
-          />
-        ))}
-      </View>
+        <View style={styles.options}>
+          {question.options.map((option, optionIndex) => (
+            <QuizOption
+              key={`${option}-${optionIndex}`}
+              option={option}
+              letter={String.fromCharCode(65 + optionIndex)}
+              selected={quiz.selected === optionIndex}
+              correct={question.correctIndex === optionIndex}
+              checked={quiz.checked}
+              onPress={() => quiz.setSelected(optionIndex)}
+            />
+          ))}
+        </View>
 
-      {quiz.checked && <QuizFeedback correct={quiz.isCorrect} correctAnswer={question.options[question.correctIndex]} />}
+        {quiz.checked && <QuizFeedback correct={quiz.isCorrect} correctAnswer={question.options[question.correctIndex]} />}
 
-      <Pressable disabled={quiz.selected == null} style={[styles.primaryButton, quiz.selected == null && styles.disabled]} onPress={quiz.next} accessibilityRole="button">
-        <Text style={styles.primaryText}>{quiz.checked ? (quiz.index + 1 === quiz.questions.length ? t("quiz.seeResults") : t("quiz.nextQuestion")) : t("quiz.checkAnswer")}</Text>
-        <MaterialIcons name={quiz.checked ? "arrow-forward" : "check"} size={size.icon} color={colors.onPrimary} />
-      </Pressable>
+        <Pressable disabled={quiz.selected == null} style={[styles.primaryButton, quiz.selected == null && styles.disabled]} onPress={quiz.next} accessibilityRole="button">
+          <Text style={styles.primaryText}>{quiz.checked ? (quiz.index + 1 === quiz.questions.length ? t("quiz.seeResults") : t("quiz.nextQuestion")) : t("quiz.checkAnswer")}</Text>
+          <MaterialIcons name={quiz.checked ? "arrow-forward" : "check"} size={size.icon} color={colors.onPrimary} />
+        </Pressable>
 
-      <QuizExitConfirmModal visible={quiz.showExitConfirm} onCancel={() => quiz.setShowExitConfirm(false)} onConfirm={quiz.confirmClose} />
-    </ScrollView>
+        <QuizExitConfirmModal visible={quiz.showExitConfirm} onCancel={() => quiz.setShowExitConfirm(false)} onConfirm={quiz.confirmClose} />
+      </ScrollView>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   scroll: { flex: 1, backgroundColor: colors.background },
-  content: { gap: spacing.xlPlus, paddingHorizontal: spacing.page, paddingTop: typography.bodyLarge, paddingBottom: spacing.screenBottom },
+  content: { gap: spacing.xlPlus, paddingHorizontal: spacing.page, paddingBottom: spacing.screenBottom },
   options: { gap: spacing.lg },
   primaryButton: { minHeight: size.reviewButton, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: spacing.lg, borderRadius: radius.md, backgroundColor: colors.primaryDeep, paddingHorizontal: spacing.hero },
   primaryText: { color: colors.onPrimary, fontSize: typography.bodyLarge, fontWeight: typography.weightSemibold },

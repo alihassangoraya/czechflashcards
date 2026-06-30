@@ -113,6 +113,7 @@ export const hi = {
     "search.addToDeck": "{word} को डेक में जोड़ें",
     "search.addToMyList": "{word} को मेरी सूची में जोड़ें",
     "search.removeFromMyList": "{word} को मेरी सूची से हटाएँ",
+    "study.sessionProgress": "कार्ड {current} / {total} · आज {reviewedToday} / {dailyGoal}",
     "study.translation": "अनुवाद",
     "study.inContext": "संदर्भ में",
     "study.playExample": "चेक उदाहरण चलाएँ",
