@@ -10,6 +10,10 @@ export function inspectLocalRouteAndModalPicks({ lines, rel }, violations) {
   if (rel.startsWith("app/shellHandlers/") && !rel.startsWith("app/shellHandlers/handlerTypes/")) {
     inspectLocalPicks(lines, rel, violations, "Pick<AppShellHandlerInput", "move shell handler prop picks into app/shellHandlers/handlerTypes/");
   }
+
+  if (rel.startsWith("app/settingsTools/") && !rel.startsWith("app/settingsTools/settingsToolTypes/")) {
+    inspectLocalPicks(lines, rel, violations, "Pick<SettingsToolContext", "move settings tool context picks into app/settingsTools/settingsToolTypes/");
+  }
 }
 
 function inspectLocalPicks(lines, rel, violations, token, message) {

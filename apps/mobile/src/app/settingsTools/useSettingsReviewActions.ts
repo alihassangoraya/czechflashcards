@@ -1,12 +1,6 @@
 import { markCardsDueNow } from "../../database";
 import { useI18n } from "../../i18n/I18nProvider";
-import type { SettingsToolContext } from "./settingsToolTypes";
-
-type Props = Pick<SettingsToolContext, "db" | "deck" | "setSettingsNotice" | "refresh"> & {
-  shuffleDueCards: (onNotice: (message: string) => void) => void;
-  clearShuffledDueQueue: () => void;
-  forceDeckRefresh: () => void;
-};
+import type { SettingsReviewContext } from "./settingsToolTypes";
 
 export function useSettingsReviewActions({
   db,
@@ -16,7 +10,7 @@ export function useSettingsReviewActions({
   shuffleDueCards,
   clearShuffledDueQueue,
   forceDeckRefresh
-}: Props) {
+}: SettingsReviewContext) {
   const { t } = useI18n();
 
   function shuffleDueCardsInDeck() {
