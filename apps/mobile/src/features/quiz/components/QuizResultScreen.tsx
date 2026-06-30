@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 import MaterialIcons from "../../../components/MaterialIcons";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
-import { buildQuizResultModel } from "../quizResultModel";
+import { buildQuizResultSummaryProps } from "../quizResultSummaryProps";
 import { QuizResultActions } from "./QuizResultActions";
 import { QuizResultSummary } from "./QuizResultSummary";
 
@@ -16,7 +16,6 @@ type Props = {
 
 export function QuizResultScreen({ score, total, onRestart, onClose }: Props) {
   const { t, textAlign } = useI18n();
-  const result = buildQuizResultModel(score, total);
 
   return (
     <ScrollView contentContainerStyle={styles.resultContent}>
@@ -26,15 +25,7 @@ export function QuizResultScreen({ score, total, onRestart, onClose }: Props) {
       <Text style={[styles.resultTitle, { textAlign }]}>{t("quiz.congrats")}</Text>
       <Text style={[styles.resultSubtitle, { textAlign }]}>{t("quiz.complete")}</Text>
 
-      <QuizResultSummary
-        score={score}
-        total={total}
-        missed={result.missed}
-        accuracy={result.finalAccuracy}
-        feedback={t(result.feedbackKey)}
-        textAlign={textAlign}
-        labels={{ score: t("quiz.yourScore"), correct: t("quiz.correct"), missed: t("quiz.missed"), accuracy: t("quiz.accuracy") }}
-      />
+      <QuizResultSummary {...buildQuizResultSummaryProps({ score, total, textAlign, translate: t })} />
       <QuizResultActions restartLabel={t("quiz.tryAnother")} closeLabel={t("quiz.returnHome")} onRestart={onRestart} onClose={onClose} />
     </ScrollView>
   );

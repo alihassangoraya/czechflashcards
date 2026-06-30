@@ -4,7 +4,7 @@ import { colors, radius, shadow, spacing, typography } from "../../../theme/desi
 import { QuizResultMetrics } from "./QuizResultMetrics";
 import { QuizResultScore } from "./QuizResultScore";
 
-type Props = {
+export type QuizResultSummaryProps = {
   score: number;
   total: number;
   missed: number;
@@ -19,7 +19,7 @@ type Props = {
   };
 };
 
-export function QuizResultSummary({ score, total, missed, accuracy, feedback, textAlign, labels }: Props) {
+export function QuizResultSummary({ score, total, missed, accuracy, feedback, textAlign, labels }: QuizResultSummaryProps) {
   return (
     <View style={styles.resultCard}>
       <Text style={[styles.resultEyebrow, { textAlign }]}>{labels.score}</Text>
