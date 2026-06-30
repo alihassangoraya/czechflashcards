@@ -1,11 +1,9 @@
 import React from "react";
-import { Text, View } from "react-native";
 import type { CustomDeck } from "../../../database";
-import MaterialIcons from "../../../components/MaterialIcons";
-import { colors, size } from "../../../theme/design";
 import type { CustomDeckActionLabels } from "./customDeckActionTypes";
-import { CustomDeckIconAction } from "./CustomDeckIconAction";
-import { customDeckRowStyles as styles } from "./customDeckRowStyles";
+import { CustomDeckDefaultActions } from "./CustomDeckDefaultActions";
+import { CustomDeckDeleteActions } from "./CustomDeckDeleteActions";
+import { CustomDeckEditActions } from "./CustomDeckEditActions";
 
 type Props = {
   deck: CustomDeck;
@@ -23,29 +21,12 @@ type Props = {
 
 export function CustomDeckRowActions({ deck, active, editing, deleting, labels, onCancelEditDeck, onSaveEditDeck, onStartEditDeck, onRequestDeleteDeck, onCancelDeleteDeck, onConfirmDeleteDeck }: Props) {
   if (editing) {
-    return (
-      <View style={styles.deckActions}>
-        <CustomDeckIconAction icon="check" color={colors.success} label={labels.saveDeck} onPress={onSaveEditDeck} />
-        <CustomDeckIconAction icon="close" color={colors.textMuted} label={labels.cancelEdit} onPress={onCancelEditDeck} />
-      </View>
-    );
+    return <CustomDeckEditActions labels={labels} onCancelEditDeck={onCancelEditDeck} onSaveEditDeck={onSaveEditDeck} />;
   }
 
   if (deleting) {
-    return (
-      <View style={styles.deleteConfirm}>
-        <Text style={styles.deleteText}>{labels.deleteQuestion}</Text>
-        <CustomDeckIconAction icon="delete-outline" color={colors.dangerStrong} label={labels.deleteDeck} onPress={() => onConfirmDeleteDeck(deck.id)} />
-        <CustomDeckIconAction icon="close" color={colors.textMuted} label={labels.keepDeck} onPress={onCancelDeleteDeck} />
-      </View>
-    );
+    return <CustomDeckDeleteActions deck={deck} labels={labels} onCancelDeleteDeck={onCancelDeleteDeck} onConfirmDeleteDeck={onConfirmDeleteDeck} />;
   }
 
-  return (
-    <View style={styles.deckActions}>
-      {active && <MaterialIcons name="check" size={size.iconSmall} color={colors.success} />}
-      <CustomDeckIconAction icon="edit" color={colors.action} label={labels.renameDeck} onPress={() => onStartEditDeck(deck.id)} />
-      <CustomDeckIconAction icon="delete-outline" color={colors.dangerStrong} label={labels.deleteDeck} onPress={() => onRequestDeleteDeck(deck.id)} />
-    </View>
-  );
+  return <CustomDeckDefaultActions deck={deck} active={active} labels={labels} onRequestDeleteDeck={onRequestDeleteDeck} onStartEditDeck={onStartEditDeck} />;
 }
