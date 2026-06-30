@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import type { Card } from "@czech-flashcards/shared";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, spacing, typography } from "../../../theme/design";
-
-export type EditCardFormValues = { cz: string; en: string; hi: string; ur: string; sentence: string; sentenceEn: string };
+import { editCardFields } from "./editCardFields";
+import type { EditCardFieldKey, EditCardFormValues } from "./editCardFormTypes";
+import { EditCardInput } from "./EditCardInput";
 
 type EditCardFormProps = {
   card: Card;
@@ -21,19 +22,15 @@ export function EditCardForm({ card, onSubmit }: EditCardFormProps) {
     sentence: card.sentence,
     sentenceEn: card.sentenceEn
   });
-  const update = (key: keyof EditCardFormValues, value: string) => setValues((current) => ({ ...current, [key]: value }));
+
+  function update(key: EditCardFieldKey, value: string) {
+    setValues((current) => ({ ...current, [key]: value }));
+  }
 
   return (
     <View style={styles.form}>
-      {[
-        ["cz", t("words.czechWord")],
-        ["en", t("language.english")],
-        ["hi", t("language.hindi")],
-        ["ur", t("language.urdu")],
-        ["sentence", t("words.czechExample")],
-        ["sentenceEn", t("words.englishExample")]
-      ].map(([key, label]) => (
-        <TextInput key={key} style={[styles.input, key === "ur" && styles.rtl]} value={values[key as keyof EditCardFormValues]} onChangeText={(value) => update(key as keyof EditCardFormValues, value)} placeholder={label} placeholderTextColor={colors.textMuted} />
+      {editCardFields.map((field) => (
+        <EditCardInput key={field.key} fieldKey={field.key} label={t(field.labelKey)} rtl={field.rtl} value={values[field.key]} onChange={update} />
       ))}
       <Pressable style={styles.primaryButton} onPress={() => onSubmit(values)}>
         <Text style={styles.primaryButtonText}>{t("words.saveCorrection")}</Text>
@@ -44,8 +41,6 @@ export function EditCardForm({ card, onSubmit }: EditCardFormProps) {
 
 const styles = StyleSheet.create({
   form: { gap: spacing.xlPlus },
-  input: { backgroundColor: colors.surface, borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, color: colors.textStrong, padding: spacing.xlPlus, fontSize: typography.bodyLarge },
-  rtl: { writingDirection: "rtl", textAlign: "right" },
   primaryButton: { alignItems: "center", backgroundColor: colors.primaryDeep, borderRadius: radius.md, padding: spacing.xlPlus },
   primaryButtonText: { color: colors.onPrimary, fontWeight: typography.weightSemibold }
 });
