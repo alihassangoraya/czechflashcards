@@ -1,10 +1,10 @@
 export const enCoreTranslations = {
   "app.name": "Czech Flashcards",
   "language.english": "English",
-  "language.czech": "Czech",
+  "language.czech": "Čeština",
   "language.hindi": "Hindi",
   "language.urdu": "Urdu",
-  "language.ukrainian": "Ukrainian",
+  "language.ukrainian": "Українська",
   "common.backHome": "Back home",
   "common.close": "Close {title}",
   "common.cards": "cards",

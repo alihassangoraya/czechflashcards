@@ -1,6 +1,7 @@
 import React from "react";
 import type { StudySettings } from "../../../database";
 import { useI18n } from "../../../i18n/I18nProvider";
+import { languageDisplayNames } from "../../../i18n/languageDisplayNames";
 import { languageOptions, type LanguageCode } from "../../../i18n/translations";
 import { ChoiceSegment } from "./ChoiceSegment";
 import { PreferenceRow } from "./PreferenceRow";
@@ -13,13 +14,7 @@ type Props = {
 
 export function AppLanguageSettingGroup({ appLanguage, onChange }: Props) {
   const { t } = useI18n();
-  const languageLabels: Record<LanguageCode, string> = {
-    en: t("language.english"),
-    cs: t("language.czech"),
-    hi: t("language.hindi"),
-    ur: t("language.urdu"),
-    uk: t("language.ukrainian")
-  };
+  const languageLabels: Record<LanguageCode, string> = languageDisplayNames;
 
   return (
     <SettingGroup>

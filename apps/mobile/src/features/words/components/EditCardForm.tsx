@@ -24,7 +24,7 @@ export function EditCardForm({ card, onSubmit }: EditCardFormProps) {
   return (
     <View style={styles.form}>
       {editCardFields.map((field) => (
-        <EditCardInput key={field.key} fieldKey={field.key} label={t(field.labelKey)} rtl={field.rtl} value={values[field.key]} onChange={update} />
+        <EditCardInput key={field.key} fieldKey={field.key} label={field.label || t(field.labelKey)} rtl={field.rtl} value={values[field.key]} onChange={update} />
       ))}
       <Pressable style={styles.primaryButton} onPress={() => onSubmit(values)}>
         <Text style={styles.primaryButtonText}>{t("words.saveCorrection")}</Text>

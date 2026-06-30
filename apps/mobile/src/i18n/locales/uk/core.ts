@@ -1,9 +1,9 @@
 export const ukCoreTranslations = {
   "app.name": "Чеські картки",
-  "language.english": "Англійська",
-  "language.czech": "Чеська",
-  "language.hindi": "Гінді",
-  "language.urdu": "Урду",
+  "language.english": "English",
+  "language.czech": "Čeština",
+  "language.hindi": "Hindi",
+  "language.urdu": "Urdu",
   "language.ukrainian": "Українська",
   "common.backHome": "Назад на головну",
   "common.close": "Закрити {title}",

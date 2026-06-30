@@ -1,5 +1,6 @@
 import React from "react";
 import { useI18n } from "../../../i18n/I18nProvider";
+import { languageDisplayNames } from "../../../i18n/languageDisplayNames";
 import type { StudySettings } from "../../../database";
 import { ChoiceSegment } from "./ChoiceSegment";
 import { PreferenceRow } from "./PreferenceRow";
@@ -12,12 +13,12 @@ type Props = {
 
 export function MeaningLanguageSettingGroup({ meaningLanguage, onChange }: Props) {
   const { t } = useI18n();
-  const value = meaningLanguage === "ur" ? t("language.urdu") : t("language.hindi");
+  const value = languageDisplayNames[meaningLanguage];
 
   return (
     <SettingGroup>
       <PreferenceRow icon="translate" title={t("settings.meaningLanguage")} value={value} />
-      <ChoiceSegment value={meaningLanguage} options={["hi", "ur"]} labels={{ hi: t("language.hindi"), ur: t("language.urdu") }} onChange={onChange} />
+      <ChoiceSegment value={meaningLanguage} options={["hi", "ur"]} labels={{ hi: languageDisplayNames.hi, ur: languageDisplayNames.ur }} onChange={onChange} />
     </SettingGroup>
   );
 }
