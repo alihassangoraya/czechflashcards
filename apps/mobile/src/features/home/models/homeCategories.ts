@@ -1,8 +1,10 @@
 import type { Card } from "@czech-flashcards/shared";
-import type { MaterialIconName } from "../../components/MaterialIcons";
-import type { StudySettings } from "../../database";
-import { colors } from "../../theme/design";
-import { baseDecks, countForDeck, type Category } from "./homeContent";
+import type { MaterialIconName } from "../../../components/MaterialIcons";
+import type { StudySettings } from "../../../database";
+import { colors } from "../../../theme/design";
+import { baseDecks } from "./homeBaseDecks";
+import { countForDeck } from "./homeDeckMetrics";
+import type { Category } from "../types/homeCategoryTypes";
 
 export function filterVisibleHomeCards(cards: Card[], examLevel: StudySettings["examLevel"]) {
   return cards.filter((card) => examLevel === "b1" || card.level === "a2" || card.tags.includes("custom") || String(card.id).startsWith("import-"));

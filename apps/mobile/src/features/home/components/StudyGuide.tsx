@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { MaterialIcons } from "../../../components/MaterialIcons";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
-import { guideItems } from "../homeContent";
+import { guideItems } from "../models/homeContent";
 
 export function StudyGuide() {
   const { t, textAlign } = useI18n();

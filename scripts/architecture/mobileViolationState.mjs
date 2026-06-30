@@ -6,6 +6,7 @@ export function createMobileArchitectureViolations() {
     featureRootHooks: [],
     featureToAppImports: [],
     hardcodedText: [],
+    homeRootModules: [],
     inlineScreenProps: [],
     inlineScreenStyles: [],
     lineCounts: [],

@@ -18,6 +18,12 @@ export function inspectFeatureHookPlacement({ rel }, violations) {
   }
 }
 
+export function inspectHomeFeatureRoot({ rel }, violations) {
+  if (rel.match(/^features\/home\/(?!index\.ts$)[^/]+\.(ts|tsx)$/)) {
+    violations.homeRootModules.push(`${rel}: keep home internals under components/, hooks/, models/, screens/, or types/`);
+  }
+}
+
 export function inspectFeatureText({ lines, rel }, violations) {
   if (hardcodedTextAllowList.has(rel) || !rel.startsWith("features/")) return;
   lines.forEach((line, index) => {

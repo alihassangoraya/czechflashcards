@@ -1,5 +1,5 @@
-import type { HomeScreenModel } from "../homeScreenModel";
-import type { HomeScreenProps } from "../homeScreenTypes";
+import type { HomeScreenModel } from "../models/homeScreenModel";
+import type { HomeScreenProps } from "../types/homeScreenTypes";
 
 export type HomeContentProps = Pick<HomeScreenProps, "deck" | "settings" | "onSelectCategory"> & {
   model: HomeScreenModel;

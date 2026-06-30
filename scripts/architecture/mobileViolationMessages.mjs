@@ -7,6 +7,7 @@ export const mobileViolationMessages = [
   ["studyDomainFeatureImports", "Mobile architecture check failed. Study queue/session domain modules must not import feature UI modules:"],
   ["featureRootComponents", "Mobile architecture check failed. Feature UI files must live in components/ or screens/:"],
   ["featureRootHooks", "Mobile architecture check failed. Feature hooks must live in hooks/ folders:"],
+  ["homeRootModules", "Mobile architecture check failed. Home feature internals must live in focused folders:"],
   ["inlineScreenProps", "Mobile architecture check failed. Feature screens must use named props types:"],
   ["inlineScreenStyles", "Mobile architecture check failed. Feature screens must keep styles in sibling style modules:"],
   ["localContractPicks", "Mobile architecture check failed. Keep route and modal prop picks in contract files:"],

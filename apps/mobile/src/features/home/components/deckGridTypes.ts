@@ -1,4 +1,4 @@
-import type { Category } from "../homeContent";
+import type { Category } from "../models/homeContent";
 
 export type DeckGridProps = {
   categories: Category[];

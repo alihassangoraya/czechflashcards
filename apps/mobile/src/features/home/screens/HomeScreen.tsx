@@ -2,9 +2,9 @@ import React from "react";
 import { ScrollView, useWindowDimensions, View } from "react-native";
 import { HomeContent } from "../components/HomeContent";
 import { HomeHero } from "../components/HomeHero";
-import { buildHomeHeroProps } from "../homeHeroPropsAdapter";
-import type { HomeScreenProps } from "../homeScreenTypes";
 import { useHomeScreenModel } from "../hooks/useHomeScreenModel";
+import { buildHomeHeroProps } from "../models/homeHeroPropsAdapter";
+import type { HomeScreenProps } from "../types/homeScreenTypes";
 import { homeScreenStyles as styles } from "./homeScreenStyles";
 
 export function HomeScreen(props: HomeScreenProps) {

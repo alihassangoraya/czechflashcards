@@ -1,6 +1,6 @@
-import type { HomeHeroProps } from "./components/homeHeroTypes";
+import type { HomeHeroProps } from "../components/homeHeroTypes";
 import type { HomeScreenModel } from "./homeScreenModel";
-import type { HomeScreenProps } from "./homeScreenTypes";
+import type { HomeScreenProps } from "../types/homeScreenTypes";
 
 type Input = {
   model: HomeScreenModel;

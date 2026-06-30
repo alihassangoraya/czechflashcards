@@ -1,4 +1,4 @@
-import type { GuideItem } from "./homeCategoryTypes";
+import type { GuideItem } from "../types/homeCategoryTypes";
 
 export const guideItems: GuideItem[] = [
   { icon: "touch-app", textKey: "guide.tapCard" },

@@ -1,5 +1,5 @@
-import { colors } from "../../theme/design";
-import type { Category } from "./homeCategoryTypes";
+import { colors } from "../../../theme/design";
+import type { Category } from "../types/homeCategoryTypes";
 
 export const baseDecks: Category[] = [
   { id: "a2-focus", title: "A2 Focus", icon: "school", color: colors.bohemianBlue },

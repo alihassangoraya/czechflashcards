@@ -1,7 +1,7 @@
 import type { Card } from "@czech-flashcards/shared";
-import type { ReviewStates, StudySettings } from "../../database";
-import type { TranslationKey } from "../../i18n/translations";
-import { deckLabel } from "../settings";
+import type { ReviewStates, StudySettings } from "../../../database";
+import type { TranslationKey } from "../../../i18n/translations";
+import { deckLabel } from "../../settings";
 import { buildHomeCategories, filterVisibleHomeCards } from "./homeCategories";
 import { parseHomeDailyProgress } from "./homeDailyProgress";
 
