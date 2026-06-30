@@ -32,3 +32,14 @@ export type StudyScreenProps = {
   onUndoLastReview: () => void;
   onGrade: (grade: ReviewGrade) => void;
 };
+
+type StudyHeaderProgressKey =
+  | "dailyGoal"
+  | "onBack"
+  | "onOpenGrammar"
+  | "reviewedToday"
+  | "sessionProgress"
+  | "sessionReviews"
+  | "sessionTarget";
+
+export type StudyContentProps = Omit<StudyScreenProps, StudyHeaderProgressKey>;

@@ -1,12 +1,9 @@
 import React from "react";
 import { ScrollView, StyleSheet } from "react-native";
 import { spacing } from "../../../theme/design";
-import { StudyCard } from "./StudyCard";
+import { StudyContentCard } from "./StudyContentCard";
 import { StudyRevealedContent } from "./StudyRevealedContent";
-import { displaySelectedMeaning } from "../studyMeaning";
-import type { StudyScreenProps } from "../studyScreenTypes";
-
-type Props = Omit<StudyScreenProps, "dailyGoal" | "onBack" | "onGrade" | "onOpenGrammar" | "reviewedToday" | "sessionProgress" | "sessionReviews" | "sessionTarget"> & Pick<StudyScreenProps, "onGrade">;
+import type { StudyContentProps } from "../studyScreenTypes";
 
 export function StudyContent({
   current,
@@ -29,14 +26,12 @@ export function StudyContent({
   onCompleteSwipe,
   onUndoLastReview,
   onGrade
-}: Props) {
-  const currentSecondaryMeaning = current ? displaySelectedMeaning(current, settings.meaningLanguage) : "";
-
+}: StudyContentProps) {
   return (
     <ScrollView contentContainerStyle={styles.content} directionalLockEnabled>
-      <StudyCard
+      <StudyContentCard
         current={current}
-        currentSecondaryMeaning={currentSecondaryMeaning}
+        settings={settings}
         savedCardIds={savedCardIds}
         revealed={revealed}
         flipping={flipping}
@@ -47,7 +42,6 @@ export function StudyContent({
         flipProgress={flipProgress}
         cardRotation={cardRotation}
         panHandlers={panHandlers}
-        meaningLanguage={settings.meaningLanguage}
         onFlipCard={onFlipCard}
         onToggleSaved={onToggleSaved}
         onManageDecks={onManageDecks}
