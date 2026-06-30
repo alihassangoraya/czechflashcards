@@ -1,8 +1,9 @@
 import type { Card, ReviewState } from "@czech-flashcards/shared";
-import { chooseVariedDueCard, sortDueCardsByUrgency } from "./dueCardSelection";
+import { chooseVariedDueCard } from "./dueCardSelection";
 import { findQueuedDueCard, pruneShuffledDueQueue } from "./dueShuffleQueue";
-import { takeNextRelearningCard } from "./relearningQueue";
 import type { RelearningEntry } from "./relearningTypes";
+import { selectDueStudyCards } from "./studyQueueDueCards";
+import { selectRelearningStudyCard } from "./studyQueueRelearning";
 
 type SelectionInput = {
   deck: Card[];
@@ -30,23 +31,18 @@ export function selectNextStudyCard({
   recentCardIds,
   now
 }: SelectionInput): SelectionResult {
-  const queuedIds = new Set(relearningQueue.map((entry) => entry.id));
-  const due = sortDueCardsByUrgency(
-    deck.filter((card) => (states[card.id]?.dueAt || 0) <= now && !queuedIds.has(card.id)),
-    states,
-    now
-  );
+  const due = selectDueStudyCards({ deck, states, relearningQueue, now });
   const forced = forcedCardId ? deck.find((card) => card.id === forcedCardId) || null : null;
-  const relearning = forced ? { card: null, queue: relearningQueue } : takeNextRelearningCard(relearningQueue, deck, recentCardIds);
-  const fallbackRelearning = forced || relearning.card || due.length ? { card: null, queue: relearning.queue } : takeNextRelearningCard(relearning.queue, deck, recentCardIds, true);
+  const relearning = selectRelearningStudyCard({ deck, dueCards: due, forced, relearningQueue, recentCardIds });
   const nextShuffledDueQueue = pruneShuffledDueQueue(shuffledDueQueue, due);
   const queued = findQueuedDueCard(nextShuffledDueQueue, due);
-  const nextCard = forced || relearning.card || queued || chooseVariedDueCard(due, states, recentCardIds, now) || fallbackRelearning.card || null;
+  const dueCard = queued || chooseVariedDueCard(due, states, recentCardIds, now);
+  const nextCard = forced || relearning.primaryCard || dueCard || relearning.fallbackCard || null;
 
   return {
     nextCard,
     forced,
     shuffledDueQueue: nextShuffledDueQueue,
-    relearningQueue: fallbackRelearning.queue
+    relearningQueue: relearning.queue
   };
 }
