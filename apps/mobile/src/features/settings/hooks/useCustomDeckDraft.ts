@@ -1,6 +1,6 @@
-import { useState } from "react";
 import type { StudySettings } from "../../../database";
 import { buildCreateDeckPatch, buildDeleteDeckPatch, buildRenameDeckPatch } from "../customDeckDraftModel";
+import { useCustomDeckDraftState } from "./useCustomDeckDraftState";
 
 type Params = {
   settings: StudySettings;
@@ -8,56 +8,39 @@ type Params = {
 };
 
 export function useCustomDeckDraft({ settings, update }: Params) {
-  const [deckName, setDeckName] = useState("");
-  const [editingDeckId, setEditingDeckId] = useState<string | null>(null);
-  const [editingDeckName, setEditingDeckName] = useState("");
-  const [deleteDeckId, setDeleteDeckId] = useState<string | null>(null);
+  const draft = useCustomDeckDraftState();
 
   function createDeck() {
-    const patch = buildCreateDeckPatch(settings, deckName);
+    const patch = buildCreateDeckPatch(settings, draft.deckName);
     if (!patch) return;
     update(patch);
-    setDeckName("");
+    draft.resetDeckName();
   }
 
   function startEditingDeck(deckId: string) {
     const deck = settings.customDecks.find((item) => item.id === deckId);
     if (!deck) return;
-    setEditingDeckId(deck.id);
-    setEditingDeckName(deck.name);
-    setDeleteDeckId(null);
-  }
-
-  function cancelEditingDeck() {
-    setEditingDeckId(null);
-    setEditingDeckName("");
+    draft.startEditingDeck(deck.id, deck.name);
   }
 
   function saveEditingDeck() {
-    if (!editingDeckId) return;
-    const patch = buildRenameDeckPatch(settings, editingDeckId, editingDeckName);
+    if (!draft.editingDeckId) return;
+    const patch = buildRenameDeckPatch(settings, draft.editingDeckId, draft.editingDeckName);
     if (!patch) return;
     update(patch);
-    cancelEditingDeck();
+    draft.cancelEditingDeck();
   }
 
   function deleteDeck(deckId: string) {
     update(buildDeleteDeckPatch(settings, deckId));
-    if (editingDeckId === deckId) cancelEditingDeck();
-    setDeleteDeckId(null);
+    if (draft.editingDeckId === deckId) draft.cancelEditingDeck();
+    draft.setDeleteDeckId(null);
   }
 
   return {
-    deckName,
-    editingDeckId,
-    editingDeckName,
-    deleteDeckId,
-    setDeckName,
-    setEditingDeckName,
-    setDeleteDeckId,
+    ...draft,
     createDeck,
     startEditingDeck,
-    cancelEditingDeck,
     saveEditingDeck,
     deleteDeck
   };
