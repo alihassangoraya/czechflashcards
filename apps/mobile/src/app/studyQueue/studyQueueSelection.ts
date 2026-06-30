@@ -1,27 +1,9 @@
-import type { Card } from "@czech-flashcards/shared";
-import type { ReviewStates } from "../../database";
-import { chooseVariedDueCard } from "./dueCardSelection";
-import { findQueuedDueCard, pruneShuffledDueQueue } from "./dueShuffleQueue";
-import type { RelearningEntry } from "./relearningTypes";
+import { selectDueStudyCard } from "./dueStudyCardSelection";
+import { pruneShuffledDueQueue } from "./dueShuffleQueue";
+import { selectForcedStudyCard } from "./forcedCardSelection";
 import { selectDueStudyCards } from "./studyQueueDueCards";
 import { selectRelearningStudyCard } from "./studyQueueRelearning";
-
-type SelectionInput = {
-  deck: Card[];
-  states: ReviewStates;
-  forcedCardId: string | null;
-  shuffledDueQueue: string[];
-  relearningQueue: RelearningEntry[];
-  recentCardIds: string[];
-  now: number;
-};
-
-export type SelectionResult = {
-  nextCard: Card | null;
-  shuffledDueQueue: string[];
-  relearningQueue: RelearningEntry[];
-  forced: Card | null;
-};
+import type { StudyQueueSelectionInput, StudyQueueSelectionResult } from "./studyQueueSelectionTypes";
 
 export function selectNextStudyCard({
   deck,
@@ -31,13 +13,12 @@ export function selectNextStudyCard({
   relearningQueue,
   recentCardIds,
   now
-}: SelectionInput): SelectionResult {
+}: StudyQueueSelectionInput): StudyQueueSelectionResult {
   const due = selectDueStudyCards({ deck, states, relearningQueue, now });
-  const forced = forcedCardId ? deck.find((card) => card.id === forcedCardId) || null : null;
+  const forced = selectForcedStudyCard(deck, forcedCardId);
   const relearning = selectRelearningStudyCard({ deck, dueCards: due, forced, relearningQueue, recentCardIds });
   const nextShuffledDueQueue = pruneShuffledDueQueue(shuffledDueQueue, due);
-  const queued = findQueuedDueCard(nextShuffledDueQueue, due);
-  const dueCard = queued || chooseVariedDueCard(due, states, recentCardIds, now);
+  const dueCard = selectDueStudyCard({ dueCards: due, states, shuffledDueQueue: nextShuffledDueQueue, recentCardIds, now });
   const nextCard = forced || relearning.primaryCard || dueCard || relearning.fallbackCard || null;
 
   return {
