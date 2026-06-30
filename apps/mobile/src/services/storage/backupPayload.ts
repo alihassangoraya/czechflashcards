@@ -1,5 +1,5 @@
-import type { Card, DailyProgress } from "@czech-flashcards/shared";
-import type { ReviewStates, StudySettings, WebStore } from "./storageTypes";
+import type { Card } from "@czech-flashcards/shared";
+import type { CardOverrides, DailyProgressLog, ReviewStates, StudySettings, WebStore } from "./storageTypes";
 
 export type BackupPayload = Partial<WebStore> & {
   store?: Partial<WebStore>;
@@ -7,10 +7,10 @@ export type BackupPayload = Partial<WebStore> & {
   reviewStates?: ReviewStates;
   importedCards?: Card[];
   customCards?: Card[];
-  editedCards?: Record<string, Card>;
+  editedCards?: CardOverrides;
   savedCardIds?: string[];
-  dailyLog?: Record<string, DailyProgress>;
-  dailyProgress?: Record<string, DailyProgress>;
+  dailyLog?: DailyProgressLog;
+  dailyProgress?: DailyProgressLog;
   dailyGoal?: number;
   examLevel?: StudySettings["examLevel"];
   meaningLanguage?: StudySettings["meaningLanguage"];

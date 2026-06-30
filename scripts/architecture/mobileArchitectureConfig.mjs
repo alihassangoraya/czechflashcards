@@ -20,6 +20,9 @@ export const allowedRootServiceFiles = new Set(["services/fileTransfer.ts"]);
 
 export const canonicalTypeFiles = new Map([
   ["AuthMode", "services/sync/syncTypes.ts"],
+  ["CardOverrides", "services/storage/storageTypes.ts"],
+  ["CustomCards", "services/storage/storageTypes.ts"],
+  ["DailyProgressLog", "services/storage/storageTypes.ts"],
   ["DeckMemberships", "services/storage/storageTypes.ts"],
   ["ReviewStates", "services/storage/storageTypes.ts"],
   ["SavedCardIds", "services/storage/storageTypes.ts"],
@@ -31,6 +34,18 @@ export const rawCollectionTypeRules = [
   {
     pattern: /\bdeckMemberships:\s*Record<string,\s*string\[\]>/,
     message: "use DeckMemberships instead of a raw deck membership map"
+  },
+  {
+    pattern: /\b(?:dailyProgress|dailyLog):\s*Record<string,\s*DailyProgress>/,
+    message: "use DailyProgressLog instead of a raw daily-progress map"
+  },
+  {
+    pattern: /\bcustomCards:\s*Record<string,\s*CustomCard>/,
+    message: "use CustomCards instead of a raw custom-card map"
+  },
+  {
+    pattern: /\b(?:overrides|editedCards):\s*Record<string,\s*Card>/,
+    message: "use CardOverrides instead of a raw card-override map"
   },
   {
     pattern: /\b(?:states|reviewStates|progress):\s*Record<string,\s*ReviewState>/,

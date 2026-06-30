@@ -1,6 +1,6 @@
 import type { Card } from "@czech-flashcards/shared";
 import { normalizeCards } from "@czech-flashcards/shared";
-import type { CustomCard, StudySettings, WebStore } from "./storageTypes";
+import type { CustomCards, StudySettings, WebStore } from "./storageTypes";
 import { DEFAULT_SETTINGS } from "./storageTypes";
 import { normalizeStore } from "./storageCore";
 import type { BackupPayload } from "./backupPayload";
@@ -22,9 +22,9 @@ export function normalizeBackupStore(current: WebStore, backup: BackupPayload): 
   });
 }
 
-function normalizeCustomCards(value: unknown): Record<string, CustomCard> {
+function normalizeCustomCards(value: unknown): CustomCards {
   if (!value) return {};
-  if (!Array.isArray(value) && typeof value === "object") return value as Record<string, CustomCard>;
+  if (!Array.isArray(value) && typeof value === "object") return value as CustomCards;
   const cards = normalizeCards(value as Card[]);
   return Object.fromEntries(cards.map((card) => [card.id, { card }]));
 }
