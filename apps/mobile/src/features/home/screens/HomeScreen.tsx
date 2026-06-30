@@ -1,44 +1,15 @@
 import React from "react";
 import { ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
-import type { Card, ReviewState } from "@czech-flashcards/shared";
-import type { StudySettings } from "../../../database";
-import { useI18n } from "../../../i18n/I18nProvider";
-import { spacing, typography } from "../../../theme/design";
-import { DailyGoalCard } from "../components/DailyGoalCard";
-import { DeckGrid } from "../components/DeckGrid";
+import { HomeContent } from "../components/HomeContent";
 import { HomeHero } from "../components/HomeHero";
-import { StudyGuide } from "../components/StudyGuide";
-import { buildHomeScreenModel } from "../homeScreenModel";
+import type { HomeScreenProps } from "../homeScreenTypes";
+import { useHomeScreenModel } from "../useHomeScreenModel";
 
-type Props = {
-  deck: Card[];
-  allCards: Card[];
-  states: Record<string, ReviewState>;
-  settings: StudySettings;
-  savedCount: number;
-  customCount: number;
-  dailyProgress: string;
-  accountEmail: string | null;
-  syncStatus: string;
-  onStartStudy: () => void;
-  onStartQuiz: () => void;
-  onSelectCategory: (category: string) => void;
-  onSearch: () => void;
-  onAdd: () => void;
-  onSettings: () => void;
-  onAccount: () => void;
-};
-
-export function HomeScreen({
+export function HomeScreen(props: HomeScreenProps) {
+  const {
   deck,
-  allCards,
-  states,
   settings,
-  savedCount,
-  customCount,
-  dailyProgress,
   accountEmail,
-  syncStatus,
   onStartStudy,
   onStartQuiz,
   onSelectCategory,
@@ -46,28 +17,18 @@ export function HomeScreen({
   onAdd,
   onSettings,
   onAccount
-}: Props) {
-  const { t } = useI18n();
+  } = props;
   const { width } = useWindowDimensions();
   const isWideLayout = width >= 768;
-  const { activeDeckLabel, categories, dailyGoalProgress, dueCount } = buildHomeScreenModel({
-    deck,
-    allCards,
-    states,
-    settings,
-    savedCount,
-    customCount,
-    dailyProgress,
-    translate: t
-  });
+  const model = useHomeScreenModel(props);
 
   return (
     <View style={styles.screen}>
-    <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
+    <ScrollView style={styles.scroll}>
       <HomeHero
-        activeDeckLabel={activeDeckLabel}
+        activeDeckLabel={model.activeDeckLabel}
         examLevel={settings.examLevel}
-        dueCount={dueCount}
+        dueCount={model.dueCount}
         accountEmail={accountEmail}
         wide={isWideLayout}
         onStartStudy={onStartStudy}
@@ -77,9 +38,7 @@ export function HomeScreen({
         onSettings={onSettings}
         onAccount={onAccount}
       />
-      <DailyGoalCard reviewedToday={dailyGoalProgress.reviewedToday} dailyGoal={dailyGoalProgress.dailyGoal} ratio={dailyGoalProgress.dailyRatio} />
-      <DeckGrid categories={categories} selectedDeckId={settings.deckFilter} currentDeckCount={deck.length} onSelectCategory={onSelectCategory} />
-      <StudyGuide />
+      <HomeContent deck={deck} settings={settings} model={model} onSelectCategory={onSelectCategory} />
     </ScrollView>
     </View>
   );
@@ -87,6 +46,5 @@ export function HomeScreen({
 
 const styles = StyleSheet.create({
   screen: { flex: 1 },
-  scroll: { flex: 1 },
-  content: { gap: typography.bodyLarge, paddingBottom: spacing.screenBottom }
+  scroll: { flex: 1 }
 });
