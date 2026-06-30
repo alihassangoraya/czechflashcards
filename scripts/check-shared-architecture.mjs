@@ -4,7 +4,7 @@ import { join, relative } from "node:path";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const sharedSrc = join(root, "packages/shared/src");
-const maxLines = 100;
+const maxLines = 80;
 const files = [];
 
 async function collect(directory) {
