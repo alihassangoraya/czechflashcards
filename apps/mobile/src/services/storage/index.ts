@@ -24,6 +24,6 @@ export {
   seedCards,
   setCardSaved,
   undoReviewResult
-} from "./services/storage";
+} from "./storagePublicApi";
 
-export type { AppDatabase, CardOverrides, CustomCard, CustomCards, CustomDeck, DailyProgressLog, DeckMemberships, ReviewStates, SavedCardIds, StudySettings, SyncEntry, WebStore } from "./services/storage";
+export type { AppDatabase, CardOverrides, CustomCard, CustomCards, CustomDeck, DailyProgressLog, DeckMemberships, ReviewStates, SavedCardIds, StudySettings, SyncEntry, WebStore } from "./storagePublicApi";
