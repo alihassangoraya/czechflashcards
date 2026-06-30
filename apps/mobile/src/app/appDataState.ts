@@ -44,3 +44,5 @@ export function useAppDataState() {
     applySnapshot
   };
 }
+
+export type AppDataState = ReturnType<typeof useAppDataState>;
