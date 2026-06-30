@@ -26,6 +26,6 @@ const styles = StyleSheet.create({
     borderColor: colors.borderSoft,
     backfaceVisibility: "hidden"
   },
-  word: { fontSize: typography.word, lineHeight: 56, color: colors.textStrong, fontWeight: typography.weightBold, textAlign: "center" },
+  word: { fontSize: typography.word, lineHeight: typography.wordLine, color: colors.textStrong, fontWeight: typography.weightBold, textAlign: "center" },
   hint: { color: colors.textMuted, marginTop: typography.bodyLarge, textAlign: "center", fontWeight: typography.weightRegular }
 });

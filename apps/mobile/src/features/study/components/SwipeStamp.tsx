@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, Text } from "react-native";
 import { useI18n } from "../../../i18n/I18nProvider";
-import { colors, radius, size, spacing } from "../../../theme/design";
+import { colors, radius, size, spacing, typography } from "../../../theme/design";
 import type { SwipeDirection } from "../animations/animationTypes";
 
 export function SwipeStamp({ direction }: { direction: SwipeDirection }) {
@@ -25,9 +25,9 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     paddingVertical: spacing.lg,
     backgroundColor: colors.stampSurface,
-    fontSize: 62,
-    fontWeight: "900",
-    lineHeight: 68,
+    fontSize: typography.stamp,
+    fontWeight: typography.weightBlack,
+    lineHeight: typography.stampLine,
     textAlign: "center",
     textTransform: "uppercase"
   },

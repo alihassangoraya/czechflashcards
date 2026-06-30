@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, Text } from "react-native";
 import { useI18n } from "../../../i18n/I18nProvider";
-import { colors } from "../../../theme/design";
+import { colors, typography } from "../../../theme/design";
 
 export function GrammarEmptyState() {
   const { t } = useI18n();
@@ -9,5 +9,5 @@ export function GrammarEmptyState() {
 }
 
 const styles = StyleSheet.create({
-  muted: { color: colors.textMuted, lineHeight: 20 }
+  muted: { color: colors.textMuted, lineHeight: typography.compactLine }
 });

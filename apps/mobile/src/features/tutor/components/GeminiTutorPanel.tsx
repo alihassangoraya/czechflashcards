@@ -78,10 +78,10 @@ const styles = StyleSheet.create({
   eyebrow: { color: colors.warning, fontSize: typography.caption, fontWeight: typography.weightSemibold, textTransform: "uppercase" },
   title: { color: colors.text, fontSize: typography.titleSmall, fontWeight: typography.weightBold, marginTop: spacing.xxs },
   close: { width: 34, height: 34, alignItems: "center", justifyContent: "center", borderRadius: radius.md, borderWidth: spacing.hairline, borderColor: colors.borderSoft },
-  closeText: { color: colors.text, fontSize: 25, lineHeight: 27, fontWeight: typography.weightBold },
+  closeText: { color: colors.text, fontSize: typography.closeIcon, lineHeight: typography.closeIconLine, fontWeight: typography.weightBold },
   loading: { alignItems: "center", gap: spacing.lgPlus, paddingVertical: spacing.panel },
   muted: { color: colors.muted, fontWeight: typography.weightRegular },
   copy: { gap: spacing.lg },
   section: { color: colors.primary, fontSize: typography.label, fontWeight: typography.weightSemibold, textTransform: "uppercase", marginTop: spacing.sm },
-  body: { color: colors.textSoft, fontSize: typography.body, lineHeight: 21, fontWeight: typography.weightRegular }
+  body: { color: colors.textSoft, fontSize: typography.body, lineHeight: typography.bodyLine, fontWeight: typography.weightRegular }
 });

@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
   todayCard: { flexDirection: "row", alignItems: "center", gap: spacing.xl, marginHorizontal: spacing.page, borderRadius: radius.xl, borderWidth: spacing.hairline, borderColor: colors.borderSoft, backgroundColor: colors.surfaceWarm, padding: spacing.xlPlus },
   todayIcon: { width: 44, height: 44, alignItems: "center", justifyContent: "center", borderRadius: radius.lg, backgroundColor: colors.goldSoft },
   todayCopy: { flex: 1, gap: 5 },
-  todayTitle: { color: colors.charcoalText, fontSize: 16, fontWeight: typography.weightBold },
-  todayCount: { color: colors.bohemianGold, fontSize: 15, fontWeight: typography.weightSemibold },
-  todayMeta: { color: colors.mutedSlate, fontSize: 13, fontWeight: typography.weightRegular }
+  todayTitle: { color: colors.charcoalText, fontSize: typography.bodyLarge, fontWeight: typography.weightBold },
+  todayCount: { color: colors.bohemianGold, fontSize: typography.categoryTitle, fontWeight: typography.weightSemibold },
+  todayMeta: { color: colors.mutedSlate, fontSize: typography.bodySmall, fontWeight: typography.weightRegular }
 });

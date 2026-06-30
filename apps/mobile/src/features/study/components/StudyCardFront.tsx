@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
   },
   word: {
     fontSize: typography.word,
-    lineHeight: 56,
+    lineHeight: typography.wordLine,
     color: colors.textStrong,
     fontWeight: typography.weightBold,
     textAlign: "center"

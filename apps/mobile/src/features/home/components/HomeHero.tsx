@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
   heroIconGroup: { flexDirection: "row", alignItems: "center", gap: spacing.xs },
   heroCopy: { gap: 2 },
   heroEyebrow: { color: colors.heroTextMuted, fontSize: typography.label, fontWeight: typography.weightMedium },
-  heroTitle: { color: colors.heroText, fontSize: typography.display, lineHeight: 33, fontWeight: typography.weightBold },
+  heroTitle: { color: colors.heroText, fontSize: typography.display, lineHeight: typography.heroLine, fontWeight: typography.weightBold },
   heroSubtitle: { color: colors.heroTextSecondary, fontSize: typography.body, fontWeight: typography.weightRegular },
   heroActions: { flexDirection: "row", gap: 8 },
   reviewAction: { flex: 1, minHeight: 40, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: spacing.md, borderRadius: radius.lg, backgroundColor: colors.surface, paddingHorizontal: spacing.lgPlus },
