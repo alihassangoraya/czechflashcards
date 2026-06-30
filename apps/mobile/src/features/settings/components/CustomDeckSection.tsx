@@ -4,6 +4,7 @@ import type { CustomDeck } from "../../../database";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { CustomDeckCreateRow } from "./CustomDeckCreateRow";
 import { CustomDeckList } from "./CustomDeckList";
+import { createCustomDeckListItems } from "./customDeckListItems";
 import { SettingsSection } from "./SettingsSection";
 
 type Props = {
@@ -29,14 +30,13 @@ type Props = {
 
 export function CustomDeckSection({ deckName, decks, cards, deckMemberships, activeDeckId, editingDeckId, editingDeckName, deleteDeckId, onDeckNameChange, onCreateDeck, onSelectDeck, onStartEditDeck, onEditingDeckNameChange, onCancelEditDeck, onSaveEditDeck, onRequestDeleteDeck, onCancelDeleteDeck, onConfirmDeleteDeck }: Props) {
   const { t } = useI18n();
+  const deckItems = createCustomDeckListItems(decks, cards, deckMemberships);
 
   return (
     <SettingsSection icon="folder" title={t("settings.myDecks")} description={t("settings.myDecksDescription")}>
       <CustomDeckCreateRow deckName={deckName} onDeckNameChange={onDeckNameChange} onCreateDeck={onCreateDeck} />
       <CustomDeckList
-        decks={decks}
-        cards={cards}
-        deckMemberships={deckMemberships}
+        items={deckItems}
         activeDeckId={activeDeckId}
         editingDeckId={editingDeckId}
         editingDeckName={editingDeckName}

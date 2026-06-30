@@ -1,15 +1,11 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import type { Card } from "@czech-flashcards/shared";
-import type { CustomDeck } from "../../../database";
-import { customDeckCardCount } from "../../decks";
 import { spacing } from "../../../theme/design";
+import type { CustomDeckListItem } from "./customDeckListItems";
 import { CustomDeckRow } from "./CustomDeckRow";
 
 type Props = {
-  decks: CustomDeck[];
-  cards: Card[];
-  deckMemberships: Record<string, string[]>;
+  items: CustomDeckListItem[];
   activeDeckId: string;
   editingDeckId: string | null;
   editingDeckName: string;
@@ -24,16 +20,16 @@ type Props = {
   onConfirmDeleteDeck: (deckId: string) => void;
 };
 
-export function CustomDeckList({ decks, cards, deckMemberships, activeDeckId, editingDeckId, editingDeckName, deleteDeckId, onSelectDeck, onStartEditDeck, onEditingDeckNameChange, onCancelEditDeck, onSaveEditDeck, onRequestDeleteDeck, onCancelDeleteDeck, onConfirmDeleteDeck }: Props) {
-  if (!decks.length) return null;
+export function CustomDeckList({ items, activeDeckId, editingDeckId, editingDeckName, deleteDeckId, onSelectDeck, onStartEditDeck, onEditingDeckNameChange, onCancelEditDeck, onSaveEditDeck, onRequestDeleteDeck, onCancelDeleteDeck, onConfirmDeleteDeck }: Props) {
+  if (!items.length) return null;
 
   return (
     <View style={styles.customDeckList}>
-      {decks.map((deck) => (
+      {items.map(({ deck, count }) => (
         <CustomDeckRow
           key={deck.id}
           deck={deck}
-          count={customDeckCardCount(deck, cards, deckMemberships)}
+          count={count}
           active={activeDeckId === deck.id}
           editing={editingDeckId === deck.id}
           deleting={deleteDeckId === deck.id}
