@@ -1,5 +1,5 @@
 import type { Card } from "@czech-flashcards/shared";
-import type { TranslationKey } from "../../i18n/translations";
+import type { TranslationKey } from "../../../i18n/translations";
 
 export type GrammarModel = {
   genderKey: TranslationKey;

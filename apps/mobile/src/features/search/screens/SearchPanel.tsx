@@ -5,7 +5,7 @@ import { SearchNoResults } from "../components/SearchNoResults";
 import { SearchPrompt } from "../components/SearchPrompt";
 import { SearchResultMeta } from "../components/SearchResultMeta";
 import { SearchResultsList } from "../components/SearchResultsList";
-import { searchCards } from "../searchCards";
+import { searchCards } from "../models/searchCards";
 import { searchPanelStyles as styles } from "./searchPanelStyles";
 import type { SearchPanelProps } from "./searchPanelTypes";
 

@@ -3,7 +3,7 @@ import { StyleSheet, View } from "react-native";
 import type { Card } from "@czech-flashcards/shared";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { spacing } from "../../../theme/design";
-import { getGrammarModel } from "../grammarModel";
+import { getGrammarModel } from "../models/grammarModel";
 import { GrammarBanner } from "./GrammarBanner";
 import { GrammarExample } from "./GrammarExample";
 import { GrammarNounGuide } from "./GrammarNounGuide";
