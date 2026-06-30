@@ -13,6 +13,7 @@ export function inspectMobileFile(source, violations) {
   inspectAppImports(source, violations);
   inspectFeatureImports(source, violations);
   inspectRootAppHandlers(source, violations);
+  inspectRootAppShellData(source, violations);
   inspectRootServices(source, violations);
   inspectCanonicalTypes(source, violations);
 }
@@ -67,6 +68,12 @@ function inspectFeatureImports({ lines, rel }, violations) {
 function inspectRootAppHandlers({ rel }, violations) {
   if (rel.match(/^app\/[^/]+Handlers\.ts$/)) {
     violations.rootAppHandlers.push(`${rel}: move handler composition into a focused folder under app/`);
+  }
+}
+
+function inspectRootAppShellData({ rel }, violations) {
+  if (rel === "app/appShellDataProps.ts") {
+    violations.rootAppShellData.push(`${rel}: move shell data projection into app/shellData/`);
   }
 }
 
