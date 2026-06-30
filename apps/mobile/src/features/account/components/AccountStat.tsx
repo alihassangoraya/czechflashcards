@@ -1,8 +1,9 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { colors, spacing, typography } from "../../../theme/design";
+import type { AccountStatProps } from "./accountStatTypes";
 
-export function AccountStat({ count, label, color }: { count: number; label: string; color: string }) {
+export function AccountStat({ count, label, color }: AccountStatProps) {
   return (
     <View style={styles.stat}>
       <Text style={[styles.count, { color }]}>{count}</Text>

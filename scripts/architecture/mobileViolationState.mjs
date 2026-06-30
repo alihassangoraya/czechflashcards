@@ -1,39 +1,18 @@
+import { createBoundaryViolations } from "./mobileViolationState/boundaryViolations.mjs";
+import { createFeatureViolations } from "./mobileViolationState/featureViolations.mjs";
+import { createPlatformViolations } from "./mobileViolationState/platformViolations.mjs";
+
 export function createMobileArchitectureViolations() {
   return {
+    ...createFeatureViolations(),
+    ...createBoundaryViolations(),
+    ...createPlatformViolations(),
     duplicateTypes: [],
     defaultExports: [],
-    featureRootComponents: [],
-    featureRootHooks: [],
-    featureToAppImports: [],
-    focusedFeatureRoots: [],
-    hardcodedText: [],
-    inlineScreenProps: [],
-    inlineScreenStyles: [],
     lineCounts: [],
-    localContractPicks: [],
     localeSections: [],
     localeSettingsSections: [],
-    materialIconPrivateImports: [],
-    materialIconPropTypes: [],
     rawCollectionTypes: [],
-    rootAppData: [],
-    rootAppCards: [],
-    rootAppHandlers: [],
-    rootAppFeedback: [],
-    rootAppNavigation: [],
-    rootAppSettingsTools: [],
-    rootAppShellData: [],
-    rootAppStudy: [],
-    rootContractFiles: [],
-    rootSourceFiles: [],
-    rootServices: [],
-    serviceFacadeImports: [],
-    serviceNamespaceImports: [],
-    rootPlatformServices: [],
-    appDeepFeatureImports: [],
-    appDataStateComposition: [],
-    sharedComponentContracts: [],
-    studyDomainFeatureImports: [],
     wildcardExports: []
   };
 }

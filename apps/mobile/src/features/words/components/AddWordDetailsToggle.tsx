@@ -3,8 +3,9 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { MaterialIcons } from "../../../components/MaterialIcons";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
+import type { AddWordDetailsToggleProps } from "./addWordDetailsToggleTypes";
 
-export function AddWordDetailsToggle({ expanded, onToggle }: { expanded: boolean; onToggle: () => void }) {
+export function AddWordDetailsToggle({ expanded, onToggle }: AddWordDetailsToggleProps) {
   const { t } = useI18n();
 
   return (

@@ -1,11 +1,11 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import type { Card } from "@czech-flashcards/shared";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, spacing, typography } from "../../../theme/design";
 import { ExampleSpeechButton } from "./ExampleSpeechButton";
+import type { CardExampleBlockProps } from "./cardExampleBlockTypes";
 
-export function CardExampleBlock({ card }: { card: Card }) {
+export function CardExampleBlock({ card }: CardExampleBlockProps) {
   const { t, textAlign } = useI18n();
 
   if (!card.sentence) return null;

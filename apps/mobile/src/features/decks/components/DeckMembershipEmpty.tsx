@@ -3,8 +3,9 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { MaterialIcons } from "../../../components/MaterialIcons";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
+import type { DeckMembershipEmptyProps } from "./deckMembershipEmptyTypes";
 
-export function DeckMembershipEmpty({ onOpenSettings }: { onOpenSettings: () => void }) {
+export function DeckMembershipEmpty({ onOpenSettings }: DeckMembershipEmptyProps) {
   const { t } = useI18n();
 
   return (

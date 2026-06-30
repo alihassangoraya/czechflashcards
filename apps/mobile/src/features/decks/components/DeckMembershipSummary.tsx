@@ -1,10 +1,10 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import type { Card } from "@czech-flashcards/shared";
 import { MaterialIcons } from "../../../components/MaterialIcons";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
+import type { DeckMembershipSummaryProps } from "./deckMembershipSummaryTypes";
 
-export function DeckMembershipSummary({ card }: { card: Card }) {
+export function DeckMembershipSummary({ card }: DeckMembershipSummaryProps) {
   return (
     <View style={styles.wordSummary}>
       <MaterialIcons name="library-add" size={size.iconMedium} color={colors.primaryDeep} />

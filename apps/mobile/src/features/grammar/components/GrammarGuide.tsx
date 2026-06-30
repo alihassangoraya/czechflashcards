@@ -1,6 +1,5 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import type { Card } from "@czech-flashcards/shared";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { spacing } from "../../../theme/design";
 import { getGrammarModel } from "../models/grammarModel";
@@ -8,8 +7,9 @@ import { GrammarBanner } from "./GrammarBanner";
 import { GrammarExample } from "./GrammarExample";
 import { GrammarNounGuide } from "./GrammarNounGuide";
 import { GrammarVerbGuide } from "./GrammarVerbGuide";
+import type { GrammarGuideProps } from "./grammarGuideTypes";
 
-export function GrammarGuide({ card }: { card: Card }) {
+export function GrammarGuide({ card }: GrammarGuideProps) {
   const { t } = useI18n();
   const grammar = getGrammarModel(card);
   const gender = t(grammar.genderKey);

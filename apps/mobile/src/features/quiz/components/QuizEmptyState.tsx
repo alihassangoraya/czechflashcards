@@ -3,8 +3,9 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { MaterialIcons } from "../../../components/MaterialIcons";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
+import type { QuizEmptyStateProps } from "./quizEmptyStateTypes";
 
-export function QuizEmptyState({ onClose }: { onClose: () => void }) {
+export function QuizEmptyState({ onClose }: QuizEmptyStateProps) {
   const { t, textAlign } = useI18n();
 
   return (

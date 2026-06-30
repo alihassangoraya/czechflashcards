@@ -2,8 +2,9 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
+import type { CustomWordsHeaderProps } from "./customWordsHeaderTypes";
 
-export function CustomWordsHeader({ count }: { count: number }) {
+export function CustomWordsHeader({ count }: CustomWordsHeaderProps) {
   const { t, textAlign } = useI18n();
 
   return (

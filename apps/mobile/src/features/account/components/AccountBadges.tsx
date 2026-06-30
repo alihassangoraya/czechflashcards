@@ -3,10 +3,10 @@ import { StyleSheet, Text, View } from "react-native";
 import { MaterialIcons } from "../../../components/MaterialIcons";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
-import type { AccountStudySummary } from "../types/accountTypes";
 import { buildAccountBadges } from "./accountBadgesModel";
+import type { AccountBadgesProps } from "./accountBadgesTypes";
 
-export function AccountBadges({ summary }: { summary: AccountStudySummary }) {
+export function AccountBadges({ summary }: AccountBadgesProps) {
   const { t } = useI18n();
 
   return (

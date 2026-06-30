@@ -1,8 +1,9 @@
 import React from "react";
 import { Pressable, StyleSheet, Text } from "react-native";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
+import type { ReviewButtonProps } from "./reviewButtonTypes";
 
-export function ReviewButton({ disabled, style, label, interval, onPress }: { disabled: boolean; style: object; label: string; interval: string; onPress: () => void }) {
+export function ReviewButton({ disabled, style, label, interval, onPress }: ReviewButtonProps) {
   return (
     <Pressable disabled={disabled} style={[styles.button, style, disabled && styles.disabled]} onPress={onPress}>
       <Text style={styles.text}>{label}</Text>

@@ -1,8 +1,9 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { colors, radius, spacing } from "../../../theme/design";
+import type { SettingGroupProps } from "./settingGroupTypes";
 
-export function SettingGroup({ children }: { children: React.ReactNode }) {
+export function SettingGroup({ children }: SettingGroupProps) {
   return <View style={styles.settingGroup}>{children}</View>;
 }
 

@@ -1,12 +1,12 @@
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import type { Card } from "@czech-flashcards/shared";
 import { speak } from "../../../services/speech";
 import { MaterialIcons } from "../../../components/MaterialIcons";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, shadow, size, spacing, typography } from "../../../theme/design";
+import type { QuizPromptCardProps } from "./quizPromptCardTypes";
 
-export function QuizPromptCard({ card }: { card: Card }) {
+export function QuizPromptCard({ card }: QuizPromptCardProps) {
   const { t, textAlign } = useI18n();
 
   return (

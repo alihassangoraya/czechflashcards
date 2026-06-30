@@ -2,8 +2,9 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, spacing, typography } from "../../../theme/design";
+import type { SearchResultMetaProps } from "./searchResultMetaTypes";
 
-export function SearchResultMeta({ count }: { count: number }) {
+export function SearchResultMeta({ count }: SearchResultMetaProps) {
   const { t, textAlign } = useI18n();
   const label = count === 1 ? t("search.match") : t("search.matchesPlural");
 

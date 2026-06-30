@@ -5,6 +5,12 @@ export function inspectFeaturePlacement({ lines, rel }, violations) {
     violations.featureRootComponents.push(`${rel}: move feature UI files into components/ or screens/`);
   }
 
+  if (rel.match(/^features\/[^/]+\/components\/[^/]+\.tsx$/)) {
+    lines.forEach((line, index) => {
+      if (line.match(/export function .*:\s*\{/)) violations.featureComponentContracts.push(`${rel}:${index + 1}: use a named component props type`);
+    });
+  }
+
   if (rel.match(/^features\/[^/]+\/screens\/[^/]+\.tsx$/)) {
     lines.forEach((line, index) => {
       if (line.match(/export function .*:\s*\{/)) violations.inlineScreenProps.push(`${rel}:${index + 1}: use a named screen props type`);

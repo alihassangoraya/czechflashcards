@@ -1,9 +1,10 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { MaterialIcons, type MaterialIconName } from "../../../components/MaterialIcons";
+import { MaterialIcons } from "../../../components/MaterialIcons";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
+import type { RelatedWordsProps } from "./relatedWordsTypes";
 
-export function RelatedWords({ label, icon, value, color }: { label: string; icon: MaterialIconName; value: string; color: string }) {
+export function RelatedWords({ label, icon, value, color }: RelatedWordsProps) {
   const words = value.split(",").map((word) => word.trim()).filter(Boolean);
   if (!words.length) return null;
   return (

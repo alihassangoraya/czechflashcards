@@ -1,13 +1,13 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import type { Card } from "@czech-flashcards/shared";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, spacing } from "../../../theme/design";
 import { GrammarDetailCard } from "./GrammarDetailCard";
 import { RelatedWords } from "./RelatedWords";
 import { WordDetailsHeader } from "./WordDetailsHeader";
+import type { WordDetailsPanelProps } from "./wordDetailsPanelTypes";
 
-export function WordDetailsPanel({ card }: { card: Card }) {
+export function WordDetailsPanel({ card }: WordDetailsPanelProps) {
   const { t } = useI18n();
   const hasRelatedWords = Boolean(card.synonyms || card.antonyms);
   if (!hasRelatedWords && !card.grammar && !card.googleCategory) return null;

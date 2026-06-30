@@ -1,10 +1,10 @@
 import React from "react";
 import { Text } from "react-native";
 import { useI18n } from "../../../i18n/I18nProvider";
-import type { SwipeDirection } from "../animations/animationTypes";
 import { swipeStampStyles as styles } from "./swipeStampStyles";
+import type { SwipeStampProps } from "./swipeStampTypes";
 
-export function SwipeStamp({ direction }: { direction: SwipeDirection }) {
+export function SwipeStamp({ direction }: SwipeStampProps) {
   const { t } = useI18n();
 
   return (
