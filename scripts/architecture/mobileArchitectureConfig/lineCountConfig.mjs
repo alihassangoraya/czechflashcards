@@ -1,6 +1,5 @@
-export const defaultMaxLines = 60;
+export const defaultMaxLines = 50;
 
 export const maxLinesByPath = new Map([
-  ["components/MaterialIcons.tsx", 110],
-  ["theme/tokens/colors.ts", 120]
+  ["components/MaterialIcons.tsx", 110]
 ]);
