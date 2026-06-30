@@ -7,6 +7,7 @@ export const hiSettingsStudyPlanTranslations = {
   "settings.appLanguage": "ऐप भाषा",
   "settings.appLanguageDescription": "इंटरफ़ेस भाषा चुनें. शब्दावली चेक-केंद्रित रहेगी.",
   "settings.themeMode": "थीम",
+  "settings.themeSystem": "सिस्टम",
   "settings.themeLight": "लाइट",
   "settings.themeDark": "डार्क",
   "settings.dailyTarget": "दैनिक लक्ष्य",

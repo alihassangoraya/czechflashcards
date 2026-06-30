@@ -7,6 +7,7 @@ export const csSettingsStudyPlanTranslations = {
   "settings.appLanguage": "Jazyk aplikace",
   "settings.appLanguageDescription": "Vyber jazyk rozhraní. Slovíčka zůstávají česky.",
   "settings.themeMode": "Motiv",
+  "settings.themeSystem": "Systém",
   "settings.themeLight": "Světlý",
   "settings.themeDark": "Tmavý",
   "settings.dailyTarget": "Denní cíl",

@@ -4,6 +4,7 @@ import { motion } from "./motion";
 import { typography } from "./typography";
 
 export type ThemeMode = "light" | "dark";
+export type ThemePreference = ThemeMode | "system";
 
 const shared = { spacing, radius, size, typography, motion } as const;
 
@@ -14,6 +15,6 @@ export const themes = {
 
 export type AppTheme = (typeof themes)[ThemeMode];
 
-export function getTheme(mode: ThemeMode = "dark"): AppTheme {
+export function getTheme(mode: ThemeMode): AppTheme {
   return themes[mode];
 }

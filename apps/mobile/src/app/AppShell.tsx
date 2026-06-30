@@ -7,13 +7,16 @@ import { appShellStyles as styles } from "./appShellStyles";
 import type { AppShellProps } from "./appTypes";
 import { MainScreens } from "./MainScreens";
 import { ThemeModeSync } from "./ThemeModeSync";
+import { resolveThemePreference } from "../theme/systemThemeMode";
 
 export function AppShell(props: AppShellProps) {
+  const resolvedThemeMode = resolveThemePreference(props.settings.themeMode);
+
   return (
     <I18nProvider language={props.settings.appLanguage}>
       <SafeAreaView style={styles.shell}>
-        <ThemeModeSync themeMode={props.settings.themeMode} />
-        <StatusBar barStyle={props.settings.themeMode === "dark" ? "light-content" : "dark-content"} />
+        <ThemeModeSync themePreference={props.settings.themeMode} />
+        <StatusBar barStyle={resolvedThemeMode === "dark" ? "light-content" : "dark-content"} />
         <MainScreens {...props} />
         <AppPanels {...props} />
         <AppToast message={props.toastMessage} />

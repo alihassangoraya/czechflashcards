@@ -7,6 +7,7 @@ export const ukSettingsStudyPlanTranslations = {
   "settings.appLanguage": "Мова додатка",
   "settings.appLanguageDescription": "Вибери мову інтерфейсу. Словник залишається чеським.",
   "settings.themeMode": "Тема",
+  "settings.themeSystem": "Система",
   "settings.themeLight": "Світла",
   "settings.themeDark": "Темна",
   "settings.dailyTarget": "Денна ціль",

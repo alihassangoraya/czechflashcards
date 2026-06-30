@@ -7,6 +7,7 @@ export const enSettingsStudyPlanTranslations = {
   "settings.appLanguage": "App language",
   "settings.appLanguageDescription": "Choose the interface language. Vocabulary stays Czech-first.",
   "settings.themeMode": "Theme",
+  "settings.themeSystem": "System",
   "settings.themeLight": "Light",
   "settings.themeDark": "Dark",
   "settings.dailyTarget": "Daily target",

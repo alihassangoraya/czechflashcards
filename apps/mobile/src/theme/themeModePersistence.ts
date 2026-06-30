@@ -1,23 +1,24 @@
-import type { ThemeMode } from "./tokens/themeFactory";
+import type { ThemePreference } from "./tokens/themeFactory";
 
 export const THEME_MODE_STORAGE_KEY = "czechFlashcards.themeMode";
 
-export function isThemeMode(value: unknown): value is ThemeMode {
-  return value === "light" || value === "dark";
+export function isThemePreference(value: unknown): value is ThemePreference {
+  return value === "system" || value === "light" || value === "dark";
 }
 
-export function readStoredThemeMode(fallback: ThemeMode = "dark"): ThemeMode {
+export function readStoredThemePreference(fallback: ThemePreference = "system"): ThemePreference {
   try {
     const stored = globalThis.localStorage?.getItem(THEME_MODE_STORAGE_KEY);
-    return isThemeMode(stored) ? stored : fallback;
+    return isThemePreference(stored) ? stored : fallback;
   } catch {
     return fallback;
   }
 }
 
-export function writeStoredThemeMode(themeMode: ThemeMode): void {
+export function writeStoredThemePreference(themePreference: ThemePreference): void {
   try {
-    globalThis.localStorage?.setItem(THEME_MODE_STORAGE_KEY, themeMode);
+    if (themePreference === "system") globalThis.localStorage?.removeItem(THEME_MODE_STORAGE_KEY);
+    else globalThis.localStorage?.setItem(THEME_MODE_STORAGE_KEY, themePreference);
   } catch {
     // Native platforms do not expose localStorage; settings persistence remains the source of truth there.
   }

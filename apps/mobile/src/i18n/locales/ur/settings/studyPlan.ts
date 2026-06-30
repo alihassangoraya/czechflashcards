@@ -7,6 +7,7 @@ export const urSettingsStudyPlanTranslations = {
   "settings.appLanguage": "ایپ زبان",
   "settings.appLanguageDescription": "انٹرفیس زبان منتخب کریں۔ الفاظ چیک ہی رہیں گے۔",
   "settings.themeMode": "تھیم",
+  "settings.themeSystem": "سسٹم",
   "settings.themeLight": "لائٹ",
   "settings.themeDark": "ڈارک",
   "settings.dailyTarget": "روزانہ ہدف",
