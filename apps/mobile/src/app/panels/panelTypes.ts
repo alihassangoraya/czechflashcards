@@ -1,47 +1,20 @@
-import type { Card } from "@czech-flashcards/shared";
-import type { DeckMemberships, SavedCardIds, StudySettings } from "../../database";
-import type { AccountPanelProps, AccountStudySummary } from "../../features/account";
-import type { AppSupabaseClient, SyncStatus } from "../../sync";
-import type { AddWordValues, CorrectionValues } from "../appShellTypes";
-import type { Panel } from "../appTypes";
+import type {
+  PanelAccountDataProps,
+  PanelAccountHandlers,
+  PanelCardDataProps,
+  PanelCardHandlers,
+  PanelNavigationHandlers,
+  PanelSettingsDataProps,
+  PanelSettingsHandlers,
+  PanelStateProps
+} from "./panelTypes/index";
 
-export type AppPanelProps = {
-  panel: Panel | null;
-  cards: Card[];
-  customCards: Card[];
-  settings: StudySettings;
-  savedCardIds: SavedCardIds;
-  deckMemberships: DeckMemberships;
-  current: Card | null;
-  deckManagementCard: Card | null;
-  editingCard: Card | null;
-  query: string;
-  syncStatus: SyncStatus;
-  settingsNotice: string;
-  accountEmail: string | null;
-  authBusy: boolean;
-  accountStudySummary: AccountStudySummary;
-  supabase: AppSupabaseClient;
-  onSetPanel: (panel: Panel | null) => void;
-  onQueryChange: (value: string) => void;
-  onStudySearchResult: (card: Card) => void;
-  onToggleSaved: (cardId: string, showFeedback?: boolean) => void;
-  onAddCardToDeck: (deckId: string, cardId: string) => void;
-  onRemoveCardFromDeck: (deckId: string, cardId: string) => void;
-  onSetDeckManagementCard: (card: Card | null) => void;
-  onOpenCardEditor: (card?: Card | null) => void;
-  onCloseCardEditor: () => void;
-  onAddWord: (values: AddWordValues) => void;
-  onDeleteWord: (cardId: string) => void;
-  onSaveCorrection: (values: CorrectionValues) => void;
-  onChangeSettings: (settings: StudySettings) => void;
-  onSyncNow: () => void;
-  onRestoreJson: () => void;
-  onImportCsv: () => void;
-  onShuffleDue: () => void;
-  onReviewAllNow: () => void;
-  onExportProgress: () => void;
-  onExportDeck: () => void;
-  onAuthenticate: AccountPanelProps["onAuthenticate"];
-  onSignOut: AccountPanelProps["onSignOut"];
-};
+export type AppPanelProps =
+  PanelStateProps &
+  PanelCardDataProps &
+  PanelSettingsDataProps &
+  PanelAccountDataProps &
+  PanelNavigationHandlers &
+  PanelCardHandlers &
+  PanelSettingsHandlers &
+  PanelAccountHandlers;
