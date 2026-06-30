@@ -1,6 +1,7 @@
 import React from "react";
-import { StudyCardFaces, type StudyCardFacesProps } from "./StudyCardFaces";
+import { StudyCardFaces } from "./StudyCardFaces";
 import type { CurrentStudyCardProps } from "./currentStudyCardTypes";
+import type { StudyCardFacesProps } from "./studyCardFacesTypes";
 
 function toStudyCardFacesProps({ savedCardIds, ...props }: CurrentStudyCardProps): StudyCardFacesProps {
   return {
