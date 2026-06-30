@@ -40,6 +40,7 @@ const featureToAppImportViolations = [];
 const featureRootComponentViolations = [];
 const duplicateTypeViolations = [];
 const studyDomainFeatureImportViolations = [];
+const inlineScreenPropsViolations = [];
 const canonicalTypeFiles = new Map([
   ["AuthMode", "services/sync/syncTypes.ts"],
   ["StudyAnimations", "app/studyAnimationTypes.ts"],
@@ -61,6 +62,12 @@ for (const file of files) {
 
   if (rel.match(/^features\/[^/]+\/[^/]+\.tsx$/)) {
     featureRootComponentViolations.push(`${rel}: move feature UI files into components/ or screens/`);
+  }
+
+  if (rel.match(/^features\/[^/]+\/screens\/[^/]+\.tsx$/)) {
+    lines.forEach((line, index) => {
+      if (line.match(/export function .*:\s*\{/)) inlineScreenPropsViolations.push(`${rel}:${index + 1}: use a named screen props type`);
+    });
   }
 
   if (rel.startsWith("app/")) {
@@ -119,6 +126,12 @@ if (featureRootComponentViolations.length) {
   failed = true;
   console.error("Mobile architecture check failed. Feature UI files must live in components/ or screens/:");
   console.error(featureRootComponentViolations.join("\n"));
+}
+
+if (inlineScreenPropsViolations.length) {
+  failed = true;
+  console.error("Mobile architecture check failed. Feature screens must use named props types:");
+  console.error(inlineScreenPropsViolations.join("\n"));
 }
 
 if (violations.length) {
