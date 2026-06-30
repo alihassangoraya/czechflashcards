@@ -1,10 +1,11 @@
 import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import type { Card } from "@czech-flashcards/shared";
 import type { CustomDeck } from "../../../database";
 import MaterialIcons from "../../../components/MaterialIcons";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
 import { customCardDeckLabel } from "../wordDecks";
+import { CustomWordActions } from "./CustomWordActions";
 import { DeleteWordWarning } from "./DeleteWordWarning";
 
 type Props = {
@@ -33,14 +34,7 @@ export function CustomWordRow({ card, decks, deleting, onRequestDelete, onCancel
           </View>
           <Text style={styles.meaning} numberOfLines={2}>{card.en}</Text>
         </View>
-        <View style={styles.actions}>
-          <Pressable style={styles.editButton} onPress={() => onEdit(card)} accessibilityRole="button" accessibilityLabel={`Edit ${card.cz}`}>
-            <MaterialIcons name="edit" size={size.iconSmall} color={colors.action} />
-          </Pressable>
-          <Pressable style={[styles.deleteButton, deleting && styles.deleteButtonActive]} onPress={() => onRequestDelete(card.id)} accessibilityRole="button" accessibilityLabel={`Delete ${card.cz}`}>
-            <MaterialIcons name="delete-outline" size={size.iconSmall} color={colors.danger} />
-          </Pressable>
-        </View>
+        <CustomWordActions deleting={deleting} word={card.cz} onEdit={() => onEdit(card)} onRequestDelete={() => onRequestDelete(card.id)} />
       </View>
       {deleting && <DeleteWordWarning onCancel={onCancelDelete} onConfirm={() => onConfirmDelete(card.id)} />}
     </View>
@@ -56,9 +50,5 @@ const styles = StyleSheet.create({
   word: { color: colors.textStrong, fontSize: typography.body, fontWeight: typography.weightSemibold },
   deckPill: { maxWidth: size.cardHeight / 2, borderRadius: radius.card, backgroundColor: colors.surfaceMuted, paddingHorizontal: spacing.smd, paddingVertical: spacing.xxs },
   deckText: { color: colors.textSoft, fontSize: typography.caption, fontWeight: typography.weightSemibold },
-  meaning: { color: colors.textMuted, fontSize: typography.bodySmall, lineHeight: typography.bodyLarge },
-  actions: { flexDirection: "row", alignItems: "center", gap: spacing.xs },
-  editButton: { width: size.cardAction, height: size.cardAction, alignItems: "center", justifyContent: "center", borderRadius: radius.sm, backgroundColor: colors.actionSoft },
-  deleteButton: { width: size.cardAction, height: size.cardAction, alignItems: "center", justifyContent: "center", borderRadius: radius.sm, backgroundColor: colors.dangerSoft },
-  deleteButtonActive: { borderWidth: spacing.hairline, borderColor: colors.danger }
+  meaning: { color: colors.textMuted, fontSize: typography.bodySmall, lineHeight: typography.bodyLarge }
 });
