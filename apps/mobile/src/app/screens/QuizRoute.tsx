@@ -1,9 +1,7 @@
 import React from "react";
 import { QuizScreen } from "../../features/quiz";
-import type { MainScreenProps } from "./screenTypes";
+import type { QuizRouteProps } from "./routeTypes";
 
-type Props = Pick<MainScreenProps, "deck" | "onSetScreen">;
-
-export function QuizRoute({ deck, onSetScreen }: Props) {
+export function QuizRoute({ deck, onSetScreen }: QuizRouteProps) {
   return <QuizScreen deck={deck} onClose={() => onSetScreen("home")} />;
 }

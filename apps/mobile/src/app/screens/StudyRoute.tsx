@@ -1,10 +1,8 @@
 import React from "react";
 import { StudyScreen } from "../../features/study";
-import type { MainScreenProps } from "./screenTypes";
+import type { StudyRouteProps } from "./routeTypes";
 
-type Props = Pick<MainScreenProps, "current" | "settings" | "savedCardIds" | "revealed" | "grading" | "lastReviewCard" | "sessionReviews" | "sessionTarget" | "reviewedToday" | "dailyGoal" | "sessionProgress" | "studyAnimations" | "reviewInterval" | "onSetScreen" | "onSetPanel" | "onToggleSaved" | "onSetDeckManagementCard" | "onOpenCardEditor" | "onUndoLastReview" | "onGrade">;
-
-export function StudyRoute({ current, settings, savedCardIds, revealed, grading, lastReviewCard, sessionReviews, sessionTarget, reviewedToday, dailyGoal, sessionProgress, studyAnimations, reviewInterval, onSetScreen, onSetPanel, onToggleSaved, onSetDeckManagementCard, onOpenCardEditor, onUndoLastReview, onGrade }: Props) {
+export function StudyRoute({ current, settings, savedCardIds, revealed, grading, lastReviewCard, sessionReviews, sessionTarget, reviewedToday, dailyGoal, sessionProgress, studyAnimations, reviewInterval, onSetScreen, onSetPanel, onToggleSaved, onSetDeckManagementCard, onOpenCardEditor, onUndoLastReview, onGrade }: StudyRouteProps) {
   return (
     <StudyScreen
       current={current}

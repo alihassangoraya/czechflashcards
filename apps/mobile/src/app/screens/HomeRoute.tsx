@@ -1,10 +1,8 @@
 import React from "react";
 import { HomeScreen } from "../../features/home";
-import type { MainScreenProps } from "./screenTypes";
+import type { HomeRouteProps } from "./routeTypes";
 
-type Props = Pick<MainScreenProps, "deck" | "cards" | "customCards" | "states" | "settings" | "savedCardIds" | "dailyProgress" | "accountEmail" | "syncStatus" | "onStartStudy" | "onSelectCategory" | "onSetPanel" | "onSetScreen">;
-
-export function HomeRoute({ deck, cards, customCards, states, settings, savedCardIds, dailyProgress, accountEmail, syncStatus, onStartStudy, onSelectCategory, onSetPanel, onSetScreen }: Props) {
+export function HomeRoute({ deck, cards, customCards, states, settings, savedCardIds, dailyProgress, accountEmail, syncStatus, onStartStudy, onSelectCategory, onSetPanel, onSetScreen }: HomeRouteProps) {
   return (
     <HomeScreen
       deck={deck}

@@ -1,10 +1,8 @@
 import React from "react";
 import { AuthScreen } from "../../features/account";
-import type { MainScreenProps } from "./screenTypes";
+import type { AuthRouteProps } from "./routeTypes";
 
-type Props = Pick<MainScreenProps, "screen" | "syncStatus" | "authBusy" | "onSetScreen" | "onAuthenticate">;
-
-export function AuthRoute({ screen, syncStatus, authBusy, onSetScreen, onAuthenticate }: Props) {
+export function AuthRoute({ screen, syncStatus, authBusy, onSetScreen, onAuthenticate }: AuthRouteProps) {
   return (
     <AuthScreen
       configured={syncStatus !== "not-configured"}
