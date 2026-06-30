@@ -6,7 +6,7 @@ export function isThemeMode(value: unknown): value is ThemeMode {
   return value === "light" || value === "dark";
 }
 
-export function readStoredThemeMode(fallback: ThemeMode = "light"): ThemeMode {
+export function readStoredThemeMode(fallback: ThemeMode = "dark"): ThemeMode {
   try {
     const stored = globalThis.localStorage?.getItem(THEME_MODE_STORAGE_KEY);
     return isThemeMode(stored) ? stored : fallback;

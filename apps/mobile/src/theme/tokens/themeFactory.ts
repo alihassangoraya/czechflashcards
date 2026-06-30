@@ -14,6 +14,6 @@ export const themes = {
 
 export type AppTheme = (typeof themes)[ThemeMode];
 
-export function getTheme(mode: ThemeMode = "light"): AppTheme {
+export function getTheme(mode: ThemeMode = "dark"): AppTheme {
   return themes[mode];
 }
