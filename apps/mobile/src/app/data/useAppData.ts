@@ -7,7 +7,7 @@ import { refreshAppData } from "./appDataRefresh";
 import { persistAppSettings } from "./appDataSettings";
 import { syncAppDataNow } from "./appDataSyncNow";
 import { useAppDataState } from "./appDataState";
-import { useAuthActions } from "../useAuthActions";
+import { useAuthActions } from "./useAuthActions";
 
 export function useAppData(supabase: SupabaseClient | null) {
   const state = useAppDataState();

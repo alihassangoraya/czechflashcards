@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { signInWithPassword, signOut, signUpWithPassword, type AuthMode } from "../sync";
+import { signInWithPassword, signOut, signUpWithPassword, type AuthMode } from "../../sync";
 
 export function useAuthActions(supabase: SupabaseClient | null, onAuthenticated: () => Promise<void>) {
   const [authBusy, setAuthBusy] = useState(false);
