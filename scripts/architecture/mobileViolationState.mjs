@@ -9,6 +9,7 @@ export function createMobileArchitectureViolations() {
     lineCounts: [],
     localContractPicks: [],
     localeSections: [],
+    materialIconPrivateImports: [],
     materialIconPropTypes: [],
     rawCollectionTypes: [],
     rootAppData: [],
