@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import type { Panel, Screen } from "./appTypes";
+import type { Panel, Screen } from "../appTypes";
 import { useWebRouteSync } from "./useWebRouteSync";
 import { getInitialScreenFromLocation, syncScreenPath } from "./webRoutes";
 

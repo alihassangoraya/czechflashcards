@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import type { Screen } from "./appTypes";
+import type { Screen } from "../appTypes";
 import { screenFromPath, syncScreenPath } from "./webRoutes";
 
 type Params = {

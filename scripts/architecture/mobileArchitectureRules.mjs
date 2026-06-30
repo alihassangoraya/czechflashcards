@@ -15,6 +15,7 @@ export function inspectMobileFile(source, violations) {
   inspectRootAppData(source, violations);
   inspectRootAppCards(source, violations);
   inspectRootAppHandlers(source, violations);
+  inspectRootAppNavigation(source, violations);
   inspectRootAppShellData(source, violations);
   inspectRootServices(source, violations);
   inspectCanonicalTypes(source, violations);
@@ -82,6 +83,12 @@ function inspectRootAppCards({ rel }, violations) {
 function inspectRootAppHandlers({ rel }, violations) {
   if (rel.match(/^app\/[^/]+Handlers\.ts$/)) {
     violations.rootAppHandlers.push(`${rel}: move handler composition into a focused folder under app/`);
+  }
+}
+
+function inspectRootAppNavigation({ rel }, violations) {
+  if (rel.match(/^app\/(?:useAppNavigation|useWebRouteSync|webRoutes)\.ts$/)) {
+    violations.rootAppNavigation.push(`${rel}: move app navigation modules into app/navigation/`);
   }
 }
 

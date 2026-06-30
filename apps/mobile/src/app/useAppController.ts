@@ -5,7 +5,7 @@ import { buildAppShellHandlers } from "./shellHandlers";
 import { useAppData } from "./data/useAppData";
 import { useCardManagement } from "./cards/useCardManagement";
 import { useFilteredStudyDeck } from "./cards/useFilteredStudyDeck";
-import { useAppNavigation } from "./useAppNavigation";
+import { useAppNavigation } from "./navigation/useAppNavigation";
 import { useSettingsTools } from "./useSettingsTools";
 import { useStudySession } from "./useStudySession";
 import { useToast } from "./useToast";

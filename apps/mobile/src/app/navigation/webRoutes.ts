@@ -1,4 +1,4 @@
-import type { Screen } from "./appTypes";
+import type { Screen } from "../appTypes";
 
 const screenPaths: Record<Screen, string> = {
   home: "/",
