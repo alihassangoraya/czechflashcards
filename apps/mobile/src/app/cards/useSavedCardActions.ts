@@ -2,12 +2,13 @@ import { useRef } from "react";
 import type { Card } from "@czech-flashcards/shared";
 import { loadSavedCardIds, setCardSaved, type AppDatabase } from "../../database";
 import { useI18n } from "../../i18n/I18nProvider";
+import { updateSavedCardIds, type SavedCardIds } from "./savedCardState";
 
 type Props = {
   db: AppDatabase | null;
   cards: Card[];
-  savedCardIds: Set<string>;
-  setSavedCardIds: (savedCardIds: Set<string> | ((previous: Set<string>) => Set<string>)) => void;
+  savedCardIds: SavedCardIds;
+  setSavedCardIds: (savedCardIds: SavedCardIds | ((previous: SavedCardIds) => SavedCardIds)) => void;
   showToast: (message: string) => void;
 };
 
@@ -21,12 +22,7 @@ export function useSavedCardActions({ db, cards, savedCardIds, setSavedCardIds, 
     savingCardIds.current.add(cardId);
     const nextSaved = !savedCardIds.has(cardId);
     const card = cards.find((item) => item.id === cardId);
-    setSavedCardIds((previous) => {
-      const next = new Set(previous);
-      if (nextSaved) next.add(cardId);
-      else next.delete(cardId);
-      return next;
-    });
+    setSavedCardIds((previous) => updateSavedCardIds(previous, cardId, nextSaved));
 
     const word = card?.cz || t("toast.cardFallback");
     if (showFeedback) showToast(nextSaved ? t("toast.starredAdded", { word }) : t("toast.starredRemoved", { word }));
