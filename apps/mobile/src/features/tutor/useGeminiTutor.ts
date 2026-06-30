@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Card } from "@czech-flashcards/shared";
-import { explainCzechCard, type GeminiTutorResult } from "../../services/geminiTutor";
+import { explainCzechCard, type GeminiTutorResult } from "../../services/gemini/tutorService";
 
 export function useGeminiTutor(card: Card | null) {
   const [openForId, setOpenForId] = useState<string | null>(null);

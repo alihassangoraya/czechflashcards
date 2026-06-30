@@ -1,9 +1,9 @@
 import type { Card } from "@czech-flashcards/shared";
-import { generateGeminiText } from "./gemini/geminiClient";
-import type { GeminiTutorResult } from "./gemini/geminiTypes";
-import { buildTutorLessonPrompt, buildTutorPhoneticPrompt } from "./gemini/tutorPrompts";
+import { generateGeminiText } from "./geminiClient";
+import type { GeminiTutorResult } from "./geminiTypes";
+import { buildTutorLessonPrompt, buildTutorPhoneticPrompt } from "./tutorPrompts";
 
-export type { GeminiTutorResult } from "./gemini/geminiTypes";
+export type { GeminiTutorResult } from "./geminiTypes";
 
 export async function explainCzechCard(card: Card): Promise<GeminiTutorResult> {
   const [lesson, phonetics] = await Promise.all([

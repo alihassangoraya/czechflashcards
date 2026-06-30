@@ -40,6 +40,8 @@ const duplicateTypeViolations = [];
 const studyDomainFeatureImportViolations = [];
 const inlineScreenPropsViolations = [];
 const localeSectionViolations = [];
+const rootServiceViolations = [];
+const allowedRootServiceFiles = new Set(["services/fileTransfer.ts"]);
 const canonicalTypeFiles = new Map([
   ["AuthMode", "services/sync/syncTypes.ts"],
   ["StudyAnimations", "app/studyAnimationTypes.ts"],
@@ -83,6 +85,10 @@ for (const file of files) {
       const appImport = line.match(/from\s+["'](?:\.\.\/)+app\/[^"']+["']/);
       if (appImport) featureToAppImportViolations.push(`${rel}:${index + 1}: ${line.trim()}`);
     });
+  }
+
+  if (rel.match(/^services\/[^/]+\.(ts|tsx)$/) && !allowedRootServiceFiles.has(rel)) {
+    rootServiceViolations.push(`${rel}: move service logic into a domain folder under services/`);
   }
 
   for (const [typeName, canonicalPath] of canonicalTypeFiles) {
@@ -159,6 +165,12 @@ if (localeSectionViolations.length) {
   failed = true;
   console.error("Mobile architecture check failed. Keep i18n catalogs split into matching feature sections:");
   console.error(localeSectionViolations.join("\n"));
+}
+
+if (rootServiceViolations.length) {
+  failed = true;
+  console.error("Mobile architecture check failed. Service implementations must live in domain service folders:");
+  console.error(rootServiceViolations.join("\n"));
 }
 
 if (failed) process.exit(1);

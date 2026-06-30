@@ -1,6 +1,6 @@
 import React from "react";
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
-import type { GeminiTutorResult } from "../../../services/geminiTutor";
+import type { GeminiTutorResult } from "../../../services/gemini/tutorService";
 import { colors, radius, shadow, size, spacing, typography } from "../../../theme/design";
 
 type Props = {
