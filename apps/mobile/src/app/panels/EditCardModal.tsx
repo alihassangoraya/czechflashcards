@@ -2,11 +2,9 @@ import React from "react";
 import { AppModal } from "../../components/AppModal";
 import { EditCardForm } from "../../features/words";
 import { useI18n } from "../../i18n/I18nProvider";
-import type { AppPanelProps } from "./panelTypes";
+import type { EditCardModalProps } from "./modalTypes";
 
-type Props = Pick<AppPanelProps, "panel" | "editingCard" | "onCloseCardEditor" | "onSaveCorrection">;
-
-export function EditCardModal({ panel, editingCard, onCloseCardEditor, onSaveCorrection }: Props) {
+export function EditCardModal({ panel, editingCard, onCloseCardEditor, onSaveCorrection }: EditCardModalProps) {
   const { t } = useI18n();
   return (
     <AppModal visible={panel === "edit"} title={t("modal.edit")} onClose={onCloseCardEditor}>

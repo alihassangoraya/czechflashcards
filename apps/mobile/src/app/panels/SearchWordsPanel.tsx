@@ -2,11 +2,9 @@ import React from "react";
 import { AppModal } from "../../components/AppModal";
 import { SearchPanel } from "../../features/search";
 import { useI18n } from "../../i18n/I18nProvider";
-import type { AppPanelProps } from "./panelTypes";
+import type { SearchWordsPanelProps } from "./modalTypes";
 
-type Props = Pick<AppPanelProps, "panel" | "cards" | "query" | "settings" | "savedCardIds" | "onSetPanel" | "onQueryChange" | "onStudySearchResult" | "onToggleSaved" | "onSetDeckManagementCard" | "onOpenCardEditor">;
-
-export function SearchWordsPanel({ panel, cards, query, settings, savedCardIds, onSetPanel, onQueryChange, onStudySearchResult, onToggleSaved, onSetDeckManagementCard, onOpenCardEditor }: Props) {
+export function SearchWordsPanel({ panel, cards, query, settings, savedCardIds, onSetPanel, onQueryChange, onStudySearchResult, onToggleSaved, onSetDeckManagementCard, onOpenCardEditor }: SearchWordsPanelProps) {
   const { t } = useI18n();
   return (
     <AppModal visible={panel === "search"} title={t("modal.search")} onClose={() => onSetPanel(null)}>

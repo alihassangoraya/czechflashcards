@@ -2,11 +2,9 @@ import React from "react";
 import { AppModal } from "../../components/AppModal";
 import { AddWordPanel } from "../../features/words";
 import { useI18n } from "../../i18n/I18nProvider";
-import type { AppPanelProps } from "./panelTypes";
+import type { AddWordModalProps } from "./modalTypes";
 
-type Props = Pick<AppPanelProps, "panel" | "customCards" | "settings" | "onSetPanel" | "onAddWord" | "onDeleteWord" | "onOpenCardEditor">;
-
-export function AddWordModal({ panel, customCards, settings, onSetPanel, onAddWord, onDeleteWord, onOpenCardEditor }: Props) {
+export function AddWordModal({ panel, customCards, settings, onSetPanel, onAddWord, onDeleteWord, onOpenCardEditor }: AddWordModalProps) {
   const { t } = useI18n();
   return (
     <AppModal visible={panel === "add"} title={t("modal.add")} onClose={() => onSetPanel(null)}>
