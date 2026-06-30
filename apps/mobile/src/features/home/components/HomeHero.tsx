@@ -1,9 +1,9 @@
 import React from "react";
-import { ImageBackground, Pressable, StyleSheet, Text, View } from "react-native";
-import MaterialIcons from "../../../components/MaterialIcons";
+import { ImageBackground, StyleSheet, Text, View } from "react-native";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
 import pragueHero from "../../../../assets/images/prague_hero_banner.jpg";
+import { HomeHeroActions } from "./HomeHeroActions";
 import { HeroIcon } from "./HeroIcon";
 
 type Props = {
@@ -22,6 +22,9 @@ type Props = {
 
 export function HomeHero({ activeDeckLabel, examLevel, dueCount, accountEmail, wide, onStartStudy, onStartQuiz, onSearch, onAdd, onSettings, onAccount }: Props) {
   const { t, textAlign } = useI18n();
+  const reviewLabel = dueCount > 0 ? t("common.reviewDue", { count: dueCount }) : t("common.startReview");
+  const quizLabel = t("common.quiz");
+  const quizAccessibilityLabel = t("home.startQuiz");
 
   return (
     <ImageBackground source={pragueHero as never} style={[styles.hero, wide && styles.heroWide]} imageStyle={styles.heroImage} resizeMode="cover">
@@ -40,16 +43,7 @@ export function HomeHero({ activeDeckLabel, examLevel, dueCount, accountEmail, w
         <Text style={[styles.heroTitle, { textAlign }]}>{t("home.greeting")}</Text>
         <Text style={[styles.heroSubtitle, { textAlign }]}>{dueCount > 0 ? t("home.cardsReady", { count: dueCount }) : t("home.keepFresh")}</Text>
       </View>
-      <View style={styles.heroActions}>
-        <Pressable style={styles.reviewAction} onPress={onStartStudy} accessibilityRole="button" accessibilityLabel={dueCount > 0 ? t("common.reviewDue", { count: dueCount }) : t("common.startReview")}>
-          <MaterialIcons name="play-arrow" size={size.icon} color={colors.charcoalText} />
-          <Text style={styles.reviewActionText}>{dueCount > 0 ? t("common.reviewDue", { count: dueCount }) : t("common.startReview")}</Text>
-        </Pressable>
-        <Pressable style={styles.quizAction} onPress={onStartQuiz} accessibilityRole="button" accessibilityLabel={t("home.startQuiz")}>
-          <MaterialIcons name="psychology" size={size.iconSmall} color={colors.onPrimary} />
-          <Text style={styles.quizActionText}>{t("common.quiz")}</Text>
-        </Pressable>
-      </View>
+      <HomeHeroActions reviewLabel={reviewLabel} quizLabel={quizLabel} quizAccessibilityLabel={quizAccessibilityLabel} onStartStudy={onStartStudy} onStartQuiz={onStartQuiz} />
     </ImageBackground>
   );
 }
@@ -65,10 +59,5 @@ const styles = StyleSheet.create({
   heroCopy: { gap: spacing.xxs },
   heroEyebrow: { color: colors.heroTextMuted, fontSize: typography.label, fontWeight: typography.weightMedium },
   heroTitle: { color: colors.heroText, fontSize: typography.display, lineHeight: typography.heroLine, fontWeight: typography.weightBold },
-  heroSubtitle: { color: colors.heroTextSecondary, fontSize: typography.body, fontWeight: typography.weightRegular },
-  heroActions: { flexDirection: "row", gap: spacing.lg },
-  reviewAction: { flex: 1, minHeight: size.actionMinHeight, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: spacing.md, borderRadius: radius.lg, backgroundColor: colors.surface, paddingHorizontal: spacing.lgPlus },
-  reviewActionText: { color: colors.text, fontSize: typography.body, fontWeight: typography.weightSemibold },
-  quizAction: { minWidth: size.quizOptionHeight, minHeight: size.actionMinHeight, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: spacing.smd, borderRadius: radius.lg, borderWidth: spacing.hairline, borderColor: colors.heroOutline, backgroundColor: colors.heroControl, paddingHorizontal: spacing.lgPlus },
-  quizActionText: { color: colors.onPrimary, fontSize: typography.body, fontWeight: typography.weightSemibold }
+  heroSubtitle: { color: colors.heroTextSecondary, fontSize: typography.body, fontWeight: typography.weightRegular }
 });
