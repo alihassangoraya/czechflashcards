@@ -1,14 +1,14 @@
 import React from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import MaterialIcons from "../../../components/MaterialIcons";
+import { ScrollView, StyleSheet, View } from "react-native";
 import type { Card } from "@czech-flashcards/shared";
 import { useI18n } from "../../../i18n/I18nProvider";
-import { colors, radius, size, spacing, typography } from "../../../theme/design";
+import { colors, spacing } from "../../../theme/design";
 import { QuizEmptyState } from "../components/QuizEmptyState";
 import { QuizExitConfirmModal } from "../components/QuizExitConfirmModal";
 import { QuizFeedback } from "../components/QuizFeedback";
 import { QuizHeader } from "../components/QuizHeader";
 import { QuizOption } from "../components/QuizOption";
+import { QuizPrimaryAction } from "../components/QuizPrimaryAction";
 import { QuizProgress } from "../components/QuizProgress";
 import { QuizPromptCard } from "../components/QuizPromptCard";
 import { QuizResultScreen } from "../components/QuizResultScreen";
@@ -32,6 +32,8 @@ export function QuizScreen({ deck, onClose }: Props) {
   }
 
   const question = quiz.question;
+  const isFinalQuestion = quiz.index + 1 === quiz.questions.length;
+  const actionLabel = quiz.checked ? (isFinalQuestion ? t("quiz.seeResults") : t("quiz.nextQuestion")) : t("quiz.checkAnswer");
 
   return (
     <>
@@ -56,10 +58,7 @@ export function QuizScreen({ deck, onClose }: Props) {
 
         {quiz.checked && <QuizFeedback correct={quiz.isCorrect} correctAnswer={question.options[question.correctIndex]} />}
 
-        <Pressable disabled={quiz.selected == null} style={[styles.primaryButton, quiz.selected == null && styles.disabled]} onPress={quiz.next} accessibilityRole="button">
-          <Text style={styles.primaryText}>{quiz.checked ? (quiz.index + 1 === quiz.questions.length ? t("quiz.seeResults") : t("quiz.nextQuestion")) : t("quiz.checkAnswer")}</Text>
-          <MaterialIcons name={quiz.checked ? "arrow-forward" : "check"} size={size.icon} color={colors.onPrimary} />
-        </Pressable>
+        <QuizPrimaryAction disabled={quiz.selected == null} label={actionLabel} checked={quiz.checked} onPress={quiz.next} />
 
         <QuizExitConfirmModal visible={quiz.showExitConfirm} onCancel={() => quiz.setShowExitConfirm(false)} onConfirm={quiz.confirmClose} />
       </ScrollView>
@@ -70,8 +69,5 @@ export function QuizScreen({ deck, onClose }: Props) {
 const styles = StyleSheet.create({
   scroll: { flex: 1, backgroundColor: colors.background },
   content: { gap: spacing.xlPlus, paddingHorizontal: spacing.page, paddingBottom: spacing.screenBottom },
-  options: { gap: spacing.lg },
-  primaryButton: { minHeight: size.reviewButton, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: spacing.lg, borderRadius: radius.md, backgroundColor: colors.primaryDeep, paddingHorizontal: spacing.hero },
-  primaryText: { color: colors.onPrimary, fontSize: typography.bodyLarge, fontWeight: typography.weightSemibold },
-  disabled: { opacity: 0.42 }
+  options: { gap: spacing.lg }
 });

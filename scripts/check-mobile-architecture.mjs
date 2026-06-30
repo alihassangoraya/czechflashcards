@@ -4,8 +4,9 @@ import { relative, join } from "node:path";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const srcRoot = join(root, "apps/mobile/src");
-const defaultMaxLines = 100;
+const defaultMaxLines = 90;
 const maxLinesByPath = new Map([
+  ["components/MaterialIcons.tsx", 110],
   ["theme/tokens/colors.ts", 120]
 ]);
 const localeLanguages = ["en", "cs", "hi", "ur"];
