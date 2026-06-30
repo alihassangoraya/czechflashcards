@@ -1,11 +1,8 @@
 const fs = require("fs");
 const path = require("path");
+const { normalizedCzech } = require("./text/czechText");
 
 const overridesPath = path.resolve(__dirname, "..", "data", "legacy-urdu-overrides.json");
-
-function normalizedCzech(value) {
-  return String(value || "").normalize("NFC").trim().toLocaleLowerCase("cs-CZ");
-}
 
 function loadLegacyUrduOverrides() {
   if (!fs.existsSync(overridesPath)) return new Map();
