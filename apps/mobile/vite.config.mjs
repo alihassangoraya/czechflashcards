@@ -1,5 +1,7 @@
 import { defineConfig, loadEnv } from "vite";
 
+const vocabularyChunkWarningLimitKb = 3200;
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), ["VITE_", "EXPO_PUBLIC_"]);
 
@@ -20,7 +22,18 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       outDir: "dist",
-      emptyOutDir: true
+      emptyOutDir: true,
+      chunkSizeWarningLimit: vocabularyChunkWarningLimitKb,
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes("vocabulary.seed.json")) return "seed-vocabulary";
+            if (id.includes("node_modules/react-native-web") || id.includes("node_modules/react") || id.includes("node_modules/scheduler")) return "vendor-react-native";
+            if (id.includes("node_modules/@supabase")) return "vendor-supabase";
+            if (id.includes("packages/shared")) return "shared";
+          }
+        }
+      }
     }
   };
 });

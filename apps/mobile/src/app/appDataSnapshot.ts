@@ -9,7 +9,7 @@ import {
   seedCards,
   type AppDatabase
 } from "../database";
-import { seedCardsNormalized, seedVersion } from "./appSeed";
+import { loadSeedCards } from "./appSeed";
 
 export type AppDataSnapshot = {
   cards: Card[];
@@ -21,7 +21,8 @@ export type AppDataSnapshot = {
 
 export async function openSeededDatabase() {
   const database = await openAppDatabase();
-  await seedCards(database, seedCardsNormalized, seedVersion);
+  const seed = await loadSeedCards();
+  await seedCards(database, seed.cards, seed.seedVersion);
   return database;
 }
 

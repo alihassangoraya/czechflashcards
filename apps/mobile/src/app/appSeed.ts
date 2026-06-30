@@ -1,5 +1,14 @@
 import { normalizeCards } from "@czech-flashcards/shared";
-import seedPayload from "@czech-flashcards/shared/seed";
 
-export const seedCardsNormalized = normalizeCards(seedPayload.cards as Parameters<typeof normalizeCards>[0]);
-export const seedVersion = String((seedPayload as { seedVersion?: string }).seedVersion || "legacy-seed");
+type SeedPayload = {
+  cards: Parameters<typeof normalizeCards>[0];
+  seedVersion?: string;
+};
+
+export async function loadSeedCards() {
+  const seedPayload = (await import("@czech-flashcards/shared/seed")).default as unknown as SeedPayload;
+  return {
+    cards: normalizeCards(seedPayload.cards),
+    seedVersion: String(seedPayload.seedVersion || "legacy-seed")
+  };
+}
