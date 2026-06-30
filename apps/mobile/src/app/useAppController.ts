@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { AppShellProps } from "./appShellTypes";
 import { buildAppShellDataProps } from "./appShellDataProps";
-import { buildAppShellHandlers } from "./appShellHandlers";
+import { buildAppShellHandlers } from "./shellHandlers";
 import { useAppData } from "./useAppData";
 import { useCardManagement } from "./useCardManagement";
 import { useFilteredStudyDeck } from "./useFilteredStudyDeck";

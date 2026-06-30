@@ -12,6 +12,7 @@ export function inspectMobileFile(source, violations) {
   inspectFeatureText(source, violations);
   inspectAppImports(source, violations);
   inspectFeatureImports(source, violations);
+  inspectRootAppHandlers(source, violations);
   inspectRootServices(source, violations);
   inspectCanonicalTypes(source, violations);
 }
@@ -61,6 +62,12 @@ function inspectFeatureImports({ lines, rel }, violations) {
       violations.featureToAppImports.push(`${rel}:${index + 1}: ${line.trim()}`);
     }
   });
+}
+
+function inspectRootAppHandlers({ rel }, violations) {
+  if (rel.match(/^app\/[^/]+Handlers\.ts$/)) {
+    violations.rootAppHandlers.push(`${rel}: move handler composition into a focused folder under app/`);
+  }
 }
 
 function inspectRootServices({ rel }, violations) {

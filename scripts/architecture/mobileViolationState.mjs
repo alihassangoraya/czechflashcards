@@ -7,6 +7,7 @@ export function createMobileArchitectureViolations() {
     inlineScreenProps: [],
     lineCounts: [],
     localeSections: [],
+    rootAppHandlers: [],
     rootServices: [],
     appDeepFeatureImports: [],
     studyDomainFeatureImports: []

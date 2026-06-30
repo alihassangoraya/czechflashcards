@@ -8,6 +8,7 @@ const mobileViolationMessages = [
   ["lineCounts", "Mobile architecture check failed. Split large files into focused modules:"],
   ["duplicateTypes", "Mobile architecture check failed. Reuse canonical shared type aliases:"],
   ["localeSections", "Mobile architecture check failed. Keep i18n catalogs split into matching feature sections:"],
+  ["rootAppHandlers", "Mobile architecture check failed. App shell handlers must live under app/shellHandlers/:"],
   ["rootServices", "Mobile architecture check failed. Service implementations must live in domain service folders:"]
 ];
 

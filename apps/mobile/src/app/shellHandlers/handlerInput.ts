@@ -1,0 +1,15 @@
+import type { StudySettings } from "../../database";
+import type { AppData } from "../useAppData";
+import type { AppNavigation } from "../useAppNavigation";
+import type { CardManagement } from "../useCardManagement";
+import type { SettingsTools } from "../useSettingsTools";
+import type { StudySession } from "../useStudySession";
+
+export type AppShellHandlerInput = {
+  data: AppData;
+  settings: StudySettings;
+  navigation: AppNavigation;
+  studySession: StudySession;
+  cardManagement: CardManagement;
+  settingsTools: SettingsTools;
+};
