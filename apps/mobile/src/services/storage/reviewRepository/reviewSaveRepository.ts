@@ -1,7 +1,7 @@
 import type { DailyProgress, ReviewEvent, ReviewState } from "@czech-flashcards/shared";
 import { recordDailyReview } from "@czech-flashcards/shared";
 import type { AppDatabase } from "../storageTypes";
-import { localDateKey } from "../storageCore";
+import { localDateKey } from "../storageDateKey";
 import { enqueueSync } from "../syncQueueRepository";
 
 export async function saveReviewResult(db: AppDatabase, state: ReviewState, event: ReviewEvent, dailyGoal: number): Promise<DailyProgress> {

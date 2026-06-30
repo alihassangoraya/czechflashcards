@@ -1,7 +1,8 @@
 import type { DailyProgress, ReviewEvent, ReviewState } from "@czech-flashcards/shared";
 import { undoDailyReview } from "@czech-flashcards/shared";
 import type { AppDatabase } from "../storageTypes";
-import { localDateKey, persistDatabase } from "../storageCore";
+import { persistDatabase } from "../storageCore";
+import { localDateKey } from "../storageDateKey";
 import { removePendingReviewSync, removeReviewEvent, restorePreviousReviewState } from "../reviewUndoHelpers";
 
 export async function undoReviewResult(
