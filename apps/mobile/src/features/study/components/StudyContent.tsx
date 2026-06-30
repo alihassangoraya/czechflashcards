@@ -1,11 +1,9 @@
 import React from "react";
 import { ScrollView, StyleSheet } from "react-native";
-import { GeminiTutorPanel } from "../../tutor";
 import { spacing } from "../../../theme/design";
-import { ReviewButtons } from "./ReviewButtons";
 import { StudyCard } from "./StudyCard";
+import { StudyRevealedContent } from "./StudyRevealedContent";
 import { displaySelectedMeaning } from "../studyMeaning";
-import { WordDetailsPanel } from "./WordDetailsPanel";
 import type { StudyScreenProps } from "../studyScreenTypes";
 
 type Props = Omit<StudyScreenProps, "dailyGoal" | "onBack" | "onGrade" | "onOpenGrammar" | "reviewedToday" | "sessionProgress" | "sessionReviews" | "sessionTarget"> & Pick<StudyScreenProps, "onGrade">;
@@ -58,9 +56,7 @@ export function StudyContent({
         onUndoLastReview={onUndoLastReview}
       />
 
-      {revealed && current && <ReviewButtons grading={grading} reviewInterval={reviewInterval} onGrade={onGrade} />}
-      {revealed && current && <WordDetailsPanel card={current} />}
-      {revealed && <GeminiTutorPanel card={current} />}
+      <StudyRevealedContent current={current} grading={grading} revealed={revealed} reviewInterval={reviewInterval} onGrade={onGrade} />
     </ScrollView>
   );
 }
