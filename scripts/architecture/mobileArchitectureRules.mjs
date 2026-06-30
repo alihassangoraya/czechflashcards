@@ -3,7 +3,8 @@ import {
   canonicalTypeFiles,
   defaultMaxLines,
   hardcodedTextAllowList,
-  maxLinesByPath
+  maxLinesByPath,
+  rawCollectionTypeRules
 } from "./mobileArchitectureConfig.mjs";
 import { inspectRootAppModules } from "./mobileRootAppRules.mjs";
 
@@ -18,6 +19,7 @@ export function inspectMobileFile(source, violations) {
   inspectRootServices(source, violations);
   inspectRootPlatformServices(source, violations);
   inspectCanonicalTypes(source, violations);
+  inspectRawCollectionTypes(source, violations);
 }
 
 function inspectLineCount({ lines, rel }, violations) {
@@ -94,4 +96,13 @@ function inspectCanonicalTypes({ lines, rel }, violations) {
       }
     });
   }
+}
+
+function inspectRawCollectionTypes({ lines, rel }, violations) {
+  if (rel === "services/storage/storageTypes.ts") return;
+  lines.forEach((line, index) => {
+    for (const rule of rawCollectionTypeRules) {
+      if (rule.pattern.test(line)) violations.rawCollectionTypes.push(`${rel}:${index + 1}: ${rule.message}`);
+    }
+  });
 }
