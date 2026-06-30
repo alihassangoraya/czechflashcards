@@ -1,5 +1,6 @@
 import { lightColors } from "./lightColors";
 import type { ColorTokens } from "./colorTypes";
+import { darkCompatibilityColorAliases } from "./compatibilityColorAliases";
 
 export const darkColors: ColorTokens = {
   ...lightColors,
@@ -26,16 +27,5 @@ export const darkColors: ColorTokens = {
   actionSoft: "#263a45",
   heroOverlay: "rgba(0,0,0,0.50)",
   stampSurface: "rgba(34,39,34,0.94)",
-  bohemianBlue: "#5d6246",
-  bohemianRed: "#a34f4f",
-  bohemianGold: "#b07d3e",
-  warmSand: "#20241f",
-  appBackground: "#171a17",
-  charcoalText: "#f4f1ea",
-  card: "#222722",
-  lightSand: "#3a443c",
-  softMint: "#4f7a56",
-  mutedSlate: "#aeb5ab",
-  darkTaupe: "#b7bdb3",
-  inkSoft: "#c5ccc2"
+  ...darkCompatibilityColorAliases
 };

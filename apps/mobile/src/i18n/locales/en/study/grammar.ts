@@ -1,0 +1,20 @@
+export const enStudyGrammarTranslations = {
+  "grammar.likelyFeminine": "Likely feminine",
+  "grammar.likelyNeuter": "Likely neuter",
+  "grammar.likelyMasculine": "Likely masculine",
+  "grammar.verbMeta": "Verb (sloveso)",
+  "grammar.nounMeta": "Noun or adjective · {gender}",
+  "grammar.presentTense": "Present tense",
+  "grammar.verbCopy": "Czech verbs change with the subject. Learn this word with its full infinitive and listen for the ending in the example.",
+  "grammar.subjectsSingular": "ja · ty · on/ona",
+  "grammar.subjectsPlural": "my · vy · oni",
+  "grammar.aspectCopy": "Aspect matters at B1: imperfective verbs describe an action or habit; perfective verbs focus on a completed result.",
+  "grammar.casesGender": "Cases and gender",
+  "grammar.caseCopy": "{gender}. Czech endings change by case, so remember the word with a short phrase, not only on its own.",
+  "grammar.caseNom": "1. nominative: basic form",
+  "grammar.caseAcc": "4. accusative: direct object",
+  "grammar.caseLoc": "6. locative: after v, na, o",
+  "grammar.caseIns": "7. instrumental: after s",
+  "grammar.example": "Example: {sentence}",
+  "grammar.empty": "Choose a card to see its grammar notes."
+} as const;

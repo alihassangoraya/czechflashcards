@@ -1,0 +1,21 @@
+export const enStudyFlashcardTranslations = {
+  "study.openGrammar": "Open grammar guide",
+  "study.markAgain": "Mark again",
+  "study.markKnown": "Mark known",
+  "review.again": "Again",
+  "review.hard": "Hard",
+  "review.good": "Good",
+  "review.easy": "Easy",
+  "study.translation": "Translation",
+  "study.sessionProgress": "Card {current} of {total} · Today {reviewedToday} / {dailyGoal}",
+  "study.inContext": "In context",
+  "study.playExample": "Play Czech example",
+  "study.done": "Done",
+  "study.noDue": "No cards are due in this deck.",
+  "study.revealMeaning": "Reveal meaning",
+  "study.tapReveal": "Tap to reveal meaning",
+  "study.tapCzech": "Tap to see Czech",
+  "study.showCzech": "Show Czech word",
+  "study.undo": "Undo",
+  "study.known": "Known"
+} as const;
