@@ -1,18 +1,11 @@
 import { useRef } from "react";
-import type { Card } from "@czech-flashcards/shared";
-import { loadSavedCardIds, setCardSaved, type AppDatabase } from "../../database";
 import { useI18n } from "../../i18n/I18nProvider";
-import { updateSavedCardIds, type SavedCardIds } from "./savedCardState";
+import { savedCardFailureMessage, savedCardSuccessMessage } from "./savedCardFeedback";
+import { persistSavedCardState, reloadSavedCardIds } from "./savedCardPersistence";
+import { updateSavedCardIds } from "./savedCardState";
+import type { SavedCardActionProps } from "./savedCardTypes";
 
-type Props = {
-  db: AppDatabase | null;
-  cards: Card[];
-  savedCardIds: SavedCardIds;
-  setSavedCardIds: (savedCardIds: SavedCardIds | ((previous: SavedCardIds) => SavedCardIds)) => void;
-  showToast: (message: string) => void;
-};
-
-export function useSavedCardActions({ db, cards, savedCardIds, setSavedCardIds, showToast }: Props) {
+export function useSavedCardActions({ db, cards, savedCardIds, setSavedCardIds, showToast }: SavedCardActionProps) {
   const { t } = useI18n();
   const savingCardIds = useRef(new Set<string>());
 
@@ -24,14 +17,13 @@ export function useSavedCardActions({ db, cards, savedCardIds, setSavedCardIds, 
     const card = cards.find((item) => item.id === cardId);
     setSavedCardIds((previous) => updateSavedCardIds(previous, cardId, nextSaved));
 
-    const word = card?.cz || t("toast.cardFallback");
-    if (showFeedback) showToast(nextSaved ? t("toast.starredAdded", { word }) : t("toast.starredRemoved", { word }));
+    if (showFeedback) showToast(savedCardSuccessMessage(card, nextSaved, t));
 
     try {
-      await setCardSaved(db, cardId, nextSaved);
+      await persistSavedCardState(db, cardId, nextSaved);
     } catch {
-      setSavedCardIds(await loadSavedCardIds(db));
-      if (showFeedback) showToast(t("toast.starredFailed"));
+      setSavedCardIds(await reloadSavedCardIds(db));
+      if (showFeedback) showToast(savedCardFailureMessage(t));
     } finally {
       savingCardIds.current.delete(cardId);
     }
