@@ -1,39 +1,39 @@
-import { useMemo, useRef } from "react";
+import { useRef } from "react";
 import { Animated } from "react-native";
-import { createSwipePanResponder } from "./swipePanResponder";
 import { createSwipeRotation } from "./swipeRotation";
 import type { SwipeAnimationParams } from "./swipeAnimationTypes";
 import { useSwipeCompletion } from "./useSwipeCompletion";
 import { useSwipeAnimationState } from "./useSwipeAnimationState";
+import { useSwipePanHandlers } from "./useSwipePanHandlers";
 
 export function useSwipeAnimation({ current, grading, onSwipeGrade }: SwipeAnimationParams) {
   const dragX = useRef(new Animated.Value(0)).current;
   const swipeState = useSwipeAnimationState({ current, dragX });
+  const { consumedSwipe, finishSwipeCompletion, releaseConsumedSwipe, resetCancelledSwipe, setSwipeDirection, startSwipeCompletion, swipeCompleting, swipeDirection } = swipeState;
   const cardRotation = createSwipeRotation(dragX);
-
   const completeSwipe = useSwipeCompletion({
     dragX,
     grading,
     onSwipeGrade,
-    finishSwipeCompletion: swipeState.finishSwipeCompletion,
-    releaseConsumedSwipe: swipeState.releaseConsumedSwipe,
-    startSwipeCompletion: swipeState.startSwipeCompletion,
-    swipeCompleting: swipeState.swipeCompleting
+    finishSwipeCompletion,
+    releaseConsumedSwipe,
+    startSwipeCompletion,
+    swipeCompleting
   });
-  const panResponder = useMemo(() => createSwipePanResponder({
+  const panHandlers = useSwipePanHandlers({
     completeSwipe,
     dragX,
     grading,
-    resetCancelledSwipe: swipeState.resetCancelledSwipe,
-    setSwipeDirection: swipeState.setSwipeDirection,
-    swipeCompleting: swipeState.swipeCompleting
-  }), [completeSwipe, dragX, grading, swipeState.resetCancelledSwipe, swipeState.setSwipeDirection, swipeState.swipeCompleting]);
+    resetCancelledSwipe,
+    setSwipeDirection,
+    swipeCompleting
+  });
   return {
     cardRotation,
     completeSwipe,
-    consumedSwipe: swipeState.consumedSwipe,
+    consumedSwipe,
     dragX,
-    panHandlers: panResponder.panHandlers,
-    swipeDirection: swipeState.swipeDirection
+    panHandlers,
+    swipeDirection
   };
 }
