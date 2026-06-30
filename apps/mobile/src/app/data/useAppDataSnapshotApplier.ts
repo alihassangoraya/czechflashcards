@@ -2,7 +2,7 @@ import { applyAppDataSnapshot } from "./appDataSnapshotApply";
 import type { AppDataSnapshot } from "./appDataSnapshotTypes";
 import type { AppDataState } from "./appDataStateTypes";
 
-type SnapshotSetters = Pick<AppDataState, "setCards" | "setSavedCardIds" | "setDeckMemberships" | "setStates"> & {
+type SnapshotSetters = Pick<AppDataState, "setCards" | "setSavedCardIds" | "setDeckMemberships" | "setStates" | "setDailyProgressLog"> & {
   setDailyProgress: (dailyProgress: string) => void;
 };
 

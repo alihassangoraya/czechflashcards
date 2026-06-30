@@ -15,6 +15,7 @@ export const urCoreTranslations = {
   "common.openSettings": "سیٹنگز کھولیں",
   "common.settings": "سیٹنگز",
   "common.quiz": "کوئز",
+  "common.progress": "پروگریس",
   "common.cancel": "منسوخ",
   "common.delete": "حذف کریں",
   "common.startReview": "ریویو شروع کریں",

@@ -1,5 +1,5 @@
 import type { Card } from "@czech-flashcards/shared";
-import type { DeckMemberships, ReviewStates, SavedCardIds } from "../../database";
+import type { DailyProgressLog, DeckMemberships, ReviewStates, SavedCardIds } from "../../database";
 
 export type AppDataSnapshot = {
   cards: Card[];
@@ -7,4 +7,5 @@ export type AppDataSnapshot = {
   deckMemberships: DeckMemberships;
   states: ReviewStates;
   dailyProgress: string;
+  dailyProgressLog: DailyProgressLog;
 };

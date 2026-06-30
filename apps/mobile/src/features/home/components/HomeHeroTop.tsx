@@ -10,11 +10,12 @@ type Props = {
   examLevel: string;
   onAccount: () => void;
   onAdd: () => void;
+  onProgress: () => void;
   onSearch: () => void;
   onSettings: () => void;
 };
 
-export function HomeHeroTop({ activeDeckLabel, accountEmail, examLevel, onAccount, onAdd, onSearch, onSettings }: Props) {
+export function HomeHeroTop({ activeDeckLabel, accountEmail, examLevel, onAccount, onAdd, onProgress, onSearch, onSettings }: Props) {
   const { t } = useI18n();
 
   return (
@@ -23,6 +24,7 @@ export function HomeHeroTop({ activeDeckLabel, accountEmail, examLevel, onAccoun
       <View style={styles.heroIconGroup}>
         <HeroIcon icon="search" label={t("common.searchWords")} onPress={onSearch} />
         <HeroIcon icon="add" label={t("common.addWord")} onPress={onAdd} />
+        <HeroIcon icon="trending-up" label={t("common.progress")} onPress={onProgress} />
         <HeroIcon icon={accountEmail ? "account-circle" : "person-outline"} label={accountEmail ? t("common.account") : t("common.guestAccount")} onPress={onAccount} />
         <HeroIcon icon="settings" label={t("common.openSettings")} onPress={onSettings} />
       </View>

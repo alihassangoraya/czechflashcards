@@ -15,6 +15,7 @@ export const enCoreTranslations = {
   "common.openSettings": "Open settings",
   "common.settings": "Settings",
   "common.quiz": "Quiz",
+  "common.progress": "Progress",
   "common.cancel": "Cancel",
   "common.delete": "Delete",
   "common.startReview": "Start review",

@@ -17,6 +17,7 @@ export function buildHomeHeroProps({ model, props, wide }: Input): HomeHeroProps
     wide,
     onStartStudy: props.onStartStudy,
     onStartQuiz: props.onStartQuiz,
+    onOpenProgress: props.onOpenProgress,
     onSearch: props.onSearch,
     onAdd: props.onAdd,
     onSettings: props.onSettings,

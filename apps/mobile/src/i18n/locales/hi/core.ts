@@ -15,6 +15,7 @@ export const hiCoreTranslations = {
   "common.openSettings": "सेटिंग्स खोलें",
   "common.settings": "सेटिंग्स",
   "common.quiz": "क्विज़",
+  "common.progress": "प्रोग्रेस",
   "common.cancel": "रद्द करें",
   "common.delete": "हटाएँ",
   "common.startReview": "रिव्यू शुरू करें",

@@ -16,6 +16,7 @@ export function HomeRoute({ deck, cards, customCards, states, settings, savedCar
       syncStatus={syncStatus}
       onStartStudy={onStartStudy}
       onStartQuiz={() => onSetScreen("quiz")}
+      onOpenProgress={() => onSetScreen("progress")}
       onSelectCategory={onSelectCategory}
       onSearch={() => onSetPanel("search")}
       onAdd={() => onSetPanel("add")}

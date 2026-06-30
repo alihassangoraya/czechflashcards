@@ -17,6 +17,7 @@ export function buildAppDataResult({ state, actions, auth }: Input) {
     states: state.states,
     settings: state.settings,
     dailyProgress: state.dailyProgress,
+    dailyProgressLog: state.dailyProgressLog,
     syncStatus: state.syncStatus,
     accountEmail: state.accountEmail,
     authBusy: auth.authBusy,

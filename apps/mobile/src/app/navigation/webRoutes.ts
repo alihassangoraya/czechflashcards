@@ -7,6 +7,7 @@ function canUseBrowserHistory() {
 
 export function screenFromPath(pathname: string): Screen {
   if (pathname === screenPaths.quiz) return "quiz";
+  if (pathname === screenPaths.progress) return "progress";
   if (pathname === screenPaths.study) return "study";
   if (pathname === screenPaths.login) return "login";
   if (pathname === screenPaths.register) return "register";

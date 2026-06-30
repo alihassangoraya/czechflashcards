@@ -6,6 +6,7 @@ export type HomeHeroProps = {
   wide: boolean;
   onStartStudy: () => void;
   onStartQuiz: () => void;
+  onOpenProgress: () => void;
   onSearch: () => void;
   onAdd: () => void;
   onSettings: () => void;

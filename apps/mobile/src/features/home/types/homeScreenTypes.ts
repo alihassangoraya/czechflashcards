@@ -13,6 +13,7 @@ export type HomeScreenProps = {
   syncStatus: string;
   onStartStudy: () => void;
   onStartQuiz: () => void;
+  onOpenProgress: () => void;
   onSelectCategory: (category: string) => void;
   onSearch: () => void;
   onAdd: () => void;

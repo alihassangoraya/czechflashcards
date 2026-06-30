@@ -6,6 +6,7 @@ import { csQuizTranslations } from "./cs/quiz";
 import { csSearchTranslations } from "./cs/search";
 import { csWordsTranslations } from "./cs/words";
 import { csAccountTranslations } from "./cs/account";
+import { csProgressTranslations } from "./cs/progress";
 
 export const cs = {
   ...csCoreTranslations,
@@ -16,4 +17,5 @@ export const cs = {
   ...csSearchTranslations,
   ...csWordsTranslations,
   ...csAccountTranslations,
+  ...csProgressTranslations,
 } as const;

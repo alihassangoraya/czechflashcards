@@ -6,6 +6,7 @@ import { enQuizTranslations } from "./en/quiz";
 import { enSearchTranslations } from "./en/search";
 import { enWordsTranslations } from "./en/words";
 import { enAccountTranslations } from "./en/account";
+import { enProgressTranslations } from "./en/progress";
 
 export const en = {
   ...enCoreTranslations,
@@ -16,4 +17,5 @@ export const en = {
   ...enSearchTranslations,
   ...enWordsTranslations,
   ...enAccountTranslations,
+  ...enProgressTranslations,
 } as const;

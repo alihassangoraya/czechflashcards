@@ -6,6 +6,7 @@ import { urQuizTranslations } from "./ur/quiz";
 import { urSearchTranslations } from "./ur/search";
 import { urWordsTranslations } from "./ur/words";
 import { urAccountTranslations } from "./ur/account";
+import { urProgressTranslations } from "./ur/progress";
 
 export const ur = {
   ...urCoreTranslations,
@@ -16,4 +17,5 @@ export const ur = {
   ...urSearchTranslations,
   ...urWordsTranslations,
   ...urAccountTranslations,
+  ...urProgressTranslations,
 } as const;

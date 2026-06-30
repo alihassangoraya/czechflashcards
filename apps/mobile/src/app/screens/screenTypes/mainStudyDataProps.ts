@@ -1,4 +1,5 @@
 import type { Card, ReviewGrade } from "@czech-flashcards/shared";
+import type { DailyProgressLog } from "../../../database";
 import type { StudyAnimations } from "../../study/studyTypes/studyAnimationTypes";
 
 export type MainStudyDataProps = {
@@ -11,6 +12,7 @@ export type MainStudyDataProps = {
   reviewedToday: number;
   dailyGoal: number;
   sessionProgress: number;
+  dailyProgressLog: DailyProgressLog;
   studyAnimations: StudyAnimations;
   reviewInterval: (grade: ReviewGrade) => string;
 };

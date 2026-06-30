@@ -15,6 +15,7 @@ export const csCoreTranslations = {
   "common.openSettings": "Otevřít nastavení",
   "common.settings": "Nastavení",
   "common.quiz": "Kvíz",
+  "common.progress": "Pokrok",
   "common.cancel": "Zrušit",
   "common.delete": "Smazat",
   "common.startReview": "Začít opakování",

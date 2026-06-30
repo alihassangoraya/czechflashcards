@@ -15,6 +15,7 @@ export async function loadAppDataSnapshot(database: AppDatabase, dailyGoal: numb
     savedCardIds: await loadSavedCardIds(database),
     deckMemberships: await loadDeckMemberships(database),
     states: await loadReviewStates(database),
-    dailyProgress: `${progress.reviewed} / ${progress.goal}`
+    dailyProgress: `${progress.reviewed} / ${progress.goal}`,
+    dailyProgressLog: { ...database.store.dailyProgress }
   };
 }

@@ -6,6 +6,7 @@ import { hiQuizTranslations } from "./hi/quiz";
 import { hiSearchTranslations } from "./hi/search";
 import { hiWordsTranslations } from "./hi/words";
 import { hiAccountTranslations } from "./hi/account";
+import { hiProgressTranslations } from "./hi/progress";
 
 export const hi = {
   ...hiCoreTranslations,
@@ -16,4 +17,5 @@ export const hi = {
   ...hiSearchTranslations,
   ...hiWordsTranslations,
   ...hiAccountTranslations,
+  ...hiProgressTranslations,
 } as const;

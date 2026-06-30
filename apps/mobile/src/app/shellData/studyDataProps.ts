@@ -11,6 +11,7 @@ export function buildStudyDataProps(input: AppShellDataInput) {
     lastReviewCard: studySession.lastReview?.card || null,
     sessionReviews: studySession.sessionReviews,
     ...buildSessionProgressProps(input),
+    dailyProgressLog: data.dailyProgressLog,
     studyAnimations: studySession.studyAnimations,
     dailyProgress: data.dailyProgress,
     reviewInterval: studySession.reviewInterval
