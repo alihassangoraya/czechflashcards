@@ -1,7 +1,6 @@
 import type { DailyProgress, ReviewEvent, ReviewState } from "@czech-flashcards/shared";
-import { createDailyProgress, createReviewState, recordDailyReview, undoDailyReview } from "@czech-flashcards/shared";
+import { createReviewState, recordDailyReview, undoDailyReview } from "@czech-flashcards/shared";
 import type { AppDatabase } from "./storageTypes";
-import { DEFAULT_SETTINGS } from "./storageTypes";
 import { localDateKey, persistDatabase } from "./storageCore";
 import { removePendingReviewSync, removeReviewEvent, restorePreviousReviewState } from "./reviewUndoHelpers";
 import { enqueueSync } from "./syncQueueRepository";
@@ -48,8 +47,4 @@ export async function undoReviewResult(
   db.store.dailyProgress[date] = progress;
   await persistDatabase(db);
   return progress;
-}
-
-export async function getDailyProgress(db: AppDatabase, date = localDateKey(), goal = DEFAULT_SETTINGS.dailyGoal): Promise<DailyProgress> {
-  return db.store.dailyProgress[date] || createDailyProgress(date, goal);
 }
