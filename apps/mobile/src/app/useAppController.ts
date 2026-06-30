@@ -6,7 +6,7 @@ import { useAppData } from "./data/useAppData";
 import { useCardManagement } from "./cards/useCardManagement";
 import { useFilteredStudyDeck } from "./cards/useFilteredStudyDeck";
 import { useAppNavigation } from "./navigation/useAppNavigation";
-import { useSettingsTools } from "./useSettingsTools";
+import { useSettingsTools } from "./settingsTools/useSettingsTools";
 import { useStudySession } from "./useStudySession";
 import { useToast } from "./useToast";
 

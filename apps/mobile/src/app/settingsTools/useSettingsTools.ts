@@ -1,8 +1,8 @@
 import type { Card } from "@czech-flashcards/shared";
-import type { AppDatabase, StudySettings } from "../database";
-import { useSettingsExportActions } from "./settingsTools/useSettingsExportActions";
-import { useSettingsImportActions } from "./settingsTools/useSettingsImportActions";
-import { useSettingsReviewActions } from "./settingsTools/useSettingsReviewActions";
+import type { AppDatabase, StudySettings } from "../../database";
+import { useSettingsExportActions } from "./useSettingsExportActions";
+import { useSettingsImportActions } from "./useSettingsImportActions";
+import { useSettingsReviewActions } from "./useSettingsReviewActions";
 
 type Props = {
   db: AppDatabase | null;

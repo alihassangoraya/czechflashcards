@@ -5,6 +5,7 @@ import {
   hardcodedTextAllowList,
   maxLinesByPath
 } from "./mobileArchitectureConfig.mjs";
+import { inspectRootAppModules } from "./mobileRootAppRules.mjs";
 
 export function inspectMobileFile(source, violations) {
   inspectLineCount(source, violations);
@@ -12,11 +13,7 @@ export function inspectMobileFile(source, violations) {
   inspectFeatureText(source, violations);
   inspectAppImports(source, violations);
   inspectFeatureImports(source, violations);
-  inspectRootAppData(source, violations);
-  inspectRootAppCards(source, violations);
-  inspectRootAppHandlers(source, violations);
-  inspectRootAppNavigation(source, violations);
-  inspectRootAppShellData(source, violations);
+  inspectRootAppModules(source, violations);
   inspectRootServices(source, violations);
   inspectCanonicalTypes(source, violations);
 }
@@ -66,36 +63,6 @@ function inspectFeatureImports({ lines, rel }, violations) {
       violations.featureToAppImports.push(`${rel}:${index + 1}: ${line.trim()}`);
     }
   });
-}
-
-function inspectRootAppData({ rel }, violations) {
-  if (rel.match(/^app\/(?:appData.*|appSeed|useAppData)\.ts$/)) {
-    violations.rootAppData.push(`${rel}: move app data modules into app/data/`);
-  }
-}
-
-function inspectRootAppCards({ rel }, violations) {
-  if (rel.match(/^app\/(?:cardFactory|deckFiltering|use(?:Card|CustomWord|DeckMembership|FilteredStudyDeck|SavedCard).*)\.ts$/)) {
-    violations.rootAppCards.push(`${rel}: move app card-management modules into app/cards/`);
-  }
-}
-
-function inspectRootAppHandlers({ rel }, violations) {
-  if (rel.match(/^app\/[^/]+Handlers\.ts$/)) {
-    violations.rootAppHandlers.push(`${rel}: move handler composition into a focused folder under app/`);
-  }
-}
-
-function inspectRootAppNavigation({ rel }, violations) {
-  if (rel.match(/^app\/(?:useAppNavigation|useWebRouteSync|webRoutes)\.ts$/)) {
-    violations.rootAppNavigation.push(`${rel}: move app navigation modules into app/navigation/`);
-  }
-}
-
-function inspectRootAppShellData({ rel }, violations) {
-  if (rel === "app/appShellDataProps.ts") {
-    violations.rootAppShellData.push(`${rel}: move shell data projection into app/shellData/`);
-  }
 }
 
 function inspectRootServices({ rel }, violations) {
