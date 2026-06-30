@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import MaterialIcons from "../../../components/MaterialIcons";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
+import { type AuthMode, isValidEmail } from "../accountAuth";
 import { AccountAuthForm } from "../components/AccountAuthForm";
-
-type AuthMode = "sign-in" | "sign-up";
+import { useAccountCredentials } from "../useAccountCredentials";
 
 type Props = {
   configured: boolean;
@@ -16,34 +16,27 @@ type Props = {
   onAuthenticate: (mode: AuthMode, email: string, password: string, displayName: string) => Promise<string | null>;
 };
 
-function isValidEmail(value: string) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
-}
-
 export function AuthScreen({ configured, initialMode, busy, onBack, onSwitchMode, onAuthenticate }: Props) {
   const { t } = useI18n();
-  const [displayName, setDisplayName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
+  const credentials = useAccountCredentials();
   const isRegister = initialMode === "sign-up";
 
   async function submit(mode: AuthMode) {
     if (!configured) {
-      setMessage(t("account.syncNotConfigured"));
+      credentials.setMessage(t("account.syncNotConfigured"));
       return;
     }
-    if (!isValidEmail(email)) {
-      setMessage(t("account.invalidEmail"));
+    if (!isValidEmail(credentials.email)) {
+      credentials.setMessage(t("account.invalidEmail"));
       return;
     }
-    if (password.length < 6) {
-      setMessage(t("account.shortPassword"));
+    if (credentials.password.length < 6) {
+      credentials.setMessage(t("account.shortPassword"));
       return;
     }
 
-    const error = await onAuthenticate(mode, email, password, displayName);
-    setMessage(error || (mode === "sign-up" ? t("account.created") : t("account.signedIn")));
+    const error = await onAuthenticate(mode, credentials.email, credentials.password, credentials.displayName);
+    credentials.setMessage(error || (mode === "sign-up" ? t("account.created") : t("account.signedIn")));
   }
 
   return (
@@ -67,14 +60,14 @@ export function AuthScreen({ configured, initialMode, busy, onBack, onSwitchMode
 
         <AccountAuthForm
           busy={busy}
-          displayName={displayName}
-          email={email}
+          displayName={credentials.displayName}
+          email={credentials.email}
           mode={initialMode}
-          password={password}
-          message={message}
-          onChangeDisplayName={setDisplayName}
-          onChangeEmail={setEmail}
-          onChangePassword={setPassword}
+          password={credentials.password}
+          message={credentials.message}
+          onChangeDisplayName={credentials.setDisplayName}
+          onChangeEmail={credentials.setEmail}
+          onChangePassword={credentials.setPassword}
           onSwitchMode={onSwitchMode}
           onSubmit={(mode) => void submit(mode)}
         />
