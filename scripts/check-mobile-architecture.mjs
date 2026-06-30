@@ -51,7 +51,7 @@ for (const file of files) {
 
   if (rel.startsWith("app/")) {
     lines.forEach((line, index) => {
-      const deepFeatureImport = line.match(/from\s+["']\.\.\/features\/[^/"']+\/[^"']+["']/);
+      const deepFeatureImport = line.match(/from\s+["'](?:\.\.\/)+features\/[^/"']+\/[^"']+["']/);
       if (deepFeatureImport) deepFeatureImportViolations.push(`${rel}:${index + 1}: ${line.trim()}`);
     });
   }

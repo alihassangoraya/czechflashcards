@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { applyReviewGrade, formatInterval, type Card, type ReviewGrade, type ReviewState } from "@czech-flashcards/shared";
-import { getReviewState, saveReviewResult, undoReviewResult, type AppDatabase, type StudySettings } from "../database";
+import type { Card, ReviewGrade, ReviewState } from "@czech-flashcards/shared";
+import type { AppDatabase, StudySettings } from "../database";
 import { useStudyAnimations } from "../features/study";
 import type { UndoReview } from "./appTypes";
+import { formatReviewInterval } from "./studySession/reviewInterval";
+import { restoreReview, saveGradedReview } from "./studySession/reviewPersistence";
 import { useStudyQueue } from "./useStudyQueue";
 
 type Props = {
@@ -32,11 +34,7 @@ export function useStudySession({ db, settings, deck, states, refresh }: Props) 
   }
 
   function reviewInterval(grade: ReviewGrade): string {
-    if (!queue.current) return "";
-    const state = states[queue.current.id] || { cardId: queue.current.id, knownStreak: 0, againCount: 0, dueAt: 0, seen: 0 };
-    const now = Date.now();
-    const next = applyReviewGrade(state, grade, now);
-    return formatInterval(next.event.nextDueAt - now);
+    return formatReviewInterval(queue.current, states, grade);
   }
 
   async function grade(result: ReviewGrade) {
@@ -44,12 +42,10 @@ export function useStudySession({ db, settings, deck, states, refresh }: Props) 
     const reviewedCard = queue.current;
     setGrading(true);
     try {
-      const before = await getReviewState(db, reviewedCard.id);
-      const next = applyReviewGrade(before, result, Date.now());
       const previousRelearningQueue = queue.snapshotRelearningQueue();
-      await saveReviewResult(db, next.state, next.event, settings.dailyGoal);
+      const review = await saveGradedReview({ db, card: reviewedCard, grade: result, dailyGoal: settings.dailyGoal, previousRelearningQueue });
       queue.recordReviewedCard(reviewedCard.id, result);
-      setLastReview({ card: reviewedCard, previousState: before, event: next.event, previousRelearningQueue });
+      setLastReview(review);
       setSessionReviews((value) => value + 1);
       await refresh(db);
     } finally {
@@ -63,7 +59,7 @@ export function useStudySession({ db, settings, deck, states, refresh }: Props) 
     try {
       queue.forceCard(lastReview.card.id, true);
       queue.restoreRelearningQueue(lastReview.previousRelearningQueue);
-      await undoReviewResult(db, lastReview.previousState, lastReview.event, settings.dailyGoal);
+      await restoreReview(db, lastReview, settings.dailyGoal);
       await refresh(db);
       setSessionReviews((value) => Math.max(0, value - 1));
       setLastReview(null);
