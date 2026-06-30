@@ -1,4 +1,4 @@
-import type { AppShellProps } from "./appShellTypes";
+import type { AppShellProps } from "./appTypes";
 import type { AppSupabaseClient } from "../sync";
 import { buildAppShellDataProps } from "./shellData";
 import { buildAppShellHandlers } from "./shellHandlers";

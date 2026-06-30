@@ -8,6 +8,6 @@ export const canonicalTypeFiles = new Map([
   ["MaterialIconName", "components/materialIconGlyphs.ts"],
   ["ReviewStates", "services/storage/storageTypes/collectionTypes.ts"],
   ["SavedCardIds", "services/storage/storageTypes/collectionTypes.ts"],
-  ["StudyAnimations", "app/studyAnimationTypes.ts"],
+  ["StudyAnimations", "app/study/studyTypes/studyAnimationTypes.ts"],
   ["SwipeDirection", "features/study/animations/animationTypes.ts"]
 ]);

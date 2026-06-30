@@ -1,4 +1,4 @@
-import type { StudyAnimations } from "../../studyAnimationTypes";
+import type { StudyAnimations } from "../../study/studyTypes/studyAnimationTypes";
 import type { MainAccountDataProps } from "./mainAccountDataProps";
 import type { MainAuthHandlers } from "./mainAuthHandlers";
 import type { MainDeckDataProps } from "./mainDeckDataProps";

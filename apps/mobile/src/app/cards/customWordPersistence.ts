@@ -1,5 +1,5 @@
 import { addCardToCustomDeck, addCustomCard, deleteCustomCard, type AppDatabase } from "../../database";
-import type { AddWordValues } from "../appShellTypes";
+import type { AddWordValues } from "../appTypes";
 import { createCustomCard } from "./cardFactory";
 
 export async function saveCustomWord(db: AppDatabase, values: AddWordValues) {

@@ -4,7 +4,7 @@ import { AppToast } from "../components/AppToast";
 import { I18nProvider } from "../i18n/I18nProvider";
 import { AppPanels } from "./AppPanels";
 import { appShellStyles as styles } from "./appShellStyles";
-import type { AppShellProps } from "./appShellTypes";
+import type { AppShellProps } from "./appTypes";
 import { MainScreens } from "./MainScreens";
 
 export function AppShell(props: AppShellProps) {

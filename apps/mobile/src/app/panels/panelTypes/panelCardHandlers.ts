@@ -1,5 +1,5 @@
 import type { Card } from "@czech-flashcards/shared";
-import type { AddWordValues, CorrectionValues } from "../../appShellTypes";
+import type { AddWordValues, CorrectionValues } from "../../appTypes";
 
 export type PanelCardHandlers = {
   onStudySearchResult: (card: Card) => void;

@@ -1,4 +1,4 @@
-import type { StudyAnimations } from "../studyAnimationTypes";
+import type { StudyAnimations } from "./studyTypes/studyAnimationTypes";
 import type { StudyQueue } from "../studyQueue/useStudyQueue";
 import type { StudyReviewActions } from "../studySession/useStudyReviewActions";
 import { createStudyReviewInterval } from "./studyReviewIntervalCallback";

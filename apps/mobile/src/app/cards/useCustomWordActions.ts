@@ -1,4 +1,4 @@
-import type { AddWordValues } from "../appShellTypes";
+import type { AddWordValues } from "../appTypes";
 import { removeCustomWord, saveCustomWord } from "./customWordPersistence";
 import type { CustomWordActionProps } from "./customWordTypes";
 import { isValidCustomWord } from "./customWordValidation";

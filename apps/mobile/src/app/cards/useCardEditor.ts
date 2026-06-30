@@ -1,5 +1,5 @@
 import type { Card } from "@czech-flashcards/shared";
-import type { CorrectionValues } from "../appShellTypes";
+import type { CorrectionValues } from "../appTypes";
 import type { CardEditorProps } from "./cardEditorTypes";
 import { saveCardEditorCorrection } from "./cardEditorSaveCorrection";
 import { useCardEditSession } from "./useCardEditSession";

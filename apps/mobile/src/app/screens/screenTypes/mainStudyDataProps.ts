@@ -1,5 +1,5 @@
 import type { Card, ReviewGrade } from "@czech-flashcards/shared";
-import type { StudyAnimations } from "../../studyAnimationTypes";
+import type { StudyAnimations } from "../../study/studyTypes/studyAnimationTypes";
 
 export type MainStudyDataProps = {
   current: Card | null;

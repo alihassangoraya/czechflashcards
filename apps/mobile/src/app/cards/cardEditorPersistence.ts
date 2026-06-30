@@ -1,6 +1,6 @@
 import type { Card } from "@czech-flashcards/shared";
 import { addCustomCard, saveCardCorrection, type AppDatabase } from "../../database";
-import type { CorrectionValues } from "../appShellTypes";
+import type { CorrectionValues } from "../appTypes";
 import { applyCardCorrection } from "./cardFactory";
 
 type SaveEditedCardInput = {

@@ -1,6 +1,6 @@
 import type { Card } from "@czech-flashcards/shared";
 import type { AppDatabase } from "../../database";
-import type { CorrectionValues } from "../appShellTypes";
+import type { CorrectionValues } from "../appTypes";
 import type { Panel } from "../appTypes";
 import { saveEditedCard } from "./cardEditorPersistence";
 
