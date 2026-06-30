@@ -1,8 +1,7 @@
-import { normalizeCards, parseCsvCards } from "@czech-flashcards/shared";
-import { addCardToCustomDeck, importCards, restoreBackup, seedCards } from "../../database";
 import { useI18n } from "../../i18n/I18nProvider";
 import { pickTextFile } from "../../services/fileTransfer";
-import { loadSeedCards } from "../data/appSeed";
+import { restoreSettingsBackup } from "./settingsBackupRestore";
+import { importCsvTextToSettingsDeck } from "./settingsCsvImport";
 import type { SettingsImportContext } from "./settingsToolTypes";
 
 export function useSettingsImportActions({ db, settings, setSettingsState, setSettingsNotice, refresh }: SettingsImportContext) {
@@ -11,17 +10,12 @@ export function useSettingsImportActions({ db, settings, setSettingsState, setSe
   function importCsv() {
     pickTextFile(".csv,text/csv", async (text) => {
       if (!db) return;
-      const imported = normalizeCards(parseCsvCards(text));
-      if (!imported.length) {
+      const result = await importCsvTextToSettingsDeck(db, text, settings);
+      if (!result) {
         setSettingsNotice(t("settings.notice.csvInvalid"));
         return;
       }
-      const count = await importCards(db, imported);
-      const activeCustomDeck = settings?.customDecks.find((deck) => deck.id === settings.deckFilter);
-      if (activeCustomDeck) {
-        for (const card of imported) await addCardToCustomDeck(db, activeCustomDeck.id, card.id);
-      }
-      setSettingsNotice(activeCustomDeck ? t("settings.notice.csvImportedDeck", { count, deck: activeCustomDeck.name }) : t("settings.notice.csvImported", { count }));
+      setSettingsNotice(result.deckName ? t("settings.notice.csvImportedDeck", { count: result.count, deck: result.deckName }) : t("settings.notice.csvImported", { count: result.count }));
       await refresh(db);
     }, () => setSettingsNotice(t("settings.notice.csvWebOnly")));
   }
@@ -30,9 +24,7 @@ export function useSettingsImportActions({ db, settings, setSettingsState, setSe
     pickTextFile(".json,application/json", async (text) => {
       if (!db) return;
       try {
-        const nextSettings = await restoreBackup(db, JSON.parse(text));
-        const seed = await loadSeedCards();
-        await seedCards(db, seed.cards, seed.seedVersion);
+        const nextSettings = await restoreSettingsBackup(db, text);
         setSettingsState(nextSettings);
         setSettingsNotice(t("settings.notice.restoreSuccess"));
         await refresh(db);
