@@ -1,5 +1,5 @@
 import React from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 import type { Card } from "@czech-flashcards/shared";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, spacing } from "../../../theme/design";
@@ -7,7 +7,7 @@ import { QuizEmptyState } from "../components/QuizEmptyState";
 import { QuizExitConfirmModal } from "../components/QuizExitConfirmModal";
 import { QuizFeedback } from "../components/QuizFeedback";
 import { QuizHeader } from "../components/QuizHeader";
-import { QuizOption } from "../components/QuizOption";
+import { QuizOptionsList } from "../components/QuizOptionsList";
 import { QuizPrimaryAction } from "../components/QuizPrimaryAction";
 import { QuizProgress } from "../components/QuizProgress";
 import { QuizPromptCard } from "../components/QuizPromptCard";
@@ -42,19 +42,7 @@ export function QuizScreen({ deck, onClose }: Props) {
         <QuizProgress current={quiz.index + 1} total={quiz.questions.length} accuracy={quiz.accuracy} />
         <QuizPromptCard card={question.card} />
 
-        <View style={styles.options}>
-          {question.options.map((option, optionIndex) => (
-            <QuizOption
-              key={`${option}-${optionIndex}`}
-              option={option}
-              letter={String.fromCharCode(65 + optionIndex)}
-              selected={quiz.selected === optionIndex}
-              correct={question.correctIndex === optionIndex}
-              checked={quiz.checked}
-              onPress={() => quiz.setSelected(optionIndex)}
-            />
-          ))}
-        </View>
+        <QuizOptionsList options={question.options} correctIndex={question.correctIndex} selected={quiz.selected} checked={quiz.checked} onSelect={quiz.setSelected} />
 
         {quiz.checked && <QuizFeedback correct={quiz.isCorrect} correctAnswer={question.options[question.correctIndex]} />}
 
@@ -68,6 +56,5 @@ export function QuizScreen({ deck, onClose }: Props) {
 
 const styles = StyleSheet.create({
   scroll: { flex: 1, backgroundColor: colors.background },
-  content: { gap: spacing.xlPlus, paddingHorizontal: spacing.page, paddingBottom: spacing.screenBottom },
-  options: { gap: spacing.lg }
+  content: { gap: spacing.xlPlus, paddingHorizontal: spacing.page, paddingBottom: spacing.screenBottom }
 });
