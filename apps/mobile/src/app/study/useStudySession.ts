@@ -1,5 +1,5 @@
-import type { Card, ReviewGrade, ReviewState } from "@czech-flashcards/shared";
-import type { AppDatabase, StudySettings } from "../../database";
+import type { Card, ReviewGrade } from "@czech-flashcards/shared";
+import type { AppDatabase, ReviewStates, StudySettings } from "../../database";
 import { useStudyAnimations } from "../../features/study";
 import { useStudyQueue } from "../studyQueue/useStudyQueue";
 import { formatReviewInterval } from "../studySession/reviewInterval";
@@ -9,7 +9,7 @@ type Props = {
   db: AppDatabase | null;
   settings: StudySettings | null;
   deck: Card[];
-  states: Record<string, ReviewState>;
+  states: ReviewStates;
   refresh: (database?: AppDatabase | null) => Promise<void>;
 };
 

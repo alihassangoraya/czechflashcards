@@ -1,4 +1,4 @@
-import type { Card, ReviewState } from "@czech-flashcards/shared";
+import type { Card } from "@czech-flashcards/shared";
 import {
   getDailyProgress,
   loadCards,
@@ -7,6 +7,7 @@ import {
   loadSavedCardIds,
   type AppDatabase,
   type DeckMemberships,
+  type ReviewStates,
   type SavedCardIds
 } from "../../database";
 
@@ -14,7 +15,7 @@ export type AppDataSnapshot = {
   cards: Card[];
   savedCardIds: SavedCardIds;
   deckMemberships: DeckMemberships;
-  states: Record<string, ReviewState>;
+  states: ReviewStates;
   dailyProgress: string;
 };
 

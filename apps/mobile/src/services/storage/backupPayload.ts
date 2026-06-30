@@ -1,10 +1,10 @@
-import type { Card, DailyProgress, ReviewState } from "@czech-flashcards/shared";
-import type { StudySettings, WebStore } from "./storageTypes";
+import type { Card, DailyProgress } from "@czech-flashcards/shared";
+import type { ReviewStates, StudySettings, WebStore } from "./storageTypes";
 
 export type BackupPayload = Partial<WebStore> & {
   store?: Partial<WebStore>;
-  progress?: Record<string, ReviewState>;
-  reviewStates?: Record<string, ReviewState>;
+  progress?: ReviewStates;
+  reviewStates?: ReviewStates;
   importedCards?: Card[];
   customCards?: Card[];
   editedCards?: Record<string, Card>;

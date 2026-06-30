@@ -1,10 +1,11 @@
-import type { Card, ReviewState } from "@czech-flashcards/shared";
+import type { Card } from "@czech-flashcards/shared";
+import type { ReviewStates } from "../../database";
 import { sortDueCardsByUrgency } from "./dueCardSelection";
 import type { RelearningEntry } from "./relearningTypes";
 
 type Input = {
   deck: Card[];
-  states: Record<string, ReviewState>;
+  states: ReviewStates;
   relearningQueue: RelearningEntry[];
   now: number;
 };

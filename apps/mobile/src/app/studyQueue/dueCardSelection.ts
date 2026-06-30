@@ -1,7 +1,8 @@
 import type { Card, ReviewState } from "@czech-flashcards/shared";
 import { compareDueReviewStates } from "@czech-flashcards/shared";
+import type { ReviewStates } from "../../database";
 
-export function chooseVariedDueCard(dueCards: Card[], states: Record<string, ReviewState>, recentCardIds: string[], now: number): Card | null {
+export function chooseVariedDueCard(dueCards: Card[], states: ReviewStates, recentCardIds: string[], now: number): Card | null {
   const ranked = sortDueCardsByUrgency(dueCards, states, now);
   if (!ranked.length) return null;
   const firstState = stateFor(states, ranked[0].id);
@@ -11,10 +12,10 @@ export function chooseVariedDueCard(dueCards: Card[], states: Record<string, Rev
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
-export function sortDueCardsByUrgency(dueCards: Card[], states: Record<string, ReviewState>, now: number): Card[] {
+export function sortDueCardsByUrgency(dueCards: Card[], states: ReviewStates, now: number): Card[] {
   return dueCards.slice().sort((a, b) => compareDueReviewStates(stateFor(states, a.id), stateFor(states, b.id), now));
 }
 
-function stateFor(states: Record<string, ReviewState>, cardId: string): ReviewState {
+function stateFor(states: ReviewStates, cardId: string): ReviewState {
   return states[cardId] || { cardId, knownStreak: 0, againCount: 0, dueAt: 0, seen: 0 };
 }

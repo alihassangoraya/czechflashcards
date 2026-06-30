@@ -1,10 +1,11 @@
-import type { Card, ReviewState } from "@czech-flashcards/shared";
+import type { Card } from "@czech-flashcards/shared";
+import type { ReviewStates } from "../../database";
 import type { TranslationKey } from "../../i18n/translations";
 import { buildShuffledDueQueue } from "./dueShuffleQueue";
 
 type Input = {
   deck: Card[];
-  states: Record<string, ReviewState>;
+  states: ReviewStates;
   current: Card | null;
   translate: (key: TranslationKey, values?: Record<string, string | number>) => string;
 };

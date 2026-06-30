@@ -21,6 +21,7 @@ export const allowedRootServiceFiles = new Set(["services/fileTransfer.ts"]);
 export const canonicalTypeFiles = new Map([
   ["AuthMode", "services/sync/syncTypes.ts"],
   ["DeckMemberships", "services/storage/storageTypes.ts"],
+  ["ReviewStates", "services/storage/storageTypes.ts"],
   ["SavedCardIds", "services/storage/storageTypes.ts"],
   ["StudyAnimations", "app/studyAnimationTypes.ts"],
   ["SwipeDirection", "features/study/animations/animationTypes.ts"]
@@ -30,6 +31,10 @@ export const rawCollectionTypeRules = [
   {
     pattern: /\bdeckMemberships:\s*Record<string,\s*string\[\]>/,
     message: "use DeckMemberships instead of a raw deck membership map"
+  },
+  {
+    pattern: /\b(?:states|reviewStates|progress):\s*Record<string,\s*ReviewState>/,
+    message: "use ReviewStates instead of a raw review-state map"
   },
   {
     pattern: /\bsavedCardIds:\s*(?:Readonly)?Set<string>/,

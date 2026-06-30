@@ -1,5 +1,5 @@
-import type { Card, ReviewGrade, ReviewState } from "@czech-flashcards/shared";
-import type { SavedCardIds, StudySettings } from "../../database";
+import type { Card, ReviewGrade } from "@czech-flashcards/shared";
+import type { ReviewStates, SavedCardIds, StudySettings } from "../../database";
 import type { AuthMode, SyncStatus } from "../../sync";
 import type { Panel, Screen } from "../appTypes";
 import type { StudyAnimations } from "../studyAnimationTypes";
@@ -10,7 +10,7 @@ export type MainScreenProps = {
   deck: Card[];
   cards: Card[];
   customCards: Card[];
-  states: Record<string, ReviewState>;
+  states: ReviewStates;
   settings: StudySettings;
   savedCardIds: SavedCardIds;
   current: Card | null;

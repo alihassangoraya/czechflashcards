@@ -1,10 +1,10 @@
-import type { Card, ReviewState } from "@czech-flashcards/shared";
-import type { StudySettings } from "../../database";
+import type { Card } from "@czech-flashcards/shared";
+import type { ReviewStates, StudySettings } from "../../database";
 
 export type HomeScreenProps = {
   deck: Card[];
   allCards: Card[];
-  states: Record<string, ReviewState>;
+  states: ReviewStates;
   settings: StudySettings;
   savedCount: number;
   customCount: number;

@@ -1,4 +1,5 @@
-import type { Card, ReviewGrade, ReviewState } from "@czech-flashcards/shared";
+import type { Card, ReviewGrade } from "@czech-flashcards/shared";
+import type { ReviewStates } from "../../database";
 import type { TranslationKey } from "../../i18n/translations";
 import { buildDueShuffleNotice } from "./dueShuffleNotice";
 import { recordRelearningReview, restoreRelearningQueue as restoreRelearningEntries, snapshotRelearningQueue as snapshotRelearningEntries } from "./relearningQueue";
@@ -7,7 +8,7 @@ import type { StudyQueueRefs } from "./studyQueueRefs";
 
 type Input = {
   deck: Card[];
-  states: Record<string, ReviewState>;
+  states: ReviewStates;
   current: Card | null;
   refs: StudyQueueRefs;
   translate: (key: TranslationKey) => string;

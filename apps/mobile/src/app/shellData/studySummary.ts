@@ -1,9 +1,9 @@
-import type { Card, ReviewState } from "@czech-flashcards/shared";
-import type { StudySettings } from "../../database";
+import type { Card } from "@czech-flashcards/shared";
+import type { ReviewStates, StudySettings } from "../../database";
 import type { AccountStudySummary } from "../../features/account";
 import type { SyncStatus } from "../../sync";
 
-export function buildAccountStudySummary(deck: Card[], cards: Card[], states: Record<string, ReviewState>, savedCount: number, settings: StudySettings, syncStatus: SyncStatus): AccountStudySummary {
+export function buildAccountStudySummary(deck: Card[], cards: Card[], states: ReviewStates, savedCount: number, settings: StudySettings, syncStatus: SyncStatus): AccountStudySummary {
   const dueCount = deck.filter((card) => (states[card.id]?.dueAt || 0) <= Date.now()).length;
   const studiedCount = deck.filter((card) => (states[card.id]?.seen || 0) > 0).length;
   const masteredCount = deck.filter((card) => (states[card.id]?.knownStreak || 0) >= 4).length;

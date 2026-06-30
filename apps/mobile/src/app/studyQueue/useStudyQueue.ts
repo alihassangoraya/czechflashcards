@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import type { Card, ReviewState } from "@czech-flashcards/shared";
+import type { Card } from "@czech-flashcards/shared";
+import type { ReviewStates } from "../../database";
 import { useI18n } from "../../i18n/I18nProvider";
 import { rememberShownCardId } from "./recentCards";
 import { buildStudyQueueActions } from "./studyQueueActions";
@@ -7,7 +8,7 @@ import { RECENT_CARD_LIMIT } from "./studyQueueConstants";
 import { useStudyQueueRefs } from "./studyQueueRefs";
 import { selectNextStudyCard } from "./studyQueueSelection";
 
-export function useStudyQueue(deck: Card[], states: Record<string, ReviewState>) {
+export function useStudyQueue(deck: Card[], states: ReviewStates) {
   const { t } = useI18n();
   const [current, setCurrent] = useState<Card | null>(null);
   const [revealed, setRevealed] = useState(false);

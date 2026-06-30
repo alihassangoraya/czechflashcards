@@ -1,6 +1,7 @@
 import { applyReviewGrade, formatInterval, type Card, type ReviewGrade, type ReviewState } from "@czech-flashcards/shared";
+import type { ReviewStates } from "../../database";
 
-export function formatReviewInterval(card: Card | null, states: Record<string, ReviewState>, grade: ReviewGrade) {
+export function formatReviewInterval(card: Card | null, states: ReviewStates, grade: ReviewGrade) {
   if (!card) return "";
   const state = states[card.id] || { cardId: card.id, knownStreak: 0, againCount: 0, dueAt: 0, seen: 0 };
   const now = Date.now();

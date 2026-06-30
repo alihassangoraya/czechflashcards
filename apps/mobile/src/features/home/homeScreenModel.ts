@@ -1,5 +1,5 @@
-import type { Card, ReviewState } from "@czech-flashcards/shared";
-import type { StudySettings } from "../../database";
+import type { Card } from "@czech-flashcards/shared";
+import type { ReviewStates, StudySettings } from "../../database";
 import type { TranslationKey } from "../../i18n/translations";
 import { deckLabel } from "../settings";
 import { buildHomeCategories, filterVisibleHomeCards } from "./homeCategories";
@@ -8,7 +8,7 @@ import { parseHomeDailyProgress } from "./homeDailyProgress";
 type Params = {
   deck: Card[];
   allCards: Card[];
-  states: Record<string, ReviewState>;
+  states: ReviewStates;
   settings: StudySettings;
   savedCount: number;
   customCount: number;
@@ -28,7 +28,7 @@ export function buildHomeScreenModel({ deck, allCards, states, settings, savedCo
   return { activeDeckLabel, categories, dailyGoalProgress, dueCount };
 }
 
-function countDueCards(deck: Card[], states: Record<string, ReviewState>) {
+function countDueCards(deck: Card[], states: ReviewStates) {
   const now = Date.now();
   return deck.filter((card) => (states[card.id]?.dueAt || 0) <= now).length;
 }

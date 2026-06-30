@@ -1,6 +1,6 @@
 import type { DailyProgress, ReviewEvent, ReviewState } from "@czech-flashcards/shared";
 import { createReviewState, recordDailyReview, undoDailyReview } from "@czech-flashcards/shared";
-import type { AppDatabase } from "./storageTypes";
+import type { AppDatabase, ReviewStates } from "./storageTypes";
 import { localDateKey, persistDatabase } from "./storageCore";
 import { removePendingReviewSync, removeReviewEvent, restorePreviousReviewState } from "./reviewUndoHelpers";
 import { enqueueSync } from "./syncQueueRepository";
@@ -9,7 +9,7 @@ export async function getReviewState(db: AppDatabase, cardId: string): Promise<R
   return db.store.reviewStates[cardId] || createReviewState(cardId);
 }
 
-export async function loadReviewStates(db: AppDatabase): Promise<Record<string, ReviewState>> {
+export async function loadReviewStates(db: AppDatabase): Promise<ReviewStates> {
   return { ...db.store.reviewStates };
 }
 

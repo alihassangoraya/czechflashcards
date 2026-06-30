@@ -14,13 +14,14 @@ export type StudySettings = {
 
 export type CustomCard = { card: Card; deletedAt?: number };
 export type DeckMemberships = Record<string, string[]>;
+export type ReviewStates = Record<string, ReviewState>;
 export type SavedCardIds = Set<string>;
 export type SyncEntry = { id: number; type: string; payload: unknown; createdAt: number; syncedAt?: number };
 
 export type WebStore = {
   seedVersion?: string;
   cards: Card[];
-  reviewStates: Record<string, ReviewState>;
+  reviewStates: ReviewStates;
   reviews: ReviewEvent[];
   dailyProgress: Record<string, DailyProgress>;
   customCards: Record<string, CustomCard>;

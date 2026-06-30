@@ -1,4 +1,5 @@
-import type { Card, ReviewState } from "@czech-flashcards/shared";
+import type { Card } from "@czech-flashcards/shared";
+import type { ReviewStates } from "../../database";
 import { chooseVariedDueCard } from "./dueCardSelection";
 import { findQueuedDueCard, pruneShuffledDueQueue } from "./dueShuffleQueue";
 import type { RelearningEntry } from "./relearningTypes";
@@ -7,7 +8,7 @@ import { selectRelearningStudyCard } from "./studyQueueRelearning";
 
 type SelectionInput = {
   deck: Card[];
-  states: Record<string, ReviewState>;
+  states: ReviewStates;
   forcedCardId: string | null;
   shuffledDueQueue: string[];
   relearningQueue: RelearningEntry[];
