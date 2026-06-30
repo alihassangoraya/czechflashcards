@@ -1,6 +1,4 @@
-function hasTag(card, tag) {
-  return (card.tags || []).includes(tag);
-}
+const { hasTag } = require("./tagPredicates");
 
 function isNumberCard(card) {
   return hasTag(card, "numbers");
