@@ -1,3 +1,4 @@
+export type { AppPanelProps } from "./appPanelProps";
 export type { PanelAccountDataProps } from "./panelAccountDataProps";
 export type { PanelAccountHandlers } from "./panelAccountHandlers";
 export type { PanelCardDataProps } from "./panelCardDataProps";

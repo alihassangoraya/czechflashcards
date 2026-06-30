@@ -1,4 +1,4 @@
-import type { AppPanelProps } from "../panelTypes";
+import type { AppPanelProps } from "../panelTypes/index";
 
 export type SearchWordsPanelProps = Pick<
   AppPanelProps,

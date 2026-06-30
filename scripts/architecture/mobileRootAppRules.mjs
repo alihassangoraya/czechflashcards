@@ -6,7 +6,8 @@ import {
   inspectRootAppNavigation,
   inspectRootAppSettingsTools,
   inspectRootAppShellData,
-  inspectRootAppStudy
+  inspectRootAppStudy,
+  inspectRootContractFiles
 } from "./mobileRootAppRules/index.mjs";
 
 function inspectAppDataStateComposition({ lines, rel }, violations) {
@@ -30,4 +31,5 @@ export function inspectRootAppModules(source, violations) {
   inspectRootAppShellData(rel, violations);
   inspectRootAppStudy(rel, violations);
   inspectAppDataStateComposition(source, violations);
+  inspectRootContractFiles(rel, violations);
 }

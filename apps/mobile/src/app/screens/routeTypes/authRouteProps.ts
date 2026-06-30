@@ -1,4 +1,4 @@
-import type { MainScreenProps } from "../screenTypes";
+import type { MainScreenProps } from "../screenTypes/index";
 
 export type AuthRouteProps = Pick<
   MainScreenProps,

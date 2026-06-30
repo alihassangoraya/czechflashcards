@@ -25,6 +25,7 @@ export const mobileViolationMessages = [
   ["rootAppSettingsTools", "Mobile architecture check failed. App settings tool modules must live under app/settingsTools/:"],
   ["rootAppShellData", "Mobile architecture check failed. App shell data projection must live under app/shellData/:"],
   ["rootAppStudy", "Mobile architecture check failed. App study modules must live under focused study folders:"],
+  ["rootContractFiles", "Mobile architecture check failed. App contract composition must live inside contract folders:"],
   ["rootSourceFiles", "Mobile architecture check failed. Mobile src root must stay limited to entrypoint and compatibility facades:"],
   ["serviceFacadeImports", "Mobile architecture check failed. Service modules must import sibling service APIs, not root compatibility facades:"],
   ["rootServices", "Mobile architecture check failed. Service implementations must live in domain service folders:"],

@@ -14,4 +14,4 @@ export type {
   SearchWordsPanelProps,
   SettingsModalProps
 } from "./modalTypes";
-export type { AppPanelProps } from "./panelTypes";
+export type { AppPanelProps } from "./panelTypes/index";

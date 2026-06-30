@@ -22,6 +22,7 @@ export function createMobileArchitectureViolations() {
     rootAppSettingsTools: [],
     rootAppShellData: [],
     rootAppStudy: [],
+    rootContractFiles: [],
     rootSourceFiles: [],
     rootServices: [],
     serviceFacadeImports: [],

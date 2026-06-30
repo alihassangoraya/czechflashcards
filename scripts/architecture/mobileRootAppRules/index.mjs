@@ -6,3 +6,4 @@ export { inspectRootAppNavigation } from "./rootAppNavigationRule.mjs";
 export { inspectRootAppSettingsTools } from "./rootAppSettingsToolsRule.mjs";
 export { inspectRootAppShellData } from "./rootAppShellDataRule.mjs";
 export { inspectRootAppStudy } from "./rootAppStudyRule.mjs";
+export { inspectRootContractFiles } from "./rootContractFilesRule.mjs";
