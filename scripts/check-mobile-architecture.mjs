@@ -35,6 +35,7 @@ await collect(srcRoot);
 const violations = [];
 const hardcodedTextViolations = [];
 const deepFeatureImportViolations = [];
+const featureToAppImportViolations = [];
 for (const file of files) {
   const rel = relative(srcRoot, file);
   const maxLines = maxLinesByPath.get(rel) || defaultMaxLines;
@@ -55,6 +56,13 @@ for (const file of files) {
       if (deepFeatureImport) deepFeatureImportViolations.push(`${rel}:${index + 1}: ${line.trim()}`);
     });
   }
+
+  if (rel.startsWith("features/")) {
+    lines.forEach((line, index) => {
+      const appImport = line.match(/from\s+["'](?:\.\.\/)+app\/[^"']+["']/);
+      if (appImport) featureToAppImportViolations.push(`${rel}:${index + 1}: ${line.trim()}`);
+    });
+  }
 }
 
 if (violations.length) {
@@ -72,6 +80,12 @@ if (hardcodedTextViolations.length) {
 if (deepFeatureImportViolations.length) {
   console.error("Mobile architecture check failed. App orchestration must import features through feature barrels:");
   console.error(deepFeatureImportViolations.join("\n"));
+  process.exit(1);
+}
+
+if (featureToAppImportViolations.length) {
+  console.error("Mobile architecture check failed. Feature modules must not import app orchestration:");
+  console.error(featureToAppImportViolations.join("\n"));
   process.exit(1);
 }
 

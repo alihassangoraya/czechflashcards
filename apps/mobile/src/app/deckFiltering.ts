@@ -1,5 +1,5 @@
 import { filterDeck, type Card } from "@czech-flashcards/shared";
-import type { CustomDeck, StudySettings } from "../database";
+import type { StudySettings } from "../database";
 
 export function filterStudyDeck(
   cards: Card[],
@@ -14,9 +14,4 @@ export function filterStudyDeck(
 
   const membershipIds = new Set(deckMemberships[settings.deckFilter] || []);
   return cards.filter((card) => membershipIds.has(card.id) || card.tags.includes(settings.deckFilter));
-}
-
-export function customDeckCardCount(deck: CustomDeck, cards: Card[], deckMemberships: Record<string, string[]>) {
-  const membershipIds = new Set(deckMemberships[deck.id] || []);
-  return cards.filter((card) => membershipIds.has(card.id) || card.tags.includes(deck.id)).length;
 }
