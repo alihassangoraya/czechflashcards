@@ -1,12 +1,12 @@
 import React, { useMemo } from "react";
-import { StyleSheet, View } from "react-native";
-import { spacing } from "../../../theme/design";
+import { View } from "react-native";
 import { SearchField } from "../components/SearchField";
 import { SearchNoResults } from "../components/SearchNoResults";
 import { SearchPrompt } from "../components/SearchPrompt";
 import { SearchResultMeta } from "../components/SearchResultMeta";
 import { SearchResultsList } from "../components/SearchResultsList";
 import { searchCards } from "../searchCards";
+import { searchPanelStyles as styles } from "./searchPanelStyles";
 import type { SearchPanelProps } from "./searchPanelTypes";
 
 export function SearchPanel({ cards, query, meaningLanguage, savedCardIds, onQueryChange, onStudy, onToggleSaved, onManageDecks, onEdit }: SearchPanelProps) {
@@ -29,7 +29,3 @@ export function SearchPanel({ cards, query, meaningLanguage, savedCardIds, onQue
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  root: { gap: spacing.xl }
-});

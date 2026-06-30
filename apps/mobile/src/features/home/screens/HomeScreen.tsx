@@ -1,10 +1,11 @@
 import React from "react";
-import { ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
+import { ScrollView, useWindowDimensions, View } from "react-native";
 import { HomeContent } from "../components/HomeContent";
 import { HomeHero } from "../components/HomeHero";
 import { buildHomeHeroProps } from "../homeHeroPropsAdapter";
 import type { HomeScreenProps } from "../homeScreenTypes";
 import { useHomeScreenModel } from "../hooks/useHomeScreenModel";
+import { homeScreenStyles as styles } from "./homeScreenStyles";
 
 export function HomeScreen(props: HomeScreenProps) {
   const { deck, settings, onSelectCategory } = props;
@@ -21,8 +22,3 @@ export function HomeScreen(props: HomeScreenProps) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: { flex: 1 },
-  scroll: { flex: 1 }
-});

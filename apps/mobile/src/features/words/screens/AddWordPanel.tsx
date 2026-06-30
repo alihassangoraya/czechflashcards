@@ -1,13 +1,13 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 import { useI18n } from "../../../i18n/I18nProvider";
-import { spacing } from "../../../theme/design";
 import type { AddWordPanelProps } from "../addWordPanelTypes";
 import { AddWordForm } from "../components/AddWordForm";
 import { AddWordIntro } from "../components/AddWordIntro";
 import { CustomWordsList } from "../components/CustomWordsList";
 import { useAddWordForm } from "../hooks/useAddWordForm";
 import { useCustomWordDeletion } from "../hooks/useCustomWordDeletion";
+import { addWordPanelStyles as styles } from "./addWordPanelStyles";
 
 export function AddWordPanel({ onSubmit, cards, decks, onDelete, onEdit }: AddWordPanelProps) {
   const { t } = useI18n();
@@ -30,7 +30,3 @@ export function AddWordPanel({ onSubmit, cards, decks, onDelete, onEdit }: AddWo
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  root: { gap: spacing.xlPlus }
-});

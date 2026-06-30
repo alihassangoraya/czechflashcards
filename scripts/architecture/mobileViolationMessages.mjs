@@ -6,6 +6,7 @@ export const mobileViolationMessages = [
   ["featureRootComponents", "Mobile architecture check failed. Feature UI files must live in components/ or screens/:"],
   ["featureRootHooks", "Mobile architecture check failed. Feature hooks must live in hooks/ folders:"],
   ["inlineScreenProps", "Mobile architecture check failed. Feature screens must use named props types:"],
+  ["inlineScreenStyles", "Mobile architecture check failed. Feature screens must keep styles in sibling style modules:"],
   ["localContractPicks", "Mobile architecture check failed. Keep route and modal prop picks in contract files:"],
   ["materialIconPrivateImports", "Mobile architecture check failed. Import icons through components/MaterialIcons, not private glyph tables:"],
   ["materialIconPropTypes", "Mobile architecture check failed. Use the named MaterialIconName contract instead of deriving icon prop types:"],

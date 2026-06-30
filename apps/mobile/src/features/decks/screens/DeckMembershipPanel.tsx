@@ -1,10 +1,10 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
-import { spacing } from "../../../theme/design";
+import { View } from "react-native";
 import { DeckMembershipEmpty } from "../components/DeckMembershipEmpty";
 import { DeckMembershipList } from "../components/DeckMembershipList";
 import { DeckMembershipSummary } from "../components/DeckMembershipSummary";
 import type { DeckMembershipPanelProps } from "../deckMembershipTypes";
+import { deckMembershipPanelStyles as styles } from "./deckMembershipPanelStyles";
 
 export function DeckMembershipPanel({ card, decks, deckMemberships, onAddToDeck, onRemoveFromDeck, onOpenSettings }: DeckMembershipPanelProps) {
   if (!card) return null;
@@ -20,7 +20,3 @@ export function DeckMembershipPanel({ card, decks, deckMemberships, onAddToDeck,
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  root: { gap: spacing.xlPlus }
-});
