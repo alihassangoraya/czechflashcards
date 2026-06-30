@@ -14,3 +14,5 @@ export function useSettingsDraft(settings: StudySettings, onChange: (settings: S
     ...reminderDraft
   };
 }
+
+export type SettingsDraft = ReturnType<typeof useSettingsDraft>;

@@ -1,10 +1,8 @@
 import React from "react";
 import type { Card } from "@czech-flashcards/shared";
 import type { DeckMemberships, StudySettings } from "../../../database";
-import type { useSettingsDraft } from "../hooks/useSettingsDraft";
+import type { SettingsDraft } from "../hooks/useSettingsDraft";
 import { CustomDeckSection } from "./CustomDeckSection";
-
-type SettingsDraft = ReturnType<typeof useSettingsDraft>;
 
 type Props = {
   cards: Card[];

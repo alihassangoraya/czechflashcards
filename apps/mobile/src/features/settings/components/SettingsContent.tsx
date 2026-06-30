@@ -8,9 +8,7 @@ import { SettingsSummary } from "./SettingsSummary";
 import { StudyPlanSection } from "./StudyPlanSection";
 import { SyncSettingsSection } from "./SyncSettingsSection";
 import type { SettingsPanelProps } from "../settingsPanelTypes";
-import type { useSettingsDraft } from "../hooks/useSettingsDraft";
-
-type SettingsDraft = ReturnType<typeof useSettingsDraft>;
+import type { SettingsDraft } from "../hooks/useSettingsDraft";
 
 type Props = SettingsPanelProps & {
   activeDeckLabel: string;
