@@ -1,9 +1,10 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { Animated } from "react-native";
 import type { Card } from "@czech-flashcards/shared";
 import type { SwipeDirection } from "./animationTypes";
 import { springCardBack } from "./swipeAnimations";
 import { useResetSwipeOnCardChange } from "./useResetSwipeOnCardChange";
+import { useSwipeFlags } from "./useSwipeFlags";
 
 type Params = {
   current: Card | null;
@@ -11,42 +12,31 @@ type Params = {
 };
 
 export function useSwipeAnimationState({ current, dragX }: Params) {
-  const consumedSwipe = useRef(false);
-  const swipeCompleting = useRef(false);
+  const { clearSwipeCompleting, consumedSwipe, markSwipeCompleting, releaseConsumedSwipe, resetSwipeFlags, swipeCompleting } = useSwipeFlags();
   const [swipeDirection, setSwipeDirection] = useState<SwipeDirection | null>(null);
-
-  const resetFlags = useCallback(() => {
-    consumedSwipe.current = false;
-    swipeCompleting.current = false;
-  }, []);
 
   const resetSwipeDirection = useCallback(() => {
     setSwipeDirection(null);
   }, []);
 
-  useResetSwipeOnCardChange({ current, dragX, resetFlags, resetSwipeDirection });
+  useResetSwipeOnCardChange({ current, dragX, resetFlags: resetSwipeFlags, resetSwipeDirection });
 
   const resetCancelledSwipe = useCallback(() => {
-    resetFlags();
+    resetSwipeFlags();
     resetSwipeDirection();
     springCardBack(dragX);
-  }, [dragX, resetFlags, resetSwipeDirection]);
+  }, [dragX, resetSwipeFlags, resetSwipeDirection]);
 
   const startSwipeCompletion = useCallback((direction: SwipeDirection) => {
-    consumedSwipe.current = true;
-    swipeCompleting.current = true;
+    markSwipeCompleting();
     setSwipeDirection(direction);
-  }, []);
+  }, [markSwipeCompleting]);
 
   const finishSwipeCompletion = useCallback(() => {
     dragX.setValue(0);
     setSwipeDirection(null);
-    swipeCompleting.current = false;
-  }, [dragX]);
-
-  const releaseConsumedSwipe = useCallback(() => {
-    consumedSwipe.current = false;
-  }, []);
+    clearSwipeCompleting();
+  }, [clearSwipeCompleting, dragX]);
 
   return {
     consumedSwipe,
