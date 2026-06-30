@@ -1,17 +1,14 @@
 import React, { createContext, useContext, useMemo } from "react";
 import { I18nManager } from "react-native";
-import { rtlLanguages, translations, type LanguageCode, type TranslationKey } from "./translations";
-
-type TranslationParams = Record<string, string | number>;
+import { defaultLanguage, getTextAlign, getTextDirection, interpolateTranslation, normalizeLanguage, type TextAlignment, type TextDirection, type TranslationParams } from "./i18nCore";
+import { translations, type LanguageCode, type TranslationKey } from "./translations";
 
 type I18nContextValue = {
   language: LanguageCode;
-  direction: "ltr" | "rtl";
-  textAlign: "left" | "right";
+  direction: TextDirection;
+  textAlign: TextAlignment;
   t: (key: TranslationKey, params?: TranslationParams) => string;
 };
-
-const defaultLanguage: LanguageCode = "en";
 
 const I18nContext = createContext<I18nContextValue>({
   language: defaultLanguage,
@@ -20,26 +17,17 @@ const I18nContext = createContext<I18nContextValue>({
   t: (key) => translations.en[key]
 });
 
-function interpolate(template: string, params?: TranslationParams) {
-  if (!params) return template;
-  return template.replace(/\{(\w+)\}/g, (_, key: string) => String(params[key] ?? `{${key}}`));
-}
-
-export function normalizeLanguage(value?: string | null): LanguageCode {
-  return value && value in translations ? value as LanguageCode : defaultLanguage;
-}
-
 export function I18nProvider({ language, children }: { language?: string | null; children: React.ReactNode }) {
   const normalizedLanguage = normalizeLanguage(language);
   const value = useMemo<I18nContextValue>(() => {
     const catalog = translations[normalizedLanguage] as Partial<Record<TranslationKey, string>>;
-    const direction = rtlLanguages.has(normalizedLanguage) ? "rtl" : "ltr";
+    const direction = getTextDirection(normalizedLanguage);
 
     return {
       language: normalizedLanguage,
       direction,
-      textAlign: direction === "rtl" ? "right" : "left",
-      t: (key, params) => interpolate(catalog[key] || translations.en[key] || key, params)
+      textAlign: getTextAlign(direction),
+      t: (key, params) => interpolateTranslation(catalog[key] || translations.en[key] || key, params)
     };
   }, [normalizedLanguage]);
 
