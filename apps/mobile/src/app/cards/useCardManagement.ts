@@ -1,6 +1,8 @@
 import type { Card } from "@czech-flashcards/shared";
 import type { AppDatabase } from "../../database";
 import type { Panel } from "../appTypes";
+import type { DeckMemberships } from "./deckMembershipState";
+import type { SavedCardIds } from "./savedCardState";
 import { useCardEditor } from "./useCardEditor";
 import { useCustomWordActions } from "./useCustomWordActions";
 import { useDeckMembershipActions } from "./useDeckMembershipActions";
@@ -11,9 +13,9 @@ type Props = {
   cards: Card[];
   current: Card | null;
   panel: Panel | null;
-  savedCardIds: Set<string>;
-  setSavedCardIds: (savedCardIds: Set<string> | ((previous: Set<string>) => Set<string>)) => void;
-  setDeckMemberships: (deckMemberships: Record<string, string[]> | ((previous: Record<string, string[]>) => Record<string, string[]>)) => void;
+  savedCardIds: SavedCardIds;
+  setSavedCardIds: (savedCardIds: SavedCardIds | ((previous: SavedCardIds) => SavedCardIds)) => void;
+  setDeckMemberships: (deckMemberships: DeckMemberships | ((previous: DeckMemberships) => DeckMemberships)) => void;
   setCurrent: (card: Card | null) => void;
   setRevealed: (revealed: boolean) => void;
   setPanel: (panel: Panel | null) => void;
