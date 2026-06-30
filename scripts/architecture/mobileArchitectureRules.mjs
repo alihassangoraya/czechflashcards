@@ -102,7 +102,7 @@ function inspectCanonicalTypes({ lines, rel }, violations) {
 }
 
 function inspectRawCollectionTypes({ lines, rel }, violations) {
-  if (rel === "services/storage/storageTypes.ts" || rel === "services/sync/supabaseClient.ts") return;
+  if (rel.startsWith("services/storage/storageTypes/") || rel === "services/sync/supabaseClient.ts") return;
   lines.forEach((line, index) => {
     for (const rule of rawCollectionTypeRules) {
       if (rule.pattern.test(line)) violations.rawCollectionTypes.push(`${rel}:${index + 1}: ${rule.message}`);
