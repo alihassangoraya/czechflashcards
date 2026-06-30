@@ -1,9 +1,9 @@
 import { useState } from "react";
 import type { Card } from "@czech-flashcards/shared";
-import { addCustomCard, saveCardCorrection, type AppDatabase } from "../../database";
+import type { AppDatabase } from "../../database";
 import type { Panel } from "../appTypes";
 import type { CorrectionValues } from "../appShellTypes";
-import { applyCardCorrection } from "./cardFactory";
+import { saveEditedCard } from "./cardEditorPersistence";
 
 type Props = {
   db: AppDatabase | null;
@@ -23,9 +23,7 @@ export function useCardEditor({ db, current, panel, setCurrent, setRevealed, set
 
   async function saveCorrection(values: CorrectionValues) {
     if (!db || !editingCard) return;
-    const card = applyCardCorrection(editingCard, values);
-    if (card.source === "custom") await addCustomCard(db, card);
-    else await saveCardCorrection(db, card);
+    const card = await saveEditedCard({ db, editingCard, values });
     forceCard(card.id, true);
     const returnPanel = editReturnPanel;
     setEditingCard(null);
