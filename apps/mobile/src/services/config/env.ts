@@ -6,5 +6,9 @@ export const env = {
     process.env.GEMINI_API_KEY ||
     process.env.GOOGLE_API_KEY ||
     process.env.GOOGLE_GENERATIVE_AI_API_KEY ||
-    ""
+    "",
+  geminiModel: process.env.EXPO_PUBLIC_GEMINI_MODEL ||
+    process.env.VITE_GEMINI_MODEL ||
+    process.env.GEMINI_MODEL ||
+    "gemini-2.5-flash"
 };

@@ -3,19 +3,22 @@ import { defineConfig, loadEnv } from "vite";
 const vocabularyChunkWarningLimitKb = 3200;
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), ["VITE_", "EXPO_PUBLIC_"]);
+  const env = loadEnv(mode, process.cwd(), "");
 
   return {
     define: {
       "process.env.EXPO_PUBLIC_SUPABASE_URL": JSON.stringify(env.EXPO_PUBLIC_SUPABASE_URL || process.env.EXPO_PUBLIC_SUPABASE_URL || ""),
       "process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY": JSON.stringify(env.EXPO_PUBLIC_SUPABASE_ANON_KEY || process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || ""),
       "process.env.EXPO_PUBLIC_GEMINI_API_KEY": JSON.stringify(env.EXPO_PUBLIC_GEMINI_API_KEY || process.env.EXPO_PUBLIC_GEMINI_API_KEY || ""),
+      "process.env.EXPO_PUBLIC_GEMINI_MODEL": JSON.stringify(env.EXPO_PUBLIC_GEMINI_MODEL || process.env.EXPO_PUBLIC_GEMINI_MODEL || ""),
       "process.env.GEMINI_API_KEY": JSON.stringify(env.GEMINI_API_KEY || process.env.GEMINI_API_KEY || ""),
+      "process.env.GEMINI_MODEL": JSON.stringify(env.GEMINI_MODEL || process.env.GEMINI_MODEL || ""),
       "process.env.GOOGLE_API_KEY": JSON.stringify(env.GOOGLE_API_KEY || process.env.GOOGLE_API_KEY || ""),
       "process.env.GOOGLE_GENERATIVE_AI_API_KEY": JSON.stringify(env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY || ""),
       "process.env.VITE_SUPABASE_URL": JSON.stringify(env.VITE_SUPABASE_URL || process.env.VITE_SUPABASE_URL || ""),
       "process.env.VITE_SUPABASE_ANON_KEY": JSON.stringify(env.VITE_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY || ""),
-      "process.env.VITE_GEMINI_API_KEY": JSON.stringify(env.VITE_GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY || "")
+      "process.env.VITE_GEMINI_API_KEY": JSON.stringify(env.VITE_GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY || ""),
+      "process.env.VITE_GEMINI_MODEL": JSON.stringify(env.VITE_GEMINI_MODEL || process.env.VITE_GEMINI_MODEL || "")
     },
     resolve: {
       alias: {
