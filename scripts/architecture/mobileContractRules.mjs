@@ -1,6 +1,6 @@
 export function inspectLocalRouteAndModalPicks({ lines, rel }, violations) {
-  if (rel.startsWith("app/screens/") && rel !== "app/screens/routeTypes.ts") {
-    inspectLocalPicks(lines, rel, violations, "Pick<MainScreenProps", "move route prop picks into app/screens/routeTypes.ts");
+  if (rel.startsWith("app/screens/") && !rel.startsWith("app/screens/routeTypes/")) {
+    inspectLocalPicks(lines, rel, violations, "Pick<MainScreenProps", "move route prop picks into app/screens/routeTypes/");
   }
 
   if (rel.startsWith("app/panels/") && !rel.startsWith("app/panels/modalTypes/")) {
