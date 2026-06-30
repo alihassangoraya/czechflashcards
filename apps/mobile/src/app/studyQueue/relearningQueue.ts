@@ -1,10 +1,6 @@
 import type { Card, ReviewGrade } from "@czech-flashcards/shared";
-import {
-  advanceRelearningQueue,
-  scheduleRelearningEntry,
-  takeRelearningCardFromQueue,
-  type RelearningEntry
-} from "../../features/study";
+import { advanceRelearningQueue, scheduleRelearningEntry, takeRelearningCardFromQueue } from "./relearningScheduling";
+import type { RelearningEntry } from "./relearningTypes";
 import { RELEARNING_MAX_CARDS, RELEARNING_MIN_CARDS } from "./studyQueueConstants";
 
 export function recordRelearningReview(queue: RelearningEntry[], cardId: string, grade: ReviewGrade): RelearningEntry[] {

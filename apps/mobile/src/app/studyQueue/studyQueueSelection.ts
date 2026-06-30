@@ -1,7 +1,8 @@
 import type { Card, ReviewState } from "@czech-flashcards/shared";
-import { chooseVariedDueCard, sortDueCardsByUrgency, type RelearningEntry } from "../../features/study";
+import { chooseVariedDueCard, sortDueCardsByUrgency } from "./dueCardSelection";
 import { findQueuedDueCard, pruneShuffledDueQueue } from "./dueShuffleQueue";
 import { takeNextRelearningCard } from "./relearningQueue";
+import type { RelearningEntry } from "./relearningTypes";
 
 type SelectionInput = {
   deck: Card[];

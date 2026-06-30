@@ -1,6 +1,6 @@
 import type { Card, ReviewGrade } from "@czech-flashcards/shared";
 import type { AppDatabase, StudySettings } from "../../database";
-import type { RelearningEntry } from "../../features/study";
+import type { RelearningEntry } from "../studyQueue/relearningTypes";
 import type { UndoReview } from "./reviewTypes";
 import { restoreReview, saveGradedReview } from "./reviewPersistence";
 

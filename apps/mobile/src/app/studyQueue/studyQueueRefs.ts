@@ -1,5 +1,5 @@
 import { useMemo, useRef } from "react";
-import type { RelearningEntry } from "../../features/study";
+import type { RelearningEntry } from "./relearningTypes";
 
 export function useStudyQueueRefs() {
   const forcedCardId = useRef<string | null>(null);

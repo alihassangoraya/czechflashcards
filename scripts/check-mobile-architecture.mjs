@@ -39,6 +39,7 @@ const deepFeatureImportViolations = [];
 const featureToAppImportViolations = [];
 const featureRootComponentViolations = [];
 const duplicateTypeViolations = [];
+const studyDomainFeatureImportViolations = [];
 const canonicalTypeFiles = new Map([
   ["AuthMode", "services/sync/syncTypes.ts"],
   ["StudyAnimations", "app/studyAnimationTypes.ts"],
@@ -66,6 +67,8 @@ for (const file of files) {
     lines.forEach((line, index) => {
       const deepFeatureImport = line.match(/from\s+["'](?:\.\.\/)+features\/[^/"']+\/[^"']+["']/);
       if (deepFeatureImport) deepFeatureImportViolations.push(`${rel}:${index + 1}: ${line.trim()}`);
+      const studyDomainFeatureImport = rel.match(/^app\/study(?:Queue|Session)\//) && line.match(/from\s+["'](?:\.\.\/)+features\/[^"']+["']/);
+      if (studyDomainFeatureImport) studyDomainFeatureImportViolations.push(`${rel}:${index + 1}: ${line.trim()}`);
     });
   }
 
@@ -104,6 +107,12 @@ if (featureToAppImportViolations.length) {
   failed = true;
   console.error("Mobile architecture check failed. Feature modules must not import app orchestration:");
   console.error(featureToAppImportViolations.join("\n"));
+}
+
+if (studyDomainFeatureImportViolations.length) {
+  failed = true;
+  console.error("Mobile architecture check failed. Study queue/session domain modules must not import feature UI modules:");
+  console.error(studyDomainFeatureImportViolations.join("\n"));
 }
 
 if (featureRootComponentViolations.length) {

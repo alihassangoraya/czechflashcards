@@ -1,5 +1,5 @@
 import type { Card } from "@czech-flashcards/shared";
-import { shuffleValues } from "../../features/study";
+import { shuffleValues } from "./shuffleValues";
 
 export function pruneShuffledDueQueue(queue: string[], dueCards: Card[]) {
   return queue.filter((id) => dueCards.some((card) => card.id === id));

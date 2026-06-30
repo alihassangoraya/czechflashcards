@@ -1,8 +1,8 @@
 import type { Card, ReviewGrade, ReviewState } from "@czech-flashcards/shared";
-import type { RelearningEntry } from "../../features/study";
 import type { TranslationKey } from "../../i18n/translations";
 import { buildDueShuffleNotice } from "./dueShuffleNotice";
 import { recordRelearningReview, restoreRelearningQueue as restoreRelearningEntries, snapshotRelearningQueue as snapshotRelearningEntries } from "./relearningQueue";
+import type { RelearningEntry } from "./relearningTypes";
 import type { StudyQueueRefs } from "./studyQueueRefs";
 
 type Input = {

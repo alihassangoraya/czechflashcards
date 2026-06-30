@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Card, ReviewState } from "@czech-flashcards/shared";
-import { rememberShownCardId } from "../features/study";
 import { useI18n } from "../i18n/I18nProvider";
+import { rememberShownCardId } from "./studyQueue/recentCards";
 import { buildStudyQueueActions } from "./studyQueue/studyQueueActions";
 import { RECENT_CARD_LIMIT } from "./studyQueue/studyQueueConstants";
 import { useStudyQueueRefs } from "./studyQueue/studyQueueRefs";
