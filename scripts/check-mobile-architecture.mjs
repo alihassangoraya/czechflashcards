@@ -4,12 +4,13 @@ import { relative, join } from "node:path";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const srcRoot = join(root, "apps/mobile/src");
-const defaultMaxLines = 140;
+const defaultMaxLines = 100;
 const maxLinesByPath = new Map([
   ["i18n/locales/en.ts", 340],
   ["i18n/locales/cs.ts", 220],
   ["i18n/locales/hi.ts", 220],
-  ["i18n/locales/ur.ts", 220]
+  ["i18n/locales/ur.ts", 220],
+  ["theme/tokens/colors.ts", 120]
 ]);
 const hardcodedTextAllowList = new Set([
   "features/home/homeContent.ts",
@@ -65,28 +66,32 @@ for (const file of files) {
   }
 }
 
-if (violations.length) {
-  console.error("Mobile architecture check failed. Split large files into focused modules:");
-  console.error(violations.join("\n"));
-  process.exit(1);
-}
+let failed = false;
 
 if (hardcodedTextViolations.length) {
+  failed = true;
   console.error("Mobile architecture check failed. Move hardcoded UI text into i18n translations:");
   console.error(hardcodedTextViolations.join("\n"));
-  process.exit(1);
 }
 
 if (deepFeatureImportViolations.length) {
+  failed = true;
   console.error("Mobile architecture check failed. App orchestration must import features through feature barrels:");
   console.error(deepFeatureImportViolations.join("\n"));
-  process.exit(1);
 }
 
 if (featureToAppImportViolations.length) {
+  failed = true;
   console.error("Mobile architecture check failed. Feature modules must not import app orchestration:");
   console.error(featureToAppImportViolations.join("\n"));
-  process.exit(1);
 }
 
-console.log("Mobile architecture file-size boundaries are healthy.");
+if (violations.length) {
+  failed = true;
+  console.error("Mobile architecture check failed. Split large files into focused modules:");
+  console.error(violations.join("\n"));
+}
+
+if (failed) process.exit(1);
+
+console.log("Mobile architecture boundaries are healthy.");
