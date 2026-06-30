@@ -1,6 +1,7 @@
 import React from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import MaterialIcons from "../../../components/MaterialIcons";
+import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, shadow, size, spacing, typography } from "../../../theme/design";
 import { ResultMetric } from "./ResultMetric";
 
@@ -12,45 +13,46 @@ type Props = {
 };
 
 export function QuizResultScreen({ score, total, onRestart, onClose }: Props) {
+  const { t, textAlign } = useI18n();
   const missed = total - score;
   const finalAccuracy = Math.round((score / total) * 100);
   const feedback = score === total
-    ? "Bezchybne. Every answer was correct."
+    ? t("quiz.feedbackPerfect")
     : finalAccuracy >= 80
-      ? "Vyborne. Your recall is looking strong."
+      ? t("quiz.feedbackStrong")
       : finalAccuracy >= 50
-        ? "Dobra prace. A short review will help these words stick."
-        : "Keep going. Review the missed words, then take another round.";
+        ? t("quiz.feedbackReview")
+        : t("quiz.feedbackKeepGoing");
 
   return (
     <ScrollView contentContainerStyle={styles.resultContent}>
       <View style={styles.resultIcon}>
         <MaterialIcons name="emoji-events" size={size.quizResultIcon} color={colors.warning} />
       </View>
-      <Text style={styles.resultTitle}>Gratulujeme!</Text>
-      <Text style={styles.resultSubtitle}>Quiz complete</Text>
+      <Text style={[styles.resultTitle, { textAlign }]}>{t("quiz.congrats")}</Text>
+      <Text style={[styles.resultSubtitle, { textAlign }]}>{t("quiz.complete")}</Text>
 
       <View style={styles.resultCard}>
-        <Text style={styles.resultEyebrow}>Your score</Text>
+        <Text style={[styles.resultEyebrow, { textAlign }]}>{t("quiz.yourScore")}</Text>
         <View style={styles.scoreLine}>
           <Text style={[styles.resultScore, finalAccuracy >= 50 ? styles.scorePositive : styles.scoreNeedsReview]}>{score}</Text>
           <Text style={styles.scoreTotal}>/ {total}</Text>
         </View>
-        <Text style={styles.resultFeedback}>{feedback}</Text>
+        <Text style={[styles.resultFeedback, { textAlign }]}>{feedback}</Text>
         <View style={styles.resultMetrics}>
-          <ResultMetric icon="check-circle" value={`${score}`} label="Correct" color={colors.success} />
-          <ResultMetric icon="cancel" value={`${missed}`} label="Missed" color={colors.danger} />
-          <ResultMetric icon="bolt" value={`${finalAccuracy}%`} label="Accuracy" color={colors.action} />
+          <ResultMetric icon="check-circle" value={`${score}`} label={t("quiz.correct")} color={colors.success} />
+          <ResultMetric icon="cancel" value={`${missed}`} label={t("quiz.missed")} color={colors.danger} />
+          <ResultMetric icon="bolt" value={`${finalAccuracy}%`} label={t("quiz.accuracy")} color={colors.action} />
         </View>
       </View>
 
       <Pressable style={styles.primaryButton} onPress={onRestart} accessibilityRole="button">
         <MaterialIcons name="refresh" size={size.icon} color={colors.onPrimary} />
-        <Text style={styles.primaryText}>Try another quiz</Text>
+        <Text style={styles.primaryText}>{t("quiz.tryAnother")}</Text>
       </Pressable>
       <Pressable style={styles.secondaryButton} onPress={onClose} accessibilityRole="button">
         <MaterialIcons name="home" size={size.icon} color={colors.primaryDeep} />
-        <Text style={styles.secondaryText}>Return home</Text>
+        <Text style={styles.secondaryText}>{t("quiz.returnHome")}</Text>
       </Pressable>
     </ScrollView>
   );

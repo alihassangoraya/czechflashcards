@@ -1,5 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, spacing, typography } from "../../../theme/design";
 import { IconButton } from "./IconButton";
 import { PreferenceRow } from "./PreferenceRow";
@@ -11,16 +12,18 @@ type Props = {
 };
 
 export function DailyTargetStepper({ dailyGoal, onChange }: Props) {
+  const { t, textAlign } = useI18n();
+
   return (
     <SettingGroup>
-      <PreferenceRow icon="today" title="Daily target" value={`${dailyGoal} cards`} />
+      <PreferenceRow icon="today" title={t("settings.dailyTarget")} value={t("settings.cardsValue", { count: dailyGoal })} />
       <View style={styles.stepper}>
-        <IconButton icon="remove" label="Reduce daily target" disabled={dailyGoal <= 5} onPress={() => onChange(Math.max(5, dailyGoal - 5))} />
+        <IconButton icon="remove" label={t("settings.reduceDailyTarget")} disabled={dailyGoal <= 5} onPress={() => onChange(Math.max(5, dailyGoal - 5))} />
         <View style={styles.stepperValue}>
-          <Text style={styles.stepperNumber}>{dailyGoal}</Text>
-          <Text style={styles.stepperLabel}>cards / day</Text>
+          <Text style={[styles.stepperNumber, { textAlign }]}>{dailyGoal}</Text>
+          <Text style={[styles.stepperLabel, { textAlign }]}>{t("settings.cardsPerDay")}</Text>
         </View>
-        <IconButton icon="add" label="Increase daily target" onPress={() => onChange(Math.min(200, dailyGoal + 5))} />
+        <IconButton icon="add" label={t("settings.increaseDailyTarget")} onPress={() => onChange(Math.min(200, dailyGoal + 5))} />
       </View>
     </SettingGroup>
   );

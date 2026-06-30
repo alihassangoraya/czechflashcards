@@ -2,6 +2,7 @@ import React from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import MaterialIcons from "../../components/MaterialIcons";
 import type { Card } from "@czech-flashcards/shared";
+import { useI18n } from "../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../theme/design";
 import { QuizEmptyState } from "./components/QuizEmptyState";
 import { QuizExitConfirmModal } from "./components/QuizExitConfirmModal";
@@ -19,6 +20,7 @@ type Props = {
 };
 
 export function QuizScreen({ deck, onClose }: Props) {
+  const { t } = useI18n();
   const quiz = useQuizSession(deck, onClose);
 
   if (quiz.questions.length === 0) {
@@ -54,7 +56,7 @@ export function QuizScreen({ deck, onClose }: Props) {
       {quiz.checked && <QuizFeedback correct={quiz.isCorrect} correctAnswer={question.options[question.correctIndex]} />}
 
       <Pressable disabled={quiz.selected == null} style={[styles.primaryButton, quiz.selected == null && styles.disabled]} onPress={quiz.next} accessibilityRole="button">
-        <Text style={styles.primaryText}>{quiz.checked ? (quiz.index + 1 === quiz.questions.length ? "See results" : "Next question") : "Check answer"}</Text>
+        <Text style={styles.primaryText}>{quiz.checked ? (quiz.index + 1 === quiz.questions.length ? t("quiz.seeResults") : t("quiz.nextQuestion")) : t("quiz.checkAnswer")}</Text>
         <MaterialIcons name={quiz.checked ? "arrow-forward" : "check"} size={size.icon} color={colors.onPrimary} />
       </Pressable>
 

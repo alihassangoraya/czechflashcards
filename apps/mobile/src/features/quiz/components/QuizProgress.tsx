@@ -1,5 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, spacing, typography } from "../../../theme/design";
 
 type Props = {
@@ -9,11 +10,13 @@ type Props = {
 };
 
 export function QuizProgress({ current, total, accuracy }: Props) {
+  const { t, textAlign } = useI18n();
+
   return (
     <View style={styles.progressSection}>
       <View style={styles.progressLabels}>
-        <Text style={styles.progressTitle}>Question {current} of {total}</Text>
-        <Text style={styles.progressMeta}>{accuracy}% accurate</Text>
+        <Text style={[styles.progressTitle, { textAlign }]}>{t("quiz.questionProgress", { current, total })}</Text>
+        <Text style={[styles.progressMeta, { textAlign }]}>{t("quiz.accurate", { accuracy })}</Text>
       </View>
       <View style={styles.progressTrack}>
         <View style={[styles.progressFill, { width: `${(current / total) * 100}%` }]} />

@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import MaterialIcons from "../../../components/MaterialIcons";
+import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
 import { ProgressBar } from "./ProgressBar";
 
@@ -11,6 +12,7 @@ type Props = {
 };
 
 export function DailyGoalCard({ reviewedToday, dailyGoal, ratio }: Props) {
+  const { t, textAlign } = useI18n();
   const complete = ratio >= 1;
   return (
     <View style={styles.todayCard}>
@@ -19,10 +21,10 @@ export function DailyGoalCard({ reviewedToday, dailyGoal, ratio }: Props) {
       </View>
       <View style={styles.todayCopy}>
         <View style={styles.sectionHeader}>
-          <Text style={styles.todayTitle}>{complete ? "Daily goal met" : "Today's goal"}</Text>
+          <Text style={[styles.todayTitle, { textAlign }]}>{complete ? t("home.dailyGoalMet") : t("home.dailyGoal")}</Text>
           <Text style={styles.todayCount}>{reviewedToday} / {dailyGoal}</Text>
         </View>
-        <Text style={styles.todayMeta}>{complete ? "Nice work. Come back tomorrow for more." : `${Math.max(0, dailyGoal - reviewedToday)} cards left today`}</Text>
+        <Text style={[styles.todayMeta, { textAlign }]}>{complete ? t("home.dailyGoalDone") : t("home.cardsLeftToday", { count: Math.max(0, dailyGoal - reviewedToday) })}</Text>
         <ProgressBar value={ratio} color={complete ? colors.softMint : colors.bohemianGold} compact />
       </View>
     </View>

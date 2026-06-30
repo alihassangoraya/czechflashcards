@@ -11,6 +11,7 @@ import {
 } from "../database";
 import type { Panel } from "./appTypes";
 import type { WordValues } from "./appShellTypes";
+import { useI18n } from "../i18n/I18nProvider";
 import { createCustomCard } from "./cardFactory";
 import { useCardEditor } from "./useCardEditor";
 
@@ -32,6 +33,7 @@ type Props = {
 };
 
 export function useCardManagement({ db, cards, current, panel, savedCardIds, setSavedCardIds, setDeckMemberships, setCurrent, setRevealed, setPanel, setSessionReviews, refresh, forceCard, showToast }: Props) {
+  const { t } = useI18n();
   const savingCardIds = useRef(new Set<string>());
   const [deckManagementCard, setDeckManagementCardState] = useState<Card | null>(null);
   const editor = useCardEditor({ db, current, panel, setCurrent, setRevealed, setPanel, setSessionReviews, refresh, forceCard });
@@ -63,13 +65,14 @@ export function useCardManagement({ db, cards, current, panel, savedCardIds, set
       else next.delete(cardId);
       return next;
     });
-    if (showFeedback) showToast(nextSaved ? `${card?.cz || "Card"} added to starred.` : `${card?.cz || "Card"} removed from starred.`);
+    const word = card?.cz || t("toast.cardFallback");
+    if (showFeedback) showToast(nextSaved ? t("toast.starredAdded", { word }) : t("toast.starredRemoved", { word }));
 
     try {
       await setCardSaved(db, cardId, nextSaved);
     } catch {
       setSavedCardIds(await loadSavedCardIds(db));
-      if (showFeedback) showToast("Could not update starred card.");
+      if (showFeedback) showToast(t("toast.starredFailed"));
     } finally {
       savingCardIds.current.delete(cardId);
     }
@@ -89,7 +92,7 @@ export function useCardManagement({ db, cards, current, panel, savedCardIds, set
       return { ...previous, [deckId]: [...nextIds] };
     });
     await addCardToCustomDeck(db, deckId, cardId);
-    showToast(`${card?.cz || "Card"} added to deck.`);
+    showToast(t("toast.deckAdded", { word: card?.cz || t("toast.cardFallback") }));
   }
 
   async function removeCardFromDeck(deckId: string, cardId: string) {
@@ -101,7 +104,7 @@ export function useCardManagement({ db, cards, current, panel, savedCardIds, set
       return { ...previous, [deckId]: [...nextIds] };
     });
     await removeCardFromCustomDeck(db, deckId, cardId);
-    showToast(`${card?.cz || "Card"} removed from deck.`);
+    showToast(t("toast.deckRemoved", { word: card?.cz || t("toast.cardFallback") }));
   }
 
   return {

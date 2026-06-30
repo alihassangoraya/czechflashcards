@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import type { Card, MeaningLanguage } from "@czech-flashcards/shared";
 import { selectedMeaning } from "@czech-flashcards/shared";
 import MaterialIcons from "../../../components/MaterialIcons";
+import { useI18n } from "../../../i18n/I18nProvider";
 import * as Speech from "../../../speech";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
 
@@ -17,11 +18,12 @@ type Props = {
 };
 
 export function SearchResultRow({ card, meaningLanguage, saved, onStudy, onToggleSaved, onManageDecks, onEdit }: Props) {
+  const { t } = useI18n();
   const meaning = selectedMeaning(card, meaningLanguage);
 
   return (
     <View style={styles.row}>
-      <Pressable style={styles.study} onPress={() => onStudy(card)} accessibilityRole="button" accessibilityLabel={`Study ${card.cz}`}>
+      <Pressable style={styles.study} onPress={() => onStudy(card)} accessibilityRole="button" accessibilityLabel={t("search.studyWord", { word: card.cz })}>
         <View style={styles.heading}>
           <Text style={styles.word}>{card.cz}</Text>
           {card.grammar?.partOfSpeech && <Text style={styles.partOfSpeech}>{card.grammar.partOfSpeech}</Text>}
@@ -31,17 +33,17 @@ export function SearchResultRow({ card, meaningLanguage, saved, onStudy, onToggl
       </Pressable>
       <View style={styles.actions}>
         {card.source === "custom" && (
-          <Pressable style={styles.action} onPress={() => onEdit(card)} accessibilityRole="button" accessibilityLabel={`Edit ${card.cz}`}>
+          <Pressable style={styles.action} onPress={() => onEdit(card)} accessibilityRole="button" accessibilityLabel={t("search.editWord", { word: card.cz })}>
             <MaterialIcons name="edit" size={size.iconSmall} color={colors.action} />
           </Pressable>
         )}
-        <Pressable style={styles.action} onPress={() => Speech.speak(card.cz, { language: "cs-CZ", rate: 0.86 })} accessibilityRole="button" accessibilityLabel={`Play ${card.cz}`}>
+        <Pressable style={styles.action} onPress={() => Speech.speak(card.cz, { language: "cs-CZ", rate: 0.86 })} accessibilityRole="button" accessibilityLabel={t("search.playWord", { word: card.cz })}>
           <MaterialIcons name="volume-up" size={size.iconSmall} color={colors.action} />
         </Pressable>
-        <Pressable style={styles.action} onPress={() => onManageDecks(card)} accessibilityRole="button" accessibilityLabel={`Add ${card.cz} to a deck`}>
+        <Pressable style={styles.action} onPress={() => onManageDecks(card)} accessibilityRole="button" accessibilityLabel={t("search.addToDeck", { word: card.cz })}>
           <MaterialIcons name="folder" size={size.iconSmall} color={colors.action} />
         </Pressable>
-        <Pressable style={[styles.action, saved && styles.savedAction]} onPress={() => onToggleSaved(card)} accessibilityRole="button" accessibilityLabel={saved ? `Remove ${card.cz} from My list` : `Add ${card.cz} to My list`}>
+        <Pressable style={[styles.action, saved && styles.savedAction]} onPress={() => onToggleSaved(card)} accessibilityRole="button" accessibilityLabel={saved ? t("search.removeFromMyList", { word: card.cz }) : t("search.addToMyList", { word: card.cz })}>
           <MaterialIcons name={saved ? "star" : "star-border"} size={size.iconSmall} color={saved ? colors.onPrimary : colors.action} />
         </Pressable>
       </View>

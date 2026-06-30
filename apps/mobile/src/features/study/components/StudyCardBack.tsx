@@ -2,6 +2,7 @@ import React from "react";
 import { Animated, StyleSheet, Text, View } from "react-native";
 import type { Card } from "@czech-flashcards/shared";
 import type { StudySettings } from "../../../database";
+import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, spacing, typography } from "../../../theme/design";
 import { CardBackFaceContainer } from "./CardFaceContainer";
 import { CardExampleBlock } from "./CardExampleBlock";
@@ -16,6 +17,8 @@ type Props = {
 };
 
 export function StudyCardBack({ current, currentSecondaryMeaning, flipProgress, meaningLanguage, onFlipCard }: Props) {
+  const { t, textAlign } = useI18n();
+
   return (
     <CardBackFaceContainer flipProgress={flipProgress} onPress={onFlipCard}>
       <Text style={styles.backWord}>{current.cz}</Text>
@@ -23,7 +26,7 @@ export function StudyCardBack({ current, currentSecondaryMeaning, flipProgress, 
         <CardTranslationBlock card={current} secondaryMeaning={currentSecondaryMeaning} meaningLanguage={meaningLanguage} />
         <CardExampleBlock card={current} />
       </View>
-      <Text style={styles.hint}>Tap to see Czech</Text>
+      <Text style={[styles.hint, { textAlign }]}>{t("study.tapCzech")}</Text>
     </CardBackFaceContainer>
   );
 }

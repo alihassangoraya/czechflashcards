@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import MaterialIcons from "../../components/MaterialIcons";
 import type { Card } from "@czech-flashcards/shared";
 import type { CustomDeck } from "../../database";
+import { useI18n } from "../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../theme/design";
 import { initialAddWordValues, type AddWordValues } from "./addWordTypes";
 import { AddWordDetailsToggle } from "./components/AddWordDetailsToggle";
@@ -16,6 +17,7 @@ import { WordDeckPicker } from "./components/WordDeckPicker";
 type Props = { onSubmit: (values: AddWordValues) => void; cards: Card[]; decks: CustomDeck[]; onDelete: (cardId: string) => void; onEdit: (card: Card) => void };
 
 export function AddWordPanel({ onSubmit, cards, decks, onDelete, onEdit }: Props) {
+  const { t, textAlign } = useI18n();
   const [values, setValues] = useState<AddWordValues>(initialAddWordValues);
   const [showDetails, setShowDetails] = useState(false);
   const [error, setError] = useState("");
@@ -23,7 +25,7 @@ export function AddWordPanel({ onSubmit, cards, decks, onDelete, onEdit }: Props
   const update = (key: keyof AddWordValues, value: string) => setValues((current) => ({ ...current, [key]: value }));
   const submit = () => {
     if (!values.cz.trim() || !values.en.trim()) {
-      setError("Add the Czech word and its English meaning first.");
+      setError(t("words.validationRequired"));
       return;
     }
     setError("");
@@ -40,12 +42,12 @@ export function AddWordPanel({ onSubmit, cards, decks, onDelete, onEdit }: Props
     <View style={styles.root}>
       <AddWordIntro />
 
-      <FormSection icon="edit" title="Word" required>
-        <FormField label="Czech word" value={values.cz} onChangeText={(value) => update("cz", value)} placeholder="e.g. rozumet" autoFocus />
-        <FormField label="English meaning" value={values.en} onChangeText={(value) => update("en", value)} placeholder="e.g. to understand" />
+      <FormSection icon="edit" title={t("words.sectionWord")} required>
+        <FormField label={t("words.czechWord")} value={values.cz} onChangeText={(value) => update("cz", value)} placeholder={t("words.czechPlaceholder")} autoFocus />
+        <FormField label={t("words.englishMeaning")} value={values.en} onChangeText={(value) => update("en", value)} placeholder={t("words.englishPlaceholder")} />
       </FormSection>
 
-      <FormSection icon="folder" title="Deck">
+      <FormSection icon="folder" title={t("words.deck")}>
         <WordDeckPicker value={values.tag} decks={decks} onChange={(tag) => update("tag", tag)} />
       </FormSection>
 
@@ -53,10 +55,10 @@ export function AddWordPanel({ onSubmit, cards, decks, onDelete, onEdit }: Props
 
       {showDetails && <AddWordOptionalDetails values={values} onUpdate={update} />}
 
-      {Boolean(error) && <Text style={styles.error}>{error}</Text>}
+      {Boolean(error) && <Text style={[styles.error, { textAlign }]}>{error}</Text>}
       <Pressable style={styles.submitButton} onPress={submit} accessibilityRole="button">
         <MaterialIcons name="add" size={size.icon} color={colors.onPrimary} />
-        <Text style={styles.submitText}>Add word</Text>
+        <Text style={styles.submitText}>{t("common.addWord")}</Text>
       </Pressable>
 
       <CustomWordsList

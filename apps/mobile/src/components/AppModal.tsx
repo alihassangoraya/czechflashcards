@@ -1,15 +1,18 @@
 import React from "react";
 import { Modal, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useI18n } from "../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../theme/design";
 
 export function AppModal({ visible, title, onClose, children }: { visible: boolean; title: string; onClose: () => void; children: React.ReactNode }) {
+  const { t, textAlign } = useI18n();
+
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
       <SafeAreaView style={styles.modalOverlay}>
         <View style={styles.modalSheet}>
           <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>{title}</Text>
-            <Pressable style={styles.closeButton} onPress={onClose} accessibilityRole="button" accessibilityLabel={`Close ${title}`}>
+            <Text style={[styles.modalTitle, { textAlign }]}>{title}</Text>
+            <Pressable style={styles.closeButton} onPress={onClose} accessibilityRole="button" accessibilityLabel={t("common.close", { title })}>
               <Text style={styles.closeButtonText}>x</Text>
             </Pressable>
           </View>

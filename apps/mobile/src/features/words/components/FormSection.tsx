@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import MaterialIcons from "../../../components/MaterialIcons";
+import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
 
 type Props = {
@@ -11,12 +12,14 @@ type Props = {
 };
 
 export function FormSection({ icon, title, required = false, children }: Props) {
+  const { t, textAlign } = useI18n();
+
   return (
     <View style={styles.formSection}>
       <View style={styles.sectionHeader}>
         <MaterialIcons name={icon} size={size.iconSmall} color={colors.primaryDeep} />
-        <Text style={styles.sectionTitle}>{title}</Text>
-        {required && <Text style={styles.required}>Required</Text>}
+        <Text style={[styles.sectionTitle, { textAlign }]}>{title}</Text>
+        {required && <Text style={styles.required}>{t("words.required")}</Text>}
       </View>
       {children}
     </View>

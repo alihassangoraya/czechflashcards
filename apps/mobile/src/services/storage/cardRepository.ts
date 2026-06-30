@@ -4,12 +4,18 @@ import type { AppDatabase } from "./storageTypes";
 import { persistDatabase } from "./storageCore";
 import { enqueueSync } from "./syncQueueRepository";
 
-export async function seedCards(db: AppDatabase, cards: Card[]): Promise<void> {
-  const byId = new Map(db.store.cards.map((card) => [card.id, card]));
+export async function seedCards(db: AppDatabase, cards: Card[], seedVersion?: string): Promise<void> {
+  if (seedVersion && db.store.seedVersion === seedVersion && db.store.cards.length >= cards.length) return;
+  const customCardIds = new Set(Object.keys(db.store.customCards));
+  const byId = new Map<string, Card>();
+  for (const card of db.store.cards) {
+    if (customCardIds.has(card.id) || card.source === "custom" || card.source === "import") byId.set(card.id, card);
+  }
   for (const card of cards) {
     if (!db.store.customCards[card.id]) byId.set(card.id, card);
   }
   db.store.cards = [...byId.values()];
+  if (seedVersion) db.store.seedVersion = seedVersion;
   await persistDatabase(db);
 }
 

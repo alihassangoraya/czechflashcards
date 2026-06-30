@@ -36,7 +36,13 @@ function enrichWithGoogleVocabulary(cards) {
     const tag = `google-${slug(detail.category)}`;
     const existing = byCzech.get(normalizedCzech(detail.cz));
     if (existing) {
-      Object.assign(existing, metadata, { tags: Array.from(new Set([...(existing.tags || []), "google", tag])) });
+      Object.assign(existing, metadata, {
+        hi: existing.hi || detail.hi,
+        ur: existing.ur || detail.ur,
+        sentence: existing.sentence || detail.sentence,
+        sentenceEn: existing.sentenceEn || detail.sentenceEn,
+        tags: Array.from(new Set([...(existing.tags || []), "google", tag]))
+      });
       return;
     }
 

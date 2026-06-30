@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import type { ReviewGrade } from "@czech-flashcards/shared";
+import { useI18n } from "../../../i18n/I18nProvider";
 import { colors } from "../../../theme/design";
 import { ReviewButton } from "./ReviewButton";
 
@@ -11,12 +12,14 @@ type Props = {
 };
 
 export function ReviewButtons({ grading, reviewInterval, onGrade }: Props) {
+  const { t } = useI18n();
+
   return (
     <View style={styles.reviewRow}>
-      <ReviewButton disabled={grading} style={styles.reviewAgain} label="Again" interval={reviewInterval("again")} onPress={() => onGrade("again")} />
-      <ReviewButton disabled={grading} style={styles.reviewHard} label="Hard" interval={reviewInterval("hard")} onPress={() => onGrade("hard")} />
-      <ReviewButton disabled={grading} style={styles.reviewGood} label="Good" interval={reviewInterval("good")} onPress={() => onGrade("good")} />
-      <ReviewButton disabled={grading} style={styles.reviewEasy} label="Easy" interval={reviewInterval("easy")} onPress={() => onGrade("easy")} />
+      <ReviewButton disabled={grading} style={styles.reviewAgain} label={t("review.again")} interval={reviewInterval("again")} onPress={() => onGrade("again")} />
+      <ReviewButton disabled={grading} style={styles.reviewHard} label={t("review.hard")} interval={reviewInterval("hard")} onPress={() => onGrade("hard")} />
+      <ReviewButton disabled={grading} style={styles.reviewGood} label={t("review.good")} interval={reviewInterval("good")} onPress={() => onGrade("good")} />
+      <ReviewButton disabled={grading} style={styles.reviewEasy} label={t("review.easy")} interval={reviewInterval("easy")} onPress={() => onGrade("easy")} />
     </View>
   );
 }

@@ -1,25 +1,28 @@
 import React from "react";
 import { Pressable, StyleSheet, TextInput, View } from "react-native";
 import MaterialIcons from "../../../components/MaterialIcons";
+import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
 
 export function SearchField({ query, onQueryChange }: { query: string; onQueryChange: (value: string) => void }) {
+  const { t, textAlign, direction } = useI18n();
+
   return (
     <View style={styles.field}>
       <MaterialIcons name="search" size={size.icon} color={colors.actionMuted} />
       <TextInput
-        style={styles.input}
+        style={[styles.input, { textAlign, writingDirection: direction }]}
         value={query}
         onChangeText={onQueryChange}
         autoFocus
         autoCapitalize="none"
         autoCorrect={false}
-        placeholder="Search Czech, English, Hindi, or Urdu"
+        placeholder={t("search.placeholder")}
         placeholderTextColor={colors.textMuted}
-        accessibilityLabel="Search vocabulary"
+        accessibilityLabel={t("search.accessibility")}
       />
       {Boolean(query) && (
-        <Pressable style={styles.clearButton} onPress={() => onQueryChange("")} accessibilityRole="button" accessibilityLabel="Clear search">
+        <Pressable style={styles.clearButton} onPress={() => onQueryChange("")} accessibilityRole="button" accessibilityLabel={t("search.clear")}>
           <MaterialIcons name="close" size={size.iconSmall} color={colors.textMuted} />
         </Pressable>
       )}

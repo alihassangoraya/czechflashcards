@@ -14,6 +14,8 @@ import { SettingGroup } from "./components/SettingGroup";
 import { SettingsSection } from "./components/SettingsSection";
 import { SettingsSummary } from "./components/SettingsSummary";
 import { SyncSettingsSection } from "./components/SyncSettingsSection";
+import { useI18n } from "../../i18n/I18nProvider";
+import { languageOptions, type LanguageCode, type TranslationKey } from "../../i18n/translations";
 import { deckLabel } from "./settingsFormat";
 import { useSettingsDraft } from "./useSettingsDraft";
 import { spacing } from "../../theme/design";
@@ -53,27 +55,41 @@ export function SettingsPanel({
   onExportProgress,
   onExportDeck
 }: Props) {
-  const activeDeckLabel = deckLabel(settings.deckFilter, settings.customDecks);
+  const { t } = useI18n();
+  const activeDeckLabel = settings.customDecks.some((deck) => deck.id === settings.deckFilter)
+    ? deckLabel(settings.deckFilter, settings.customDecks)
+    : t(`deck.${settings.deckFilter}` as TranslationKey);
   const draft = useSettingsDraft(settings, onChange);
+  const languageLabels: Record<LanguageCode, string> = {
+    en: t("language.english"),
+    cs: t("language.czech"),
+    hi: t("language.hindi"),
+    ur: t("language.urdu")
+  };
 
   return (
     <View style={styles.root}>
       <SettingsSummary examLevel={settings.examLevel} activeDeckLabel={activeDeckLabel} dailyGoal={settings.dailyGoal} />
 
-      <SettingsSection icon="school" title="Study plan" description="Choose what you want to practice.">
+      <SettingsSection icon="school" title={t("settings.studyPlan")} description={t("settings.studyPlanDescription")}>
         <SettingGroup>
-          <PreferenceRow icon="flag" title="Exam level" value={settings.examLevel.toUpperCase()} />
+          <PreferenceRow icon="translate" title={t("settings.appLanguage")} value={languageLabels[settings.appLanguage]} />
+          <ChoiceSegment value={settings.appLanguage} options={languageOptions} labels={languageLabels} onChange={(appLanguage) => draft.update({ appLanguage })} />
+        </SettingGroup>
+
+        <SettingGroup>
+          <PreferenceRow icon="flag" title={t("settings.examLevel")} value={settings.examLevel.toUpperCase()} />
           <ChoiceSegment value={settings.examLevel} options={["a2", "b1"]} labels={{ a2: "A2", b1: "B1" }} onChange={draft.updateExamLevel} />
         </SettingGroup>
 
         <SettingGroup>
-          <PreferenceRow icon="layers" title="Active deck" value={activeDeckLabel} />
+          <PreferenceRow icon="layers" title={t("settings.activeDeck")} value={activeDeckLabel} />
           <DeckPicker value={settings.deckFilter} decks={settings.customDecks} onChange={(deckFilter) => draft.update({ deckFilter })} />
         </SettingGroup>
 
         <SettingGroup>
-          <PreferenceRow icon="translate" title="Meaning language" value={settings.meaningLanguage === "ur" ? "Urdu" : "Hindi"} />
-          <ChoiceSegment value={settings.meaningLanguage} options={["hi", "ur"]} labels={{ hi: "Hindi", ur: "Urdu" }} onChange={(meaningLanguage) => draft.update({ meaningLanguage })} />
+          <PreferenceRow icon="translate" title={t("settings.meaningLanguage")} value={settings.meaningLanguage === "ur" ? t("language.urdu") : t("language.hindi")} />
+          <ChoiceSegment value={settings.meaningLanguage} options={["hi", "ur"]} labels={{ hi: t("language.hindi"), ur: t("language.urdu") }} onChange={(meaningLanguage) => draft.update({ meaningLanguage })} />
         </SettingGroup>
 
         <DailyTargetStepper dailyGoal={settings.dailyGoal} onChange={(dailyGoal) => draft.update({ dailyGoal })} />

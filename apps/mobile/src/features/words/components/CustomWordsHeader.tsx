@@ -1,13 +1,16 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
 
 export function CustomWordsHeader({ count }: { count: number }) {
+  const { t, textAlign } = useI18n();
+
   return (
     <View style={styles.header}>
       <View style={styles.copy}>
-        <Text style={styles.title}>Your added words</Text>
-        <Text style={styles.subtitle}>Edit details or remove words you added yourself.</Text>
+        <Text style={[styles.title, { textAlign }]}>{t("words.customTitle")}</Text>
+        <Text style={[styles.subtitle, { textAlign }]}>{t("words.customSubtitle")}</Text>
       </View>
       <View style={styles.countPill}>
         <Text style={styles.count}>{count}</Text>

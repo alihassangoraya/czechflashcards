@@ -1,19 +1,22 @@
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import MaterialIcons from "../../../components/MaterialIcons";
+import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
 
 export function QuizEmptyState({ onClose }: { onClose: () => void }) {
+  const { t, textAlign } = useI18n();
+
   return (
     <View style={styles.empty}>
       <View style={styles.emptyIcon}>
         <MaterialIcons name="quiz" size={size.iconLarge} color={colors.warning} />
       </View>
-      <Text style={styles.emptyTitle}>Quiz needs more cards</Text>
-      <Text style={styles.emptyCopy}>Choose a deck with at least four distinct translations to start a quiz.</Text>
+      <Text style={[styles.emptyTitle, { textAlign }]}>{t("quiz.needsMoreCards")}</Text>
+      <Text style={[styles.emptyCopy, { textAlign }]}>{t("quiz.needsMoreCardsCopy")}</Text>
       <Pressable style={styles.secondaryButton} onPress={onClose} accessibilityRole="button">
         <MaterialIcons name="arrow-back" size={size.icon} color={colors.primaryDeep} />
-        <Text style={styles.secondaryText}>Back home</Text>
+        <Text style={styles.secondaryText}>{t("common.backHome")}</Text>
       </Pressable>
     </View>
   );

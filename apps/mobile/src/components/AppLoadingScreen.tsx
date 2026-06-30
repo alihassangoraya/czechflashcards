@@ -1,12 +1,15 @@
 import React from "react";
 import { ActivityIndicator, SafeAreaView, StyleSheet, Text } from "react-native";
+import { useI18n } from "../i18n/I18nProvider";
 import { colors } from "../theme/design";
 
 export function AppLoadingScreen() {
+  const { t } = useI18n();
+
   return (
     <SafeAreaView style={styles.shell}>
       <ActivityIndicator />
-      <Text style={styles.muted}>Preparing offline study mode...</Text>
+      <Text style={styles.muted}>{t("app.loading")}</Text>
     </SafeAreaView>
   );
 }

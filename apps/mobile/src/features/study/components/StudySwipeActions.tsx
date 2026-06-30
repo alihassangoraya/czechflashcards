@@ -1,11 +1,14 @@
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import MaterialIcons from "../../../components/MaterialIcons";
+import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
 
 type SwipeDirection = "again" | "known";
 
 export function StudySwipeActions({ grading, onCompleteSwipe }: { grading: boolean; onCompleteSwipe: (direction: SwipeDirection) => void }) {
+  const { t } = useI18n();
+
   return (
     <View style={styles.actions}>
       <Pressable
@@ -13,19 +16,19 @@ export function StudySwipeActions({ grading, onCompleteSwipe }: { grading: boole
         style={[styles.button, styles.again, grading && styles.disabled]}
         onPress={(event) => { event.stopPropagation(); onCompleteSwipe("again"); }}
         accessibilityRole="button"
-        accessibilityLabel="Mark again"
+        accessibilityLabel={t("study.markAgain")}
       >
         <MaterialIcons name="arrow-back" size={size.icon} color={colors.danger} />
-        <Text style={[styles.text, styles.againText]}>Again</Text>
+        <Text style={[styles.text, styles.againText]}>{t("review.again")}</Text>
       </Pressable>
       <Pressable
         disabled={grading}
         style={[styles.button, styles.known, grading && styles.disabled]}
         onPress={(event) => { event.stopPropagation(); onCompleteSwipe("known"); }}
         accessibilityRole="button"
-        accessibilityLabel="Mark known"
+        accessibilityLabel={t("study.markKnown")}
       >
-        <Text style={[styles.text, styles.knownText]}>Known</Text>
+        <Text style={[styles.text, styles.knownText]}>{t("review.easy")}</Text>
         <MaterialIcons name="arrow-forward" size={size.icon} color={colors.success} />
       </Pressable>
     </View>

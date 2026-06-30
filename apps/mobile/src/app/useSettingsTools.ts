@@ -10,7 +10,8 @@ import {
   type StudySettings
 } from "../database";
 import { downloadJson, pickTextFile } from "../services/fileTransfer";
-import { seedCardsNormalized } from "./appSeed";
+import { useI18n } from "../i18n/I18nProvider";
+import { seedCardsNormalized, seedVersion } from "./appSeed";
 
 type Props = {
   db: AppDatabase | null;
@@ -25,6 +26,8 @@ type Props = {
 };
 
 export function useSettingsTools({ db, deck, settings, setSettingsState, setSettingsNotice, refresh, shuffleDueCards, clearShuffledDueQueue, forceDeckRefresh }: Props) {
+  const { t } = useI18n();
+
   function shuffleDueCardsInDeck() {
     shuffleDueCards(setSettingsNotice);
     forceDeckRefresh();
@@ -34,14 +37,14 @@ export function useSettingsTools({ db, deck, settings, setSettingsState, setSett
     if (!db) return;
     const count = await markCardsDueNow(db, deck.map((card) => card.id));
     clearShuffledDueQueue();
-    setSettingsNotice(count ? `${count} cards in this deck are due now.` : "There are no cards in this deck.");
+    setSettingsNotice(count ? t("settings.notice.reviewDue", { count }) : t("settings.notice.noCards"));
     await refresh(db);
   }
 
   async function exportProgress() {
     if (!db) return;
     const ok = downloadJson("czech-flashcards-progress.json", exportBackup(db));
-    setSettingsNotice(ok ? "Progress backup exported." : "Export is available in the web app. Native sharing needs a document/share module.");
+    setSettingsNotice(ok ? t("settings.notice.progressExported") : t("settings.notice.exportWebOnly"));
   }
 
   function exportCurrentDeck() {
@@ -68,7 +71,7 @@ export function useSettingsTools({ db, deck, settings, setSettingsState, setSett
       }))
     };
     const ok = downloadJson(`czech-${settings.examLevel}-${settings.deckFilter}-deck.json`, payload);
-    setSettingsNotice(ok ? `Exported ${deck.length} cards from the current deck.` : "Deck export is available in the web app. Native sharing needs a document/share module.");
+    setSettingsNotice(ok ? t("settings.notice.deckExported", { count: deck.length }) : t("settings.notice.deckExportWebOnly"));
   }
 
   function importCsv() {
@@ -76,7 +79,7 @@ export function useSettingsTools({ db, deck, settings, setSettingsState, setSett
       if (!db) return;
       const imported = normalizeCards(parseCsvCards(text));
       if (!imported.length) {
-        setSettingsNotice("No valid CSV cards found. Use Czech, English, Hindi, Urdu, sentence, sentenceEn, tags.");
+        setSettingsNotice(t("settings.notice.csvInvalid"));
         return;
       }
       const count = await importCards(db, imported);
@@ -84,9 +87,9 @@ export function useSettingsTools({ db, deck, settings, setSettingsState, setSett
       if (activeCustomDeck) {
         for (const card of imported) await addCardToCustomDeck(db, activeCustomDeck.id, card.id);
       }
-      setSettingsNotice(activeCustomDeck ? `Imported ${count} cards into ${activeCustomDeck.name}.` : `Imported ${count} cards.`);
+      setSettingsNotice(activeCustomDeck ? t("settings.notice.csvImportedDeck", { count, deck: activeCustomDeck.name }) : t("settings.notice.csvImported", { count }));
       await refresh(db);
-    }, () => setSettingsNotice("CSV import is available in the web app. Native file picking needs a document picker module."));
+    }, () => setSettingsNotice(t("settings.notice.csvWebOnly")));
   }
 
   function restoreJson() {
@@ -94,14 +97,14 @@ export function useSettingsTools({ db, deck, settings, setSettingsState, setSett
       if (!db) return;
       try {
         const nextSettings = await restoreBackup(db, JSON.parse(text));
-        await seedCards(db, seedCardsNormalized);
+        await seedCards(db, seedCardsNormalized, seedVersion);
         setSettingsState(nextSettings);
-        setSettingsNotice("Progress backup restored.");
+        setSettingsNotice(t("settings.notice.restoreSuccess"));
         await refresh(db);
       } catch {
-        setSettingsNotice("Could not restore backup. Choose a JSON export from this app.");
+        setSettingsNotice(t("settings.notice.restoreFailed"));
       }
-    }, () => setSettingsNotice("Restore JSON is available in the web app. Native file picking needs a document picker module."));
+    }, () => setSettingsNotice(t("settings.notice.restoreWebOnly")));
   }
 
   return {

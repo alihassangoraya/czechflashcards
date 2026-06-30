@@ -56,8 +56,9 @@ The active repository is [`alihassangoraya/czechflashcards`](https://github.com/
 - `packages/shared` contains card types, review grading, filtering,
   normalization, and CSV helpers used by mobile and tested against current web
   behavior.
-- `packages/shared/data/vocabulary.seed.json` is generated from the web data;
-  it keeps mobile and web vocabulary identical.
+- `packages/shared/data/vocabulary.seed.json` is generated from the web data
+  plus the Google-project B1 source; it keeps mobile and web vocabulary
+  identical.
 - `supabase/migrations` contains the Postgres/Supabase schema for profiles,
   cards, review state, streaks, custom cards, notification preferences,
   sync-events, and future friendship/privacy features.
@@ -73,9 +74,12 @@ The current validated study data contains:
 - `700` core Czech word lemmas.
 - `1361` extended Czech lemmas.
 - `2061` unique non-number Czech word lemmas.
-- `1159` generated Czech verb-form cards.
+- `2529` generated Czech verb-form cards.
 - `2001` generated number cards from `0` to `2000`.
-- `6268` cards in the complete shared seed.
+- `1654` Google-project B1 cards enriched with category, pronunciation,
+  synonyms, antonyms, and grammar metadata.
+- `7688` cards in the complete shared seed.
+- `0` cards missing Hindi or Urdu meanings in the shared seed.
 
 All card examples are checked for missing translations, encoding issues, and
 known generic/template-style sentences.
@@ -147,6 +151,21 @@ Regenerate the shared seed after changing a web vocabulary source:
 
 ```bash
 npm run seed:shared
+```
+
+Fill legacy Urdu gaps before regenerating the shared seed:
+
+```bash
+npm run seed:urdu
+npm run seed:shared
+```
+
+Seed the same enriched card data to Supabase after applying migrations:
+
+```bash
+SUPABASE_REST_URL=https://your-project.supabase.co \
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key \
+npm run seed:supabase
 ```
 
 Run all web/data/shared tests:
@@ -227,19 +246,30 @@ this repository. Read it before changing product behavior or deployment files.
 | `apps/mobile/src/sync.ts` | Optional Supabase sync queue delivery. |
 | `supabase/migrations` | Auth, sync, streak, notification, and friendship database foundation. |
 | `scripts/export-shared-seed.js` | Generates the shared mobile vocabulary seed. |
+| `scripts/import-google-vocabulary.mjs` | Extracts the Google-project Kotlin B1 seed into enriched JSON. |
+| `scripts/google-vocabulary.js` | Merges Google-project examples, categories, pronunciation, synonyms, antonyms, and grammar into the shared seed. |
+| `scripts/fill-missing-urdu.mjs` | Generates source-level Urdu overrides for legacy cards that are missing Urdu. |
+| `scripts/legacy-urdu-overrides.js` | Applies legacy Urdu overrides during shared seed generation. |
+| `scripts/seed-supabase-cards.mjs` | Upserts the shared enriched seed into Supabase `public.cards`. |
 | `scripts/validate-data.js` | Vocabulary and sentence-quality guardrails. |
 
 ### Vocabulary Change Workflow
 
 1. Edit vocabulary source data in `data/vocabulary.js`, `data/extended-lemmas.js`,
-   or `data/verb-forms.js`; adjust `data/focus-decks.js` when a focus-deck
-   curation decision changes.
+   `data/b1-verb-pack.js`, or `data/verb-forms.js`; adjust
+   `data/focus-decks.js` when a focus-deck curation decision changes.
+   Google-project source updates should be imported with
+   `node scripts/import-google-vocabulary.mjs`.
 2. Keep each Czech example sentence specific to the word and provide a matching
    English translation.
 3. Run `npm run seed:shared` to regenerate
    `packages/shared/data/vocabulary.seed.json`.
+   If legacy cards are missing Urdu, run `npm run seed:urdu` first so the
+   source-level overrides are updated.
 4. Run `npm run check`.
-5. If a new generic sentence pattern is found, add a targeted rejection pattern
+5. For production database updates, apply Supabase migrations and run
+   `npm run seed:supabase` with a service-role key.
+6. If a new generic sentence pattern is found, add a targeted rejection pattern
    to `rejectedPlaceholderExample` in `scripts/validate-data.js` and fix all
    existing occurrences before committing.
 

@@ -4,6 +4,7 @@ import type { Card } from "@czech-flashcards/shared";
 import type { CustomDeck } from "../../../database";
 import { customDeckCardCount } from "../../../app/deckFiltering";
 import MaterialIcons from "../../../components/MaterialIcons";
+import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
 import { SettingsSection } from "./SettingsSection";
 
@@ -29,11 +30,13 @@ type Props = {
 };
 
 export function CustomDeckSection({ deckName, decks, cards, deckMemberships, activeDeckId, editingDeckId, editingDeckName, deleteDeckId, onDeckNameChange, onCreateDeck, onSelectDeck, onStartEditDeck, onEditingDeckNameChange, onCancelEditDeck, onSaveEditDeck, onRequestDeleteDeck, onCancelDeleteDeck, onConfirmDeleteDeck }: Props) {
+  const { t } = useI18n();
+
   return (
-    <SettingsSection icon="folder" title="My decks" description="Keep your own words together.">
+    <SettingsSection icon="folder" title={t("settings.myDecks")} description={t("settings.myDecksDescription")}>
       <View style={styles.deckCreateRow}>
-        <TextInput style={styles.deckInput} value={deckName} onChangeText={onDeckNameChange} placeholder="Deck name" placeholderTextColor={colors.textMuted} returnKeyType="done" onSubmitEditing={onCreateDeck} />
-        <Pressable style={styles.addDeckButton} onPress={onCreateDeck} accessibilityRole="button" accessibilityLabel="Create deck">
+        <TextInput style={styles.deckInput} value={deckName} onChangeText={onDeckNameChange} placeholder={t("settings.deckName")} placeholderTextColor={colors.textMuted} returnKeyType="done" onSubmitEditing={onCreateDeck} />
+        <Pressable style={styles.addDeckButton} onPress={onCreateDeck} accessibilityRole="button" accessibilityLabel={t("settings.createDeck")}>
           <MaterialIcons name="add" size={size.icon} color={colors.onPrimary} />
         </Pressable>
       </View>
@@ -61,37 +64,37 @@ export function CustomDeckSection({ deckName, decks, cards, deckMemberships, act
                   ) : (
                     <View style={styles.deckCopy}>
                       <Text style={styles.customDeckName}>{deck.name}</Text>
-                      <Text style={styles.customDeckMeta}>{count} {count === 1 ? "word" : "words"}</Text>
+                      <Text style={styles.customDeckMeta}>{count} {count === 1 ? t("settings.wordSingular") : t("settings.wordPlural")}</Text>
                     </View>
                   )}
                 </Pressable>
 
                 {editing ? (
                   <View style={styles.deckActions}>
-                    <Pressable style={styles.iconAction} onPress={onSaveEditDeck} accessibilityRole="button" accessibilityLabel={`Save ${deck.name}`}>
+                    <Pressable style={styles.iconAction} onPress={onSaveEditDeck} accessibilityRole="button" accessibilityLabel={t("settings.saveDeck", { deck: deck.name })}>
                       <MaterialIcons name="check" size={size.iconSmall} color={colors.success} />
                     </Pressable>
-                    <Pressable style={styles.iconAction} onPress={onCancelEditDeck} accessibilityRole="button" accessibilityLabel={`Cancel editing ${deck.name}`}>
+                    <Pressable style={styles.iconAction} onPress={onCancelEditDeck} accessibilityRole="button" accessibilityLabel={t("settings.cancelDeckEdit", { deck: deck.name })}>
                       <MaterialIcons name="close" size={size.iconSmall} color={colors.textMuted} />
                     </Pressable>
                   </View>
                 ) : deleting ? (
                   <View style={styles.deleteConfirm}>
-                    <Text style={styles.deleteText}>Delete?</Text>
-                    <Pressable style={styles.iconAction} onPress={() => onConfirmDeleteDeck(deck.id)} accessibilityRole="button" accessibilityLabel={`Delete ${deck.name}`}>
+                    <Text style={styles.deleteText}>{t("settings.deleteQuestion")}</Text>
+                    <Pressable style={styles.iconAction} onPress={() => onConfirmDeleteDeck(deck.id)} accessibilityRole="button" accessibilityLabel={t("settings.deleteDeck", { deck: deck.name })}>
                       <MaterialIcons name="delete-outline" size={size.iconSmall} color={colors.dangerStrong} />
                     </Pressable>
-                    <Pressable style={styles.iconAction} onPress={onCancelDeleteDeck} accessibilityRole="button" accessibilityLabel={`Keep ${deck.name}`}>
+                    <Pressable style={styles.iconAction} onPress={onCancelDeleteDeck} accessibilityRole="button" accessibilityLabel={t("settings.keepDeck", { deck: deck.name })}>
                       <MaterialIcons name="close" size={size.iconSmall} color={colors.textMuted} />
                     </Pressable>
                   </View>
                 ) : (
                   <View style={styles.deckActions}>
                     {active && <MaterialIcons name="check" size={size.iconSmall} color={colors.success} />}
-                    <Pressable style={styles.iconAction} onPress={() => onStartEditDeck(deck.id)} accessibilityRole="button" accessibilityLabel={`Rename ${deck.name}`}>
+                    <Pressable style={styles.iconAction} onPress={() => onStartEditDeck(deck.id)} accessibilityRole="button" accessibilityLabel={t("settings.renameDeck", { deck: deck.name })}>
                       <MaterialIcons name="edit" size={size.iconSmall} color={colors.action} />
                     </Pressable>
-                    <Pressable style={styles.iconAction} onPress={() => onRequestDeleteDeck(deck.id)} accessibilityRole="button" accessibilityLabel={`Delete ${deck.name}`}>
+                    <Pressable style={styles.iconAction} onPress={() => onRequestDeleteDeck(deck.id)} accessibilityRole="button" accessibilityLabel={t("settings.deleteDeck", { deck: deck.name })}>
                       <MaterialIcons name="delete-outline" size={size.iconSmall} color={colors.dangerStrong} />
                     </Pressable>
                   </View>

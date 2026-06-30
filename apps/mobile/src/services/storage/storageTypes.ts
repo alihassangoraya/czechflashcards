@@ -6,6 +6,7 @@ export type StudySettings = {
   examLevel: "a2" | "b1";
   deckFilter: string;
   meaningLanguage: "hi" | "ur";
+  appLanguage: "en" | "cs" | "hi" | "ur";
   dailyGoal: number;
   customDecks: CustomDeck[];
   notifications: NotificationPreferences;
@@ -15,6 +16,7 @@ export type CustomCard = { card: Card; deletedAt?: number };
 export type SyncEntry = { id: number; type: string; payload: unknown; createdAt: number; syncedAt?: number };
 
 export type WebStore = {
+  seedVersion?: string;
   cards: Card[];
   reviewStates: Record<string, ReviewState>;
   reviews: ReviewEvent[];
@@ -34,6 +36,7 @@ export const DEFAULT_SETTINGS: StudySettings = {
   examLevel: "b1",
   deckFilter: "b1-focus",
   meaningLanguage: "ur",
+  appLanguage: "en",
   dailyGoal: 30,
   customDecks: [],
   notifications: {

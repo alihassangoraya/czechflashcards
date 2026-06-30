@@ -1,13 +1,13 @@
 import React from "react";
 import { ImageBackground, Pressable, StyleSheet, Text, View } from "react-native";
 import MaterialIcons from "../../../components/MaterialIcons";
+import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
 import pragueHero from "../../../../assets/images/prague_hero_banner.jpg";
-import { labelForDeck } from "../homeContent";
 import { HeroIcon } from "./HeroIcon";
 
 type Props = {
-  deckFilter: string;
+  activeDeckLabel: string;
   examLevel: string;
   dueCount: number;
   accountEmail: string | null;
@@ -20,32 +20,34 @@ type Props = {
   onAccount: () => void;
 };
 
-export function HomeHero({ deckFilter, examLevel, dueCount, accountEmail, wide, onStartStudy, onStartQuiz, onSearch, onAdd, onSettings, onAccount }: Props) {
+export function HomeHero({ activeDeckLabel, examLevel, dueCount, accountEmail, wide, onStartStudy, onStartQuiz, onSearch, onAdd, onSettings, onAccount }: Props) {
+  const { t, textAlign } = useI18n();
+
   return (
     <ImageBackground source={pragueHero as never} style={[styles.hero, wide && styles.heroWide]} imageStyle={styles.heroImage} resizeMode="cover">
       <View style={styles.heroOverlay} />
       <View style={styles.heroTop}>
-        <Text style={styles.levelPill}>{examLevel.toUpperCase()} · {labelForDeck(deckFilter)}</Text>
+        <Text style={styles.levelPill}>{examLevel.toUpperCase()} · {activeDeckLabel}</Text>
         <View style={styles.heroIconGroup}>
-          <HeroIcon icon="search" label="Search words" onPress={onSearch} />
-          <HeroIcon icon="add" label="Add word" onPress={onAdd} />
-          <HeroIcon icon={accountEmail ? "account-circle" : "person-outline"} label={accountEmail ? "Account" : "Guest account"} onPress={onAccount} />
-          <HeroIcon icon="settings" label="Open settings" onPress={onSettings} />
+          <HeroIcon icon="search" label={t("common.searchWords")} onPress={onSearch} />
+          <HeroIcon icon="add" label={t("common.addWord")} onPress={onAdd} />
+          <HeroIcon icon={accountEmail ? "account-circle" : "person-outline"} label={accountEmail ? t("common.account") : t("common.guestAccount")} onPress={onAccount} />
+          <HeroIcon icon="settings" label={t("common.openSettings")} onPress={onSettings} />
         </View>
       </View>
       <View style={styles.heroCopy}>
-        <Text style={styles.heroEyebrow}>Continue learning</Text>
-        <Text style={styles.heroTitle}>Ahoj, studentu!</Text>
-        <Text style={styles.heroSubtitle}>{dueCount > 0 ? `${dueCount} cards are ready for you.` : "Keep your Czech fresh today."}</Text>
+        <Text style={[styles.heroEyebrow, { textAlign }]}>{t("home.continueLearning")}</Text>
+        <Text style={[styles.heroTitle, { textAlign }]}>{t("home.greeting")}</Text>
+        <Text style={[styles.heroSubtitle, { textAlign }]}>{dueCount > 0 ? t("home.cardsReady", { count: dueCount }) : t("home.keepFresh")}</Text>
       </View>
       <View style={styles.heroActions}>
-        <Pressable style={styles.reviewAction} onPress={onStartStudy} accessibilityRole="button" accessibilityLabel={dueCount > 0 ? `Review ${dueCount} due cards` : "Start review"}>
+        <Pressable style={styles.reviewAction} onPress={onStartStudy} accessibilityRole="button" accessibilityLabel={dueCount > 0 ? t("common.reviewDue", { count: dueCount }) : t("common.startReview")}>
           <MaterialIcons name="play-arrow" size={20} color={colors.charcoalText} />
-          <Text style={styles.reviewActionText}>{dueCount > 0 ? `Review ${dueCount} due` : "Start review"}</Text>
+          <Text style={styles.reviewActionText}>{dueCount > 0 ? t("common.reviewDue", { count: dueCount }) : t("common.startReview")}</Text>
         </Pressable>
-        <Pressable style={styles.quizAction} onPress={onStartQuiz} accessibilityRole="button" accessibilityLabel="Start B1 quiz">
+        <Pressable style={styles.quizAction} onPress={onStartQuiz} accessibilityRole="button" accessibilityLabel={t("home.startQuiz")}>
           <MaterialIcons name="psychology" size={19} color={colors.onPrimary} />
-          <Text style={styles.quizActionText}>Quiz</Text>
+          <Text style={styles.quizActionText}>{t("common.quiz")}</Text>
         </Pressable>
       </View>
     </ImageBackground>

@@ -16,7 +16,7 @@ import {
 } from "../database";
 import { configureLocalNotifications } from "../notifications";
 import { flushSyncQueue, restoreSyncSnapshot, signInWithPassword, signOut, signUpWithPassword, type SyncStatus } from "../sync";
-import { seedCardsNormalized } from "./appSeed";
+import { seedCardsNormalized, seedVersion } from "./appSeed";
 
 type AuthMode = "sign-in" | "sign-up";
 
@@ -78,7 +78,7 @@ export function useAppData(supabase: SupabaseClient | null) {
   useEffect(() => {
     async function boot() {
       const database = await openAppDatabase();
-      await seedCards(database, seedCardsNormalized);
+      await seedCards(database, seedCardsNormalized, seedVersion);
       const nextSettings = await loadSettings(database);
       setDb(database);
       setSettingsState(nextSettings);

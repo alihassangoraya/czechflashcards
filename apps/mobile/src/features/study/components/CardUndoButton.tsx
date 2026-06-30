@@ -2,9 +2,12 @@ import React from "react";
 import { Pressable, StyleSheet, Text } from "react-native";
 import type { Card } from "@czech-flashcards/shared";
 import MaterialIcons from "../../../components/MaterialIcons";
+import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
 
 export function CardUndoButton({ grading, lastReviewCard, onUndoLastReview }: { grading: boolean; lastReviewCard: Card; onUndoLastReview: () => void }) {
+  const { t } = useI18n();
+
   return (
     <Pressable
       disabled={grading}
@@ -14,7 +17,7 @@ export function CardUndoButton({ grading, lastReviewCard, onUndoLastReview }: { 
       accessibilityLabel={`Undo review for ${lastReviewCard.cz}`}
     >
       <MaterialIcons name="undo" size={size.iconSmall} color={colors.primaryDeep} />
-      <Text style={styles.text}>Undo</Text>
+      <Text style={styles.text}>{t("study.undo")}</Text>
     </Pressable>
   );
 }

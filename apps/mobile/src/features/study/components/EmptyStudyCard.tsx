@@ -1,12 +1,15 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, spacing, typography } from "../../../theme/design";
 
 export function EmptyStudyCard() {
+  const { t, textAlign } = useI18n();
+
   return (
     <View style={styles.cardFace}>
-      <Text style={styles.word}>Done</Text>
-      <Text style={styles.hint}>No cards are due in this deck.</Text>
+      <Text style={[styles.word, { textAlign }]}>{t("study.done")}</Text>
+      <Text style={[styles.hint, { textAlign }]}>{t("study.noDue")}</Text>
     </View>
   );
 }

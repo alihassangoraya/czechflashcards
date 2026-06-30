@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import MaterialIcons from "../../../components/MaterialIcons";
+import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
 import { SettingsSection } from "./SettingsSection";
 import { UtilityButton } from "./UtilityButton";
@@ -17,20 +18,22 @@ type Props = {
 };
 
 export function DataToolsSection({ notice, activeDeckLabel, onRestoreJson, onImportCsv, onShuffleDue, onReviewAllNow, onExportProgress, onExportDeck }: Props) {
+  const { t, textAlign } = useI18n();
+
   return (
-    <SettingsSection icon="assignment" title="Data tools" description="Move your deck and progress in or out of this app.">
+    <SettingsSection icon="assignment" title={t("settings.dataTools")} description={t("settings.dataToolsDescription")}>
       <View style={styles.utilityGrid}>
-        <UtilityButton icon="refresh" title="Restore JSON" detail="Load a progress backup" onPress={onRestoreJson} />
-        <UtilityButton icon="library-add" title="Import CSV" detail={`Add to ${activeDeckLabel}`} onPress={onImportCsv} />
-        <UtilityButton icon="swap-horiz" title="Shuffle due" detail="Mix ready cards" onPress={onShuffleDue} />
-        <UtilityButton icon="today" title="Review all now" detail="Make this deck due" onPress={onReviewAllNow} />
-        <UtilityButton icon="trending-up" title="Export progress" detail="Save a JSON backup" onPress={onExportProgress} />
-        <UtilityButton icon="folder" title="Export deck" detail={`Save ${activeDeckLabel}`} onPress={onExportDeck} />
+        <UtilityButton icon="refresh" title={t("settings.restoreJson")} detail={t("settings.restoreJsonDetail")} onPress={onRestoreJson} />
+        <UtilityButton icon="library-add" title={t("settings.importCsv")} detail={t("settings.importCsvDetail", { deck: activeDeckLabel })} onPress={onImportCsv} />
+        <UtilityButton icon="swap-horiz" title={t("settings.shuffleDue")} detail={t("settings.shuffleDueDetail")} onPress={onShuffleDue} />
+        <UtilityButton icon="today" title={t("settings.reviewAllNow")} detail={t("settings.reviewAllNowDetail")} onPress={onReviewAllNow} />
+        <UtilityButton icon="trending-up" title={t("settings.exportProgress")} detail={t("settings.exportProgressDetail")} onPress={onExportProgress} />
+        <UtilityButton icon="folder" title={t("settings.exportDeck")} detail={t("settings.exportDeckDetail", { deck: activeDeckLabel })} onPress={onExportDeck} />
       </View>
       {Boolean(notice) && (
         <View style={styles.notice}>
           <MaterialIcons name="info" size={size.iconSmall} color={colors.action} />
-          <Text style={styles.noticeText}>{notice}</Text>
+          <Text style={[styles.noticeText, { textAlign }]}>{notice}</Text>
         </View>
       )}
     </SettingsSection>

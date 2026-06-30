@@ -1,5 +1,6 @@
 import React from "react";
 import { Animated, Pressable, StyleSheet } from "react-native";
+import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, spacing } from "../../../theme/design";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -11,11 +12,13 @@ type Props = {
 };
 
 export function CardBackFaceContainer({ children, flipProgress, onPress }: Props) {
+  const { t } = useI18n();
+
   return (
     <AnimatedPressable
       onPress={onPress}
       accessibilityRole="button"
-      accessibilityLabel="Show Czech word"
+      accessibilityLabel={t("study.showCzech")}
       style={[
         styles.cardFace,
         styles.cardBack,

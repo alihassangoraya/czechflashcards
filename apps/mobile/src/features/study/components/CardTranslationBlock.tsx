@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import type { Card } from "@czech-flashcards/shared";
 import type { StudySettings } from "../../../database";
+import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, spacing, typography } from "../../../theme/design";
 
 type Props = {
@@ -11,9 +12,11 @@ type Props = {
 };
 
 export function CardTranslationBlock({ card, secondaryMeaning, meaningLanguage }: Props) {
+  const { t, textAlign } = useI18n();
+
   return (
     <View style={styles.answer}>
-      <Text style={styles.contentLabel}>Translation</Text>
+      <Text style={[styles.contentLabel, { textAlign }]}>{t("study.translation")}</Text>
       <View style={styles.meaningRow}>
         <Text style={styles.meaning}>{card.en}</Text>
         {Boolean(secondaryMeaning) && (

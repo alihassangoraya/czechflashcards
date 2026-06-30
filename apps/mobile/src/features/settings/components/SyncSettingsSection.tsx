@@ -2,6 +2,7 @@ import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import type { SyncStatus } from "../../../sync";
 import MaterialIcons from "../../../components/MaterialIcons";
+import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
 import { SettingsSection } from "./SettingsSection";
 
@@ -13,26 +14,27 @@ type Props = {
 };
 
 export function SyncSettingsSection({ accountEmail, syncStatus, onSyncNow, onAccount }: Props) {
+  const { t, textAlign } = useI18n();
   const syncReady = syncStatus === "synced" || syncStatus === "not-configured";
   return (
-    <SettingsSection icon="cloud-sync" title="Backup and sync" description="Your study data stays local until you connect an account.">
+    <SettingsSection icon="cloud-sync" title={t("settings.backupSync")} description={t("settings.backupSyncDescription")}>
       <View style={styles.syncStatus}>
         <View style={[styles.syncStatusIcon, syncReady ? styles.syncStatusGood : styles.syncStatusPending]}>
           <MaterialIcons name={syncReady ? "cloud-done" : "sync-problem"} size={size.iconMedium} color={syncReady ? colors.success : colors.warning} />
         </View>
         <View style={styles.syncStatusCopy}>
-          <Text style={styles.syncStatusTitle}>{accountEmail || "Guest mode"}</Text>
-          <Text style={styles.syncStatusText}>{accountEmail ? `Sync status: ${syncStatus}` : "Sign in to back up and restore this device."}</Text>
+          <Text style={[styles.syncStatusTitle, { textAlign }]}>{accountEmail || t("settings.guestMode")}</Text>
+          <Text style={[styles.syncStatusText, { textAlign }]}>{accountEmail ? t("settings.syncStatus", { status: syncStatus }) : t("settings.signInRestore")}</Text>
         </View>
       </View>
       <View style={styles.syncActions}>
         <Pressable style={styles.syncButton} onPress={onSyncNow} accessibilityRole="button">
           <MaterialIcons name="sync" size={size.icon} color={colors.action} />
-          <Text style={styles.syncButtonText}>Sync now</Text>
+          <Text style={styles.syncButtonText}>{t("settings.syncNow")}</Text>
         </Pressable>
         <Pressable style={styles.accountButton} onPress={onAccount} accessibilityRole="button">
           <MaterialIcons name={accountEmail ? "person" : "login"} size={size.icon} color={colors.onPrimary} />
-          <Text style={styles.accountButtonText}>{accountEmail ? "Account" : "Sign in"}</Text>
+          <Text style={styles.accountButtonText}>{accountEmail ? t("settings.account") : t("settings.signIn")}</Text>
         </Pressable>
       </View>
     </SettingsSection>

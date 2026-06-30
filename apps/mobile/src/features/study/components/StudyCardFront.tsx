@@ -1,6 +1,7 @@
 import React from "react";
 import { Animated, Pressable, StyleSheet, Text } from "react-native";
 import type { Card } from "@czech-flashcards/shared";
+import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, spacing, typography } from "../../../theme/design";
 import { CardUndoButton } from "./CardUndoButton";
 import { PronunciationPill } from "./PronunciationPill";
@@ -21,11 +22,13 @@ type Props = {
 };
 
 export function StudyCardFront({ current, flipProgress, grading, lastReviewCard, onFlipCard, onCompleteSwipe, onUndoLastReview }: Props) {
+  const { t, textAlign } = useI18n();
+
   return (
     <AnimatedPressable
       onPress={onFlipCard}
       accessibilityRole="button"
-      accessibilityLabel="Reveal meaning"
+      accessibilityLabel={t("study.revealMeaning")}
       style={[
         styles.cardFace,
         {
@@ -39,7 +42,7 @@ export function StudyCardFront({ current, flipProgress, grading, lastReviewCard,
       <Text style={styles.word}>{current.cz}</Text>
       <PronunciationPill card={current} />
       <StudySwipeActions grading={grading} onCompleteSwipe={onCompleteSwipe} />
-      <Text style={styles.hint}>Tap to reveal meaning</Text>
+      <Text style={[styles.hint, { textAlign }]}>{t("study.tapReveal")}</Text>
       {lastReviewCard && <CardUndoButton grading={grading} lastReviewCard={lastReviewCard} onUndoLastReview={onUndoLastReview} />}
     </AnimatedPressable>
   );

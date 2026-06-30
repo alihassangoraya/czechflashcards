@@ -1,20 +1,23 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import MaterialIcons from "../../../components/MaterialIcons";
+import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
 import { guideItems } from "../homeContent";
 
 export function StudyGuide() {
+  const { t, textAlign } = useI18n();
+
   return (
     <View style={styles.studyGuide}>
-      <Text style={styles.guideTitle}>Study Guide</Text>
+      <Text style={[styles.guideTitle, { textAlign }]}>{t("home.studyGuide")}</Text>
       <View style={styles.guideGrid}>
         {guideItems.map((item) => (
-          <View key={item.text} style={styles.guideItem}>
+          <View key={item.textKey} style={styles.guideItem}>
             <View style={styles.guideBullet}>
               <MaterialIcons name={item.icon} size={size.iconSmall} color={colors.bohemianBlue} />
             </View>
-            <Text style={styles.guideText}>{item.text}</Text>
+            <Text style={[styles.guideText, { textAlign }]}>{t(item.textKey)}</Text>
           </View>
         ))}
       </View>

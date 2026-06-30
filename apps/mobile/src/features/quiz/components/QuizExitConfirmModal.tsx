@@ -1,5 +1,6 @@
 import React from "react";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, shadow, size, spacing, typography } from "../../../theme/design";
 
 type Props = {
@@ -9,18 +10,20 @@ type Props = {
 };
 
 export function QuizExitConfirmModal({ visible, onCancel, onConfirm }: Props) {
+  const { t, textAlign } = useI18n();
+
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}>
       <View style={styles.exitOverlay}>
         <View style={styles.exitDialog}>
-          <Text style={styles.exitTitle}>Leave quiz?</Text>
-          <Text style={styles.exitCopy}>Your current quiz answers will be lost.</Text>
+          <Text style={[styles.exitTitle, { textAlign }]}>{t("quiz.leaveTitle")}</Text>
+          <Text style={[styles.exitCopy, { textAlign }]}>{t("quiz.leaveCopy")}</Text>
           <View style={styles.exitActions}>
             <Pressable style={styles.exitSecondary} onPress={onCancel} accessibilityRole="button">
-              <Text style={styles.exitSecondaryText}>Stay</Text>
+              <Text style={styles.exitSecondaryText}>{t("quiz.stay")}</Text>
             </Pressable>
             <Pressable style={styles.exitPrimary} onPress={onConfirm} accessibilityRole="button">
-              <Text style={styles.exitPrimaryText}>Leave</Text>
+              <Text style={styles.exitPrimaryText}>{t("quiz.leave")}</Text>
             </Pressable>
           </View>
         </View>

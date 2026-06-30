@@ -2,28 +2,37 @@ const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
 const { enrichWithGoogleVocabulary } = require("./google-vocabulary");
+const { applyLegacyUrduOverrides } = require("./legacy-urdu-overrides");
 
 const root = path.resolve(__dirname, "..");
 const outFile = path.join(root, "packages", "shared", "data", "vocabulary.seed.json");
-const sourceFiles = [
+const seedVersion = "google-b1-enriched-v3";
+const baseSourceFiles = [
   "data/vocabulary.js",
   "data/extended-lemmas.js",
   "data/focus-decks.js",
-  "data/b1-verb-pack.js",
+  "data/b1-verb-pack.js"
+];
+const generatedSourceFiles = [
   "data/verb-forms.js",
   "data/google-vocabulary-details.json"
 ];
+const sourceFiles = [...baseSourceFiles, ...generatedSourceFiles];
 
 function loadCards() {
   const context = { window: {} };
   context.globalThis = context;
   vm.createContext(context);
 
-  for (const file of sourceFiles) {
+  for (const file of baseSourceFiles) {
     vm.runInContext(fs.readFileSync(path.join(root, file), "utf8"), context, { filename: file });
   }
 
-  return enrichWithGoogleVocabulary(context.window.CZECH_B1_VOCAB || []);
+  context.window.CZECH_B1_VOCAB = enrichWithGoogleVocabulary(context.window.CZECH_B1_VOCAB || []);
+  context.window.CZECH_B1_VOCAB = applyLegacyUrduOverrides(context.window.CZECH_B1_VOCAB);
+  vm.runInContext(fs.readFileSync(path.join(root, "data", "verb-forms.js"), "utf8"), context, { filename: "data/verb-forms.js" });
+
+  return context.window.CZECH_B1_VOCAB || [];
 }
 
 function normalizeForSeed(card, index) {
@@ -48,6 +57,8 @@ function normalizeForSeed(card, index) {
 
 function buildPayload() {
   return JSON.stringify({
+    schemaVersion: 1,
+    seedVersion,
     generatedFrom: sourceFiles,
     generatedAt: "deterministic",
     cards: loadCards().map(normalizeForSeed)

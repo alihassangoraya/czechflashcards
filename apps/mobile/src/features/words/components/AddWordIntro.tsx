@@ -1,15 +1,18 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import MaterialIcons from "../../../components/MaterialIcons";
+import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
 
 export function AddWordIntro() {
+  const { t, textAlign } = useI18n();
+
   return (
     <View style={styles.intro}>
       <View style={styles.icon}><MaterialIcons name="add-circle-outline" size={size.iconMedium} color={colors.primaryDeep} /></View>
       <View style={styles.copy}>
-        <Text style={styles.title}>Make it yours</Text>
-        <Text style={styles.text}>Core Czech and English fields are required. Add translations and context whenever you have them.</Text>
+        <Text style={[styles.title, { textAlign }]}>{t("words.introTitle")}</Text>
+        <Text style={[styles.text, { textAlign }]}>{t("words.introCopy")}</Text>
       </View>
     </View>
   );

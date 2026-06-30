@@ -1,15 +1,18 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import MaterialIcons from "../../../components/MaterialIcons";
+import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
 
 export function SearchPrompt() {
+  const { t, textAlign } = useI18n();
+
   return (
     <View style={styles.prompt}>
       <View style={styles.icon}><MaterialIcons name="manage-search" size={size.iconMedium} color={colors.action} /></View>
       <View style={styles.copy}>
-        <Text style={styles.title}>Find a word</Text>
-        <Text style={styles.text}>Search all 6,000+ cards in Czech, English, Hindi, or Urdu.</Text>
+        <Text style={[styles.title, { textAlign }]}>{t("search.findTitle")}</Text>
+        <Text style={[styles.text, { textAlign }]}>{t("search.findCopy", { count: "7,000" })}</Text>
       </View>
     </View>
   );

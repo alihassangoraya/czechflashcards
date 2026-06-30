@@ -3,12 +3,15 @@ import { ScrollView, StyleSheet, useWindowDimensions, View } from "react-native"
 import type { Card, ReviewState } from "@czech-flashcards/shared";
 import type { MaterialIconName } from "../../components/MaterialIcons";
 import type { StudySettings } from "../../database";
+import { useI18n } from "../../i18n/I18nProvider";
+import type { TranslationKey } from "../../i18n/translations";
 import { colors, spacing, typography } from "../../theme/design";
 import { DailyGoalCard } from "./components/DailyGoalCard";
 import { DeckGrid } from "./components/DeckGrid";
 import { HomeHero } from "./components/HomeHero";
 import { StudyGuide } from "./components/StudyGuide";
 import { baseDecks, countForDeck, type Category } from "./homeContent";
+import { deckLabel } from "../settings/settingsFormat";
 
 type Props = {
   deck: Card[];
@@ -47,6 +50,7 @@ export function HomeScreen({
   onSettings,
   onAccount
 }: Props) {
+  const { t } = useI18n();
   const { width } = useWindowDimensions();
   const isWideLayout = width >= 768;
   const now = Date.now();
@@ -65,12 +69,15 @@ export function HomeScreen({
       count: visibleCards.filter((card) => card.tags.includes(customDeck.id)).length
     }))
   ];
+  const activeDeckLabel = settings.customDecks.some((deck) => deck.id === settings.deckFilter)
+    ? deckLabel(settings.deckFilter, settings.customDecks)
+    : t(`deck.${settings.deckFilter}` as TranslationKey);
 
   return (
     <View style={styles.screen}>
     <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
       <HomeHero
-        deckFilter={settings.deckFilter}
+        activeDeckLabel={activeDeckLabel}
         examLevel={settings.examLevel}
         dueCount={dueCount}
         accountEmail={accountEmail}

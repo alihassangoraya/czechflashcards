@@ -3,6 +3,7 @@ import type { Card } from "@czech-flashcards/shared";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { AppModal } from "../components/AppModal";
 import type { StudySettings } from "../database";
+import { useI18n } from "../i18n/I18nProvider";
 import { AccountPanel, type AccountStudySummary } from "../features/account/AccountPanel";
 import { DeckMembershipPanel } from "../features/decks/DeckMembershipPanel";
 import { GrammarEmptyState } from "../features/grammar/GrammarEmptyState";
@@ -61,22 +62,23 @@ type Props = {
 
 export function AppPanels(props: Props) {
   const { panel, cards, customCards, settings, savedCardIds, deckMemberships, current, deckManagementCard, editingCard, query, syncStatus, settingsNotice, accountEmail, authBusy, accountStudySummary, supabase, onSetPanel, onQueryChange, onStudySearchResult, onToggleSaved, onAddCardToDeck, onRemoveCardFromDeck, onSetDeckManagementCard, onOpenCardEditor, onCloseCardEditor, onAddWord, onDeleteWord, onSaveCorrection, onChangeSettings, onSyncNow, onRestoreJson, onImportCsv, onShuffleDue, onReviewAllNow, onExportProgress, onExportDeck, onAuthenticate, onSignOut } = props;
+  const { t } = useI18n();
 
   return (
     <>
-      <AppModal visible={panel === "search"} title="Search words" onClose={() => onSetPanel(null)}>
+      <AppModal visible={panel === "search"} title={t("modal.search")} onClose={() => onSetPanel(null)}>
         <SearchPanel cards={cards} query={query} meaningLanguage={settings.meaningLanguage} savedCardIds={savedCardIds} onQueryChange={onQueryChange} onStudy={onStudySearchResult} onToggleSaved={(card) => onToggleSaved(card.id)} onManageDecks={onSetDeckManagementCard} onEdit={onOpenCardEditor} />
       </AppModal>
 
-      <AppModal visible={panel === "add"} title="Add your own word" onClose={() => onSetPanel(null)}>
+      <AppModal visible={panel === "add"} title={t("modal.add")} onClose={() => onSetPanel(null)}>
         <AddWordPanel onSubmit={onAddWord} cards={customCards} decks={settings.customDecks} onDelete={onDeleteWord} onEdit={onOpenCardEditor} />
       </AppModal>
 
-      <AppModal visible={panel === "edit"} title="Edit card" onClose={onCloseCardEditor}>
+      <AppModal visible={panel === "edit"} title={t("modal.edit")} onClose={onCloseCardEditor}>
         {editingCard && <EditCardForm key={editingCard.id} card={editingCard} onSubmit={onSaveCorrection} />}
       </AppModal>
 
-      <AppModal visible={panel === "settings"} title="Settings" onClose={() => onSetPanel(null)}>
+      <AppModal visible={panel === "settings"} title={t("common.settings")} onClose={() => onSetPanel(null)}>
         <SettingsPanel
           settings={settings}
           cards={cards}
@@ -96,15 +98,15 @@ export function AppPanels(props: Props) {
         />
       </AppModal>
 
-      <AppModal visible={panel === "account"} title="Account and sync" onClose={() => onSetPanel(null)}>
+      <AppModal visible={panel === "account"} title={t("modal.account")} onClose={() => onSetPanel(null)}>
         <AccountPanel configured={Boolean(supabase)} supabase={supabase} accountEmail={accountEmail} studySummary={accountStudySummary} busy={authBusy} onAuthenticate={onAuthenticate} onSignOut={onSignOut} />
       </AppModal>
 
-      <AppModal visible={panel === "grammar"} title="B1 grammar guide" onClose={() => onSetPanel(null)}>
+      <AppModal visible={panel === "grammar"} title={t("modal.grammar")} onClose={() => onSetPanel(null)}>
         {current ? <GrammarGuide card={current} /> : <GrammarEmptyState />}
       </AppModal>
 
-      <AppModal visible={panel === "deck"} title="Add to deck" onClose={() => onSetDeckManagementCard(null)}>
+      <AppModal visible={panel === "deck"} title={t("modal.deck")} onClose={() => onSetDeckManagementCard(null)}>
         <DeckMembershipPanel
           card={deckManagementCard}
           decks={settings.customDecks}

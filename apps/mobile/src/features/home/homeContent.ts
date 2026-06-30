@@ -1,9 +1,10 @@
 import type { Card } from "@czech-flashcards/shared";
 import type { MaterialIconName } from "../../components/MaterialIcons";
+import type { TranslationKey } from "../../i18n/translations";
 import { colors } from "../../theme/design";
 
 export type Category = { id: string; title: string; icon: MaterialIconName; color: string; count?: number };
-export type GuideItem = { icon: MaterialIconName; text: string };
+export type GuideItem = { icon: MaterialIconName; textKey: TranslationKey };
 
 export const baseDecks: Category[] = [
   { id: "a2-focus", title: "A2 Focus", icon: "school", color: colors.bohemianBlue },
@@ -23,14 +24,14 @@ export const baseDecks: Category[] = [
 ];
 
 export const guideItems: GuideItem[] = [
-  { icon: "touch-app", text: "Tap the card to reveal meanings, examples, and word details." },
-  { icon: "arrow-back", text: "Swipe left or press Again to see a word again after 10-15 other cards." },
-  { icon: "arrow-forward", text: "Swipe right or press Known when a word feels familiar." },
-  { icon: "volume-up", text: "Use the audio buttons to hear the Czech word and example." },
-  { icon: "undo", text: "Use Undo on the Czech side if you reviewed the previous card by mistake." },
-  { icon: "star", text: "Star important cards to keep them in My List." },
-  { icon: "search", text: "Use search to find a word, + to add one, and settings to choose your deck." },
-  { icon: "quiz", text: "Use Quiz for quick recall practice after reviewing your due cards." }
+  { icon: "touch-app", textKey: "guide.tapCard" },
+  { icon: "arrow-back", textKey: "guide.swipeLeft" },
+  { icon: "arrow-forward", textKey: "guide.swipeRight" },
+  { icon: "volume-up", textKey: "guide.audio" },
+  { icon: "undo", textKey: "guide.undo" },
+  { icon: "star", textKey: "guide.star" },
+  { icon: "search", textKey: "guide.search" },
+  { icon: "quiz", textKey: "guide.quiz" }
 ];
 
 export function labelForDeck(deckFilter: string): string {

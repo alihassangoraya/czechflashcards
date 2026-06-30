@@ -10,12 +10,14 @@ import {
   takeRelearningCardFromQueue,
   type RelearningEntry
 } from "../features/study/studyQueue";
+import { useI18n } from "../i18n/I18nProvider";
 
 const RELEARNING_MIN_CARDS = 10;
 const RELEARNING_MAX_CARDS = 15;
 const RECENT_CARD_LIMIT = 18;
 
 export function useStudyQueue(deck: Card[], states: Record<string, ReviewState>) {
+  const { t } = useI18n();
   const [current, setCurrent] = useState<Card | null>(null);
   const [revealed, setRevealed] = useState(false);
   const forcedCardId = useRef<string | null>(null);
@@ -72,7 +74,7 @@ export function useStudyQueue(deck: Card[], states: Record<string, ReviewState>)
     const otherIds = due.map((card) => card.id).filter((id) => id !== currentId);
     shuffledDueQueue.current = currentId ? [...shuffleValues(otherIds), currentId] : shuffleValues(otherIds);
     forcedCardId.current = null;
-    onNotice(due.length ? `Shuffled ${due.length} due cards.` : "No due cards to shuffle in this deck.");
+    onNotice(due.length ? t("settings.notice.shuffledDue", { count: due.length }) : t("settings.notice.noDueToShuffle"));
   }
 
   function clearShuffledDueQueue() {

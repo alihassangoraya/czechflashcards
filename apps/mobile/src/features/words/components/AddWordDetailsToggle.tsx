@@ -1,14 +1,17 @@
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import MaterialIcons from "../../../components/MaterialIcons";
+import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
 
 export function AddWordDetailsToggle({ expanded, onToggle }: { expanded: boolean; onToggle: () => void }) {
+  const { t } = useI18n();
+
   return (
     <Pressable style={styles.toggle} onPress={onToggle} accessibilityRole="button" accessibilityState={{ expanded }}>
       <View style={styles.copy}>
         <MaterialIcons name="library-add" size={size.iconSmall} color={colors.action} />
-        <Text style={styles.text}>Translations and context</Text>
+        <Text style={styles.text}>{t("words.translationsContext")}</Text>
       </View>
       <MaterialIcons name={expanded ? "expand-less" : "expand-more"} size={size.icon} color={colors.action} />
     </Pressable>
