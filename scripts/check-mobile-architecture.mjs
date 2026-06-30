@@ -8,13 +8,19 @@ import { createMobileArchitectureViolations } from "./architecture/mobileViolati
 import { reportMobileArchitectureViolations } from "./architecture/reportArchitectureViolations.mjs";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
+const mobileRoot = join(root, "apps/mobile");
 const srcRoot = join(root, "apps/mobile/src");
+const rootFiles = [join(mobileRoot, "App.tsx")];
 
 const files = await collectSourceFiles(srcRoot, {
   extensionPattern: /\.(ts|tsx)$/,
   ignoredDirectories: ignoredMobileDirectories
 });
 const violations = createMobileArchitectureViolations();
+
+for (const file of rootFiles) {
+  inspectMobileFile(await readSourceFile(mobileRoot, file), violations);
+}
 
 for (const file of files) {
   inspectMobileFile(await readSourceFile(srcRoot, file), violations);
