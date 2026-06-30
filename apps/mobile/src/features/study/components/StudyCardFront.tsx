@@ -3,13 +3,12 @@ import { Animated, Pressable, StyleSheet, Text } from "react-native";
 import type { Card } from "@czech-flashcards/shared";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, spacing, typography } from "../../../theme/design";
+import type { SwipeDirection } from "../animations/animationTypes";
 import { CardUndoButton } from "./CardUndoButton";
 import { PronunciationPill } from "./PronunciationPill";
 import { StudySwipeActions } from "./StudySwipeActions";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
-
-type SwipeDirection = "again" | "known";
 
 type Props = {
   current: Card;

@@ -37,6 +37,11 @@ const violations = [];
 const hardcodedTextViolations = [];
 const deepFeatureImportViolations = [];
 const featureToAppImportViolations = [];
+const duplicateTypeViolations = [];
+const canonicalTypeFiles = new Map([
+  ["AuthMode", "services/sync/syncTypes.ts"],
+  ["SwipeDirection", "features/study/animations/animationTypes.ts"]
+]);
 for (const file of files) {
   const rel = relative(srcRoot, file);
   const maxLines = maxLinesByPath.get(rel) || defaultMaxLines;
@@ -62,6 +67,15 @@ for (const file of files) {
     lines.forEach((line, index) => {
       const appImport = line.match(/from\s+["'](?:\.\.\/)+app\/[^"']+["']/);
       if (appImport) featureToAppImportViolations.push(`${rel}:${index + 1}: ${line.trim()}`);
+    });
+  }
+
+  for (const [typeName, canonicalPath] of canonicalTypeFiles) {
+    if (rel === canonicalPath) continue;
+    lines.forEach((line, index) => {
+      if (line.match(new RegExp(`type\\s+${typeName}\\s*=`))) {
+        duplicateTypeViolations.push(`${rel}:${index + 1}: use ${canonicalPath} for ${typeName}`);
+      }
     });
   }
 }
@@ -90,6 +104,12 @@ if (violations.length) {
   failed = true;
   console.error("Mobile architecture check failed. Split large files into focused modules:");
   console.error(violations.join("\n"));
+}
+
+if (duplicateTypeViolations.length) {
+  failed = true;
+  console.error("Mobile architecture check failed. Reuse canonical shared type aliases:");
+  console.error(duplicateTypeViolations.join("\n"));
 }
 
 if (failed) process.exit(1);

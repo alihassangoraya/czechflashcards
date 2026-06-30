@@ -1,3 +1,5 @@
+export type AuthMode = "sign-in" | "sign-up";
+
 export type SyncStatus = "guest" | "not-configured" | "idle" | "synced" | "error";
 
 export type FriendRequest = {

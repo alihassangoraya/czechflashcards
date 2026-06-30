@@ -3,8 +3,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import MaterialIcons from "../../../components/MaterialIcons";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
-
-type SwipeDirection = "again" | "known";
+import type { SwipeDirection } from "../animations/animationTypes";
 
 export function StudySwipeActions({ grading, onCompleteSwipe }: { grading: boolean; onCompleteSwipe: (direction: SwipeDirection) => void }) {
   const { t } = useI18n();

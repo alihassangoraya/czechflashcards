@@ -2,8 +2,7 @@ import React from "react";
 import { StyleSheet, Text } from "react-native";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing } from "../../../theme/design";
-
-type SwipeDirection = "again" | "known";
+import type { SwipeDirection } from "../animations/animationTypes";
 
 export function SwipeStamp({ direction }: { direction: SwipeDirection }) {
   const { t } = useI18n();
