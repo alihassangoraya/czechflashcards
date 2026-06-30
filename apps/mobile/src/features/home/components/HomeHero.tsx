@@ -7,7 +7,7 @@ import { HomeHeroActions } from "./HomeHeroActions";
 import { HomeHeroCopy } from "./HomeHeroCopy";
 import { HomeHeroTop } from "./HomeHeroTop";
 
-type Props = {
+export type HomeHeroProps = {
   activeDeckLabel: string;
   examLevel: string;
   dueCount: number;
@@ -21,7 +21,7 @@ type Props = {
   onAccount: () => void;
 };
 
-export function HomeHero({ activeDeckLabel, examLevel, dueCount, accountEmail, wide, onStartStudy, onStartQuiz, onSearch, onAdd, onSettings, onAccount }: Props) {
+export function HomeHero({ activeDeckLabel, examLevel, dueCount, accountEmail, wide, onStartStudy, onStartQuiz, onSearch, onAdd, onSettings, onAccount }: HomeHeroProps) {
   const { t } = useI18n();
   const reviewLabel = dueCount > 0 ? t("common.reviewDue", { count: dueCount }) : t("common.startReview");
   const quizLabel = t("common.quiz");
