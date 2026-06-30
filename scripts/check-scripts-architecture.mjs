@@ -4,7 +4,7 @@ import { join, relative } from "node:path";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const scriptsRoot = join(root, "scripts");
-const maxLines = 220;
+const maxLines = 120;
 const files = [];
 
 async function collect(directory) {

@@ -1,0 +1,24 @@
+const mobileViolationMessages = [
+  ["hardcodedText", "Mobile architecture check failed. Move hardcoded UI text into i18n translations:"],
+  ["appDeepFeatureImports", "Mobile architecture check failed. App orchestration must import features through feature barrels:"],
+  ["featureToAppImports", "Mobile architecture check failed. Feature modules must not import app orchestration:"],
+  ["studyDomainFeatureImports", "Mobile architecture check failed. Study queue/session domain modules must not import feature UI modules:"],
+  ["featureRootComponents", "Mobile architecture check failed. Feature UI files must live in components/ or screens/:"],
+  ["inlineScreenProps", "Mobile architecture check failed. Feature screens must use named props types:"],
+  ["lineCounts", "Mobile architecture check failed. Split large files into focused modules:"],
+  ["duplicateTypes", "Mobile architecture check failed. Reuse canonical shared type aliases:"],
+  ["localeSections", "Mobile architecture check failed. Keep i18n catalogs split into matching feature sections:"],
+  ["rootServices", "Mobile architecture check failed. Service implementations must live in domain service folders:"]
+];
+
+export function reportMobileArchitectureViolations(violations) {
+  let failed = false;
+  for (const [key, message] of mobileViolationMessages) {
+    if (!violations[key].length) continue;
+    failed = true;
+    console.error(message);
+    console.error(violations[key].join("\n"));
+  }
+
+  if (failed) process.exit(1);
+}
