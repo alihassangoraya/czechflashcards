@@ -1,52 +1,14 @@
-import type { Card, ReviewGrade } from "@czech-flashcards/shared";
-import type { AppDatabase, ReviewStates, StudySettings } from "../../database";
-import { useStudyAnimations } from "../../features/study";
 import { useStudyQueue } from "../studyQueue/useStudyQueue";
-import { formatReviewInterval } from "../studySession/reviewInterval";
 import { useStudyReviewActions } from "../studySession/useStudyReviewActions";
+import { buildStudySession } from "./buildStudySession";
+import type { StudySessionProps } from "./studySessionProps";
+import { useStudySessionAnimations } from "./useStudySessionAnimations";
 
-type Props = {
-  db: AppDatabase | null;
-  settings: StudySettings | null;
-  deck: Card[];
-  states: ReviewStates;
-  refresh: (database?: AppDatabase | null) => Promise<void>;
-};
-
-export function useStudySession({ db, settings, deck, states, refresh }: Props) {
+export function useStudySession({ db, settings, deck, states, refresh }: StudySessionProps) {
   const queue = useStudyQueue(deck, states);
   const reviews = useStudyReviewActions({ db, settings, queue, refresh });
-
-  const studyAnimations = useStudyAnimations({
-    current: queue.current,
-    revealed: queue.revealed,
-    grading: reviews.grading,
-    onRevealChange: queue.setRevealed,
-    onSwipeGrade: (result) => { void reviews.grade(result); }
-  });
-
-  function reviewInterval(grade: ReviewGrade): string {
-    return formatReviewInterval(queue.current, states, grade);
-  }
-
-  return {
-    current: queue.current,
-    revealed: queue.revealed,
-    grading: reviews.grading,
-    lastReview: reviews.lastReview,
-    sessionReviews: reviews.sessionReviews,
-    studyAnimations,
-    setCurrent: queue.setCurrent,
-    setRevealed: queue.setRevealed,
-    setSessionReviews: reviews.setSessionReviews,
-    forceCard: queue.forceCard,
-    resetSessionReviews: reviews.resetSessionReviews,
-    reviewInterval,
-    grade: reviews.grade,
-    undoLastReview: reviews.undoLastReview,
-    shuffleDueCards: queue.shuffleDueCards,
-    clearShuffledDueQueue: queue.clearShuffledDueQueue
-  };
+  const studyAnimations = useStudySessionAnimations({ queue, reviews });
+  return buildStudySession({ queue, reviews, studyAnimations, states });
 }
 
 export type StudySession = ReturnType<typeof useStudySession>;

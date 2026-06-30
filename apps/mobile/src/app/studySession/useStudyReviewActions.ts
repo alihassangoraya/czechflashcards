@@ -26,3 +26,5 @@ export function useStudyReviewActions({ db, settings, queue, refresh }: Input) {
     undoLastReview
   };
 }
+
+export type StudyReviewActions = ReturnType<typeof useStudyReviewActions>;
