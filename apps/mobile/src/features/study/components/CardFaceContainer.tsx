@@ -11,6 +11,29 @@ type Props = {
   onPress: () => void;
 };
 
+export function CardFrontFaceContainer({ children, flipProgress, onPress }: Props) {
+  const { t } = useI18n();
+
+  return (
+    <AnimatedPressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={t("study.revealMeaning")}
+      style={[
+        styles.cardFace,
+        {
+          transform: [
+            { perspective: 1200 },
+            { rotateY: flipProgress.interpolate({ inputRange: [0, 1], outputRange: ["0deg", "180deg"] }) }
+          ]
+        }
+      ]}
+    >
+      {children}
+    </AnimatedPressable>
+  );
+}
+
 export function CardBackFaceContainer({ children, flipProgress, onPress }: Props) {
   const { t } = useI18n();
 

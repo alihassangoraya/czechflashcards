@@ -1,14 +1,13 @@
 import React from "react";
-import { Animated, Pressable, StyleSheet, Text } from "react-native";
+import { Animated, StyleSheet, Text } from "react-native";
 import type { Card } from "@czech-flashcards/shared";
 import { useI18n } from "../../../i18n/I18nProvider";
-import { colors, radius, spacing, typography } from "../../../theme/design";
+import { colors, typography } from "../../../theme/design";
 import type { SwipeDirection } from "../animations/animationTypes";
 import { CardUndoButton } from "./CardUndoButton";
+import { CardFrontFaceContainer } from "./CardFaceContainer";
 import { PronunciationPill } from "./PronunciationPill";
 import { StudySwipeActions } from "./StudySwipeActions";
-
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 type Props = {
   current: Card;
@@ -24,41 +23,17 @@ export function StudyCardFront({ current, flipProgress, grading, lastReviewCard,
   const { t, textAlign } = useI18n();
 
   return (
-    <AnimatedPressable
-      onPress={onFlipCard}
-      accessibilityRole="button"
-      accessibilityLabel={t("study.revealMeaning")}
-      style={[
-        styles.cardFace,
-        {
-          transform: [
-            { perspective: 1200 },
-            { rotateY: flipProgress.interpolate({ inputRange: [0, 1], outputRange: ["0deg", "180deg"] }) }
-          ]
-        }
-      ]}
-    >
+    <CardFrontFaceContainer flipProgress={flipProgress} onPress={onFlipCard}>
       <Text style={styles.word}>{current.cz}</Text>
       <PronunciationPill card={current} />
       <StudySwipeActions grading={grading} onCompleteSwipe={onCompleteSwipe} />
       <Text style={[styles.hint, { textAlign }]}>{t("study.tapReveal")}</Text>
       {lastReviewCard && <CardUndoButton grading={grading} lastReviewCard={lastReviewCard} onUndoLastReview={onUndoLastReview} />}
-    </AnimatedPressable>
+    </CardFrontFaceContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  cardFace: {
-    position: "absolute",
-    inset: 0,
-    justifyContent: "center",
-    backgroundColor: colors.surface,
-    borderRadius: radius.card,
-    padding: spacing.card,
-    borderWidth: spacing.hairline,
-    borderColor: colors.borderSoft,
-    backfaceVisibility: "hidden"
-  },
   word: {
     fontSize: typography.word,
     lineHeight: typography.wordLine,
