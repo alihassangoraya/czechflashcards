@@ -2,6 +2,7 @@ export function inspectRootAppModules({ rel }, violations) {
   inspectRootAppData(rel, violations);
   inspectRootAppCards(rel, violations);
   inspectRootAppHandlers(rel, violations);
+  inspectRootAppFeedback(rel, violations);
   inspectRootAppNavigation(rel, violations);
   inspectRootAppSettingsTools(rel, violations);
   inspectRootAppShellData(rel, violations);
@@ -26,6 +27,12 @@ function inspectRootAppHandlers(rel, violations) {
   }
 }
 
+function inspectRootAppFeedback(rel, violations) {
+  if (rel === "app/useToast.ts") {
+    violations.rootAppFeedback.push(`${rel}: move app feedback modules into app/feedback/`);
+  }
+}
+
 function inspectRootAppNavigation(rel, violations) {
   if (rel.match(/^app\/(?:useAppNavigation|useWebRouteSync|webRoutes)\.ts$/)) {
     violations.rootAppNavigation.push(`${rel}: move app navigation modules into app/navigation/`);
@@ -39,7 +46,7 @@ function inspectRootAppSettingsTools(rel, violations) {
 }
 
 function inspectRootAppShellData(rel, violations) {
-  if (rel === "app/appShellDataProps.ts") {
+  if (rel === "app/appShellDataProps.ts" || rel === "app/studySummary.ts") {
     violations.rootAppShellData.push(`${rel}: move shell data projection into app/shellData/`);
   }
 }

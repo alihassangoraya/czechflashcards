@@ -8,7 +8,7 @@ import { useFilteredStudyDeck } from "./cards/useFilteredStudyDeck";
 import { useAppNavigation } from "./navigation/useAppNavigation";
 import { useSettingsTools } from "./settingsTools/useSettingsTools";
 import { useStudySession } from "./study/useStudySession";
-import { useToast } from "./useToast";
+import { useToast } from "./feedback/useToast";
 
 export function useAppController(supabase: SupabaseClient | null): AppShellProps | null {
   const data = useAppData(supabase);

@@ -1,7 +1,7 @@
 import type { Card } from "@czech-flashcards/shared";
 import type { AppData } from "../data/useAppData";
 import type { StudySession } from "../study/useStudySession";
-import { parseDailyProgress } from "../studySummary";
+import { parseDailyProgress } from "./studySummary";
 
 type Input = {
   data: AppData;

@@ -11,6 +11,7 @@ const mobileViolationMessages = [
   ["rootAppData", "Mobile architecture check failed. App data boot/sync/state modules must live under app/data/:"],
   ["rootAppCards", "Mobile architecture check failed. App card-management modules must live under app/cards/:"],
   ["rootAppHandlers", "Mobile architecture check failed. App shell handlers must live under app/shellHandlers/:"],
+  ["rootAppFeedback", "Mobile architecture check failed. App feedback/toast modules must live under app/feedback/:"],
   ["rootAppNavigation", "Mobile architecture check failed. App navigation and route modules must live under app/navigation/:"],
   ["rootAppSettingsTools", "Mobile architecture check failed. App settings tool modules must live under app/settingsTools/:"],
   ["rootAppShellData", "Mobile architecture check failed. App shell data projection must live under app/shellData/:"],

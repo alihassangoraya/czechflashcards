@@ -1,6 +1,6 @@
 import type { Card } from "@czech-flashcards/shared";
 import type { AppData } from "../data/useAppData";
-import { buildAccountStudySummary } from "../studySummary";
+import { buildAccountStudySummary } from "./studySummary";
 
 type Input = {
   data: AppData;
