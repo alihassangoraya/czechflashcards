@@ -4,7 +4,7 @@ import { GeminiTutorPanel } from "../../tutor";
 import { ReviewButtons } from "./ReviewButtons";
 import { WordDetailsPanel } from "./WordDetailsPanel";
 
-type Props = {
+export type StudyRevealedContentProps = {
   current: Card | null;
   grading: boolean;
   revealed: boolean;
@@ -12,7 +12,7 @@ type Props = {
   onGrade: (grade: ReviewGrade) => void;
 };
 
-export function StudyRevealedContent({ current, grading, revealed, reviewInterval, onGrade }: Props) {
+export function StudyRevealedContent({ current, grading, revealed, reviewInterval, onGrade }: StudyRevealedContentProps) {
   if (!revealed) return null;
 
   return (
