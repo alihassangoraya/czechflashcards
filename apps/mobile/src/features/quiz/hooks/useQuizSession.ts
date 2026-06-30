@@ -3,6 +3,8 @@ import type { Card } from "@czech-flashcards/shared";
 import { deriveQuizMetrics } from "../quizSessionMetrics";
 import { buildQuestions } from "../quizQuestions";
 import { useQuizAnswerState } from "./useQuizAnswerState";
+import { useQuizCloseActions } from "./useQuizCloseActions";
+import { useQuizNextAction } from "./useQuizNextAction";
 import { useQuizRound } from "./useQuizRound";
 
 export function useQuizSession(deck: Card[], onClose: () => void) {
@@ -11,34 +13,8 @@ export function useQuizSession(deck: Card[], onClose: () => void) {
   const state = useQuizAnswerState(deck, round);
   const question = questions[state.index];
   const metrics = deriveQuizMetrics({ checked: state.checked, index: state.index, question, score: state.score, selected: state.selected });
-
-  function requestClose() {
-    if (metrics.hasProgress && !state.finished) {
-      state.setShowExitConfirm(true);
-      return;
-    }
-    onClose();
-  }
-
-  function confirmClose() {
-    state.setShowExitConfirm(false);
-    onClose();
-  }
-
-  function next() {
-    if (!question) return;
-    if (!state.checked) {
-      if (state.selected == null) return;
-      state.setChecked(true);
-      if (state.selected === question.correctIndex) state.setScore((value) => value + 1);
-      return;
-    }
-    if (state.index + 1 >= questions.length) {
-      state.setFinished(true);
-      return;
-    }
-    state.moveToNextQuestion();
-  }
+  const { confirmClose, requestClose } = useQuizCloseActions({ hasProgress: metrics.hasProgress, onClose, state });
+  const next = useQuizNextAction({ question, questionCount: questions.length, state });
 
   return {
     questions,
