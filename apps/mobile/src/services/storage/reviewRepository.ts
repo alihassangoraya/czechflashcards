@@ -1,5 +1,5 @@
 import type { DailyProgress, ReviewEvent, ReviewState } from "@czech-flashcards/shared";
-import { createReviewState } from "@czech-flashcards/shared";
+import { createDailyProgress, createReviewState, recordDailyReview, undoDailyReview } from "@czech-flashcards/shared";
 import type { AppDatabase } from "./storageTypes";
 import { DEFAULT_SETTINGS } from "./storageTypes";
 import { localDateKey, persistDatabase } from "./storageCore";
@@ -15,14 +15,7 @@ export async function loadReviewStates(db: AppDatabase): Promise<Record<string, 
 
 export async function saveReviewResult(db: AppDatabase, state: ReviewState, event: ReviewEvent, dailyGoal: number): Promise<DailyProgress> {
   const date = localDateKey(new Date(event.reviewedAt));
-  const previous = db.store.dailyProgress[date] || { date, reviewed: 0, newCards: 0, goal: dailyGoal, completed: false };
-  const progress: DailyProgress = {
-    date,
-    reviewed: previous.reviewed + 1,
-    newCards: previous.newCards + (event.wasNew ? 1 : 0),
-    goal: dailyGoal,
-    completed: previous.reviewed + 1 >= dailyGoal
-  };
+  const progress = recordDailyReview(db.store.dailyProgress[date], date, dailyGoal, event.wasNew);
   db.store.reviewStates[state.cardId] = state;
   db.store.reviews.push(event);
   db.store.dailyProgress[date] = progress;
@@ -47,14 +40,7 @@ export async function undoReviewResult(
   dailyGoal: number
 ): Promise<DailyProgress> {
   const date = localDateKey(new Date(event.reviewedAt));
-  const previous = db.store.dailyProgress[date] || { date, reviewed: 0, newCards: 0, goal: dailyGoal, completed: false };
-  const progress: DailyProgress = {
-    date,
-    reviewed: Math.max(0, previous.reviewed - 1),
-    newCards: Math.max(0, previous.newCards - (event.wasNew ? 1 : 0)),
-    goal: dailyGoal,
-    completed: Math.max(0, previous.reviewed - 1) >= dailyGoal
-  };
+  const progress = undoDailyReview(db.store.dailyProgress[date], date, dailyGoal, event.wasNew);
   if (!previousState.seen && !previousState.knownStreak && !previousState.againCount && !previousState.dueAt) {
     delete db.store.reviewStates[previousState.cardId];
   } else {
@@ -70,5 +56,5 @@ export async function undoReviewResult(
 }
 
 export async function getDailyProgress(db: AppDatabase, date = localDateKey(), goal = DEFAULT_SETTINGS.dailyGoal): Promise<DailyProgress> {
-  return db.store.dailyProgress[date] || { date, reviewed: 0, newCards: 0, goal, completed: false };
+  return db.store.dailyProgress[date] || createDailyProgress(date, goal);
 }
