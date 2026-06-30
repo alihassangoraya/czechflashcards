@@ -9,7 +9,7 @@ import type { StudyCardBackProps } from "./studyCardBackTypes";
 import { StudyCardHint } from "./StudyCardHint";
 
 export function StudyCardBack({ current, currentSecondaryMeaning, flipProgress, meaningLanguage, onFlipCard }: StudyCardBackProps) {
-  const { t, textAlign } = useI18n();
+  const { t } = useI18n();
 
   return (
     <CardBackFaceContainer flipProgress={flipProgress} onPress={onFlipCard}>
@@ -18,7 +18,7 @@ export function StudyCardBack({ current, currentSecondaryMeaning, flipProgress, 
         <CardTranslationBlock card={current} secondaryMeaning={currentSecondaryMeaning} meaningLanguage={meaningLanguage} />
         <CardExampleBlock card={current} />
       </View>
-      <StudyCardHint textAlign={textAlign}>{t("study.tapCzech")}</StudyCardHint>
+      <StudyCardHint>{t("study.tapCzech")}</StudyCardHint>
     </CardBackFaceContainer>
   );
 }

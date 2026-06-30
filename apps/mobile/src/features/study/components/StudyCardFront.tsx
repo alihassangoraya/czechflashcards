@@ -10,14 +10,14 @@ import { StudyCardHint } from "./StudyCardHint";
 import { StudySwipeActions } from "./StudySwipeActions";
 
 export function StudyCardFront({ current, flipProgress, grading, lastReviewCard, onFlipCard, onCompleteSwipe, onUndoLastReview }: StudyCardFrontProps) {
-  const { t, textAlign } = useI18n();
+  const { t } = useI18n();
 
   return (
     <CardFrontFaceContainer flipProgress={flipProgress} onPress={onFlipCard}>
       <Text style={styles.word}>{current.cz}</Text>
       <PronunciationPill card={current} />
       <StudySwipeActions grading={grading} onCompleteSwipe={onCompleteSwipe} />
-      <StudyCardHint textAlign={textAlign}>{t("study.tapReveal")}</StudyCardHint>
+      <StudyCardHint>{t("study.tapReveal")}</StudyCardHint>
       {lastReviewCard && <CardUndoButton grading={grading} lastReviewCard={lastReviewCard} onUndoLastReview={onUndoLastReview} />}
     </CardFrontFaceContainer>
   );

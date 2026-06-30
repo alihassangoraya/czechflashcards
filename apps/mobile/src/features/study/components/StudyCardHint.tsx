@@ -4,11 +4,10 @@ import { colors, typography } from "../../../theme/design";
 
 type Props = {
   children: string;
-  textAlign: "auto" | "left" | "right" | "center" | "justify";
 };
 
-export function StudyCardHint({ children, textAlign }: Props) {
-  return <Text style={[styles.hint, { textAlign }]}>{children}</Text>;
+export function StudyCardHint({ children }: Props) {
+  return <Text style={styles.hint}>{children}</Text>;
 }
 
 const styles = StyleSheet.create({

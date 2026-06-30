@@ -7,11 +7,11 @@ import { colors, radius, shadow, size, spacing, typography } from "../../../them
 import type { QuizPromptCardProps } from "./quizPromptCardTypes";
 
 export function QuizPromptCard({ card }: QuizPromptCardProps) {
-  const { t, textAlign } = useI18n();
+  const { t } = useI18n();
 
   return (
     <View style={styles.promptCard}>
-      <Text style={[styles.promptLabel, { textAlign }]}>{t("quiz.chooseMeaning")}</Text>
+      <Text style={styles.promptLabel}>{t("quiz.chooseMeaning")}</Text>
       <Text style={styles.word}>{card.cz}</Text>
       <Pressable style={styles.audioLine} onPress={() => speak(card.cz, { language: "cs-CZ", rate: 0.86 })} accessibilityRole="button" accessibilityLabel={t("quiz.playWord", { word: card.cz })}>
         <MaterialIcons name="volume-up" size={size.iconSmall} color={colors.action} />

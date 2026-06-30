@@ -4,12 +4,12 @@ import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, spacing, typography } from "../../../theme/design";
 
 export function EmptyStudyCard() {
-  const { t, textAlign } = useI18n();
+  const { t } = useI18n();
 
   return (
     <View style={styles.cardFace}>
-      <Text style={[styles.word, { textAlign }]}>{t("study.done")}</Text>
-      <Text style={[styles.hint, { textAlign }]}>{t("study.noDue")}</Text>
+      <Text style={styles.word}>{t("study.done")}</Text>
+      <Text style={styles.hint}>{t("study.noDue")}</Text>
     </View>
   );
 }
