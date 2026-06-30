@@ -44,3 +44,5 @@ export function useCardManagement({ db, cards, current, panel, savedCardIds, set
     studySearchResult: editor.studySearchResult
   };
 }
+
+export type CardManagement = ReturnType<typeof useCardManagement>;

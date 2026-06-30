@@ -48,3 +48,5 @@ export function useStudySession({ db, settings, deck, states, refresh }: Props) 
     clearShuffledDueQueue: queue.clearShuffledDueQueue
   };
 }
+
+export type StudySession = ReturnType<typeof useStudySession>;

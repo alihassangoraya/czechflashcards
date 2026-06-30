@@ -57,3 +57,5 @@ export function useAppData(supabase: SupabaseClient | null) {
     signOutAccount: auth.signOutAccount
   };
 }
+
+export type AppData = ReturnType<typeof useAppData>;

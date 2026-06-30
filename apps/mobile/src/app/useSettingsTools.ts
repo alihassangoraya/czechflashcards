@@ -28,3 +28,5 @@ export function useSettingsTools(props: Props) {
     ...importActions
   };
 }
+
+export type SettingsTools = ReturnType<typeof useSettingsTools>;
