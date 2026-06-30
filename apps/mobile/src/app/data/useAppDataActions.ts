@@ -27,3 +27,5 @@ export function useAppDataActions({ state, supabase }: Params) {
 
   return { persistSettings, refresh, syncNow };
 }
+
+export type AppDataActions = ReturnType<typeof useAppDataActions>;

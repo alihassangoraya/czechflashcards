@@ -23,3 +23,5 @@ export function useAuthActions(supabase: AppSupabaseClient, onAuthenticated: () 
 
   return { authBusy, authenticate, signOutAccount };
 }
+
+export type AuthActions = ReturnType<typeof useAuthActions>;
