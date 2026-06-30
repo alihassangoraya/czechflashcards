@@ -1,31 +1,7 @@
 import React from "react";
-import type { Animated, GestureResponderHandlers } from "react-native";
-import type { Card } from "@czech-flashcards/shared";
-import type { StudySettings } from "../../../database";
 import { StudyCard } from "./StudyCard";
 import { displaySelectedMeaning } from "../studyMeaning";
-import type { SwipeDirection } from "../animations/animationTypes";
-
-type Props = {
-  current: Card | null;
-  settings: StudySettings;
-  savedCardIds: Set<string>;
-  revealed: boolean;
-  flipping: boolean;
-  grading: boolean;
-  swipeDirection: SwipeDirection | null;
-  lastReviewCard: Card | null;
-  dragX: Animated.Value;
-  flipProgress: Animated.Value;
-  cardRotation: Animated.AnimatedInterpolation<string | number>;
-  panHandlers: GestureResponderHandlers;
-  onFlipCard: () => void;
-  onToggleSaved: (cardId: string) => void;
-  onManageDecks: (card: Card) => void;
-  onEditCard: () => void;
-  onCompleteSwipe: (direction: SwipeDirection) => void;
-  onUndoLastReview: () => void;
-};
+import type { StudyContentCardProps } from "./studyContentCardTypes";
 
 export function StudyContentCard({
   current,
@@ -46,7 +22,7 @@ export function StudyContentCard({
   onEditCard,
   onCompleteSwipe,
   onUndoLastReview
-}: Props) {
+}: StudyContentCardProps) {
   const currentSecondaryMeaning = current ? displaySelectedMeaning(current, settings.meaningLanguage) : "";
 
   return (
