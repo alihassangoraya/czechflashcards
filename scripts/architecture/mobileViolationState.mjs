@@ -7,6 +7,7 @@ export function createMobileArchitectureViolations() {
     hardcodedText: [],
     inlineScreenProps: [],
     lineCounts: [],
+    localContractPicks: [],
     localeSections: [],
     rawCollectionTypes: [],
     rootAppData: [],

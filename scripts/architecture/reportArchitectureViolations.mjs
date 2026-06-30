@@ -6,6 +6,7 @@ const mobileViolationMessages = [
   ["featureRootComponents", "Mobile architecture check failed. Feature UI files must live in components/ or screens/:"],
   ["featureRootHooks", "Mobile architecture check failed. Feature hooks must live in hooks/ folders:"],
   ["inlineScreenProps", "Mobile architecture check failed. Feature screens must use named props types:"],
+  ["localContractPicks", "Mobile architecture check failed. Keep route and modal prop picks in contract files:"],
   ["lineCounts", "Mobile architecture check failed. Split large files into focused modules:"],
   ["duplicateTypes", "Mobile architecture check failed. Reuse canonical shared type aliases:"],
   ["rawCollectionTypes", "Mobile architecture check failed. Use canonical collection type aliases:"],

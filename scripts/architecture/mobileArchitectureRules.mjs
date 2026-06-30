@@ -6,6 +6,7 @@ import {
   maxLinesByPath,
   rawCollectionTypeRules
 } from "./mobileArchitectureConfig.mjs";
+import { inspectLocalRouteAndModalPicks } from "./mobileContractRules.mjs";
 import { inspectRootAppModules } from "./mobileRootAppRules.mjs";
 
 export function inspectMobileFile(source, violations) {
@@ -20,6 +21,7 @@ export function inspectMobileFile(source, violations) {
   inspectRootPlatformServices(source, violations);
   inspectCanonicalTypes(source, violations);
   inspectRawCollectionTypes(source, violations);
+  inspectLocalRouteAndModalPicks(source, violations);
 }
 
 function inspectLineCount({ lines, rel }, violations) {
