@@ -7,7 +7,7 @@ import { SettingsCustomDecksSection } from "./SettingsCustomDecksSection";
 import { SettingsSummary } from "./SettingsSummary";
 import { StudyPlanSection } from "./StudyPlanSection";
 import { SyncSettingsSection } from "./SyncSettingsSection";
-import type { SettingsPanelProps } from "../settingsPanelTypes";
+import type { SettingsPanelProps } from "../types/settingsPanelTypes";
 import type { SettingsDraft } from "../hooks/useSettingsDraft";
 
 type Props = SettingsPanelProps & {

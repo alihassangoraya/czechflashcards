@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { StudySettings } from "../../../database";
-import { normalizeReminderTime } from "../settingsFormat";
+import { normalizeReminderTime } from "../models/settingsFormat";
 
 type Params = {
   settings: StudySettings;

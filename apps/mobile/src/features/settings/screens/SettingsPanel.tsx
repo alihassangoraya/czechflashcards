@@ -1,6 +1,6 @@
 import React from "react";
 import { SettingsContent } from "../components/SettingsContent";
-import type { SettingsPanelProps } from "../settingsPanelTypes";
+import type { SettingsPanelProps } from "../types/settingsPanelTypes";
 import { useSettingsPanelModel } from "../hooks/useSettingsPanelModel";
 import { useSettingsDraft } from "../hooks/useSettingsDraft";
 

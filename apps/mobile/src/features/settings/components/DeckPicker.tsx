@@ -2,8 +2,8 @@ import React from "react";
 import { Pressable, ScrollView, StyleSheet, Text } from "react-native";
 import type { CustomDeck } from "../../../database";
 import { colors, radius, spacing, typography } from "../../../theme/design";
-import { deckLabel } from "../settingsFormat";
-import { deckOptions } from "../settingsOptions";
+import { deckLabel } from "../models/settingsFormat";
+import { deckOptions } from "../models/settingsOptions";
 
 type Props = {
   value: string;

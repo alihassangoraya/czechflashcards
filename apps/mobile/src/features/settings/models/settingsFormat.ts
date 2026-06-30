@@ -1,4 +1,4 @@
-import type { CustomDeck, StudySettings } from "../../database";
+import type { CustomDeck, StudySettings } from "../../../database";
 
 export function deckLabel(value: string, decks: CustomDeck[]) {
   return decks.find((deck) => deck.id === value)?.name || ({ "a2-focus": "A2 Focus", "b1-focus": "B1 Focus", saved: "My list", core: "Core words", all: "All cards" }[value] || titleCase(value));

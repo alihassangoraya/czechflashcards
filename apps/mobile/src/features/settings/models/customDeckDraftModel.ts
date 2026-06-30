@@ -1,4 +1,4 @@
-import type { StudySettings } from "../../database";
+import type { StudySettings } from "../../../database";
 import { slug } from "./settingsFormat";
 
 type SettingsPatch = Partial<StudySettings>;

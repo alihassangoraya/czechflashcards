@@ -1,6 +1,6 @@
 import type { Card } from "@czech-flashcards/shared";
-import type { DeckMemberships, StudySettings } from "../../database";
-import type { SyncStatus } from "../../sync";
+import type { DeckMemberships, StudySettings } from "../../../database";
+import type { SyncStatus } from "../../../sync";
 
 export type SettingsPanelProps = {
   settings: StudySettings;

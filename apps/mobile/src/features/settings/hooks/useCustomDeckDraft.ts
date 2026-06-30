@@ -1,4 +1,4 @@
-import { buildCreateDeckPatch, buildDeleteDeckPatch, buildRenameDeckPatch } from "../customDeckDraftModel";
+import { buildCreateDeckPatch, buildDeleteDeckPatch, buildRenameDeckPatch } from "../models/customDeckDraftModel";
 import type { CustomDeckDraftParams } from "./customDeckDraftTypes";
 import { useCustomDeckDraftState } from "./useCustomDeckDraftState";
 export function useCustomDeckDraft({ settings, update }: CustomDeckDraftParams) {
