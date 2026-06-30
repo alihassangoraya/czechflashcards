@@ -1,6 +1,7 @@
 import React from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import { MaterialIcons } from "../../../components/MaterialIcons";
+import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing } from "../../../theme/design";
 
 type Props = {
@@ -11,12 +12,14 @@ type Props = {
 };
 
 export function CustomWordActions({ deleting, word, onEdit, onRequestDelete }: Props) {
+  const { t } = useI18n();
+
   return (
     <View style={styles.actions}>
-      <Pressable style={styles.editButton} onPress={onEdit} accessibilityRole="button" accessibilityLabel={`Edit ${word}`}>
+      <Pressable style={styles.editButton} onPress={onEdit} accessibilityRole="button" accessibilityLabel={t("words.editWord", { word })}>
         <MaterialIcons name="edit" size={size.iconSmall} color={colors.action} />
       </Pressable>
-      <Pressable style={[styles.deleteButton, deleting && styles.deleteButtonActive]} onPress={onRequestDelete} accessibilityRole="button" accessibilityLabel={`Delete ${word}`}>
+      <Pressable style={[styles.deleteButton, deleting && styles.deleteButtonActive]} onPress={onRequestDelete} accessibilityRole="button" accessibilityLabel={t("words.deleteWord", { word })}>
         <MaterialIcons name="delete-outline" size={size.iconSmall} color={colors.danger} />
       </Pressable>
     </View>

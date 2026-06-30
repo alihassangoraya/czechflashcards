@@ -1,18 +1,21 @@
 import React from "react";
 import { Pressable, StyleSheet, Text } from "react-native";
 import { MaterialIcons } from "../../../components/MaterialIcons";
+import { useI18n } from "../../../i18n/I18nProvider";
 import { speak } from "../../../services/speech";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
 import { pronunciationHint } from "../models/studyMeaning";
 import type { PronunciationPillProps } from "./pronunciationPillTypes";
 
 export function PronunciationPill({ card }: PronunciationPillProps) {
+  const { t } = useI18n();
+
   return (
     <Pressable
       style={styles.pill}
       onPress={(event) => { event.stopPropagation(); speak(card.cz, { language: "cs-CZ", rate: 0.86 }); }}
       accessibilityRole="button"
-      accessibilityLabel={`Play ${card.cz}`}
+      accessibilityLabel={t("study.playWord", { word: card.cz })}
     >
       <MaterialIcons name="volume-up" size={size.iconSmall} color={colors.action} />
       <Text style={styles.text}>{card.pronunciation || pronunciationHint(card.cz)}</Text>

@@ -22,4 +22,6 @@ export const ukWordsTranslations = {
   "words.deleteTitle": "Видалити це слово?",
   "words.deleteCopy": "Його буде видалено з власних слів і черги навчання.",
   "words.saveCorrection": "Зберегти виправлення",
+  "words.editWord": "Редагувати {word}",
+  "words.deleteWord": "Видалити {word}",
 } as const;

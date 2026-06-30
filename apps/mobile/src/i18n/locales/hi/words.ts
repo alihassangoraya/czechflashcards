@@ -22,4 +22,6 @@ export const hiWordsTranslations = {
   "words.deleteTitle": "यह शब्द हटाएँ?",
   "words.deleteCopy": "यह आपके custom words और study queue से हट जाएगा.",
   "words.saveCorrection": "सुधार सेव करें",
+  "words.editWord": "{word} संपादित करें",
+  "words.deleteWord": "{word} हटाएँ",
 } as const;

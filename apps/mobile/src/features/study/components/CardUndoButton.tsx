@@ -15,7 +15,7 @@ export function CardUndoButton({ grading, lastReviewCard, onUndoLastReview }: Ca
       style={[styles.button, grading && styles.disabled]}
       onPress={(event) => { event.stopPropagation(); onUndoLastReview(); }}
       accessibilityRole="button"
-      accessibilityLabel={`Undo review for ${lastReviewCard.cz}`}
+      accessibilityLabel={t("study.undoReview", { word: lastReviewCard.cz })}
     >
       <MaterialIcons name="undo" size={size.iconSmall} color={colors.primaryDeep} />
       <Text style={styles.text}>{t("study.undo")}</Text>

@@ -22,4 +22,6 @@ export const csWordsTranslations = {
   "words.deleteTitle": "Smazat toto slovo?",
   "words.deleteCopy": "Odebere se z vlastních slov i studijní fronty.",
   "words.saveCorrection": "Uložit opravu",
+  "words.editWord": "Upravit {word}",
+  "words.deleteWord": "Smazat {word}",
 } as const;

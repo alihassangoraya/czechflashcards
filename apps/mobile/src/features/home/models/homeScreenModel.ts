@@ -22,7 +22,7 @@ export function buildHomeScreenModel({ deck, allCards, states, settings, savedCo
   const visibleCards = filterVisibleHomeCards(allCards, settings.examLevel);
   const categories = buildHomeCategories(visibleCards, settings, savedCount, customCount);
   const activeDeckLabel = settings.customDecks.some((deckItem) => deckItem.id === settings.deckFilter)
-    ? deckLabel(settings.deckFilter, settings.customDecks)
+    ? deckLabel(settings.deckFilter, settings.customDecks, translate)
     : translate(`deck.${settings.deckFilter}` as TranslationKey);
 
   return { activeDeckLabel, categories, dailyGoalProgress, dueCount };

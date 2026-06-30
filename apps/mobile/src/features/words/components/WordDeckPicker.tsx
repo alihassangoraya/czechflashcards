@@ -1,6 +1,7 @@
 import React from "react";
 import { Pressable, ScrollView, StyleSheet, Text } from "react-native";
 import type { CustomDeck } from "../../../database";
+import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, spacing, typography } from "../../../theme/design";
 import { addWordDeckOptions, deckLabel } from "../models/wordDecks";
 
@@ -11,12 +12,13 @@ type Props = {
 };
 
 export function WordDeckPicker({ value, decks, onChange }: Props) {
+  const { t } = useI18n();
   const options = Array.from(new Set([...addWordDeckOptions, ...decks.map((deck) => deck.id)]));
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.deckPicker}>
       {options.map((option) => (
         <Pressable key={option} style={[styles.deckChip, value === option && styles.deckChipActive]} onPress={() => onChange(option)}>
-          <Text style={[styles.deckChipText, value === option && styles.deckChipTextActive]}>{deckLabel(option, decks)}</Text>
+          <Text style={[styles.deckChipText, value === option && styles.deckChipTextActive]}>{deckLabel(option, decks, t)}</Text>
         </Pressable>
       ))}
     </ScrollView>

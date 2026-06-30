@@ -22,4 +22,6 @@ export const enWordsTranslations = {
   "words.deleteTitle": "Delete this word?",
   "words.deleteCopy": "This removes it from your custom words and study queue.",
   "words.saveCorrection": "Save correction",
+  "words.editWord": "Edit {word}",
+  "words.deleteWord": "Delete {word}",
 } as const;

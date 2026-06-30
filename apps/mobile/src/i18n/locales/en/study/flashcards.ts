@@ -17,5 +17,11 @@ export const enStudyFlashcardTranslations = {
   "study.tapCzech": "Tap to see Czech",
   "study.showCzech": "Show Czech word",
   "study.undo": "Undo",
-  "study.known": "Known"
+  "study.known": "Known",
+  "study.playWord": "Play {word}",
+  "study.undoReview": "Undo review for {word}",
+  "study.addToMyList": "Add {word} to My list",
+  "study.removeFromMyList": "Remove {word} from My list",
+  "study.addToDeck": "Add {word} to a deck",
+  "study.editCard": "Edit {word}"
 } as const;

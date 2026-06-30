@@ -17,5 +17,11 @@ export const ukStudyFlashcardTranslations = {
   "study.tapCzech": "Торкнися, щоб побачити чеське слово",
   "study.showCzech": "Показати чеське слово",
   "study.undo": "Скасувати",
-  "study.known": "Відоме"
+  "study.known": "Відоме",
+  "study.playWord": "Відтворити {word}",
+  "study.undoReview": "Скасувати повторення для {word}",
+  "study.addToMyList": "Додати {word} до мого списку",
+  "study.removeFromMyList": "Видалити {word} з мого списку",
+  "study.addToDeck": "Додати {word} до колоди",
+  "study.editCard": "Редагувати {word}"
 } as const;

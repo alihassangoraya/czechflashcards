@@ -1,7 +1,14 @@
 import type { CustomDeck, StudySettings } from "../../../database";
+import type { I18nContextValue } from "../../../i18n/i18nContext";
+import type { TranslationKey } from "../../../i18n/translations";
 
-export function deckLabel(value: string, decks: CustomDeck[]) {
-  return decks.find((deck) => deck.id === value)?.name || ({ "a2-focus": "A2 Focus", "b1-focus": "B1 Focus", saved: "My list", core: "Core words", all: "All cards" }[value] || titleCase(value));
+const translatableDeckIds = new Set(["a2-focus", "b1-focus", "saved", "core", "all", "daily", "extended", "travel", "work", "health", "verbs", "forms", "custom", "numbers"]);
+
+export function deckLabel(value: string, decks: CustomDeck[], t?: I18nContextValue["t"]) {
+  const customDeck = decks.find((deck) => deck.id === value);
+  if (customDeck) return customDeck.name;
+  if (t && translatableDeckIds.has(value)) return t(`deck.${value}` as TranslationKey);
+  return titleCase(value);
 }
 
 export function titleCase(value: string) {
