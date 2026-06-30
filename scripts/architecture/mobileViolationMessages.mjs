@@ -1,6 +1,7 @@
 export const mobileViolationMessages = [
   ["hardcodedText", "Mobile architecture check failed. Move hardcoded UI text into i18n translations:"],
   ["appDeepFeatureImports", "Mobile architecture check failed. App orchestration must import features through feature barrels:"],
+  ["appDataStateComposition", "Mobile architecture check failed. App data state must compose focused domain state hooks:"],
   ["featureToAppImports", "Mobile architecture check failed. Feature modules must not import app orchestration:"],
   ["studyDomainFeatureImports", "Mobile architecture check failed. Study queue/session domain modules must not import feature UI modules:"],
   ["featureRootComponents", "Mobile architecture check failed. Feature UI files must live in components/ or screens/:"],

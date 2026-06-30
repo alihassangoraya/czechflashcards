@@ -1,39 +1,24 @@
-import { useState } from "react";
-import type { Card } from "@czech-flashcards/shared";
-import type { AppDatabase, DeckMemberships, ReviewStates, SavedCardIds, StudySettings } from "../../database";
-import type { SyncStatus } from "../../sync";
+import { useAppCardCollectionsState } from "./useAppCardCollectionsState";
+import { useAppDatabaseState } from "./useAppDatabaseState";
 import { useAppDataSnapshotApplier } from "./useAppDataSnapshotApplier";
+import { useAppReviewProgressState } from "./useAppReviewProgressState";
+import { useAppSettingsState } from "./useAppSettingsState";
+import { useAppSyncSessionState } from "./useAppSyncSessionState";
 
 export function useAppDataState() {
-  const [db, setDb] = useState<AppDatabase | null>(null);
-  const [cards, setCards] = useState<Card[]>([]);
-  const [savedCardIds, setSavedCardIds] = useState<SavedCardIds>(new Set());
-  const [deckMemberships, setDeckMemberships] = useState<DeckMemberships>({});
-  const [states, setStates] = useState<ReviewStates>({});
-  const [settings, setSettingsState] = useState<StudySettings | null>(null);
-  const [dailyProgress, setDailyProgress] = useState("0 / 30");
-  const [syncStatus, setSyncStatus] = useState<SyncStatus>("not-configured");
-  const [accountEmail, setAccountEmail] = useState<string | null>(null);
-  const applySnapshot = useAppDataSnapshotApplier({ setCards, setSavedCardIds, setDeckMemberships, setStates, setDailyProgress });
+  const database = useAppDatabaseState();
+  const collections = useAppCardCollectionsState();
+  const progress = useAppReviewProgressState();
+  const settingsState = useAppSettingsState();
+  const session = useAppSyncSessionState();
+  const applySnapshot = useAppDataSnapshotApplier({ ...collections, ...progress });
 
   return {
-    db,
-    cards,
-    savedCardIds,
-    deckMemberships,
-    states,
-    settings,
-    dailyProgress,
-    syncStatus,
-    accountEmail,
-    setDb,
-    setCards,
-    setSavedCardIds,
-    setDeckMemberships,
-    setStates,
-    setSettingsState,
-    setSyncStatus,
-    setAccountEmail,
+    ...database,
+    ...collections,
+    ...progress,
+    ...settingsState,
+    ...session,
     applySnapshot
   };
 }

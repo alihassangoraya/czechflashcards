@@ -9,7 +9,18 @@ import {
   inspectRootAppStudy
 } from "./mobileRootAppRules/index.mjs";
 
-export function inspectRootAppModules({ rel }, violations) {
+function inspectAppDataStateComposition({ lines, rel }, violations) {
+  if (rel !== "app/data/appDataState.ts") return;
+
+  lines.forEach((line, index) => {
+    if (line.includes("useState")) {
+      violations.appDataStateComposition.push(`${rel}:${index + 1}: keep app data state split into focused domain hooks`);
+    }
+  });
+}
+
+export function inspectRootAppModules(source, violations) {
+  const { rel } = source;
   inspectRootAppData(rel, violations);
   inspectRootAppCards(rel, violations);
   inspectRootAppHandlers(rel, violations);
@@ -18,4 +29,5 @@ export function inspectRootAppModules({ rel }, violations) {
   inspectRootAppSettingsTools(rel, violations);
   inspectRootAppShellData(rel, violations);
   inspectRootAppStudy(rel, violations);
+  inspectAppDataStateComposition(source, violations);
 }
