@@ -9,6 +9,7 @@ export function normalizeRestoredSettings(settings: StudySettings | undefined, b
     dailyGoal: Number(settings?.dailyGoal || backup.dailyGoal) || DEFAULT_SETTINGS.dailyGoal,
     examLevel: settings?.examLevel || backup.examLevel || DEFAULT_SETTINGS.examLevel,
     meaningLanguage: settings?.meaningLanguage || backup.meaningLanguage || DEFAULT_SETTINGS.meaningLanguage,
+    themeMode: settings?.themeMode || DEFAULT_SETTINGS.themeMode,
     notifications: { ...DEFAULT_SETTINGS.notifications, ...settings?.notifications }
   };
 }

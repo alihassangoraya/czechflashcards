@@ -5,6 +5,7 @@ export const DEFAULT_SETTINGS: StudySettings = {
   deckFilter: "b1-focus",
   meaningLanguage: "ur",
   appLanguage: "en",
+  themeMode: "light",
   dailyGoal: 30,
   customDecks: [],
   notifications: {

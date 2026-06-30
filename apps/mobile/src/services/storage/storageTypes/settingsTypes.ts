@@ -1,4 +1,5 @@
 import type { NotificationPreferences } from "@czech-flashcards/shared";
+import type { ThemeMode } from "../../../theme/design";
 
 export type CustomDeck = { id: string; name: string };
 
@@ -7,6 +8,7 @@ export type StudySettings = {
   deckFilter: string;
   meaningLanguage: "hi" | "ur";
   appLanguage: "en" | "cs" | "hi" | "ur";
+  themeMode: ThemeMode;
   dailyGoal: number;
   customDecks: CustomDeck[];
   notifications: NotificationPreferences;

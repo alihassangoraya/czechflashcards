@@ -1,7 +1,8 @@
 export { getTheme, themes, type AppTheme, type ThemeMode } from "./tokens/themeFactory";
-import { themes } from "./tokens/themeFactory";
+import { getTheme } from "./tokens/themeFactory";
+import { readStoredThemeMode } from "./themeModePersistence";
 
-// Components use the light theme today; a provider can switch this source when dark mode is enabled.
-export const theme = themes.light;
+export const startupThemeMode = readStoredThemeMode();
+export const theme = getTheme(startupThemeMode);
 export const { colors, radius, spacing, size, typography, motion } = theme;
 export { shadow } from "./tokens/shadow";
