@@ -1,5 +1,5 @@
 import type { Card } from "@czech-flashcards/shared";
-import type { CustomDeck } from "../../database";
+import type { CustomDeck } from "../../../database";
 
 export const addWordDeckOptions = ["a2-focus", "b1-focus", "daily", "extended", "travel", "work", "health", "verbs", "forms", "numbers", "custom"];
 

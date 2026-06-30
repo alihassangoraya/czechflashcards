@@ -1,5 +1,5 @@
 import type { Card } from "@czech-flashcards/shared";
-import type { CustomDeck } from "../../database";
+import type { CustomDeck } from "../../../database";
 import type { AddWordValues } from "./addWordTypes";
 
 export type AddWordPanelProps = {

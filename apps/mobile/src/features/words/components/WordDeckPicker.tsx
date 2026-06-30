@@ -2,7 +2,7 @@ import React from "react";
 import { Pressable, ScrollView, StyleSheet, Text } from "react-native";
 import type { CustomDeck } from "../../../database";
 import { colors, radius, spacing, typography } from "../../../theme/design";
-import { addWordDeckOptions, deckLabel } from "../wordDecks";
+import { addWordDeckOptions, deckLabel } from "../models/wordDecks";
 
 type Props = {
   value: string;

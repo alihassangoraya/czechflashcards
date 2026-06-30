@@ -2,7 +2,7 @@ import React from "react";
 import { Text, View } from "react-native";
 import { MaterialIcons } from "../../../components/MaterialIcons";
 import { colors, size } from "../../../theme/design";
-import { customCardDeckLabel } from "../wordDecks";
+import { customCardDeckLabel } from "../models/wordDecks";
 import { customWordSummaryStyles as styles } from "./customWordSummaryStyles";
 import type { CustomWordSummaryProps } from "./customWordSummaryTypes";
 

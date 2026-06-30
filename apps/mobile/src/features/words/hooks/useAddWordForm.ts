@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { TranslationKey } from "../../../i18n/translations";
-import { initialAddWordValues, type AddWordValues } from "../addWordTypes";
+import { initialAddWordValues, type AddWordValues } from "../types/addWordTypes";
 
 type Translate = (key: TranslationKey) => string;
 

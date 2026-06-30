@@ -1,7 +1,7 @@
 import React from "react";
 import { View } from "react-native";
 import { useI18n } from "../../../i18n/I18nProvider";
-import type { AddWordPanelProps } from "../addWordPanelTypes";
+import type { AddWordPanelProps } from "../types/addWordPanelTypes";
 import { AddWordForm } from "../components/AddWordForm";
 import { AddWordIntro } from "../components/AddWordIntro";
 import { CustomWordsList } from "../components/CustomWordsList";
