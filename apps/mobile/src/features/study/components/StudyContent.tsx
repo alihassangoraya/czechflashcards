@@ -5,7 +5,7 @@ import { spacing } from "../../../theme/design";
 import { ReviewButtons } from "./ReviewButtons";
 import { StudyCard } from "./StudyCard";
 import { displaySelectedMeaning } from "../studyMeaning";
-import { WordDetailsPanel } from "../WordDetailsPanel";
+import { WordDetailsPanel } from "./WordDetailsPanel";
 import type { StudyScreenProps } from "../studyScreenTypes";
 
 type Props = Omit<StudyScreenProps, "dailyGoal" | "onBack" | "onGrade" | "onOpenGrammar" | "reviewedToday" | "sessionProgress" | "sessionReviews" | "sessionTarget"> & Pick<StudyScreenProps, "onGrade">;

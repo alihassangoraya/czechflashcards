@@ -1,10 +1,10 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import type { Card } from "@czech-flashcards/shared";
-import MaterialIcons from "../../components/MaterialIcons";
-import { useI18n } from "../../i18n/I18nProvider";
-import { colors, radius, size, spacing, typography } from "../../theme/design";
-import { RelatedWords } from "./components/RelatedWords";
+import MaterialIcons from "../../../components/MaterialIcons";
+import { useI18n } from "../../../i18n/I18nProvider";
+import { colors, radius, size, spacing, typography } from "../../../theme/design";
+import { RelatedWords } from "./RelatedWords";
 
 export function WordDetailsPanel({ card }: { card: Card }) {
   const { t, textAlign } = useI18n();

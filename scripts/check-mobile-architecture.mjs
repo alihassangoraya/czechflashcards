@@ -37,6 +37,7 @@ const violations = [];
 const hardcodedTextViolations = [];
 const deepFeatureImportViolations = [];
 const featureToAppImportViolations = [];
+const featureRootComponentViolations = [];
 const duplicateTypeViolations = [];
 const canonicalTypeFiles = new Map([
   ["AuthMode", "services/sync/syncTypes.ts"],
@@ -54,6 +55,10 @@ for (const file of files) {
       const textMatch = line.match(/<Text[^>]*>([^<{][^<]*[A-Za-z][^<]*)<\/Text>/);
       if (textMatch && !textMatch[1].includes("{")) hardcodedTextViolations.push(`${rel}:${index + 1}: ${textMatch[1].trim()}`);
     });
+  }
+
+  if (rel.match(/^features\/[^/]+\/[^/]+\.tsx$/)) {
+    featureRootComponentViolations.push(`${rel}: move feature UI files into components/ or screens/`);
   }
 
   if (rel.startsWith("app/")) {
@@ -98,6 +103,12 @@ if (featureToAppImportViolations.length) {
   failed = true;
   console.error("Mobile architecture check failed. Feature modules must not import app orchestration:");
   console.error(featureToAppImportViolations.join("\n"));
+}
+
+if (featureRootComponentViolations.length) {
+  failed = true;
+  console.error("Mobile architecture check failed. Feature UI files must live in components/ or screens/:");
+  console.error(featureRootComponentViolations.join("\n"));
 }
 
 if (violations.length) {

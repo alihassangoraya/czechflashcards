@@ -1,1 +1,1 @@
-export { GeminiTutorPanel } from "./GeminiTutorPanel";
+export { GeminiTutorPanel } from "./components/GeminiTutorPanel";

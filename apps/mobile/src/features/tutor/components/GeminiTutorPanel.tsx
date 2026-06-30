@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
-import MaterialIcons from "../../components/MaterialIcons";
 import type { Card } from "@czech-flashcards/shared";
-import { useI18n } from "../../i18n/I18nProvider";
-import { explainCzechCard, type GeminiTutorResult } from "../../services/geminiTutor";
-import { colors, radius, shadow, spacing, typography } from "../../theme/design";
+import MaterialIcons from "../../../components/MaterialIcons";
+import { useI18n } from "../../../i18n/I18nProvider";
+import { explainCzechCard, type GeminiTutorResult } from "../../../services/geminiTutor";
+import { colors, radius, shadow, spacing, typography } from "../../../theme/design";
 
 type Props = {
   card: Card | null;

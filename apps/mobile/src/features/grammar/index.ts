@@ -1,2 +1,2 @@
-export { GrammarEmptyState } from "./GrammarEmptyState";
-export { GrammarGuide } from "./GrammarGuide";
+export { GrammarEmptyState } from "./components/GrammarEmptyState";
+export { GrammarGuide } from "./components/GrammarGuide";
