@@ -1,0 +1,20 @@
+export const spacing = {
+  none: 0,
+  hairline: 1,
+  xxs: 2,
+  xs: 3,
+  sm: 4,
+  smd: 5,
+  md: 6,
+  mdPlus: 7,
+  lg: 8,
+  lgPlus: 10,
+  xl: 12,
+  xlPlus: 14,
+  page: 15,
+  xxl: 16,
+  panel: 18,
+  card: 20,
+  hero: 24,
+  screenBottom: 32
+} as const;
