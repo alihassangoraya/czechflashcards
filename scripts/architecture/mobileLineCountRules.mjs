@@ -1,4 +1,4 @@
-import { defaultMaxLines, maxLinesByPath } from "./mobileArchitectureConfig.mjs";
+import { defaultMaxLines, maxLinesByPath } from "./mobileArchitectureConfig/index.mjs";
 
 export function inspectLineCount({ lines, rel }, violations) {
   const maxLines = maxLinesByPath.get(rel) || defaultMaxLines;

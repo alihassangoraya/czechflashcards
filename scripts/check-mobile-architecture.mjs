@@ -1,7 +1,7 @@
 import { fileURLToPath } from "node:url";
 import { join, relative } from "node:path";
 import { collectSourceFiles, readSourceFile } from "./architecture/fileCollection.mjs";
-import { ignoredMobileDirectories } from "./architecture/mobileArchitectureConfig.mjs";
+import { ignoredMobileDirectories } from "./architecture/mobileArchitectureConfig/index.mjs";
 import { inspectLocaleSections } from "./architecture/mobileLocaleRules.mjs";
 import { inspectMobileFile } from "./architecture/mobileArchitectureRules.mjs";
 import { createMobileArchitectureViolations } from "./architecture/mobileViolationState.mjs";

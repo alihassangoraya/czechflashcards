@@ -1,4 +1,4 @@
-import { hardcodedTextAllowList } from "./mobileArchitectureConfig.mjs";
+import { hardcodedTextAllowList } from "./mobileArchitectureConfig/index.mjs";
 
 export function inspectFeaturePlacement({ lines, rel }, violations) {
   if (rel.match(/^features\/[^/]+\/[^/]+\.tsx$/)) {

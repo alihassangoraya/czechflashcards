@@ -1,4 +1,4 @@
-import { localeLanguages, localeSections } from "./mobileArchitectureConfig.mjs";
+import { localeLanguages, localeSections } from "./mobileArchitectureConfig/index.mjs";
 
 export function inspectLocaleSections(relativeFiles, violations) {
   const fileSet = new Set(relativeFiles);

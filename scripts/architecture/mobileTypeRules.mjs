@@ -1,4 +1,4 @@
-import { canonicalTypeFiles, rawCollectionTypeRules } from "./mobileArchitectureConfig.mjs";
+import { canonicalTypeFiles, rawCollectionTypeRules } from "./mobileArchitectureConfig/index.mjs";
 
 export function inspectCanonicalTypes({ lines, rel }, violations) {
   for (const [typeName, canonicalPath] of canonicalTypeFiles) {
