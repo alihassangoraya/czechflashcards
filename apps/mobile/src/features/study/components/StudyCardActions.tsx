@@ -1,8 +1,8 @@
 import React from "react";
-import { Pressable, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import type { Card } from "@czech-flashcards/shared";
-import MaterialIcons from "../../../components/MaterialIcons";
 import { colors, radius, size, spacing } from "../../../theme/design";
+import { StudyCardActionButton } from "./StudyCardActionButton";
 
 type Props = {
   current: Card;
@@ -16,29 +16,21 @@ type Props = {
 export function StudyCardActions({ current, isSaved, showEdit, onToggleSaved, onManageDecks, onEditCard }: Props) {
   return (
     <>
-      <Pressable
+      <StudyCardActionButton
         style={styles.saveButton}
-        onPressIn={(event) => event.stopPropagation()}
-        onPress={(event) => { event.stopPropagation(); onToggleSaved(current.id); }}
-        accessibilityRole="button"
-        accessibilityState={{ selected: isSaved }}
-        accessibilityLabel={isSaved ? `Remove ${current.cz} from My list` : `Add ${current.cz} to My list`}
-      >
-        <MaterialIcons name={isSaved ? "star" : "star-border"} size={size.icon} color={colors.action} />
-      </Pressable>
-      <Pressable
+        icon={isSaved ? "star" : "star-border"}
+        label={isSaved ? `Remove ${current.cz} from My list` : `Add ${current.cz} to My list`}
+        selected={isSaved}
+        onPress={() => onToggleSaved(current.id)}
+      />
+      <StudyCardActionButton
         style={styles.deckButton}
-        onPressIn={(event) => event.stopPropagation()}
-        onPress={(event) => { event.stopPropagation(); onManageDecks(current); }}
-        accessibilityRole="button"
-        accessibilityLabel={`Add ${current.cz} to a deck`}
-      >
-        <MaterialIcons name="folder" size={size.icon} color={colors.action} />
-      </Pressable>
+        icon="folder"
+        label={`Add ${current.cz} to a deck`}
+        onPress={() => onManageDecks(current)}
+      />
       {showEdit && (
-        <Pressable style={styles.editButton} onPress={(event) => { event.stopPropagation(); onEditCard(); }} accessibilityRole="button" accessibilityLabel={`Edit ${current.cz}`}>
-          <MaterialIcons name="edit" size={size.iconMedium} color={colors.actionMuted} />
-        </Pressable>
+        <StudyCardActionButton style={styles.editButton} icon="edit" label={`Edit ${current.cz}`} onPress={onEditCard} muted />
       )}
     </>
   );
