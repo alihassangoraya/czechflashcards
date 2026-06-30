@@ -1,6 +1,7 @@
 import { readdir, readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { join, relative } from "node:path";
+import { inspectSharedSource } from "./shared-architecture/sharedViolationRules.mjs";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const sharedSrc = join(root, "packages/shared/src");
@@ -24,6 +25,7 @@ for (const file of files) {
   const content = await readFile(file, "utf8");
   const lineCount = content.split("\n").length;
   if (lineCount > maxLines) violations.push(`${relative(root, file)}: ${lineCount} lines > ${maxLines}`);
+  inspectSharedSource({ content, rel: relative(root, file) }, violations);
 }
 
 if (violations.length) {
