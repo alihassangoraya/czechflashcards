@@ -1,8 +1,8 @@
-import { useState } from "react";
 import type { Card } from "@czech-flashcards/shared";
 import type { AppDatabase } from "../../database";
 import type { Panel } from "../appTypes";
 import type { CorrectionValues } from "../appShellTypes";
+import { useCardEditSession } from "./useCardEditSession";
 import { saveEditedCard } from "./cardEditorPersistence";
 import { openSearchResultForStudy } from "./cardStudyNavigation";
 
@@ -19,32 +19,24 @@ type Props = {
 };
 
 export function useCardEditor({ db, current, panel, setCurrent, setRevealed, setPanel, setSessionReviews, refresh, forceCard }: Props) {
-  const [editingCard, setEditingCard] = useState<Card | null>(null);
-  const [editReturnPanel, setEditReturnPanel] = useState<Panel | null>(null);
+  const { clearEditingCard, editingCard, startEditingCard } = useCardEditSession();
 
   async function saveCorrection(values: CorrectionValues) {
     if (!db || !editingCard) return;
     const card = await saveEditedCard({ db, editingCard, values });
     forceCard(card.id, true);
-    const returnPanel = editReturnPanel;
-    setEditingCard(null);
-    setEditReturnPanel(null);
-    setPanel(returnPanel);
+    setPanel(clearEditingCard());
     await refresh(db);
   }
 
   function openCardEditor(card = current) {
     if (!card) return;
-    setEditingCard(card);
-    setEditReturnPanel(panel === "add" ? "add" : null);
+    startEditingCard(card, panel === "add" ? "add" : null);
     setPanel("edit");
   }
 
   function closeCardEditor() {
-    const returnPanel = editReturnPanel;
-    setEditingCard(null);
-    setEditReturnPanel(null);
-    setPanel(returnPanel);
+    setPanel(clearEditingCard());
   }
 
   function studySearchResult(card: Card) {
