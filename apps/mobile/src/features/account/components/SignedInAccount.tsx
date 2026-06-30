@@ -2,25 +2,11 @@ import React from "react";
 import { StyleSheet, Text } from "react-native";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, spacing, typography } from "../../../theme/design";
-import type { FriendRequest, FriendStreak } from "../../../sync";
 import { AccountSignOutButton } from "./AccountSignOutButton";
 import { FriendPanel } from "./FriendPanel";
+import type { SignedInAccountProps } from "./signedInAccountTypes";
 
-type Props = {
-  accountEmail: string;
-  busy: boolean;
-  friendCode: string;
-  myFriendCode: string | null;
-  friendRequests: FriendRequest[];
-  friends: FriendStreak[];
-  message: string;
-  onChangeFriendCode: (value: string) => void;
-  onSendFriendRequest: () => void;
-  onRespondToFriendRequest: (requestId: string, accepted: boolean) => void;
-  onSignOut: () => void;
-};
-
-export function SignedInAccount({ accountEmail, busy, friendCode, myFriendCode, friendRequests, friends, message, onChangeFriendCode, onSendFriendRequest, onRespondToFriendRequest, onSignOut }: Props) {
+export function SignedInAccount({ accountEmail, busy, friendCode, myFriendCode, friendRequests, friends, message, onChangeFriendCode, onSendFriendRequest, onRespondToFriendRequest, onSignOut }: SignedInAccountProps) {
   const { t } = useI18n();
 
   return (

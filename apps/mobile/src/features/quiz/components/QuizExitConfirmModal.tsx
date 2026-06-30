@@ -2,14 +2,9 @@ import React from "react";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, shadow, size, spacing, typography } from "../../../theme/design";
+import type { QuizExitConfirmModalProps } from "./quizExitConfirmModalTypes";
 
-type Props = {
-  visible: boolean;
-  onCancel: () => void;
-  onConfirm: () => void;
-};
-
-export function QuizExitConfirmModal({ visible, onCancel, onConfirm }: Props) {
+export function QuizExitConfirmModal({ visible, onCancel, onConfirm }: QuizExitConfirmModalProps) {
   const { t, textAlign } = useI18n();
 
   return (

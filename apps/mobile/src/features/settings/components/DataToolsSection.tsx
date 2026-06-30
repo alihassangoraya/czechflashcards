@@ -5,19 +5,9 @@ import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
 import { SettingsSection } from "./SettingsSection";
 import { UtilityButton } from "./UtilityButton";
+import type { DataToolsSectionProps } from "./dataToolsSectionTypes";
 
-type Props = {
-  notice?: string;
-  activeDeckLabel: string;
-  onRestoreJson: () => void;
-  onImportCsv: () => void;
-  onShuffleDue: () => void;
-  onReviewAllNow: () => void;
-  onExportProgress: () => void;
-  onExportDeck: () => void;
-};
-
-export function DataToolsSection({ notice, activeDeckLabel, onRestoreJson, onImportCsv, onShuffleDue, onReviewAllNow, onExportProgress, onExportDeck }: Props) {
+export function DataToolsSection({ notice, activeDeckLabel, onRestoreJson, onImportCsv, onShuffleDue, onReviewAllNow, onExportProgress, onExportDeck }: DataToolsSectionProps) {
   const { t, textAlign } = useI18n();
 
   return (

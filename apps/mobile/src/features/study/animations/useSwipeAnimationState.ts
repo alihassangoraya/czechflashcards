@@ -1,18 +1,12 @@
 import { useCallback } from "react";
-import { Animated } from "react-native";
-import type { Card } from "@czech-flashcards/shared";
 import type { SwipeDirection } from "./animationTypes";
+import type { SwipeAnimationStateParams } from "./swipeAnimationTypes";
 import { springCardBack } from "./swipeAnimations";
 import { useResetSwipeOnCardChange } from "./useResetSwipeOnCardChange";
 import { useSwipeDirectionState } from "./useSwipeDirectionState";
 import { useSwipeFlags } from "./useSwipeFlags";
 
-type Params = {
-  current: Card | null;
-  dragX: Animated.Value;
-};
-
-export function useSwipeAnimationState({ current, dragX }: Params) {
+export function useSwipeAnimationState({ current, dragX }: SwipeAnimationStateParams) {
   const { clearSwipeCompleting, consumedSwipe, markSwipeCompleting, releaseConsumedSwipe, resetSwipeFlags, swipeCompleting } = useSwipeFlags();
   const { resetSwipeDirection, setSwipeDirection, swipeDirection } = useSwipeDirectionState();
 

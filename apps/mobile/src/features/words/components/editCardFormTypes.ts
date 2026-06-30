@@ -1,3 +1,5 @@
+import type { Card } from "@czech-flashcards/shared";
+
 export type EditCardFormValues = {
   cz: string;
   en: string;
@@ -8,3 +10,8 @@ export type EditCardFormValues = {
 };
 
 export type EditCardFieldKey = keyof EditCardFormValues;
+
+export type EditCardFormProps = {
+  card: Card;
+  onSubmit: (values: EditCardFormValues) => void;
+};

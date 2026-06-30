@@ -1,18 +1,12 @@
 import { useMemo, useRef } from "react";
 import { Animated } from "react-native";
-import type { Card, ReviewGrade } from "@czech-flashcards/shared";
 import { createSwipePanResponder } from "./swipePanResponder";
 import { createSwipeRotation } from "./swipeRotation";
+import type { SwipeAnimationParams } from "./swipeAnimationTypes";
 import { useSwipeCompletion } from "./useSwipeCompletion";
 import { useSwipeAnimationState } from "./useSwipeAnimationState";
 
-type Params = {
-  current: Card | null;
-  grading: boolean;
-  onSwipeGrade: (grade: ReviewGrade) => void;
-};
-
-export function useSwipeAnimation({ current, grading, onSwipeGrade }: Params) {
+export function useSwipeAnimation({ current, grading, onSwipeGrade }: SwipeAnimationParams) {
   const dragX = useRef(new Animated.Value(0)).current;
   const swipeState = useSwipeAnimationState({ current, dragX });
 

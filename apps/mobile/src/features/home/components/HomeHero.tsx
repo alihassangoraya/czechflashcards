@@ -6,20 +6,7 @@ import pragueHero from "../../../../assets/images/prague_hero_banner.jpg";
 import { HomeHeroActions } from "./HomeHeroActions";
 import { HomeHeroCopy } from "./HomeHeroCopy";
 import { HomeHeroTop } from "./HomeHeroTop";
-
-export type HomeHeroProps = {
-  activeDeckLabel: string;
-  examLevel: string;
-  dueCount: number;
-  accountEmail: string | null;
-  wide: boolean;
-  onStartStudy: () => void;
-  onStartQuiz: () => void;
-  onSearch: () => void;
-  onAdd: () => void;
-  onSettings: () => void;
-  onAccount: () => void;
-};
+import type { HomeHeroProps } from "./homeHeroTypes";
 
 export function HomeHero({ activeDeckLabel, examLevel, dueCount, accountEmail, wide, onStartStudy, onStartQuiz, onSearch, onAdd, onSettings, onAccount }: HomeHeroProps) {
   const { t } = useI18n();

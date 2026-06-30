@@ -1,9 +1,9 @@
 import type { Card } from "@czech-flashcards/shared";
 import { normalizeCards } from "@czech-flashcards/shared";
-import type { CustomCards, StudySettings, WebStore } from "./storageTypes";
-import { DEFAULT_SETTINGS } from "./storageTypes";
+import type { CustomCards, WebStore } from "./storageTypes";
 import { normalizeStore } from "./storageCore";
 import type { BackupPayload } from "./backupPayload";
+import { normalizeRestoredSettings } from "./backupSettingsNormalizer";
 
 export function normalizeBackupStore(current: WebStore, backup: BackupPayload): WebStore {
   const source = backup.store || backup;
@@ -31,15 +31,4 @@ function normalizeCustomCards(value: unknown): CustomCards {
 
 function normalizeSavedCardIds(value: unknown): string[] {
   return Array.isArray(value) ? value.filter((id) => typeof id === "string") : [];
-}
-
-function normalizeRestoredSettings(settings: StudySettings | undefined, backup: BackupPayload): StudySettings {
-  return {
-    ...DEFAULT_SETTINGS,
-    ...settings,
-    dailyGoal: Number(settings?.dailyGoal || backup.dailyGoal) || DEFAULT_SETTINGS.dailyGoal,
-    examLevel: settings?.examLevel || backup.examLevel || DEFAULT_SETTINGS.examLevel,
-    meaningLanguage: settings?.meaningLanguage || backup.meaningLanguage || DEFAULT_SETTINGS.meaningLanguage,
-    notifications: { ...DEFAULT_SETTINGS.notifications, ...settings?.notifications }
-  };
 }

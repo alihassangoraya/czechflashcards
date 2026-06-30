@@ -1,22 +1,16 @@
 import React from "react";
 import { Pressable, StyleSheet, Text } from "react-native";
-import type { CustomDeck } from "../../../database";
 import MaterialIcons from "../../../components/MaterialIcons";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
-import type { AddWordFormState } from "../hooks/useAddWordForm";
 import { AddWordDetailsToggle } from "./AddWordDetailsToggle";
 import { AddWordOptionalDetails } from "./AddWordOptionalDetails";
+import type { AddWordFormProps } from "./addWordFormTypes";
 import { FormField } from "./FormField";
 import { FormSection } from "./FormSection";
 import { WordDeckPicker } from "./WordDeckPicker";
 
-type Props = {
-  form: AddWordFormState;
-  decks: CustomDeck[];
-};
-
-export function AddWordForm({ form, decks }: Props) {
+export function AddWordForm({ form, decks }: AddWordFormProps) {
   const { t, textAlign } = useI18n();
 
   return (

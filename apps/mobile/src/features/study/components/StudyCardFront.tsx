@@ -1,26 +1,15 @@
 import React from "react";
-import { Animated, StyleSheet, Text } from "react-native";
-import type { Card } from "@czech-flashcards/shared";
+import { StyleSheet, Text } from "react-native";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, typography } from "../../../theme/design";
-import type { SwipeDirection } from "../animations/animationTypes";
 import { CardUndoButton } from "./CardUndoButton";
 import { CardFrontFaceContainer } from "./CardFaceContainer";
 import { PronunciationPill } from "./PronunciationPill";
+import type { StudyCardFrontProps } from "./studyCardFrontTypes";
 import { StudyCardHint } from "./StudyCardHint";
 import { StudySwipeActions } from "./StudySwipeActions";
 
-type Props = {
-  current: Card;
-  flipProgress: Animated.Value;
-  grading: boolean;
-  lastReviewCard: Card | null;
-  onFlipCard: () => void;
-  onCompleteSwipe: (direction: SwipeDirection) => void;
-  onUndoLastReview: () => void;
-};
-
-export function StudyCardFront({ current, flipProgress, grading, lastReviewCard, onFlipCard, onCompleteSwipe, onUndoLastReview }: Props) {
+export function StudyCardFront({ current, flipProgress, grading, lastReviewCard, onFlipCard, onCompleteSwipe, onUndoLastReview }: StudyCardFrontProps) {
   const { t, textAlign } = useI18n();
 
   return (

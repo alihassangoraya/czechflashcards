@@ -1,4 +1,4 @@
-import type { HomeHeroProps } from "./components/HomeHero";
+import type { HomeHeroProps } from "./components/homeHeroTypes";
 import type { HomeScreenModel } from "./homeScreenModel";
 import type { HomeScreenProps } from "./homeScreenTypes";
 

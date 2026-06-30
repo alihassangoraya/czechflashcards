@@ -1,16 +1,10 @@
 import React, { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import type { Card } from "@czech-flashcards/shared";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, spacing, typography } from "../../../theme/design";
 import { editCardFields } from "./editCardFields";
-import type { EditCardFieldKey, EditCardFormValues } from "./editCardFormTypes";
+import type { EditCardFieldKey, EditCardFormProps, EditCardFormValues } from "./editCardFormTypes";
 import { EditCardInput } from "./EditCardInput";
-
-type EditCardFormProps = {
-  card: Card;
-  onSubmit: (values: EditCardFormValues) => void;
-};
 
 export function EditCardForm({ card, onSubmit }: EditCardFormProps) {
   const { t } = useI18n();

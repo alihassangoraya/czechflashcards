@@ -1,16 +1,11 @@
 import { useEffect, useState } from "react";
-import { getFriendCode, type AppSupabaseClient } from "../../../sync";
+import { getFriendCode } from "../../../sync";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { submitFriendRequest, submitFriendResponse } from "./friendActivityActions";
+import type { FriendActivityParams } from "./friendActivityTypes";
 import { useFriendActivityList } from "./useFriendActivityList";
 
-type Params = {
-  accountEmail: string | null;
-  supabase: AppSupabaseClient;
-  setMessage: (message: string) => void;
-};
-
-export function useFriendActivity({ accountEmail, supabase, setMessage }: Params) {
+export function useFriendActivity({ accountEmail, supabase, setMessage }: FriendActivityParams) {
   const { t } = useI18n();
   const [friendCode, setFriendCode] = useState("");
   const [myFriendCode, setMyFriendCode] = useState<string | null>(null);

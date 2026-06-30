@@ -1,13 +1,8 @@
-import type { StudySettings } from "../../../database";
 import { buildCreateDeckPatch, buildDeleteDeckPatch, buildRenameDeckPatch } from "../customDeckDraftModel";
+import type { CustomDeckDraftParams } from "./customDeckDraftTypes";
 import { useCustomDeckDraftState } from "./useCustomDeckDraftState";
 
-type Params = {
-  settings: StudySettings;
-  update: (patch: Partial<StudySettings>) => void;
-};
-
-export function useCustomDeckDraft({ settings, update }: Params) {
+export function useCustomDeckDraft({ settings, update }: CustomDeckDraftParams) {
   const draft = useCustomDeckDraftState();
 
   function createDeck() {

@@ -2,16 +2,9 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import MaterialIcons from "../../../components/MaterialIcons";
 import { useI18n } from "../../../i18n/I18nProvider";
-import type { TranslationKey } from "../../../i18n/translations";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
 import type { AccountStudySummary } from "../accountTypes";
-
-const badges = (summary: AccountStudySummary) => [
-  { icon: "trending-up" as const, title: "account.badgeFirst" as TranslationKey, label: "account.badgeFirstCopy" as TranslationKey, unlocked: summary.studiedCount >= 1 },
-  { icon: "star" as const, title: "account.badgeStarred" as TranslationKey, label: "account.badgeStarredCopy" as TranslationKey, unlocked: summary.savedCount >= 5 },
-  { icon: "check-circle" as const, title: "account.badgeDueClear" as TranslationKey, label: "account.badgeDueClearCopy" as TranslationKey, unlocked: summary.deckTotal > 0 && summary.dueCount === 0 },
-  { icon: "star" as const, title: "account.badgeMastery" as TranslationKey, label: "account.badgeMasteryCopy" as TranslationKey, unlocked: summary.masteredCount >= 10 }
-];
+import { buildAccountBadges } from "./accountBadgesModel";
 
 export function AccountBadges({ summary }: { summary: AccountStudySummary }) {
   const { t } = useI18n();
@@ -20,7 +13,7 @@ export function AccountBadges({ summary }: { summary: AccountStudySummary }) {
     <>
       <Text style={styles.title}>{t("account.milestones")}</Text>
       <View style={styles.badges}>
-        {badges(summary).map((badge) => (
+        {buildAccountBadges(summary).map((badge) => (
           <View key={badge.title} style={styles.item}>
             <View style={[styles.icon, !badge.unlocked && styles.lockedIcon]}>
               <MaterialIcons name={badge.icon} size={size.iconSmall} color={badge.unlocked ? colors.bohemianGold : colors.textMuted} />
