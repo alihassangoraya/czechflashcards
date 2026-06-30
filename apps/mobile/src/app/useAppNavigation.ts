@@ -1,26 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 import type { Panel, Screen } from "./appTypes";
-import { getInitialScreenFromLocation, screenFromPath, syncScreenPath } from "./webRoutes";
+import { useWebRouteSync } from "./useWebRouteSync";
+import { getInitialScreenFromLocation, syncScreenPath } from "./webRoutes";
 
 export function useAppNavigation(accountEmail: string | null) {
   const [screen, setScreen] = useState<Screen>(() => getInitialScreenFromLocation());
   const [panel, setPanel] = useState<Panel | null>(null);
   const [query, setQuery] = useState("");
   const [settingsNotice, setSettingsNotice] = useState("");
-
-  useEffect(() => {
-    syncScreenPath(screen, true);
-  }, []);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return undefined;
-    function handlePopState() {
-      setScreen(screenFromPath(window.location.pathname));
-      setPanel(null);
-    }
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, []);
+  useWebRouteSync({ screen, setScreen, setPanel });
 
   const navigateScreen = useCallback((nextScreen: Screen) => {
     setScreen(nextScreen);
