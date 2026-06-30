@@ -1,15 +1,11 @@
 import React from "react";
-import { Animated, GestureResponderHandlers, StyleSheet, View } from "react-native";
+import { Animated, GestureResponderHandlers } from "react-native";
 import type { Card } from "@czech-flashcards/shared";
 import type { StudySettings } from "../../../database";
-import { size } from "../../../theme/design";
+import type { SwipeDirection } from "../animations/animationTypes";
 import { EmptyStudyCard } from "./EmptyStudyCard";
-import { StudyCardActions } from "./StudyCardActions";
-import { StudyCardBack } from "./StudyCardBack";
-import { StudyCardFront } from "./StudyCardFront";
-import { SwipeStamp } from "./SwipeStamp";
-
-type SwipeDirection = "again" | "known";
+import { StudyCardFaces } from "./StudyCardFaces";
+import { StudyCardMotion } from "./StudyCardMotion";
 
 type Props = {
   current: Card | null;
@@ -55,45 +51,28 @@ export function StudyCard({
   onUndoLastReview
 }: Props) {
   return (
-    <View style={styles.cardFrame} {...panHandlers}>
-      <Animated.View pointerEvents="box-none" style={[styles.cardMotion, { transform: [{ translateX: dragX }, { rotateZ: cardRotation }] }]}>
-        {swipeDirection && <SwipeStamp direction={swipeDirection} />}
-        {current ? (
-          <>
-            <StudyCardActions
-              current={current}
-              isSaved={savedCardIds.has(current.id)}
-              showEdit={revealed && !flipping}
-              onToggleSaved={onToggleSaved}
-              onManageDecks={onManageDecks}
-              onEditCard={onEditCard}
-            />
-            <StudyCardFront
-              current={current}
-              flipProgress={flipProgress}
-              grading={grading}
-              lastReviewCard={lastReviewCard}
-              onFlipCard={onFlipCard}
-              onCompleteSwipe={onCompleteSwipe}
-              onUndoLastReview={onUndoLastReview}
-            />
-            <StudyCardBack
-              current={current}
-              currentSecondaryMeaning={currentSecondaryMeaning}
-              flipProgress={flipProgress}
-              meaningLanguage={meaningLanguage}
-              onFlipCard={onFlipCard}
-            />
-          </>
-        ) : (
-          <EmptyStudyCard />
-        )}
-      </Animated.View>
-    </View>
+    <StudyCardMotion cardRotation={cardRotation} dragX={dragX} panHandlers={panHandlers} swipeDirection={swipeDirection}>
+      {current ? (
+        <StudyCardFaces
+          current={current}
+          currentSecondaryMeaning={currentSecondaryMeaning}
+          flipProgress={flipProgress}
+          flipping={flipping}
+          grading={grading}
+          isSaved={savedCardIds.has(current.id)}
+          lastReviewCard={lastReviewCard}
+          meaningLanguage={meaningLanguage}
+          revealed={revealed}
+          onCompleteSwipe={onCompleteSwipe}
+          onEditCard={onEditCard}
+          onFlipCard={onFlipCard}
+          onManageDecks={onManageDecks}
+          onToggleSaved={onToggleSaved}
+          onUndoLastReview={onUndoLastReview}
+        />
+      ) : (
+        <EmptyStudyCard />
+      )}
+    </StudyCardMotion>
   );
 }
-
-const styles = StyleSheet.create({
-  cardFrame: { position: "relative", height: size.cardHeight },
-  cardMotion: { ...StyleSheet.absoluteFillObject }
-});
