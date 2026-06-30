@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import type { Card } from "@czech-flashcards/shared";
 import type { CustomDeck } from "../../../database";
 import MaterialIcons from "../../../components/MaterialIcons";
+import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
 
 type Props = {
@@ -15,6 +16,7 @@ type Props = {
 };
 
 export function DeckMembershipPanel({ card, decks, deckMemberships, onAddToDeck, onRemoveFromDeck, onOpenSettings }: Props) {
+  const { t } = useI18n();
   if (!card) return null;
 
   return (
@@ -29,11 +31,11 @@ export function DeckMembershipPanel({ card, decks, deckMemberships, onAddToDeck,
 
       {decks.length === 0 ? (
         <View style={styles.emptyState}>
-          <Text style={styles.emptyTitle}>Create your first deck</Text>
-          <Text style={styles.emptyCopy}>Make a deck like “My B1 verbs”, then add words from flashcards or search.</Text>
+          <Text style={styles.emptyTitle}>{t("deckMembership.emptyTitle")}</Text>
+          <Text style={styles.emptyCopy}>{t("deckMembership.emptyCopy")}</Text>
           <Pressable style={styles.primaryButton} onPress={onOpenSettings} accessibilityRole="button">
             <MaterialIcons name="add" size={size.icon} color={colors.onPrimary} />
-            <Text style={styles.primaryText}>Create deck</Text>
+            <Text style={styles.primaryText}>{t("deckMembership.createDeck")}</Text>
           </Pressable>
         </View>
       ) : (
@@ -53,7 +55,7 @@ export function DeckMembershipPanel({ card, decks, deckMemberships, onAddToDeck,
                 </View>
                 <View style={styles.deckCopy}>
                   <Text style={styles.deckName}>{deck.name}</Text>
-                  <Text style={styles.deckMeta}>{inDeck ? "Word is in this deck" : "Tap to add this word"}</Text>
+                  <Text style={styles.deckMeta}>{inDeck ? t("deckMembership.inDeck") : t("deckMembership.tapToAdd")}</Text>
                 </View>
                 <MaterialIcons name={inDeck ? "check-circle" : "add-circle-outline"} size={size.iconMedium} color={inDeck ? colors.success : colors.action} />
               </Pressable>

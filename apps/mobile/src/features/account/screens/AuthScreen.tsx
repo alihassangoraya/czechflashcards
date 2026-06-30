@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import MaterialIcons from "../../../components/MaterialIcons";
+import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
 import { AccountAuthForm } from "../components/AccountAuthForm";
 
@@ -20,6 +21,7 @@ function isValidEmail(value: string) {
 }
 
 export function AuthScreen({ configured, initialMode, busy, onBack, onSwitchMode, onAuthenticate }: Props) {
+  const { t } = useI18n();
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,40 +30,40 @@ export function AuthScreen({ configured, initialMode, busy, onBack, onSwitchMode
 
   async function submit(mode: AuthMode) {
     if (!configured) {
-      setMessage("Account sync is not configured for this build yet.");
+      setMessage(t("account.syncNotConfigured"));
       return;
     }
     if (!isValidEmail(email)) {
-      setMessage("Enter a valid email address.");
+      setMessage(t("account.invalidEmail"));
       return;
     }
     if (password.length < 6) {
-      setMessage("Password must be at least 6 characters.");
+      setMessage(t("account.shortPassword"));
       return;
     }
 
     const error = await onAuthenticate(mode, email, password, displayName);
-    setMessage(error || (mode === "sign-up" ? "Account created. Check your email if confirmation is enabled." : "Signed in and syncing this device."));
+    setMessage(error || (mode === "sign-up" ? t("account.created") : t("account.signedIn")));
   }
 
   return (
     <ScrollView contentContainerStyle={styles.screen} keyboardShouldPersistTaps="handled">
       <View style={styles.header}>
-        <Pressable style={styles.backButton} onPress={onBack} accessibilityRole="button" accessibilityLabel="Back home">
+        <Pressable style={styles.backButton} onPress={onBack} accessibilityRole="button" accessibilityLabel={t("common.backHome")}>
           <MaterialIcons name="arrow-back" size={size.iconLarge} color={colors.textStrong} />
         </Pressable>
-        <Text style={styles.title}>{isRegister ? "Create account" : "Sign in"}</Text>
+        <Text style={styles.title}>{isRegister ? t("account.create") : t("account.signIn")}</Text>
       </View>
 
       <View style={styles.panel}>
         <View style={styles.iconWrap}>
           <MaterialIcons name={isRegister ? "person" : "login"} size={size.iconLarge} color={colors.primaryDeep} />
         </View>
-        <Text style={styles.heading}>{isRegister ? "Back up your Czech decks" : "Welcome back"}</Text>
+        <Text style={styles.heading}>{isRegister ? t("account.backupHeading") : t("account.welcomeHeading")}</Text>
         <Text style={styles.copy}>
-          {isRegister ? "Save your progress, custom decks, imported words, and starred cards across devices." : "Sign in to restore your progress, custom decks, and imported words."}
+          {isRegister ? t("account.backupCopy") : t("account.restoreCopy")}
         </Text>
-        {!configured && <Text style={styles.warning}>Supabase URL and anonymous key are missing in this build.</Text>}
+        {!configured && <Text style={styles.warning}>{t("account.supabaseMissing")}</Text>}
 
         <AccountAuthForm
           busy={busy}

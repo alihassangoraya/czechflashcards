@@ -1,5 +1,6 @@
 import React from "react";
 import { Pressable, StyleSheet, Text } from "react-native";
+import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, spacing, typography } from "../../../theme/design";
 import type { FriendRequest, FriendStreak } from "../../../sync";
 import { FriendPanel } from "./FriendPanel";
@@ -19,10 +20,12 @@ type Props = {
 };
 
 export function SignedInAccount({ accountEmail, busy, friendCode, myFriendCode, friendRequests, friends, message, onChangeFriendCode, onSendFriendRequest, onRespondToFriendRequest, onSignOut }: Props) {
+  const { t } = useI18n();
+
   return (
     <>
       <Text style={styles.rowTitle}>{accountEmail}</Text>
-      <Text style={styles.muted}>Your offline reviews, custom words, corrections, settings, and starred words are queued for this account.</Text>
+      <Text style={styles.muted}>{t("account.queueCopy")}</Text>
       <FriendPanel
         friendCode={friendCode}
         myFriendCode={myFriendCode}
@@ -33,7 +36,7 @@ export function SignedInAccount({ accountEmail, busy, friendCode, myFriendCode, 
         onRespondToFriendRequest={onRespondToFriendRequest}
       />
       {Boolean(message) && <Text style={styles.formError}>{message}</Text>}
-      <Pressable disabled={busy} style={[styles.dangerButton, busy && styles.disabledButton]} onPress={onSignOut}><Text style={styles.dangerButtonText}>Sign out</Text></Pressable>
+      <Pressable disabled={busy} style={[styles.dangerButton, busy && styles.disabledButton]} onPress={onSignOut}><Text style={styles.dangerButtonText}>{t("account.signOut")}</Text></Pressable>
     </>
   );
 }

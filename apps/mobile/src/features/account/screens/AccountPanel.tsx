@@ -9,6 +9,7 @@ import {
   type FriendStreak
 } from "../../../sync";
 import { createSupabaseClient } from "../../../sync";
+import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, spacing, typography } from "../../../theme/design";
 import type { AccountStudySummary } from "../accountTypes";
 import { AccountAuthForm } from "../components/AccountAuthForm";
@@ -26,6 +27,7 @@ export function AccountPanel({ configured, supabase, accountEmail, studySummary,
   onAuthenticate: (mode: "sign-in" | "sign-up", email: string, password: string, displayName: string) => Promise<string | null>;
   onSignOut: () => Promise<string | null>;
 }) {
+  const { t } = useI18n();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
@@ -36,11 +38,11 @@ export function AccountPanel({ configured, supabase, accountEmail, studySummary,
   const [message, setMessage] = useState("");
   const submit = async (mode: "sign-in" | "sign-up") => {
     if (!email.trim() || !password) {
-      setMessage("Enter your email and password.");
+      setMessage(t("account.enterCredentials"));
       return;
     }
     const error = await onAuthenticate(mode, email, password, displayName);
-    setMessage(error || (mode === "sign-up" ? "Account created. Check email confirmation if your project requires it." : "Signed in and syncing this device."));
+    setMessage(error || (mode === "sign-up" ? t("account.created") : t("account.signedIn")));
   };
   const refreshFriends = async () => {
     const activity = await loadFriendActivity(supabase);
@@ -48,12 +50,12 @@ export function AccountPanel({ configured, supabase, accountEmail, studySummary,
     setFriends(activity.friends);
   };
   const sendFriend = async () => {
-    setMessage((await sendFriendRequest(supabase, friendCode)) || "Friend request sent.");
+    setMessage((await sendFriendRequest(supabase, friendCode)) || t("account.friendSent"));
     setFriendCode("");
     await refreshFriends();
   };
   const respondToRequest = async (requestId: string, accepted: boolean) => {
-    setMessage((await respondToFriendRequest(supabase, requestId, accepted)) || (accepted ? "Friend added." : "Request declined."));
+    setMessage((await respondToFriendRequest(supabase, requestId, accepted)) || (accepted ? t("account.friendAdded") : t("account.friendDeclined")));
     await refreshFriends();
   };
   useEffect(() => {
@@ -64,7 +66,7 @@ export function AccountPanel({ configured, supabase, accountEmail, studySummary,
   if (!configured) return (
     <View style={styles.form}>
       <AccountStudyPanel summary={studySummary} accountEmail={accountEmail} />
-      <Text style={styles.muted}>This build has no Supabase URL or anonymous key. Offline study remains available.</Text>
+      <Text style={styles.muted}>{t("account.offlineAvailable")}</Text>
     </View>
   );
   if (accountEmail) return (
@@ -81,7 +83,7 @@ export function AccountPanel({ configured, supabase, accountEmail, studySummary,
         onChangeFriendCode={setFriendCode}
         onSendFriendRequest={() => void sendFriend()}
         onRespondToFriendRequest={(requestId, accepted) => void respondToRequest(requestId, accepted)}
-        onSignOut={async () => setMessage((await onSignOut()) || "Signed out. Your local study data remains on this device.")}
+        onSignOut={async () => setMessage((await onSignOut()) || t("account.signedOut"))}
       />
     </View>
   );

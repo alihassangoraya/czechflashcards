@@ -1,46 +1,48 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import type { Card } from "@czech-flashcards/shared";
+import { useI18n } from "../../i18n/I18nProvider";
 import { colors, radius, spacing, typography } from "../../theme/design";
 
 export function GrammarGuide({ card }: { card: Card }) {
+  const { t } = useI18n();
   const verb = card.en.toLowerCase().startsWith("to ") || card.tags.includes("verbs") || card.cz.split(" ")[0].endsWith("t");
   const word = card.cz.toLowerCase().trim();
   const gender = word.endsWith("a") || word.endsWith("ost")
-    ? "Likely feminine"
+    ? t("grammar.likelyFeminine")
     : word.endsWith("o") || word.endsWith("e") || word.endsWith("ě")
-      ? "Likely neuter"
-      : "Likely masculine";
+      ? t("grammar.likelyNeuter")
+      : t("grammar.likelyMasculine");
 
   return (
     <View style={styles.grammarGuide}>
       <View style={styles.grammarBanner}>
         <Text style={styles.grammarWord}>{card.cz}</Text>
-        <Text style={styles.grammarMeta}>{verb ? "Verb (sloveso)" : `Noun or adjective · ${gender}`}</Text>
+        <Text style={styles.grammarMeta}>{verb ? t("grammar.verbMeta") : t("grammar.nounMeta", { gender })}</Text>
       </View>
       {verb ? (
         <>
-          <Text style={styles.grammarHeading}>Present tense</Text>
-          <Text style={styles.grammarCopy}>Czech verbs change with the subject. Learn this word with its full infinitive and listen for the ending in the example.</Text>
+          <Text style={styles.grammarHeading}>{t("grammar.presentTense")}</Text>
+          <Text style={styles.grammarCopy}>{t("grammar.verbCopy")}</Text>
           <View style={styles.grammarTable}>
-            <Text style={styles.grammarTableText}>já · ty · on/ona</Text>
-            <Text style={styles.grammarTableText}>my · vy · oni</Text>
+            <Text style={styles.grammarTableText}>{t("grammar.subjectsSingular")}</Text>
+            <Text style={styles.grammarTableText}>{t("grammar.subjectsPlural")}</Text>
           </View>
-          <Text style={styles.grammarCopy}>Aspect matters at B1: imperfective verbs describe an action or habit; perfective verbs focus on a completed result.</Text>
+          <Text style={styles.grammarCopy}>{t("grammar.aspectCopy")}</Text>
         </>
       ) : (
         <>
-          <Text style={styles.grammarHeading}>Cases and gender</Text>
-          <Text style={styles.grammarCopy}>{gender}. Czech endings change by case, so remember the word with a short phrase, not only on its own.</Text>
+          <Text style={styles.grammarHeading}>{t("grammar.casesGender")}</Text>
+          <Text style={styles.grammarCopy}>{t("grammar.caseCopy", { gender })}</Text>
           <View style={styles.grammarTable}>
-            <Text style={styles.grammarTableText}>1. nominative: basic form</Text>
-            <Text style={styles.grammarTableText}>4. accusative: direct object</Text>
-            <Text style={styles.grammarTableText}>6. locative: after v, na, o</Text>
-            <Text style={styles.grammarTableText}>7. instrumental: after s</Text>
+            <Text style={styles.grammarTableText}>{t("grammar.caseNom")}</Text>
+            <Text style={styles.grammarTableText}>{t("grammar.caseAcc")}</Text>
+            <Text style={styles.grammarTableText}>{t("grammar.caseLoc")}</Text>
+            <Text style={styles.grammarTableText}>{t("grammar.caseIns")}</Text>
           </View>
         </>
       )}
-      {card.sentence ? <Text style={styles.grammarExample}>Example: {card.sentence}</Text> : null}
+      {card.sentence ? <Text style={styles.grammarExample}>{t("grammar.example", { sentence: card.sentence })}</Text> : null}
     </View>
   );
 }

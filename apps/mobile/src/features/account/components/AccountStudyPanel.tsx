@@ -1,11 +1,13 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
 import type { AccountStudySummary } from "../accountTypes";
 import { AccountBadges } from "./AccountBadges";
 import { AccountStat } from "./AccountStat";
 
 export function AccountStudyPanel({ summary, accountEmail }: { summary: AccountStudySummary; accountEmail: string | null }) {
+  const { t } = useI18n();
   const progress = summary.deckTotal ? summary.masteredCount / summary.deckTotal : 0;
 
   return (
@@ -15,28 +17,28 @@ export function AccountStudyPanel({ summary, accountEmail }: { summary: AccountS
           <Text style={styles.avatarText}>Č</Text>
         </View>
         <View style={styles.profileCopy}>
-          <Text style={styles.profileName}>{accountEmail ? "Aktivní Student" : "Guest Student"}</Text>
-          <Text style={styles.profileMeta}>{summary.studiedCount} studied · {summary.customCount} custom · {summary.savedCount} starred</Text>
+          <Text style={styles.profileName}>{accountEmail ? t("account.activeStudent") : t("account.guestStudent")}</Text>
+          <Text style={styles.profileMeta}>{t("account.profileMeta", { studied: summary.studiedCount, custom: summary.customCount, starred: summary.savedCount })}</Text>
         </View>
-        <Text style={styles.rankPill}>{summary.examLevel} NOVICE</Text>
+        <Text style={styles.rankPill}>{t("account.rank", { level: summary.examLevel })}</Text>
       </View>
 
       <View style={styles.progressHeader}>
-        <Text style={styles.sectionTitle}>Learning Progress</Text>
-        <Text style={styles.sectionMeta}>{summary.masteredCount} mastered</Text>
+        <Text style={styles.sectionTitle}>{t("account.learningProgress")}</Text>
+        <Text style={styles.sectionMeta}>{t("account.mastered", { count: summary.masteredCount })}</Text>
       </View>
       <View style={styles.progressTrack}>
         <View style={[styles.progressFill, { width: `${Math.max(3, Math.min(100, progress * 100))}%` }]} />
       </View>
       <View style={styles.statsRow}>
-        <AccountStat count={summary.deckTotal} label="Total" color={colors.bohemianBlue} />
-        <AccountStat count={summary.masteredCount} label="Mastered" color={colors.success} />
-        <AccountStat count={summary.learningCount} label="Learning" color={colors.bohemianGold} />
-        <AccountStat count={summary.dueCount} label="Due" color={colors.bohemianRed} />
+        <AccountStat count={summary.deckTotal} label={t("account.total")} color={colors.bohemianBlue} />
+        <AccountStat count={summary.masteredCount} label={t("account.masteredLabel")} color={colors.success} />
+        <AccountStat count={summary.learningCount} label={t("account.learning")} color={colors.bohemianGold} />
+        <AccountStat count={summary.dueCount} label={t("account.due")} color={colors.bohemianRed} />
       </View>
 
       <AccountBadges summary={summary} />
-      {!accountEmail && <Text style={styles.muted}>Progress is saved on this device · {summary.syncStatus}</Text>}
+      {!accountEmail && <Text style={styles.muted}>{t("account.localProgress", { status: summary.syncStatus })}</Text>}
     </View>
   );
 }

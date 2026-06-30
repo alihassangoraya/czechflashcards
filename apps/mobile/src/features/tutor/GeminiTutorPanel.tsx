@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
 import MaterialIcons from "../../components/MaterialIcons";
 import type { Card } from "@czech-flashcards/shared";
+import { useI18n } from "../../i18n/I18nProvider";
 import { explainCzechCard, type GeminiTutorResult } from "../../services/geminiTutor";
 import { colors, radius, shadow, spacing, typography } from "../../theme/design";
 
@@ -10,6 +11,7 @@ type Props = {
 };
 
 export function GeminiTutorPanel({ card }: Props) {
+  const { t } = useI18n();
   const [openForId, setOpenForId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<GeminiTutorResult | null>(null);
@@ -32,9 +34,9 @@ export function GeminiTutorPanel({ card }: Props) {
 
   if (!isOpen) {
     return (
-      <Pressable style={styles.button} onPress={openTutor} accessibilityRole="button" accessibilityLabel={`Ask Gemini tutor about ${card.cz}`}>
+      <Pressable style={styles.button} onPress={openTutor} accessibilityRole="button" accessibilityLabel={t("tutor.ask", { word: card.cz })}>
         <MaterialIcons name="auto-awesome" size={17} color={colors.bohemianGold} />
-        <Text style={styles.buttonText}>Need help? Gemini Tutor</Text>
+        <Text style={styles.buttonText}>{t("tutor.button")}</Text>
       </Pressable>
     );
   }
@@ -43,10 +45,10 @@ export function GeminiTutorPanel({ card }: Props) {
     <View style={styles.panel}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.eyebrow}>Gemini tutor</Text>
-          <Text style={styles.title}>Czech lesson for {card.cz}</Text>
+          <Text style={styles.eyebrow}>{t("tutor.eyebrow")}</Text>
+          <Text style={styles.title}>{t("tutor.title", { word: card.cz })}</Text>
         </View>
-        <Pressable style={styles.close} onPress={() => setOpenForId(null)} accessibilityRole="button" accessibilityLabel="Close Gemini tutor">
+        <Pressable style={styles.close} onPress={() => setOpenForId(null)} accessibilityRole="button" accessibilityLabel={t("tutor.close")}>
           <Text style={styles.closeText}>×</Text>
         </Pressable>
       </View>
@@ -54,13 +56,13 @@ export function GeminiTutorPanel({ card }: Props) {
       {loading ? (
         <View style={styles.loading}>
           <ActivityIndicator color={colors.bohemianGold} />
-          <Text style={styles.muted}>Preparing personalized notes...</Text>
+          <Text style={styles.muted}>{t("tutor.loading")}</Text>
         </View>
       ) : (
         <View style={styles.copy}>
-          <Text style={styles.section}>Lesson</Text>
+          <Text style={styles.section}>{t("tutor.lesson")}</Text>
           <Text style={styles.body}>{result?.lesson}</Text>
-          <Text style={styles.section}>Pronunciation</Text>
+          <Text style={styles.section}>{t("tutor.pronunciation")}</Text>
           <Text style={styles.body}>{result?.phonetics}</Text>
         </View>
       )}

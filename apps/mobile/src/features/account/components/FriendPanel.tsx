@@ -1,5 +1,6 @@
 import React from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { useI18n } from "../../../i18n/I18nProvider";
 import type { FriendRequest, FriendStreak } from "../../../sync";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
 
@@ -14,22 +15,24 @@ type Props = {
 };
 
 export function FriendPanel({ friendCode, myFriendCode, friendRequests, friends, onChangeFriendCode, onSendFriendRequest, onRespondToFriendRequest }: Props) {
+  const { t } = useI18n();
+
   return (
     <View style={styles.panel}>
-      <Text style={styles.fieldLabel}>Friend code</Text>
-      <Text style={styles.friendCode}>{myFriendCode || "Preparing..."}</Text>
-      <TextInput style={styles.input} value={friendCode} onChangeText={onChangeFriendCode} autoCapitalize="none" placeholder="Enter a friend's code" placeholderTextColor={colors.textMuted} />
-      <Pressable style={styles.secondaryAction} onPress={onSendFriendRequest}><Text style={styles.secondaryActionText}>Send friend request</Text></Pressable>
+      <Text style={styles.fieldLabel}>{t("account.friendCode")}</Text>
+      <Text style={styles.friendCode}>{myFriendCode || t("account.preparing")}</Text>
+      <TextInput style={styles.input} value={friendCode} onChangeText={onChangeFriendCode} autoCapitalize="none" placeholder={t("account.friendCodePlaceholder")} placeholderTextColor={colors.textMuted} />
+      <Pressable style={styles.secondaryAction} onPress={onSendFriendRequest}><Text style={styles.secondaryActionText}>{t("account.sendFriend")}</Text></Pressable>
       {friendRequests.map((request) => (
         <View key={request.id} style={styles.friendRow}>
-          <Text style={styles.muted}>{request.display_name || request.friend_code} wants to connect.</Text>
+          <Text style={styles.muted}>{t("account.friendRequest", { name: request.display_name || request.friend_code })}</Text>
           <View style={styles.friendActions}>
-            <Pressable style={styles.smallAction} onPress={() => onRespondToFriendRequest(request.id, true)}><Text style={styles.secondaryActionText}>Accept</Text></Pressable>
-            <Pressable style={styles.smallAction} onPress={() => onRespondToFriendRequest(request.id, false)}><Text style={styles.secondaryActionText}>Decline</Text></Pressable>
+            <Pressable style={styles.smallAction} onPress={() => onRespondToFriendRequest(request.id, true)}><Text style={styles.secondaryActionText}>{t("account.accept")}</Text></Pressable>
+            <Pressable style={styles.smallAction} onPress={() => onRespondToFriendRequest(request.id, false)}><Text style={styles.secondaryActionText}>{t("account.decline")}</Text></Pressable>
           </View>
         </View>
       ))}
-      {friends.map((friend) => <Text key={friend.friend_code} style={styles.muted}>{friend.display_name || friend.friend_code}: {friend.current_streak ?? 0}-day streak</Text>)}
+      {friends.map((friend) => <Text key={friend.friend_code} style={styles.muted}>{t("account.friendStreak", { name: friend.display_name || friend.friend_code, count: friend.current_streak ?? 0 })}</Text>)}
     </View>
   );
 }

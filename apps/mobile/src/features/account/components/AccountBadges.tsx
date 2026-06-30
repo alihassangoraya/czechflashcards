@@ -1,28 +1,32 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import MaterialIcons from "../../../components/MaterialIcons";
+import { useI18n } from "../../../i18n/I18nProvider";
+import type { TranslationKey } from "../../../i18n/translations";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
 import type { AccountStudySummary } from "../accountTypes";
 
 const badges = (summary: AccountStudySummary) => [
-  { icon: "trending-up" as const, title: "First Step", label: "Study 1 card", unlocked: summary.studiedCount >= 1 },
-  { icon: "star" as const, title: "Starred List", label: "Star 5 cards", unlocked: summary.savedCount >= 5 },
-  { icon: "check-circle" as const, title: "Due Clear", label: "No due cards", unlocked: summary.deckTotal > 0 && summary.dueCount === 0 },
-  { icon: "star" as const, title: "Mastery", label: "Master 10 cards", unlocked: summary.masteredCount >= 10 }
+  { icon: "trending-up" as const, title: "account.badgeFirst" as TranslationKey, label: "account.badgeFirstCopy" as TranslationKey, unlocked: summary.studiedCount >= 1 },
+  { icon: "star" as const, title: "account.badgeStarred" as TranslationKey, label: "account.badgeStarredCopy" as TranslationKey, unlocked: summary.savedCount >= 5 },
+  { icon: "check-circle" as const, title: "account.badgeDueClear" as TranslationKey, label: "account.badgeDueClearCopy" as TranslationKey, unlocked: summary.deckTotal > 0 && summary.dueCount === 0 },
+  { icon: "star" as const, title: "account.badgeMastery" as TranslationKey, label: "account.badgeMasteryCopy" as TranslationKey, unlocked: summary.masteredCount >= 10 }
 ];
 
 export function AccountBadges({ summary }: { summary: AccountStudySummary }) {
+  const { t } = useI18n();
+
   return (
     <>
-      <Text style={styles.title}>Milestones</Text>
+      <Text style={styles.title}>{t("account.milestones")}</Text>
       <View style={styles.badges}>
         {badges(summary).map((badge) => (
           <View key={badge.title} style={styles.item}>
             <View style={[styles.icon, !badge.unlocked && styles.lockedIcon]}>
               <MaterialIcons name={badge.icon} size={size.iconSmall} color={badge.unlocked ? colors.bohemianGold : colors.textMuted} />
             </View>
-            <Text style={[styles.name, !badge.unlocked && styles.lockedText]} numberOfLines={1}>{badge.title}</Text>
-            <Text style={styles.label} numberOfLines={2}>{badge.label}</Text>
+            <Text style={[styles.name, !badge.unlocked && styles.lockedText]} numberOfLines={1}>{t(badge.title)}</Text>
+            <Text style={styles.label} numberOfLines={2}>{t(badge.label)}</Text>
           </View>
         ))}
       </View>
