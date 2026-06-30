@@ -1,10 +1,10 @@
 import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import MaterialIcons from "../../../components/MaterialIcons";
+import { StyleSheet, Text, View } from "react-native";
 import { useI18n } from "../../../i18n/I18nProvider";
 import type { TranslationKey } from "../../../i18n/translations";
-import { colors, radius, size, spacing, typography } from "../../../theme/design";
+import { colors, spacing, typography } from "../../../theme/design";
 import type { Category } from "../homeContent";
+import { DeckCategoryCard } from "./DeckCategoryCard";
 
 const translatableDeckIds = new Set(["a2-focus", "b1-focus", "saved", "core", "all", "daily", "extended", "travel", "work", "health", "verbs", "forms", "custom", "numbers"]);
 
@@ -28,24 +28,7 @@ export function DeckGrid({ categories, selectedDeckId, currentDeckCount, onSelec
         {categories.map((category) => {
           const selected = selectedDeckId === category.id;
           const title = translatableDeckIds.has(category.id) ? t(`deck.${category.id}` as TranslationKey) : category.title;
-          return (
-            <Pressable
-              key={category.id}
-              style={[styles.categoryCard, selected && styles.categoryCardSelected]}
-              onPress={() => onSelectCategory(category.id)}
-              accessibilityRole="button"
-              accessibilityLabel={t("home.studyDeck", { title })}
-            >
-              <View style={[styles.categoryIcon, { backgroundColor: `${category.color}1f` }]}>
-                <MaterialIcons name={category.icon} size={size.iconMedium} color={category.color} />
-              </View>
-              <View style={styles.categoryCopy}>
-                <Text style={[styles.categoryTitle, { textAlign }]}>{title}</Text>
-                <Text style={[styles.categoryCount, { textAlign }]}>{category.count || 0} {t("common.cards")}</Text>
-              </View>
-              {selected && <MaterialIcons name="check-circle" size={size.iconSmall} color={colors.softMint} />}
-            </Pressable>
-          );
+          return <DeckCategoryCard key={category.id} category={category} selected={selected} title={title} onSelect={onSelectCategory} />;
         })}
       </View>
     </View>
@@ -57,11 +40,5 @@ const styles = StyleSheet.create({
   sectionTitle: { color: colors.charcoalText, fontSize: typography.title, fontWeight: typography.weightBold },
   sectionMeta: { color: colors.mutedSlate, fontSize: typography.label, fontWeight: typography.weightMedium },
   categoriesSection: { gap: spacing.lgPlus, marginHorizontal: spacing.page },
-  categoryGrid: { flexDirection: "row", flexWrap: "wrap", gap: spacing.lgPlus },
-  categoryCard: { width: "48%", minHeight: size.categoryCardHeight, flexDirection: "row", alignItems: "center", gap: spacing.md, borderRadius: radius.lg, borderWidth: spacing.hairline, borderColor: colors.lightSand, backgroundColor: colors.card, padding: spacing.md },
-  categoryCardSelected: { borderColor: colors.softMint, borderWidth: spacing.xxs, padding: spacing.xs },
-  categoryIcon: { width: size.categoryIcon, height: size.categoryIcon, alignItems: "center", justifyContent: "center", borderRadius: radius.md },
-  categoryCopy: { flex: 1, gap: spacing.xxs },
-  categoryTitle: { color: colors.charcoalText, fontSize: typography.categoryTitle, fontWeight: typography.weightSemibold },
-  categoryCount: { color: colors.mutedSlate, fontSize: typography.label, fontWeight: typography.weightRegular }
+  categoryGrid: { flexDirection: "row", flexWrap: "wrap", gap: spacing.lgPlus }
 });
