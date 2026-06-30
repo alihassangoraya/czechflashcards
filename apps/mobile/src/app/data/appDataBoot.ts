@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { loadSettings } from "../../database";
 import { configureLocalNotifications } from "../../services/notifications";
-import { openSeededDatabase } from "./appDataSnapshot";
+import { openSeededDatabase } from "./appDatabaseBootstrap";
 import { syncAppDatabase } from "./appDataSync";
 import { refreshAppData } from "./appDataRefresh";
 import type { AppDataState } from "./appDataState";

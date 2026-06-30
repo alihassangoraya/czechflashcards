@@ -5,11 +5,8 @@ import {
   loadDeckMemberships,
   loadReviewStates,
   loadSavedCardIds,
-  openAppDatabase,
-  seedCards,
   type AppDatabase
 } from "../../database";
-import { loadSeedCards } from "./appSeed";
 
 export type AppDataSnapshot = {
   cards: Card[];
@@ -18,13 +15,6 @@ export type AppDataSnapshot = {
   states: Record<string, ReviewState>;
   dailyProgress: string;
 };
-
-export async function openSeededDatabase() {
-  const database = await openAppDatabase();
-  const seed = await loadSeedCards();
-  await seedCards(database, seed.cards, seed.seedVersion);
-  return database;
-}
 
 export async function loadAppDataSnapshot(database: AppDatabase, dailyGoal: number): Promise<AppDataSnapshot> {
   const progress = await getDailyProgress(database, undefined, dailyGoal);
