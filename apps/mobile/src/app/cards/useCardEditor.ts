@@ -4,6 +4,7 @@ import type { AppDatabase } from "../../database";
 import type { Panel } from "../appTypes";
 import type { CorrectionValues } from "../appShellTypes";
 import { saveEditedCard } from "./cardEditorPersistence";
+import { openSearchResultForStudy } from "./cardStudyNavigation";
 
 type Props = {
   db: AppDatabase | null;
@@ -47,11 +48,7 @@ export function useCardEditor({ db, current, panel, setCurrent, setRevealed, set
   }
 
   function studySearchResult(card: Card) {
-    forceCard(card.id, true);
-    setCurrent(card);
-    setRevealed(true);
-    setSessionReviews(0);
-    setPanel(null);
+    openSearchResultForStudy({ card, forceCard, setCurrent, setRevealed, setSessionReviews, setPanel });
   }
 
   return { editingCard, saveCorrection, openCardEditor, closeCardEditor, studySearchResult };
