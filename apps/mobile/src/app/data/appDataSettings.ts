@@ -1,5 +1,5 @@
 import { saveSettings, type AppDatabase, type StudySettings } from "../../database";
-import { configureLocalNotifications } from "../../notifications";
+import { configureLocalNotifications } from "../../services/notifications";
 import type { AppDataState } from "./appDataState";
 
 export async function persistAppSettings(state: AppDataState, database: AppDatabase | null, next: StudySettings): Promise<void> {

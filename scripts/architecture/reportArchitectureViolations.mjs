@@ -16,7 +16,8 @@ const mobileViolationMessages = [
   ["rootAppSettingsTools", "Mobile architecture check failed. App settings tool modules must live under app/settingsTools/:"],
   ["rootAppShellData", "Mobile architecture check failed. App shell data projection must live under app/shellData/:"],
   ["rootAppStudy", "Mobile architecture check failed. App study modules must live under focused study folders:"],
-  ["rootServices", "Mobile architecture check failed. Service implementations must live in domain service folders:"]
+  ["rootServices", "Mobile architecture check failed. Service implementations must live in domain service folders:"],
+  ["rootPlatformServices", "Mobile architecture check failed. Mobile platform service implementations must live under services/:"]
 ];
 
 export function reportMobileArchitectureViolations(violations) {

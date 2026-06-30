@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, View } from "react-native";
 import type { Card } from "@czech-flashcards/shared";
 import MaterialIcons from "../../../components/MaterialIcons";
 import { useI18n } from "../../../i18n/I18nProvider";
-import * as Speech from "../../../speech";
+import * as Speech from "../../../services/speech";
 import { colors, radius, size, spacing } from "../../../theme/design";
 
 type Props = {

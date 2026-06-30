@@ -15,6 +15,7 @@ export function inspectMobileFile(source, violations) {
   inspectFeatureImports(source, violations);
   inspectRootAppModules(source, violations);
   inspectRootServices(source, violations);
+  inspectRootPlatformServices(source, violations);
   inspectCanonicalTypes(source, violations);
 }
 
@@ -68,6 +69,12 @@ function inspectFeatureImports({ lines, rel }, violations) {
 function inspectRootServices({ rel }, violations) {
   if (rel.match(/^services\/[^/]+\.(ts|tsx)$/) && !allowedRootServiceFiles.has(rel)) {
     violations.rootServices.push(`${rel}: move service logic into a domain folder under services/`);
+  }
+}
+
+function inspectRootPlatformServices({ rel }, violations) {
+  if (rel.match(/^(?:speech|notifications(?:\.web)?)\.ts$/)) {
+    violations.rootPlatformServices.push(`${rel}: move platform service logic into a domain folder under services/`);
   }
 }
 
