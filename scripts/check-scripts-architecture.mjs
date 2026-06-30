@@ -4,6 +4,7 @@ import { join, relative } from "node:path";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const scriptsRoot = join(root, "scripts");
+const checkedRoots = [scriptsRoot, join(root, "worker")];
 const maxLines = 40;
 const files = [];
 
@@ -15,12 +16,14 @@ async function collect(directory) {
   }
 }
 
-await collect(scriptsRoot);
+for (const checkedRoot of checkedRoots) {
+  await collect(checkedRoot);
+}
 
 const violations = [];
 for (const file of files) {
   const lineCount = (await readFile(file, "utf8")).split("\n").length;
-  if (lineCount > maxLines) violations.push(`${relative(scriptsRoot, file)}: ${lineCount} lines > ${maxLines}`);
+  if (lineCount > maxLines) violations.push(`${relative(root, file)}: ${lineCount} lines > ${maxLines}`);
 }
 
 if (violations.length) {

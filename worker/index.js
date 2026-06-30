@@ -1,11 +1,11 @@
+import { createAssetRequest, shouldDisableCache } from "./assetRequest.js";
+
 export default {
   async fetch(request, env) {
-    const pathname = new URL(request.url).pathname;
-    const appRoute = pathname === "/" || pathname === "/index.html" || pathname === "/quiz" || pathname === "/flashcards" || pathname === "/login" || pathname === "/register";
-    const assetRequest = appRoute ? new Request(new URL("/index.html", request.url), request) : request;
+    const { appRoute, assetRequest, pathname } = createAssetRequest(request);
     const response = await env.ASSETS.fetch(assetRequest);
 
-    if (!appRoute && pathname !== "/sw.js") {
+    if (!shouldDisableCache(appRoute, pathname)) {
       return response;
     }
 

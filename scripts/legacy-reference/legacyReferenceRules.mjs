@@ -11,7 +11,7 @@ export const legacyReferenceRules = [
     message: "Cloudflare assets must deploy the React Native web build."
   },
   {
-    file: "worker/index.js",
+    file: "worker/appRoutes.js",
     required: ["/quiz", "/flashcards", "/login", "/register"],
     forbidden: ["legacy-web"],
     message: "Worker routes must serve the shared app shell, not legacy web."
