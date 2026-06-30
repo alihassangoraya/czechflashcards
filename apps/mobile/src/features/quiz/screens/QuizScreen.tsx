@@ -12,7 +12,7 @@ import { QuizPrimaryAction } from "../components/QuizPrimaryAction";
 import { QuizProgress } from "../components/QuizProgress";
 import { QuizPromptCard } from "../components/QuizPromptCard";
 import { QuizResultScreen } from "../components/QuizResultScreen";
-import { useQuizSession } from "../useQuizSession";
+import { useQuizSession } from "../hooks/useQuizSession";
 
 type Props = {
   deck: Card[];

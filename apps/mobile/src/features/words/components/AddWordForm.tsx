@@ -4,7 +4,7 @@ import type { CustomDeck } from "../../../database";
 import MaterialIcons from "../../../components/MaterialIcons";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
-import type { AddWordFormState } from "../useAddWordForm";
+import type { AddWordFormState } from "../hooks/useAddWordForm";
 import { AddWordDetailsToggle } from "./AddWordDetailsToggle";
 import { AddWordOptionalDetails } from "./AddWordOptionalDetails";
 import { FormField } from "./FormField";

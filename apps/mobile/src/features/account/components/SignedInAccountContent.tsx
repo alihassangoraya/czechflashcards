@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 import { spacing } from "../../../theme/design";
 import type { AccountStudySummary } from "../accountTypes";
-import type { useAccountPanel } from "../useAccountPanel";
+import type { useAccountPanel } from "../hooks/useAccountPanel";
 import { AccountStudyPanel } from "./AccountStudyPanel";
 import { SignedInAccount } from "./SignedInAccount";
 

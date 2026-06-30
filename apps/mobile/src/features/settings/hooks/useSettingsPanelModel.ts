@@ -1,7 +1,7 @@
-import { useI18n } from "../../i18n/I18nProvider";
-import type { TranslationKey } from "../../i18n/translations";
-import { deckLabel } from "./settingsFormat";
-import type { SettingsPanelProps } from "./settingsPanelTypes";
+import { useI18n } from "../../../i18n/I18nProvider";
+import type { TranslationKey } from "../../../i18n/translations";
+import { deckLabel } from "../settingsFormat";
+import type { SettingsPanelProps } from "../settingsPanelTypes";
 
 export function useSettingsPanelModel(settings: SettingsPanelProps["settings"]) {
   const { t } = useI18n();

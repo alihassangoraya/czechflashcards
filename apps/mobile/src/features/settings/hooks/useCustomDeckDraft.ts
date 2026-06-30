@@ -1,6 +1,6 @@
 import { useState } from "react";
-import type { StudySettings } from "../../database";
-import { buildCreateDeckPatch, buildDeleteDeckPatch, buildRenameDeckPatch } from "./customDeckDraftModel";
+import type { StudySettings } from "../../../database";
+import { buildCreateDeckPatch, buildDeleteDeckPatch, buildRenameDeckPatch } from "../customDeckDraftModel";
 
 type Params = {
   settings: StudySettings;

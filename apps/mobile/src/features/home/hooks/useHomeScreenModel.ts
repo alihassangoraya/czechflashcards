@@ -1,6 +1,6 @@
-import { useI18n } from "../../i18n/I18nProvider";
-import { buildHomeScreenModel } from "./homeScreenModel";
-import type { HomeScreenProps } from "./homeScreenTypes";
+import { useI18n } from "../../../i18n/I18nProvider";
+import { buildHomeScreenModel } from "../homeScreenModel";
+import type { HomeScreenProps } from "../homeScreenTypes";
 
 export function useHomeScreenModel(props: HomeScreenProps) {
   const { t } = useI18n();

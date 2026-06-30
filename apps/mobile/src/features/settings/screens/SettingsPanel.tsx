@@ -1,8 +1,8 @@
 import React from "react";
 import { SettingsContent } from "../components/SettingsContent";
 import type { SettingsPanelProps } from "../settingsPanelTypes";
-import { useSettingsPanelModel } from "../useSettingsPanelModel";
-import { useSettingsDraft } from "../useSettingsDraft";
+import { useSettingsPanelModel } from "../hooks/useSettingsPanelModel";
+import { useSettingsDraft } from "../hooks/useSettingsDraft";
 
 export function SettingsPanel(props: SettingsPanelProps) {
   const { settings, onChange } = props;

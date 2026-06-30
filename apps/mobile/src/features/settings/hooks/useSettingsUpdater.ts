@@ -1,4 +1,4 @@
-import type { StudySettings } from "../../database";
+import type { StudySettings } from "../../../database";
 
 export function createSettingsUpdater(settings: StudySettings, onChange: (settings: StudySettings) => void) {
   function update(patch: Partial<StudySettings>) {

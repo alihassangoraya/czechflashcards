@@ -1,7 +1,7 @@
 import React from "react";
 import type { Card } from "@czech-flashcards/shared";
 import { useI18n } from "../../../i18n/I18nProvider";
-import { useGeminiTutor } from "../useGeminiTutor";
+import { useGeminiTutor } from "../hooks/useGeminiTutor";
 import { GeminiTutorButton } from "./GeminiTutorButton";
 import { GeminiTutorResultPanel } from "./GeminiTutorResultPanel";
 

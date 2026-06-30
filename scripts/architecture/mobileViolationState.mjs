@@ -2,6 +2,7 @@ export function createMobileArchitectureViolations() {
   return {
     duplicateTypes: [],
     featureRootComponents: [],
+    featureRootHooks: [],
     featureToAppImports: [],
     hardcodedText: [],
     inlineScreenProps: [],

@@ -10,6 +10,7 @@ import { inspectRootAppModules } from "./mobileRootAppRules.mjs";
 export function inspectMobileFile(source, violations) {
   inspectLineCount(source, violations);
   inspectFeaturePlacement(source, violations);
+  inspectFeatureHookPlacement(source, violations);
   inspectFeatureText(source, violations);
   inspectAppImports(source, violations);
   inspectFeatureImports(source, violations);
@@ -33,6 +34,12 @@ function inspectFeaturePlacement({ lines, rel }, violations) {
     lines.forEach((line, index) => {
       if (line.match(/export function .*:\s*\{/)) violations.inlineScreenProps.push(`${rel}:${index + 1}: use a named screen props type`);
     });
+  }
+}
+
+function inspectFeatureHookPlacement({ rel }, violations) {
+  if (rel.match(/^features\/[^/]+\/use[A-Z].*\.ts$/)) {
+    violations.featureRootHooks.push(`${rel}: move feature hooks into hooks/`);
   }
 }
 

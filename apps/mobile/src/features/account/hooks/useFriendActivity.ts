@@ -6,9 +6,9 @@ import {
   sendFriendRequest,
   type FriendRequest,
   type FriendStreak
-} from "../../sync";
-import type { createSupabaseClient } from "../../sync";
-import { useI18n } from "../../i18n/I18nProvider";
+} from "../../../sync";
+import type { createSupabaseClient } from "../../../sync";
+import { useI18n } from "../../../i18n/I18nProvider";
 
 type Params = {
   accountEmail: string | null;

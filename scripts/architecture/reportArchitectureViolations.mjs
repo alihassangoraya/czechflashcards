@@ -4,6 +4,7 @@ const mobileViolationMessages = [
   ["featureToAppImports", "Mobile architecture check failed. Feature modules must not import app orchestration:"],
   ["studyDomainFeatureImports", "Mobile architecture check failed. Study queue/session domain modules must not import feature UI modules:"],
   ["featureRootComponents", "Mobile architecture check failed. Feature UI files must live in components/ or screens/:"],
+  ["featureRootHooks", "Mobile architecture check failed. Feature hooks must live in hooks/ folders:"],
   ["inlineScreenProps", "Mobile architecture check failed. Feature screens must use named props types:"],
   ["lineCounts", "Mobile architecture check failed. Split large files into focused modules:"],
   ["duplicateTypes", "Mobile architecture check failed. Reuse canonical shared type aliases:"],

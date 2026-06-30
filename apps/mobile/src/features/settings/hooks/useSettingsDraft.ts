@@ -1,4 +1,4 @@
-import type { StudySettings } from "../../database";
+import type { StudySettings } from "../../../database";
 import { useCustomDeckDraft } from "./useCustomDeckDraft";
 import { useReminderDraft } from "./useReminderDraft";
 import { createSettingsUpdater } from "./useSettingsUpdater";

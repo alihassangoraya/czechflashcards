@@ -6,8 +6,8 @@ import type { AddWordPanelProps } from "../addWordPanelTypes";
 import { AddWordForm } from "../components/AddWordForm";
 import { AddWordIntro } from "../components/AddWordIntro";
 import { CustomWordsList } from "../components/CustomWordsList";
-import { useAddWordForm } from "../useAddWordForm";
-import { useCustomWordDeletion } from "../useCustomWordDeletion";
+import { useAddWordForm } from "../hooks/useAddWordForm";
+import { useCustomWordDeletion } from "../hooks/useCustomWordDeletion";
 
 export function AddWordPanel({ onSubmit, cards, decks, onDelete, onEdit }: AddWordPanelProps) {
   const { t } = useI18n();

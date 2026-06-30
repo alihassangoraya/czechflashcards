@@ -1,6 +1,6 @@
-import type { createSupabaseClient } from "../../sync";
-import { useI18n } from "../../i18n/I18nProvider";
-import { type AuthMode } from "./accountAuth";
+import type { createSupabaseClient } from "../../../sync";
+import { useI18n } from "../../../i18n/I18nProvider";
+import { type AuthMode } from "../accountAuth";
 import { useAccountCredentials } from "./useAccountCredentials";
 import { useFriendActivity } from "./useFriendActivity";
 

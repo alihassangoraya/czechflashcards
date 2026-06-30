@@ -3,7 +3,7 @@ import type { AccountPanelProps } from "../accountPanelTypes";
 import { OfflineAccountPanel } from "../components/OfflineAccountPanel";
 import { SignedInAccountContent } from "../components/SignedInAccountContent";
 import { SignedOutAccountContent } from "../components/SignedOutAccountContent";
-import { useAccountPanel } from "../useAccountPanel";
+import { useAccountPanel } from "../hooks/useAccountPanel";
 
 export type { AccountStudySummary } from "../accountTypes";
 

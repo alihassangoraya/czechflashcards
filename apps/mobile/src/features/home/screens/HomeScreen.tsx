@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, useWindowDimensions, View } from "react-native"
 import { HomeContent } from "../components/HomeContent";
 import { HomeHero } from "../components/HomeHero";
 import type { HomeScreenProps } from "../homeScreenTypes";
-import { useHomeScreenModel } from "../useHomeScreenModel";
+import { useHomeScreenModel } from "../hooks/useHomeScreenModel";
 
 export function HomeScreen(props: HomeScreenProps) {
   const {

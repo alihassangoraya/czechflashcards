@@ -5,8 +5,8 @@ import { useI18n } from "../../../i18n/I18nProvider";
 import { spacing } from "../../../theme/design";
 import { AuthPanel } from "../components/AuthPanel";
 import type { AuthScreenProps } from "../authScreenTypes";
-import { useAccountCredentials } from "../useAccountCredentials";
-import { useAuthSubmit } from "../useAuthSubmit";
+import { useAccountCredentials } from "../hooks/useAccountCredentials";
+import { useAuthSubmit } from "../hooks/useAuthSubmit";
 
 export function AuthScreen({ configured, initialMode, busy, onBack, onSwitchMode, onAuthenticate }: AuthScreenProps) {
   const { t } = useI18n();

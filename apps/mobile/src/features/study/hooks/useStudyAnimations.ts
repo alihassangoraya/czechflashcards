@@ -1,6 +1,6 @@
 import type { Card, ReviewGrade } from "@czech-flashcards/shared";
-import { useFlipAnimation } from "./animations/useFlipAnimation";
-import { useSwipeAnimation } from "./animations/useSwipeAnimation";
+import { useFlipAnimation } from "../animations/useFlipAnimation";
+import { useSwipeAnimation } from "../animations/useSwipeAnimation";
 
 type Params = {
   current: Card | null;
