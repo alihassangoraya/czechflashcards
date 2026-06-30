@@ -7,16 +7,16 @@ import { useHomeScreenModel } from "../hooks/useHomeScreenModel";
 
 export function HomeScreen(props: HomeScreenProps) {
   const {
-  deck,
-  settings,
-  accountEmail,
-  onStartStudy,
-  onStartQuiz,
-  onSelectCategory,
-  onSearch,
-  onAdd,
-  onSettings,
-  onAccount
+    deck,
+    settings,
+    accountEmail,
+    onStartStudy,
+    onStartQuiz,
+    onSelectCategory,
+    onSearch,
+    onAdd,
+    onSettings,
+    onAccount
   } = props;
   const { width } = useWindowDimensions();
   const isWideLayout = width >= 768;
@@ -24,22 +24,22 @@ export function HomeScreen(props: HomeScreenProps) {
 
   return (
     <View style={styles.screen}>
-    <ScrollView style={styles.scroll}>
-      <HomeHero
-        activeDeckLabel={model.activeDeckLabel}
-        examLevel={settings.examLevel}
-        dueCount={model.dueCount}
-        accountEmail={accountEmail}
-        wide={isWideLayout}
-        onStartStudy={onStartStudy}
-        onStartQuiz={onStartQuiz}
-        onSearch={onSearch}
-        onAdd={onAdd}
-        onSettings={onSettings}
-        onAccount={onAccount}
-      />
-      <HomeContent deck={deck} settings={settings} model={model} onSelectCategory={onSelectCategory} />
-    </ScrollView>
+      <ScrollView style={styles.scroll}>
+        <HomeHero
+          activeDeckLabel={model.activeDeckLabel}
+          examLevel={settings.examLevel}
+          dueCount={model.dueCount}
+          accountEmail={accountEmail}
+          wide={isWideLayout}
+          onStartStudy={onStartStudy}
+          onStartQuiz={onStartQuiz}
+          onSearch={onSearch}
+          onAdd={onAdd}
+          onSettings={onSettings}
+          onAccount={onAccount}
+        />
+        <HomeContent deck={deck} settings={settings} model={model} onSelectCategory={onSelectCategory} />
+      </ScrollView>
     </View>
   );
 }

@@ -28,6 +28,8 @@ export function buildHomeScreenModel({ deck, allCards, states, settings, savedCo
   return { activeDeckLabel, categories, dailyGoalProgress, dueCount };
 }
 
+export type HomeScreenModel = ReturnType<typeof buildHomeScreenModel>;
+
 function countDueCards(deck: Card[], states: ReviewStates) {
   const now = Date.now();
   return deck.filter((card) => (states[card.id]?.dueAt || 0) <= now).length;
