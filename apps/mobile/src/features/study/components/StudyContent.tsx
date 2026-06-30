@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet } from "react-native";
 import { spacing } from "../../../theme/design";
 import { StudyContentCard } from "./StudyContentCard";
 import { StudyRevealedContent } from "./StudyRevealedContent";
-import type { StudyContentProps } from "../studyScreenTypes";
+import type { StudyContentProps } from "../types/studyScreenTypes";
 
 export function StudyContent({
   reviewInterval,

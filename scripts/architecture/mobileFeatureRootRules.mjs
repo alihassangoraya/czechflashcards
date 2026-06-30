@@ -1,4 +1,4 @@
-const guardedFeatureRoots = ["account", "home", "quiz", "settings", "words"];
+const guardedFeatureRoots = ["account", "home", "quiz", "settings", "study", "words"];
 
 export function inspectFocusedFeatureRoots({ rel }, violations) {
   const match = rel.match(/^features\/([^/]+)\/(?!index\.ts$)[^/]+\.(ts|tsx)$/);

@@ -1,4 +1,4 @@
-import { displaySelectedMeaning } from "../studyMeaning";
+import { displaySelectedMeaning } from "../models/studyMeaning";
 import type { StudyCardProps } from "./studyCardTypes";
 import type { StudyContentCardProps } from "./studyContentCardTypes";
 

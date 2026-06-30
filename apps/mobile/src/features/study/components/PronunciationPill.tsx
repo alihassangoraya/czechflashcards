@@ -4,7 +4,7 @@ import type { Card } from "@czech-flashcards/shared";
 import { MaterialIcons } from "../../../components/MaterialIcons";
 import { speak } from "../../../services/speech";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
-import { pronunciationHint } from "../studyMeaning";
+import { pronunciationHint } from "../models/studyMeaning";
 
 export function PronunciationPill({ card }: { card: Card }) {
   return (

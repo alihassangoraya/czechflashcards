@@ -2,7 +2,7 @@ import React from "react";
 import { StudyContent } from "../components/StudyContent";
 import { StudyHeader } from "../components/StudyHeader";
 import { StudyProgress } from "../components/StudyProgress";
-import type { StudyScreenProps } from "../studyScreenTypes";
+import type { StudyScreenProps } from "../types/studyScreenTypes";
 
 export function StudyScreen({
   sessionReviews,

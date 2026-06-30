@@ -1,6 +1,6 @@
-import type { StudyContentCardProps } from "./components/studyContentCardTypes";
-import type { StudyProgressProps } from "./components/StudyProgress";
-import type { StudyRevealedContentProps } from "./components/StudyRevealedContent";
+import type { StudyContentCardProps } from "../components/studyContentCardTypes";
+import type { StudyProgressProps } from "../components/StudyProgress";
+import type { StudyRevealedContentProps } from "../components/StudyRevealedContent";
 
 type StudyHeaderProps = {
   onBack: () => void;

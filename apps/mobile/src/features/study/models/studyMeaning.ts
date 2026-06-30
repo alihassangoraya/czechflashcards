@@ -1,6 +1,6 @@
 import type { Card } from "@czech-flashcards/shared";
 import { selectedMeaning } from "@czech-flashcards/shared";
-import type { StudySettings } from "../../database";
+import type { StudySettings } from "../../../database";
 
 export function pronunciationHint(word: string) {
   return `[ ${word} ] · stress the first syllable`;
