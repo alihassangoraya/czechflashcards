@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { applyReviewGrade, formatInterval, type Card, type ReviewGrade, type ReviewState } from "@czech-flashcards/shared";
 import { getReviewState, saveReviewResult, undoReviewResult, type AppDatabase, type StudySettings } from "../database";
-import { useStudyAnimations } from "../features/study/useStudyAnimations";
+import { useStudyAnimations } from "../features/study";
 import type { UndoReview } from "./appTypes";
 import { useStudyQueue } from "./useStudyQueue";
 

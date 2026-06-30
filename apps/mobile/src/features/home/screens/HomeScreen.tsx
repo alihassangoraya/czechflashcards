@@ -11,7 +11,7 @@ import { DeckGrid } from "../components/DeckGrid";
 import { HomeHero } from "../components/HomeHero";
 import { StudyGuide } from "../components/StudyGuide";
 import { baseDecks, countForDeck, type Category } from "../homeContent";
-import { deckLabel } from "../../settings/settingsFormat";
+import { deckLabel } from "../../settings";
 
 type Props = {
   deck: Card[];

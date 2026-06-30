@@ -6,7 +6,7 @@ import {
   StyleSheet,
 } from "react-native";
 import type { Card, ReviewGrade } from "@czech-flashcards/shared";
-import { GeminiTutorPanel } from "../../tutor/GeminiTutorPanel";
+import { GeminiTutorPanel } from "../../tutor";
 import type { StudySettings } from "../../../database";
 import { spacing } from "../../../theme/design";
 import { ReviewButtons } from "../components/ReviewButtons";

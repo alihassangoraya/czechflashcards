@@ -9,7 +9,7 @@ import {
   sortDueCardsByUrgency,
   takeRelearningCardFromQueue,
   type RelearningEntry
-} from "../features/study/studyQueue";
+} from "../features/study";
 import { useI18n } from "../i18n/I18nProvider";
 
 const RELEARNING_MIN_CARDS = 10;

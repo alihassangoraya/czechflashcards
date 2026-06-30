@@ -34,6 +34,7 @@ await collect(srcRoot);
 
 const violations = [];
 const hardcodedTextViolations = [];
+const deepFeatureImportViolations = [];
 for (const file of files) {
   const rel = relative(srcRoot, file);
   const maxLines = maxLinesByPath.get(rel) || defaultMaxLines;
@@ -47,6 +48,13 @@ for (const file of files) {
       if (textMatch && !textMatch[1].includes("{")) hardcodedTextViolations.push(`${rel}:${index + 1}: ${textMatch[1].trim()}`);
     });
   }
+
+  if (rel.startsWith("app/")) {
+    lines.forEach((line, index) => {
+      const deepFeatureImport = line.match(/from\s+["']\.\.\/features\/[^/"']+\/[^"']+["']/);
+      if (deepFeatureImport) deepFeatureImportViolations.push(`${rel}:${index + 1}: ${line.trim()}`);
+    });
+  }
 }
 
 if (violations.length) {
@@ -58,6 +66,12 @@ if (violations.length) {
 if (hardcodedTextViolations.length) {
   console.error("Mobile architecture check failed. Move hardcoded UI text into i18n translations:");
   console.error(hardcodedTextViolations.join("\n"));
+  process.exit(1);
+}
+
+if (deepFeatureImportViolations.length) {
+  console.error("Mobile architecture check failed. App orchestration must import features through feature barrels:");
+  console.error(deepFeatureImportViolations.join("\n"));
   process.exit(1);
 }
 
