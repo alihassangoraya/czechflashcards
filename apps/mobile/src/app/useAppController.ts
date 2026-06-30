@@ -7,7 +7,7 @@ import { useCardManagement } from "./cards/useCardManagement";
 import { useFilteredStudyDeck } from "./cards/useFilteredStudyDeck";
 import { useAppNavigation } from "./navigation/useAppNavigation";
 import { useSettingsTools } from "./settingsTools/useSettingsTools";
-import { useStudySession } from "./useStudySession";
+import { useStudySession } from "./study/useStudySession";
 import { useToast } from "./useToast";
 
 export function useAppController(supabase: SupabaseClient | null): AppShellProps | null {

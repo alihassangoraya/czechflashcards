@@ -14,6 +14,7 @@ const mobileViolationMessages = [
   ["rootAppNavigation", "Mobile architecture check failed. App navigation and route modules must live under app/navigation/:"],
   ["rootAppSettingsTools", "Mobile architecture check failed. App settings tool modules must live under app/settingsTools/:"],
   ["rootAppShellData", "Mobile architecture check failed. App shell data projection must live under app/shellData/:"],
+  ["rootAppStudy", "Mobile architecture check failed. App study modules must live under focused study folders:"],
   ["rootServices", "Mobile architecture check failed. Service implementations must live in domain service folders:"]
 ];
 

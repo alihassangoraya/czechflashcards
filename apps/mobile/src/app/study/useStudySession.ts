@@ -1,9 +1,9 @@
 import type { Card, ReviewGrade, ReviewState } from "@czech-flashcards/shared";
-import type { AppDatabase, StudySettings } from "../database";
-import { useStudyAnimations } from "../features/study";
-import { formatReviewInterval } from "./studySession/reviewInterval";
-import { useStudyReviewActions } from "./studySession/useStudyReviewActions";
-import { useStudyQueue } from "./useStudyQueue";
+import type { AppDatabase, StudySettings } from "../../database";
+import { useStudyAnimations } from "../../features/study";
+import { useStudyQueue } from "../studyQueue/useStudyQueue";
+import { formatReviewInterval } from "../studySession/reviewInterval";
+import { useStudyReviewActions } from "../studySession/useStudyReviewActions";
 
 type Props = {
   db: AppDatabase | null;

@@ -3,7 +3,7 @@ import type { Card } from "@czech-flashcards/shared";
 import type { AppData } from "../data/useAppData";
 import type { AppNavigation } from "../navigation/useAppNavigation";
 import type { CardManagement } from "../cards/useCardManagement";
-import type { StudySession } from "../useStudySession";
+import type { StudySession } from "../study/useStudySession";
 
 export type AppShellDataInput = {
   data: AppData;

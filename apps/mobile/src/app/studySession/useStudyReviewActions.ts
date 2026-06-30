@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { ReviewGrade } from "@czech-flashcards/shared";
 import type { AppDatabase, StudySettings } from "../../database";
-import type { StudyQueue } from "../useStudyQueue";
+import type { StudyQueue } from "../studyQueue/useStudyQueue";
 import type { UndoReview } from "./reviewTypes";
 import { gradeStudyCard, undoStudyReview } from "./reviewWorkflow";
 

@@ -5,6 +5,7 @@ export function inspectRootAppModules({ rel }, violations) {
   inspectRootAppNavigation(rel, violations);
   inspectRootAppSettingsTools(rel, violations);
   inspectRootAppShellData(rel, violations);
+  inspectRootAppStudy(rel, violations);
 }
 
 function inspectRootAppData(rel, violations) {
@@ -40,5 +41,11 @@ function inspectRootAppSettingsTools(rel, violations) {
 function inspectRootAppShellData(rel, violations) {
   if (rel === "app/appShellDataProps.ts") {
     violations.rootAppShellData.push(`${rel}: move shell data projection into app/shellData/`);
+  }
+}
+
+function inspectRootAppStudy(rel, violations) {
+  if (rel.match(/^app\/useStudy(?:Queue|Session)\.ts$/)) {
+    violations.rootAppStudy.push(`${rel}: move app study modules into app/study/, app/studyQueue/, or app/studySession/`);
   }
 }
