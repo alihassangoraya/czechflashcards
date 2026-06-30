@@ -1,25 +1,19 @@
-import { addCardToCustomDeck, addCustomCard, deleteCustomCard, type AppDatabase } from "../../database";
 import type { AddWordValues } from "../appShellTypes";
-import { createCustomCard } from "./cardFactory";
+import { removeCustomWord, saveCustomWord } from "./customWordPersistence";
+import type { CustomWordActionProps } from "./customWordTypes";
+import { isValidCustomWord } from "./customWordValidation";
 
-type Props = {
-  db: AppDatabase | null;
-  refresh: (database?: AppDatabase | null) => Promise<void>;
-};
-
-export function useCustomWordActions({ db, refresh }: Props) {
+export function useCustomWordActions({ db, refresh }: CustomWordActionProps) {
   async function addWord(values: AddWordValues) {
     if (!db) return;
-    if (!values.cz.trim() || !values.en.trim()) return;
-    const card = createCustomCard(values);
-    await addCustomCard(db, card);
-    if (values.tag.startsWith("deck-")) await addCardToCustomDeck(db, values.tag, card.id);
+    if (!isValidCustomWord(values)) return;
+    await saveCustomWord(db, values);
     await refresh(db);
   }
 
   async function deleteWord(cardId: string) {
     if (!db) return;
-    await deleteCustomCard(db, cardId);
+    await removeCustomWord(db, cardId);
     await refresh(db);
   }
 
