@@ -1,33 +1,8 @@
 import React from "react";
-import { Animated, GestureResponderHandlers } from "react-native";
-import type { Card } from "@czech-flashcards/shared";
-import type { StudySettings } from "../../../database";
-import type { SwipeDirection } from "../animations/animationTypes";
+import { CurrentStudyCard } from "./CurrentStudyCard";
 import { EmptyStudyCard } from "./EmptyStudyCard";
-import { StudyCardFaces } from "./StudyCardFaces";
 import { StudyCardMotion } from "./StudyCardMotion";
-
-type Props = {
-  current: Card | null;
-  currentSecondaryMeaning: string;
-  savedCardIds: Set<string>;
-  revealed: boolean;
-  flipping: boolean;
-  grading: boolean;
-  swipeDirection: SwipeDirection | null;
-  lastReviewCard: Card | null;
-  dragX: Animated.Value;
-  flipProgress: Animated.Value;
-  cardRotation: Animated.AnimatedInterpolation<string | number>;
-  panHandlers: GestureResponderHandlers;
-  meaningLanguage: StudySettings["meaningLanguage"];
-  onFlipCard: () => void;
-  onToggleSaved: (cardId: string) => void;
-  onManageDecks: (card: Card) => void;
-  onEditCard: () => void;
-  onCompleteSwipe: (direction: SwipeDirection) => void;
-  onUndoLastReview: () => void;
-};
+import type { StudyCardProps } from "./studyCardTypes";
 
 export function StudyCard({
   current,
@@ -49,17 +24,17 @@ export function StudyCard({
   onEditCard,
   onCompleteSwipe,
   onUndoLastReview
-}: Props) {
+}: StudyCardProps) {
   return (
     <StudyCardMotion cardRotation={cardRotation} dragX={dragX} panHandlers={panHandlers} swipeDirection={swipeDirection}>
       {current ? (
-        <StudyCardFaces
+        <CurrentStudyCard
           current={current}
           currentSecondaryMeaning={currentSecondaryMeaning}
           flipProgress={flipProgress}
           flipping={flipping}
           grading={grading}
-          isSaved={savedCardIds.has(current.id)}
+          savedCardIds={savedCardIds}
           lastReviewCard={lastReviewCard}
           meaningLanguage={meaningLanguage}
           revealed={revealed}
