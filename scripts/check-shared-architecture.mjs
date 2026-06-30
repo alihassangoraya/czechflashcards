@@ -4,6 +4,7 @@ import { join, relative } from "node:path";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const sharedSrc = join(root, "packages/shared/src");
+const sharedTest = join(root, "packages/shared/test");
 const maxLines = 40;
 const files = [];
 
@@ -16,16 +17,17 @@ async function collect(directory) {
 }
 
 await collect(sharedSrc);
+await collect(sharedTest);
 
 const violations = [];
 for (const file of files) {
   const content = await readFile(file, "utf8");
   const lineCount = content.split("\n").length;
-  if (lineCount > maxLines) violations.push(`${relative(sharedSrc, file)}: ${lineCount} lines > ${maxLines}`);
+  if (lineCount > maxLines) violations.push(`${relative(root, file)}: ${lineCount} lines > ${maxLines}`);
 }
 
 if (violations.length) {
-  console.error("Shared architecture check failed. Split large domain/runtime modules:");
+  console.error("Shared architecture check failed. Split large domain/runtime/test modules:");
   console.error(violations.join("\n"));
   process.exit(1);
 }
