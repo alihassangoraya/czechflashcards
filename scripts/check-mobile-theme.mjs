@@ -24,11 +24,13 @@ const literalColor = /#[0-9a-f]{3,8}\b|rgba?\(/i;
 const literalFontWeight = /fontWeight:\s*["'][^"']+["']/;
 const literalTypographyMetric = /(fontSize|lineHeight):\s*\d/;
 const literalLayoutMetric = /\b(gap|rowGap|columnGap|margin|marginTop|marginBottom|marginHorizontal|marginVertical|marginLeft|marginRight|padding|paddingTop|paddingBottom|paddingHorizontal|paddingVertical|paddingLeft|paddingRight|width|height|minWidth|maxWidth|minHeight|maxHeight|borderRadius|borderWidth|borderTopWidth|borderBottomWidth|top|left|right|bottom|zIndex):\s*(-?\d+(?:\.\d+)?)/;
+const literalMotionMetric = /\b(duration|perspective):\s*(-?\d+(?:\.\d+)?)/;
 const literalIconSize = /\bsize=\{(\d+(?:\.\d+)?)\}/;
 const colorViolations = [];
 const fontWeightViolations = [];
 const typographyMetricViolations = [];
 const layoutMetricViolations = [];
+const motionMetricViolations = [];
 const iconSizeViolations = [];
 
 for (const file of files) {
@@ -39,6 +41,8 @@ for (const file of files) {
     if (!fontWeightAllowList.has(file) && literalTypographyMetric.test(line)) typographyMetricViolations.push(`${file}:${index + 1}`);
     const layoutMatch = line.match(literalLayoutMetric);
     if (layoutMatch && Number(layoutMatch[2]) !== 0) layoutMetricViolations.push(`${file}:${index + 1}`);
+    const motionMatch = line.match(literalMotionMetric);
+    if (motionMatch && Number(motionMatch[2]) !== 0) motionMetricViolations.push(`${file}:${index + 1}`);
     const iconSizeMatch = line.match(literalIconSize);
     if (iconSizeMatch && Number(iconSizeMatch[1]) !== 0) iconSizeViolations.push(`${file}:${index + 1}`);
   });
@@ -65,6 +69,12 @@ if (typographyMetricViolations.length) {
 if (layoutMetricViolations.length) {
   console.error("Move UI spacing and dimension values into apps/mobile/src/theme/design.ts:");
   console.error(layoutMetricViolations.join("\n"));
+  process.exit(1);
+}
+
+if (motionMetricViolations.length) {
+  console.error("Move UI motion values into apps/mobile/src/theme/design.ts:");
+  console.error(motionMetricViolations.join("\n"));
   process.exit(1);
 }
 

@@ -1,6 +1,6 @@
 import React from "react";
 import { Animated, Pressable, StyleSheet } from "react-native";
-import { colors, radius, spacing } from "../../../theme/design";
+import { colors, motion, radius, spacing } from "../../../theme/design";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -24,7 +24,7 @@ export function CardFacePressable({ accessibilityLabel, back, children, flipProg
         back && styles.cardBack,
         {
           transform: [
-            { perspective: 1200 },
+            { perspective: motion.cardPerspective },
             { rotateY: flipProgress.interpolate({ inputRange: [0, 1], outputRange }) }
           ]
         }

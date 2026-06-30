@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type MutableRefObject } from "react";
 import { Animated, Easing } from "react-native";
 import type { Card } from "@czech-flashcards/shared";
+import { motion } from "../../../theme/design";
 
 type Params = {
   consumedSwipe: MutableRefObject<boolean>;
@@ -29,7 +30,7 @@ export function useFlipAnimation({ consumedSwipe, current, revealed, onRevealCha
     setFlipping(true);
     Animated.timing(flipProgress, {
       toValue: nextRevealed ? 1 : 0,
-      duration: 400,
+      duration: motion.cardFlipDuration,
       easing: Easing.inOut(Easing.cubic),
       useNativeDriver: true
     }).start(({ finished }) => {

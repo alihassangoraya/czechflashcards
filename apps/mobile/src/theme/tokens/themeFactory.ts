@@ -1,10 +1,11 @@
 import { radius, size, spacing } from "./baseTokens";
 import { darkColors, lightColors } from "./colors";
+import { motion } from "./motion";
 import { typography } from "./typography";
 
 export type ThemeMode = "light" | "dark";
 
-const shared = { spacing, radius, size, typography } as const;
+const shared = { spacing, radius, size, typography, motion } as const;
 
 export const themes = {
   light: { ...shared, colors: lightColors },
