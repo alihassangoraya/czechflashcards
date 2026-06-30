@@ -1,5 +1,6 @@
 import { DEFAULT_SETTINGS, persistDatabase, type AppDatabase, type StudySettings } from "../../database";
 import type { SupabaseClient } from "./supabaseClient";
+import type { SyncSnapshot } from "./snapshotTypes";
 import type { SyncStatus } from "./syncTypes";
 
 export async function restoreSyncSnapshot(db: AppDatabase, supabase: SupabaseClient | null): Promise<SyncStatus> {
@@ -9,18 +10,18 @@ export async function restoreSyncSnapshot(db: AppDatabase, supabase: SupabaseCli
   const { data, error } = await supabase.rpc("sync_snapshot");
   if (error || !data) return "error";
 
-  const snapshot = data as Record<string, any[]>;
+  const snapshot = data as Partial<SyncSnapshot>;
   for (const row of snapshot.user_cards || []) {
     db.store.reviewStates[row.card_id] = {
       cardId: row.card_id,
       knownStreak: row.known_streak,
       againCount: row.again_count,
       dueAt: Date.parse(row.due_at) || 0,
-      seen: row.seen
+      seen: typeof row.seen === "number" ? row.seen : Number(row.seen)
     };
   }
   for (const row of snapshot.custom_cards || []) {
-    const card = { id: row.id, cz: row.cz, en: row.en, hi: row.hi, ur: row.ur, sentence: row.sentence, sentenceEn: row.sentence_en, level: row.level, tags: row.tags, source: "custom" as const };
+    const card = { id: row.id, cz: row.cz, en: row.en, hi: row.hi || "", ur: row.ur || "", sentence: row.sentence || "", sentenceEn: row.sentence_en || "", level: row.level, tags: row.tags, source: "custom" as const };
     const cardIndex = db.store.cards.findIndex((entry) => entry.id === card.id);
     if (cardIndex >= 0) db.store.cards[cardIndex] = card;
     else db.store.cards.push(card);
