@@ -232,7 +232,7 @@ this repository. Read it before changing product behavior or deployment files.
 | --- | --- |
 | `apps/mobile` | Canonical React Native app UI for iOS, Android, and web. |
 | `apps/mobile/dist` | Generated web bundle served in development and deployment. Never hand-edit. |
-| `index.html`, `app.js`, `styles.css` | Legacy static implementation retained for migration reference only. |
+| `legacy-web` | Legacy static implementation retained for migration reference only. Not deployed. |
 | `data/vocabulary.js` | Core vocabulary source. |
 | `data/extended-lemmas.js` | Extended vocabulary source and example sentences. |
 | `data/focus-decks.js` | A2/B1 Focus curation layer; tags two separate 1,000-word decks. |
@@ -324,7 +324,7 @@ For a learner-facing feature, make this sequence the default:
 
 - The deployed web application is the Vite build in `apps/mobile/dist`; run
   `npm run build:web` before deployment. Do not deploy the legacy root
-  `index.html`, `app.js`, or `styles.css` as the application UI.
+  `legacy-web` static implementation as the application UI.
 - Cloudflare Worker assets are configured to serve `apps/mobile/dist`, keeping
   the web release on the same UI code as iOS and Android.
 - The production static process is `czech-flashcards`, served by PM2 from
