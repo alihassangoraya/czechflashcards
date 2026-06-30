@@ -1,6 +1,6 @@
 import React from "react";
 import type { Card } from "@czech-flashcards/shared";
-import type { CustomDeck } from "../../../database";
+import type { CustomDeck, DeckMemberships } from "../../../database";
 import { CustomDeckCreateRow } from "./CustomDeckCreateRow";
 import { CustomDeckList } from "./CustomDeckList";
 import { createCustomDeckListItems } from "./customDeckListItems";
@@ -15,7 +15,7 @@ type CustomDeckCreateControls = {
 export type CustomDeckManagementProps = CustomDeckCreateControls & CustomDeckListControls & {
   decks: CustomDeck[];
   cards: Card[];
-  deckMemberships: Record<string, string[]>;
+  deckMemberships: DeckMemberships;
 };
 
 export function CustomDeckManagement({ deckName, decks, cards, deckMemberships, onDeckNameChange, onCreateDeck, ...listControls }: CustomDeckManagementProps) {

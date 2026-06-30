@@ -13,6 +13,8 @@ export type StudySettings = {
 };
 
 export type CustomCard = { card: Card; deletedAt?: number };
+export type DeckMemberships = Record<string, string[]>;
+export type SavedCardIds = Set<string>;
 export type SyncEntry = { id: number; type: string; payload: unknown; createdAt: number; syncedAt?: number };
 
 export type WebStore = {
@@ -22,7 +24,7 @@ export type WebStore = {
   reviews: ReviewEvent[];
   dailyProgress: Record<string, DailyProgress>;
   customCards: Record<string, CustomCard>;
-  deckMemberships: Record<string, string[]>;
+  deckMemberships: DeckMemberships;
   overrides: Record<string, Card>;
   savedCardIds: string[];
   settings?: StudySettings;

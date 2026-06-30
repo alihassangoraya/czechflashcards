@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { StyleSheet, View } from "react-native";
 import type { Card, MeaningLanguage } from "@czech-flashcards/shared";
+import type { SavedCardIds } from "../../../database";
 import { spacing } from "../../../theme/design";
 import { SearchField } from "../components/SearchField";
 import { SearchNoResults } from "../components/SearchNoResults";
@@ -13,7 +14,7 @@ type Props = {
   cards: Card[];
   query: string;
   meaningLanguage: MeaningLanguage;
-  savedCardIds: ReadonlySet<string>;
+  savedCardIds: SavedCardIds;
   onQueryChange: (value: string) => void;
   onStudy: (card: Card) => void;
   onToggleSaved: (card: Card) => void;

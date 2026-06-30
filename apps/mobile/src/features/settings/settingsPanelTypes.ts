@@ -1,5 +1,5 @@
 import type { Card } from "@czech-flashcards/shared";
-import type { StudySettings } from "../../database";
+import type { DeckMemberships, StudySettings } from "../../database";
 import type { SyncStatus } from "../../sync";
 
 export type SettingsPanelProps = {
@@ -8,7 +8,7 @@ export type SettingsPanelProps = {
   syncStatus: SyncStatus;
   notice?: string;
   cards: Card[];
-  deckMemberships: Record<string, string[]>;
+  deckMemberships: DeckMemberships;
   onChange: (settings: StudySettings) => void;
   onSyncNow: () => void;
   onAccount: () => void;

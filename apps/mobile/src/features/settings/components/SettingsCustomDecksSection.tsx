@@ -1,6 +1,6 @@
 import React from "react";
 import type { Card } from "@czech-flashcards/shared";
-import type { StudySettings } from "../../../database";
+import type { DeckMemberships, StudySettings } from "../../../database";
 import type { useSettingsDraft } from "../hooks/useSettingsDraft";
 import { CustomDeckSection } from "./CustomDeckSection";
 
@@ -8,7 +8,7 @@ type SettingsDraft = ReturnType<typeof useSettingsDraft>;
 
 type Props = {
   cards: Card[];
-  deckMemberships: Record<string, string[]>;
+  deckMemberships: DeckMemberships;
   draft: SettingsDraft;
   settings: StudySettings;
 };

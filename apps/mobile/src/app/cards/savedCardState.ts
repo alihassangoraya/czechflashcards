@@ -1,4 +1,6 @@
-export type SavedCardIds = Set<string>;
+import type { SavedCardIds } from "../../database";
+
+export type { SavedCardIds };
 
 export function updateSavedCardIds(savedCardIds: SavedCardIds, cardId: string, saved: boolean): SavedCardIds {
   const next = new Set(savedCardIds);

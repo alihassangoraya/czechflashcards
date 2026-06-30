@@ -1,14 +1,14 @@
 import { useState } from "react";
 import type { Card, ReviewState } from "@czech-flashcards/shared";
-import type { AppDatabase, StudySettings } from "../../database";
+import type { AppDatabase, DeckMemberships, SavedCardIds, StudySettings } from "../../database";
 import type { SyncStatus } from "../../sync";
 import type { AppDataSnapshot } from "./appDataSnapshot";
 
 export function useAppDataState() {
   const [db, setDb] = useState<AppDatabase | null>(null);
   const [cards, setCards] = useState<Card[]>([]);
-  const [savedCardIds, setSavedCardIds] = useState<Set<string>>(new Set());
-  const [deckMemberships, setDeckMemberships] = useState<Record<string, string[]>>({});
+  const [savedCardIds, setSavedCardIds] = useState<SavedCardIds>(new Set());
+  const [deckMemberships, setDeckMemberships] = useState<DeckMemberships>({});
   const [states, setStates] = useState<Record<string, ReviewState>>({});
   const [settings, setSettingsState] = useState<StudySettings | null>(null);
   const [dailyProgress, setDailyProgress] = useState("0 / 30");

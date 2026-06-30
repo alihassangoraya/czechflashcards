@@ -1,13 +1,14 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import type { Card, MeaningLanguage } from "@czech-flashcards/shared";
+import type { SavedCardIds } from "../../../database";
 import { spacing } from "../../../theme/design";
 import { SearchResultRow } from "./SearchResultRow";
 
 type Props = {
   results: Card[];
   meaningLanguage: MeaningLanguage;
-  savedCardIds: ReadonlySet<string>;
+  savedCardIds: SavedCardIds;
   onStudy: (card: Card) => void;
   onToggleSaved: (card: Card) => void;
   onManageDecks: (card: Card) => void;

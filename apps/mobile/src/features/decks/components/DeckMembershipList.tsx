@@ -1,14 +1,14 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import type { Card } from "@czech-flashcards/shared";
-import type { CustomDeck } from "../../../database";
+import type { CustomDeck, DeckMemberships } from "../../../database";
 import { spacing } from "../../../theme/design";
 import { DeckMembershipRow } from "./DeckMembershipRow";
 
 type Props = {
   card: Card;
   decks: CustomDeck[];
-  deckMemberships: Record<string, string[]>;
+  deckMemberships: DeckMemberships;
   onAddToDeck: (deckId: string, cardId: string) => void;
   onRemoveFromDeck: (deckId: string, cardId: string) => void;
 };

@@ -1,4 +1,4 @@
-import type { AppDatabase } from "./storageTypes";
+import type { AppDatabase, DeckMemberships } from "./storageTypes";
 import { enqueueSync } from "./syncQueueRepository";
 
 export async function addCardToCustomDeck(db: AppDatabase, deckId: string, cardId: string): Promise<void> {
@@ -15,6 +15,6 @@ export async function removeCardFromCustomDeck(db: AppDatabase, deckId: string, 
   await enqueueSync(db, "deck_card_removed", { deckId, cardId, removedAt: Date.now() });
 }
 
-export async function loadDeckMemberships(db: AppDatabase): Promise<Record<string, string[]>> {
+export async function loadDeckMemberships(db: AppDatabase): Promise<DeckMemberships> {
   return db.store.deckMemberships;
 }

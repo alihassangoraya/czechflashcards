@@ -1,4 +1,6 @@
-export type DeckMemberships = Record<string, string[]>;
+import type { DeckMemberships } from "../../database";
+
+export type { DeckMemberships };
 
 function updateDeckMembership(
   memberships: DeckMemberships,

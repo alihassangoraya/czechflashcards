@@ -1,12 +1,12 @@
 import type { Animated } from "react-native";
 import type { Card } from "@czech-flashcards/shared";
-import type { StudySettings } from "../../../database";
+import type { SavedCardIds, StudySettings } from "../../../database";
 import type { SwipeDirection } from "../animations/animationTypes";
 
 export type CurrentStudyCardProps = {
   current: Card;
   currentSecondaryMeaning: string;
-  savedCardIds: Set<string>;
+  savedCardIds: SavedCardIds;
   revealed: boolean;
   flipping: boolean;
   grading: boolean;

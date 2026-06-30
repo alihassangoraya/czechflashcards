@@ -5,13 +5,15 @@ import {
   loadDeckMemberships,
   loadReviewStates,
   loadSavedCardIds,
-  type AppDatabase
+  type AppDatabase,
+  type DeckMemberships,
+  type SavedCardIds
 } from "../../database";
 
 export type AppDataSnapshot = {
   cards: Card[];
-  savedCardIds: Set<string>;
-  deckMemberships: Record<string, string[]>;
+  savedCardIds: SavedCardIds;
+  deckMemberships: DeckMemberships;
   states: Record<string, ReviewState>;
   dailyProgress: string;
 };

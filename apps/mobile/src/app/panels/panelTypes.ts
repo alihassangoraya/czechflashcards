@@ -1,6 +1,6 @@
 import type { Card } from "@czech-flashcards/shared";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { StudySettings } from "../../database";
+import type { DeckMemberships, SavedCardIds, StudySettings } from "../../database";
 import type { AccountPanelProps, AccountStudySummary } from "../../features/account";
 import type { SyncStatus } from "../../sync";
 import type { AddWordValues, CorrectionValues } from "../appShellTypes";
@@ -11,8 +11,8 @@ export type AppPanelProps = {
   cards: Card[];
   customCards: Card[];
   settings: StudySettings;
-  savedCardIds: Set<string>;
-  deckMemberships: Record<string, string[]>;
+  savedCardIds: SavedCardIds;
+  deckMemberships: DeckMemberships;
   current: Card | null;
   deckManagementCard: Card | null;
   editingCard: Card | null;

@@ -1,7 +1,7 @@
-import type { AppDatabase } from "./storageTypes";
+import type { AppDatabase, SavedCardIds } from "./storageTypes";
 import { enqueueSync } from "./syncQueueRepository";
 
-export async function loadSavedCardIds(db: AppDatabase): Promise<Set<string>> {
+export async function loadSavedCardIds(db: AppDatabase): Promise<SavedCardIds> {
   return new Set(db.store.savedCardIds);
 }
 
