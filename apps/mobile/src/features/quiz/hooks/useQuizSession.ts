@@ -35,3 +35,5 @@ export function useQuizSession(deck: Card[], onClose: () => void) {
     next
   };
 }
+
+export type QuizSession = ReturnType<typeof useQuizSession>;
