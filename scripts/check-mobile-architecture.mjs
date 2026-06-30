@@ -16,8 +16,7 @@ const hardcodedTextAllowList = new Set([
   "features/home/homeContent.ts",
   "features/words/wordDecks.ts",
   "features/settings/settingsFormat.ts",
-  "components/MaterialIcons.tsx",
-  "services/geminiTutor.ts"
+  "components/MaterialIcons.tsx"
 ]);
 const ignoredDirectories = new Set(["assets", "dist", "node_modules"]);
 const files = [];
