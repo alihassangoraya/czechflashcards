@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Animated, Easing, PanResponder } from "react-native";
+import { Animated, PanResponder } from "react-native";
 import type { Card, ReviewGrade } from "@czech-flashcards/shared";
 import type { SwipeDirection } from "./animationTypes";
+import { animateSwipeAway, springCardBack } from "./swipeAnimations";
+import { swipeConfig } from "./swipeConfig";
+import { directionFromDrag, gradeFromSwipe, shouldCaptureHorizontalSwipe } from "./swipeMath";
 
 type Params = {
   current: Card | null;
@@ -23,17 +26,13 @@ export function useSwipeAnimation({ current, grading, onSwipeGrade }: Params) {
     setSwipeDirection(null);
   }, [current?.id]);
 
-  const cardRotation = dragX.interpolate({ inputRange: [-120, 0, 120], outputRange: ["-4deg", "0deg", "4deg"], extrapolate: "clamp" });
+  const cardRotation = dragX.interpolate({ inputRange: [-swipeConfig.rotationRange, 0, swipeConfig.rotationRange], outputRange: ["-4deg", "0deg", "4deg"], extrapolate: "clamp" });
 
   function resetCancelledSwipe() {
     swipeCompleting.current = false;
     consumedSwipe.current = false;
     setSwipeDirection(null);
-    dragX.stopAnimation(() => {
-      Animated.spring(dragX, { toValue: 0, useNativeDriver: true, speed: 22, bounciness: 5 }).start(({ finished }) => {
-        if (finished) dragX.setValue(0);
-      });
-    });
+    springCardBack(dragX);
   }
 
   function completeSwipe(direction: SwipeDirection) {
@@ -41,23 +40,18 @@ export function useSwipeAnimation({ current, grading, onSwipeGrade }: Params) {
     consumedSwipe.current = true;
     swipeCompleting.current = true;
     setSwipeDirection(direction);
-    Animated.timing(dragX, {
-      toValue: direction === "known" ? 460 : -460,
-      duration: 230,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: true
-    }).start(({ finished }) => {
+    animateSwipeAway(dragX, direction, (finished) => {
       dragX.setValue(0);
       setSwipeDirection(null);
       swipeCompleting.current = false;
-      if (finished) onSwipeGrade(direction === "known" ? "good" : "again");
+      if (finished) onSwipeGrade(gradeFromSwipe(direction));
     });
-    setTimeout(() => { consumedSwipe.current = false; }, 360);
+    setTimeout(() => { consumedSwipe.current = false; }, swipeConfig.releaseDelay);
   }
 
   const panResponder = useMemo(() => PanResponder.create({
-    onMoveShouldSetPanResponder: (_, gesture) => Math.abs(gesture.dx) > 12 && Math.abs(gesture.dx) > Math.abs(gesture.dy),
-    onMoveShouldSetPanResponderCapture: (_, gesture) => Math.abs(gesture.dx) > 12 && Math.abs(gesture.dx) > Math.abs(gesture.dy),
+    onMoveShouldSetPanResponder: (_, gesture) => shouldCaptureHorizontalSwipe(gesture.dx, gesture.dy),
+    onMoveShouldSetPanResponderCapture: (_, gesture) => shouldCaptureHorizontalSwipe(gesture.dx, gesture.dy),
     onPanResponderGrant: () => {
       if (swipeCompleting.current) return;
       dragX.stopAnimation();
@@ -66,10 +60,10 @@ export function useSwipeAnimation({ current, grading, onSwipeGrade }: Params) {
     onPanResponderMove: (_, gesture) => {
       if (swipeCompleting.current) return;
       dragX.setValue(gesture.dx);
-      setSwipeDirection(gesture.dx > 24 ? "known" : gesture.dx < -24 ? "again" : null);
+      setSwipeDirection(directionFromDrag(gesture.dx, swipeConfig.directionPreviewDistance));
     },
     onPanResponderRelease: (_, gesture) => {
-      const direction = gesture.dx > 90 ? "known" : gesture.dx < -90 ? "again" : null;
+      const direction = directionFromDrag(gesture.dx, swipeConfig.completionDistance);
       if (!grading && direction) {
         completeSwipe(direction);
         return;
