@@ -1,4 +1,5 @@
 import { inspectLocalRouteAndModalPicks } from "./mobileContractRules.mjs";
+import { inspectWildcardExports } from "./mobileBarrelRules.mjs";
 import { inspectFeatureHookPlacement, inspectFeaturePlacement, inspectFeatureText } from "./mobileFeatureRules.mjs";
 import { inspectMaterialIconPropTypes } from "./mobileIconRules.mjs";
 import { inspectAppImports, inspectFeatureImports } from "./mobileImportBoundaryRules.mjs";
@@ -10,6 +11,7 @@ import { inspectCanonicalTypes, inspectRawCollectionTypes } from "./mobileTypeRu
 
 export function inspectMobileFile(source, violations) {
   inspectLineCount(source, violations);
+  inspectWildcardExports(source, violations);
   inspectFeaturePlacement(source, violations);
   inspectFeatureHookPlacement(source, violations);
   inspectFeatureText(source, violations);

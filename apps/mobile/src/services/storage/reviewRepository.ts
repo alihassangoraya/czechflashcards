@@ -1,4 +1,4 @@
-export * from "./reviewRepository/reviewDueRepository";
-export * from "./reviewRepository/reviewSaveRepository";
-export * from "./reviewRepository/reviewStateRepository";
-export * from "./reviewRepository/reviewUndoRepository";
+export { markCardsDueNow } from "./reviewRepository/reviewDueRepository";
+export { saveReviewResult } from "./reviewRepository/reviewSaveRepository";
+export { getReviewState, loadReviewStates } from "./reviewRepository/reviewStateRepository";
+export { undoReviewResult } from "./reviewRepository/reviewUndoRepository";

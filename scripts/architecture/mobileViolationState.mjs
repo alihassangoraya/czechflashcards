@@ -24,6 +24,7 @@ export function createMobileArchitectureViolations() {
     rootServices: [],
     rootPlatformServices: [],
     appDeepFeatureImports: [],
-    studyDomainFeatureImports: []
+    studyDomainFeatureImports: [],
+    wildcardExports: []
   };
 }

@@ -1,1 +1,1 @@
-export * from "./speechService";
+export { speak, stop } from "./speechService";

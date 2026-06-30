@@ -1,1 +1,1 @@
-export * from "./notificationService";
+export { configureLocalNotifications } from "./notificationService";
