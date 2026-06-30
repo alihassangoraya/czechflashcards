@@ -32,5 +32,6 @@ export const mobileViolationMessages = [
   ["serviceFacadeImports", "Mobile architecture check failed. Service modules must import sibling service APIs, not root compatibility facades:"],
   ["serviceNamespaceImports", "Mobile architecture check failed. Import named service APIs instead of namespace service modules:"],
   ["rootServices", "Mobile architecture check failed. Service implementations must live in domain service folders:"],
-  ["rootPlatformServices", "Mobile architecture check failed. Mobile platform service implementations must live under services/:"]
+  ["rootPlatformServices", "Mobile architecture check failed. Mobile platform service implementations must live under services/:"],
+  ["sharedComponentContracts", "Mobile architecture check failed. Shared root components must keep styles and prop contracts in sibling modules:"]
 ];

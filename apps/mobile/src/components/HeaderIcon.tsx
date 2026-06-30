@@ -1,17 +1,14 @@
 import React from "react";
-import { Pressable, StyleSheet } from "react-native";
-import { MaterialIcons, type MaterialIconName } from "./MaterialIcons";
-import { colors, radius, size, spacing } from "../theme/design";
+import { Pressable } from "react-native";
+import { MaterialIcons } from "./MaterialIcons";
+import { colors, size } from "../theme/design";
+import { headerIconStyles as styles } from "./headerIconStyles";
+import type { HeaderIconProps } from "./headerIconTypes";
 
-export function HeaderIcon({ icon, label, onPress, primary = false }: { icon: MaterialIconName; label: string; onPress: () => void; primary?: boolean }) {
+export function HeaderIcon({ icon, label, onPress, primary = false }: HeaderIconProps) {
   return (
     <Pressable style={[styles.headerIcon, primary && styles.headerIconPrimary]} onPress={onPress} accessibilityRole="button" accessibilityLabel={label}>
       <MaterialIcons name={icon} size={size.iconMedium} color={primary ? colors.onPrimary : colors.textStrong} />
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  headerIcon: { width: size.headerAction, height: size.headerAction, alignItems: "center", justifyContent: "center", borderRadius: radius.md, borderWidth: spacing.hairline, borderColor: colors.border, backgroundColor: colors.surface },
-  headerIconPrimary: { borderColor: colors.action, backgroundColor: colors.action }
-});

@@ -1,18 +1,12 @@
 import React from "react";
-import { Platform, Text, type TextStyle } from "react-native";
+import { Platform, Text } from "react-native";
 import { materialIconGlyphs, type MaterialIconName } from "./materialIconGlyphs";
+import type { MaterialIconsProps } from "./materialIconsTypes";
 
 const fontFamily = Platform.OS === "ios" ? "Material Icons" : "MaterialIcons";
 export type { MaterialIconName };
 
-type Props = {
-  name: MaterialIconName;
-  size?: number;
-  color?: string;
-  style?: TextStyle;
-};
-
-export function MaterialIcons({ name, size = 24, color = "currentColor", style }: Props) {
+export function MaterialIcons({ name, size = 24, color = "currentColor", style }: MaterialIconsProps) {
   return (
     <Text
       aria-hidden

@@ -32,6 +32,7 @@ export function createMobileArchitectureViolations() {
     rootPlatformServices: [],
     appDeepFeatureImports: [],
     appDataStateComposition: [],
+    sharedComponentContracts: [],
     studyDomainFeatureImports: [],
     wildcardExports: []
   };

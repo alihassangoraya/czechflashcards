@@ -1,17 +1,11 @@
-import React, { type ReactNode } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import React from "react";
+import { Pressable, Text, View } from "react-native";
 import { MaterialIcons } from "./MaterialIcons";
-import { colors, size, spacing, typography } from "../theme/design";
+import { colors, size } from "../theme/design";
+import { screenHeaderStyles as styles } from "./screenHeaderStyles";
+import type { ScreenHeaderProps } from "./screenHeaderTypes";
 
-type Props = {
-  title: string;
-  backLabel: string;
-  textAlign?: "auto" | "left" | "right" | "center" | "justify";
-  trailing?: ReactNode;
-  onBack: () => void;
-};
-
-export function ScreenHeader({ title, backLabel, textAlign, trailing, onBack }: Props) {
+export function ScreenHeader({ title, backLabel, textAlign, trailing, onBack }: ScreenHeaderProps) {
   return (
     <View style={styles.header}>
       <View style={styles.titleRow}>
@@ -24,11 +18,3 @@ export function ScreenHeader({ title, backLabel, textAlign, trailing, onBack }: 
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: spacing.page, paddingTop: typography.bodyLarge, paddingBottom: typography.bodyLarge },
-  titleRow: { flex: 1, flexDirection: "row", alignItems: "center", gap: spacing.lg },
-  title: { flex: 1, color: colors.textStrong, fontSize: typography.screenTitle, fontWeight: typography.weightSemibold },
-  trailing: { flexDirection: "row", gap: spacing.lg },
-  backIcon: { width: size.headerAction, height: size.headerAction, alignItems: "center", justifyContent: "center" }
-});

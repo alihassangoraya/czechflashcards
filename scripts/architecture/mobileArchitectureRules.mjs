@@ -8,7 +8,7 @@ import { inspectAppImports, inspectFeatureImports, inspectServiceFacadeImports, 
 import { inspectLineCount } from "./mobileLineCountRules.mjs";
 import { inspectRootAppModules } from "./mobileRootAppRules.mjs";
 import { inspectRootSourceFile } from "./mobileRootSourceRules.mjs";
-import { inspectFeatureScreenStyles } from "./mobileScreenRules.mjs";
+import { inspectFeatureScreenStyles, inspectSharedComponentContracts } from "./mobileScreenRules.mjs";
 import { inspectRootPlatformServices, inspectRootServices } from "./mobileServiceRules.mjs";
 import { inspectCanonicalTypes, inspectRawCollectionTypes } from "./mobileTypeRules.mjs";
 
@@ -21,6 +21,7 @@ export function inspectMobileFile(source, violations) {
   inspectFocusedFeatureRoots(source, violations);
   inspectFeatureText(source, violations);
   inspectFeatureScreenStyles(source, violations);
+  inspectSharedComponentContracts(source, violations);
   inspectAppImports(source, violations);
   inspectFeatureImports(source, violations);
   inspectServiceFacadeImports(source, violations);

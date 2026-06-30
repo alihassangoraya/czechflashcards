@@ -1,7 +1,7 @@
 import React from "react";
-import { ActivityIndicator, SafeAreaView, StyleSheet, Text } from "react-native";
+import { ActivityIndicator, SafeAreaView, Text } from "react-native";
 import { useI18n } from "../i18n/I18nProvider";
-import { colors, typography } from "../theme/design";
+import { appLoadingScreenStyles as styles } from "./appLoadingScreenStyles";
 
 export function AppLoadingScreen() {
   const { t } = useI18n();
@@ -13,8 +13,3 @@ export function AppLoadingScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  shell: { flex: 1, backgroundColor: colors.background },
-  muted: { color: colors.textMuted, lineHeight: typography.compactLine }
-});
