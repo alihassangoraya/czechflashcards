@@ -1,8 +1,8 @@
 import { useMemo, useRef } from "react";
 import { Animated } from "react-native";
 import type { Card, ReviewGrade } from "@czech-flashcards/shared";
-import { swipeConfig } from "./swipeConfig";
 import { createSwipePanResponder } from "./swipePanResponder";
+import { createSwipeRotation } from "./swipeRotation";
 import { useSwipeCompletion } from "./useSwipeCompletion";
 import { useSwipeAnimationState } from "./useSwipeAnimationState";
 
@@ -16,7 +16,7 @@ export function useSwipeAnimation({ current, grading, onSwipeGrade }: Params) {
   const dragX = useRef(new Animated.Value(0)).current;
   const swipeState = useSwipeAnimationState({ current, dragX });
 
-  const cardRotation = dragX.interpolate({ inputRange: [-swipeConfig.rotationRange, 0, swipeConfig.rotationRange], outputRange: ["-4deg", "0deg", "4deg"], extrapolate: "clamp" });
+  const cardRotation = createSwipeRotation(dragX);
 
   const completeSwipe = useSwipeCompletion({
     dragX,
