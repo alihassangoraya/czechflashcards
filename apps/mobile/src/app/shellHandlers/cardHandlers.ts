@@ -1,8 +1,7 @@
 import type { AppShellHandlerInput } from "./handlerInput";
+import type { CardHandlerInput } from "./handlerTypes";
 
-type Input = Pick<AppShellHandlerInput, "cardManagement">;
-
-export function buildCardHandlers({ cardManagement }: Input) {
+export function buildCardHandlers({ cardManagement }: CardHandlerInput) {
   return {
     onToggleSaved: (cardId: string, showFeedback?: boolean) => { void cardManagement.toggleSavedCard(cardId, showFeedback); },
     onAddCardToDeck: (deckId: string, cardId: string) => { void cardManagement.addCardToDeck(deckId, cardId); },

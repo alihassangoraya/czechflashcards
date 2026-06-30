@@ -1,9 +1,7 @@
 import type { Card } from "@czech-flashcards/shared";
-import type { AppShellHandlerInput } from "./handlerInput";
+import type { NavigationHandlerInput } from "./handlerTypes";
 
-type Input = Pick<AppShellHandlerInput, "data" | "settings" | "navigation" | "studySession" | "cardManagement">;
-
-export function buildNavigationHandlers({ data, settings, navigation, studySession, cardManagement }: Input) {
+export function buildNavigationHandlers({ data, settings, navigation, studySession, cardManagement }: NavigationHandlerInput) {
   async function selectCategory(category: string) {
     await data.persistSettings({ ...settings, deckFilter: category });
     studySession.resetSessionReviews();

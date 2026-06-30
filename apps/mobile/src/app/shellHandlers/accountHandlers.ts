@@ -1,8 +1,6 @@
-import type { AppShellHandlerInput } from "./handlerInput";
+import type { AccountHandlerInput } from "./handlerTypes";
 
-type Input = Pick<AppShellHandlerInput, "data" | "navigation">;
-
-export function buildAccountHandlers({ data, navigation }: Input) {
+export function buildAccountHandlers({ data, navigation }: AccountHandlerInput) {
   return {
     onAuthenticate: data.authenticate,
     onSignOut: async () => {

@@ -1,9 +1,7 @@
 import type { StudySettings } from "../../database";
-import type { AppShellHandlerInput } from "./handlerInput";
+import type { SettingsHandlerInput } from "./handlerTypes";
 
-type Input = Pick<AppShellHandlerInput, "data" | "settingsTools">;
-
-export function buildSettingsHandlers({ data, settingsTools }: Input) {
+export function buildSettingsHandlers({ data, settingsTools }: SettingsHandlerInput) {
   return {
     onChangeSettings: (nextSettings: StudySettings) => { void data.persistSettings(nextSettings); },
     onSyncNow: () => { void data.syncNow(); },
