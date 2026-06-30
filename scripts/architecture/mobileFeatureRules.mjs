@@ -24,6 +24,12 @@ export function inspectHomeFeatureRoot({ rel }, violations) {
   }
 }
 
+export function inspectQuizFeatureRoot({ rel }, violations) {
+  if (rel.match(/^features\/quiz\/(?!index\.ts$)[^/]+\.(ts|tsx)$/)) {
+    violations.quizRootModules.push(`${rel}: keep quiz internals under components/, hooks/, models/, screens/, or types/`);
+  }
+}
+
 export function inspectFeatureText({ lines, rel }, violations) {
   if (hardcodedTextAllowList.has(rel) || !rel.startsWith("features/")) return;
   lines.forEach((line, index) => {

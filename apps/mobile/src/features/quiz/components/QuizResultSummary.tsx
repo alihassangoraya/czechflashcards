@@ -1,23 +1,9 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { colors, radius, shadow, spacing, typography } from "../../../theme/design";
+import type { QuizResultSummaryProps } from "../types/quizResultSummaryTypes";
 import { QuizResultMetrics } from "./QuizResultMetrics";
 import { QuizResultScore } from "./QuizResultScore";
-
-export type QuizResultSummaryProps = {
-  score: number;
-  total: number;
-  missed: number;
-  accuracy: number;
-  feedback: string;
-  textAlign: "auto" | "left" | "right" | "center" | "justify";
-  labels: {
-    score: string;
-    correct: string;
-    missed: string;
-    accuracy: string;
-  };
-};
 
 export function QuizResultSummary({ score, total, missed, accuracy, feedback, textAlign, labels }: QuizResultSummaryProps) {
   return (

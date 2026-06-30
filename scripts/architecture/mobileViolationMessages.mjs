@@ -13,6 +13,7 @@ export const mobileViolationMessages = [
   ["localContractPicks", "Mobile architecture check failed. Keep route and modal prop picks in contract files:"],
   ["materialIconPrivateImports", "Mobile architecture check failed. Import icons through components/MaterialIcons, not private glyph tables:"],
   ["materialIconPropTypes", "Mobile architecture check failed. Use the named MaterialIconName contract instead of deriving icon prop types:"],
+  ["quizRootModules", "Mobile architecture check failed. Quiz feature internals must live in focused folders:"],
   ["wildcardExports", "Mobile architecture check failed. Avoid wildcard exports in mobile source barrels:"],
   ["lineCounts", "Mobile architecture check failed. Split large files into focused modules:"],
   ["duplicateTypes", "Mobile architecture check failed. Reuse canonical shared type aliases:"],

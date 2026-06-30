@@ -1,6 +1,6 @@
-import type { TranslationKey } from "../../i18n/translations";
+import type { TranslationKey } from "../../../i18n/translations";
+import type { QuizResultSummaryProps } from "../types/quizResultSummaryTypes";
 import { buildQuizResultModel } from "./quizResultModel";
-import type { QuizResultSummaryProps } from "./components/QuizResultSummary";
 
 type Input = {
   score: number;

@@ -1,4 +1,4 @@
-import type { Question } from "../quizQuestions";
+import type { Question } from "../models/quizQuestions";
 import type { QuizAnswerState } from "./quizAnswerStateTypes";
 
 type Params = {

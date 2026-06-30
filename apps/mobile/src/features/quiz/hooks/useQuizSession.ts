@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import type { Card } from "@czech-flashcards/shared";
-import { deriveQuizMetrics } from "../quizSessionMetrics";
-import { buildQuestions } from "../quizQuestions";
+import { buildQuestions } from "../models/quizQuestions";
+import { deriveQuizMetrics } from "../models/quizSessionMetrics";
 import { useQuizAnswerState } from "./useQuizAnswerState";
 import { useQuizCloseActions } from "./useQuizCloseActions";
 import { useQuizNextAction } from "./useQuizNextAction";

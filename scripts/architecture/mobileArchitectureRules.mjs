@@ -1,7 +1,7 @@
 import { inspectLocalRouteAndModalPicks } from "./mobileContractRules.mjs";
 import { inspectWildcardExports } from "./mobileBarrelRules.mjs";
 import { inspectDefaultExports } from "./mobileExportRules.mjs";
-import { inspectFeatureHookPlacement, inspectFeaturePlacement, inspectFeatureText, inspectHomeFeatureRoot } from "./mobileFeatureRules.mjs";
+import { inspectFeatureHookPlacement, inspectFeaturePlacement, inspectFeatureText, inspectHomeFeatureRoot, inspectQuizFeatureRoot } from "./mobileFeatureRules.mjs";
 import { inspectMaterialIconPropTypes } from "./mobileIconRules.mjs";
 import { inspectAppImports, inspectFeatureImports, inspectServiceFacadeImports, inspectServiceNamespaceImports } from "./mobileImportBoundaryRules.mjs";
 import { inspectLineCount } from "./mobileLineCountRules.mjs";
@@ -18,6 +18,7 @@ export function inspectMobileFile(source, violations) {
   inspectFeaturePlacement(source, violations);
   inspectFeatureHookPlacement(source, violations);
   inspectHomeFeatureRoot(source, violations);
+  inspectQuizFeatureRoot(source, violations);
   inspectFeatureText(source, violations);
   inspectFeatureScreenStyles(source, violations);
   inspectAppImports(source, violations);

@@ -15,6 +15,7 @@ export function createMobileArchitectureViolations() {
     localeSettingsSections: [],
     materialIconPrivateImports: [],
     materialIconPropTypes: [],
+    quizRootModules: [],
     rawCollectionTypes: [],
     rootAppData: [],
     rootAppCards: [],
