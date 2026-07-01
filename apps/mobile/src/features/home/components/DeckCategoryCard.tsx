@@ -5,12 +5,12 @@ import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
 import type { DeckCategoryCardProps } from "./deckCategoryCardTypes";
 
-export function DeckCategoryCard({ category, selected, title, onSelect }: DeckCategoryCardProps) {
+export function DeckCategoryCard({ category, selected, title, wide, onSelect }: DeckCategoryCardProps) {
   const { t, textAlign } = useI18n();
 
   return (
     <Pressable
-      style={[styles.card, selected && styles.selected]}
+      style={[styles.card, wide && styles.cardWide, selected && styles.selected]}
       onPress={() => onSelect(category.id)}
       accessibilityRole="button"
       accessibilityLabel={t("home.studyDeck", { title })}
@@ -28,7 +28,8 @@ export function DeckCategoryCard({ category, selected, title, onSelect }: DeckCa
 }
 
 const styles = StyleSheet.create({
-  card: { width: "48%", minHeight: size.categoryCardHeight, flexDirection: "row", alignItems: "center", gap: spacing.md, borderRadius: radius.lg, borderWidth: spacing.hairline, borderColor: colors.lightSand, backgroundColor: colors.card, padding: spacing.md },
+  card: { width: size.deckCardPhoneWidth, minHeight: size.categoryCardHeight, flexDirection: "row", alignItems: "center", gap: spacing.md, borderRadius: radius.lg, borderWidth: spacing.hairline, borderColor: colors.lightSand, backgroundColor: colors.card, padding: spacing.md },
+  cardWide: { width: size.deckCardTabletWidth },
   selected: { borderColor: colors.softMint, borderWidth: spacing.xxs, padding: spacing.xs },
   icon: { width: size.categoryIcon, height: size.categoryIcon, alignItems: "center", justifyContent: "center", borderRadius: radius.md },
   copy: { flex: 1, gap: spacing.xxs },

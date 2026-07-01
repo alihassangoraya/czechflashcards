@@ -1,4 +1,7 @@
 {
   "name": "CzechFlashCard",
-  "displayName": "CzechFlashCard"
+  "displayName": "CzechFlashCard",
+  "ios": {
+    "supportsTablet": true
+  }
 }

@@ -6,11 +6,11 @@ import { DeckGrid } from "./DeckGrid";
 import { StudyGuide } from "./StudyGuide";
 import type { HomeContentProps } from "./homeContentTypes";
 
-export function HomeContent({ deck, settings, model, onSelectCategory }: HomeContentProps) {
+export function HomeContent({ deck, settings, model, wide, onSelectCategory }: HomeContentProps) {
   return (
     <View style={styles.content}>
       <DailyGoalCard reviewedToday={model.dailyGoalProgress.reviewedToday} dailyGoal={model.dailyGoalProgress.dailyGoal} ratio={model.dailyGoalProgress.dailyRatio} />
-      <DeckGrid categories={model.categories} selectedDeckId={settings.deckFilter} currentDeckCount={deck.length} onSelectCategory={onSelectCategory} />
+      <DeckGrid categories={model.categories} selectedDeckId={settings.deckFilter} currentDeckCount={deck.length} wide={wide} onSelectCategory={onSelectCategory} />
       <StudyGuide />
     </View>
   );

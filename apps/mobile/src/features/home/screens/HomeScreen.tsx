@@ -17,7 +17,7 @@ export function HomeScreen(props: HomeScreenProps) {
     <View style={styles.screen}>
       <ScrollView style={styles.scroll}>
         <HomeHero {...buildHomeHeroProps({ model, props, wide: isWideLayout })} />
-        <HomeContent deck={deck} settings={settings} model={model} onSelectCategory={onSelectCategory} />
+        <HomeContent deck={deck} settings={settings} model={model} wide={isWideLayout} onSelectCategory={onSelectCategory} />
       </ScrollView>
     </View>
   );

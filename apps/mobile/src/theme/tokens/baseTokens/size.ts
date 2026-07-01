@@ -18,6 +18,8 @@ export const size = {
   grammarCaseColumnWidth: 72,
   searchActionMaxWidth: 132,
   searchResultMinWidth: 180,
+  deckCardPhoneWidth: "48%",
+  deckCardTabletWidth: "31.8%",
   studyProgressMaxWidth: 326,
   modalMaxWidth: 360,
   studyGuideColumnMinWidth: 260,

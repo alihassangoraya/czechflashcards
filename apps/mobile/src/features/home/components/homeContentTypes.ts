@@ -3,4 +3,5 @@ import type { HomeScreenProps } from "../types/homeScreenTypes";
 
 export type HomeContentProps = Pick<HomeScreenProps, "deck" | "settings" | "onSelectCategory"> & {
   model: HomeScreenModel;
+  wide: boolean;
 };

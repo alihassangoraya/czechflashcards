@@ -6,7 +6,7 @@ import { DeckCategoryCard } from "./DeckCategoryCard";
 import type { DeckGridProps } from "./deckGridTypes";
 import { getDeckTitle } from "./deckTitle";
 
-export function DeckGrid({ categories, selectedDeckId, currentDeckCount, onSelectCategory }: DeckGridProps) {
+export function DeckGrid({ categories, selectedDeckId, currentDeckCount, wide, onSelectCategory }: DeckGridProps) {
   const { t, textAlign } = useI18n();
 
   return (
@@ -19,7 +19,7 @@ export function DeckGrid({ categories, selectedDeckId, currentDeckCount, onSelec
         {categories.map((category) => {
           const selected = selectedDeckId === category.id;
           const title = getDeckTitle(category, t);
-          return <DeckCategoryCard key={category.id} category={category} selected={selected} title={title} onSelect={onSelectCategory} />;
+          return <DeckCategoryCard key={category.id} category={category} selected={selected} title={title} wide={wide} onSelect={onSelectCategory} />;
         })}
       </View>
     </View>
