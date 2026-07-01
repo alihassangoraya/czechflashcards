@@ -33,7 +33,7 @@ export function useAppNavigation(accountEmail: string | null) {
     syncScreenPath(previous, true);
   }, [history]);
   useEffect(() => {
-    if (accountEmail && (screen === "login" || screen === "register")) navigateScreen("home");
+    if (accountEmail && (screen === "login" || screen === "register")) navigateScreen("account");
   }, [accountEmail, navigateScreen, screen]);
   return { screen, panel, query, settingsNotice, setPanel, setQuery, setSettingsNotice, navigateScreen, goBack };
 }

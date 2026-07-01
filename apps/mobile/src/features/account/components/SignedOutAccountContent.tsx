@@ -1,33 +1,26 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
-import { spacing } from "../../../theme/design";
-import type { AccountPanelState } from "../hooks/accountPanelStateTypes";
-import { AccountAuthForm } from "./AccountAuthForm";
+import { StyleSheet, Text, View } from "react-native";
+import { useI18n } from "../../../i18n/I18nProvider";
+import { colors, radius, spacing, typography } from "../../../theme/design";
+import { AccountSyncButton } from "./AccountSyncButton";
 
 type Props = {
-  account: AccountPanelState;
-  busy: boolean;
+  onSignInToSync: () => void;
 };
 
-export function SignedOutAccountContent({ account, busy }: Props) {
+export function SignedOutAccountContent({ onSignInToSync }: Props) {
+  const { t, textAlign } = useI18n();
   return (
-    <View style={styles.form}>
-      <AccountAuthForm
-        busy={busy}
-        displayName={account.displayName}
-        email={account.email}
-        password={account.password}
-        message={account.message}
-        onChangeDisplayName={account.setDisplayName}
-        onChangeEmail={account.setEmail}
-        onChangePassword={account.setPassword}
-        onProviderSubmit={(provider) => void account.signInWithProvider(provider)}
-        onSubmit={(mode) => void account.submit(mode)}
-      />
+    <View style={styles.card}>
+      <Text style={[styles.title, { textAlign }]}>{t("account.syncSignedOutTitle")}</Text>
+      <Text style={[styles.copy, { textAlign }]}>{t("account.syncSignedOutCopy")}</Text>
+      <AccountSyncButton label={t("account.signInToSync")} onSyncNow={onSignInToSync} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  form: { gap: spacing.xlPlus }
+  card: { gap: spacing.lg, borderWidth: spacing.hairline, borderColor: colors.borderSoft, borderRadius: radius.md, backgroundColor: colors.surface, padding: spacing.xlPlus },
+  title: { color: colors.textStrong, fontSize: typography.titleSmall, fontWeight: typography.weightSemibold },
+  copy: { color: colors.textMuted, fontSize: typography.bodySmall, lineHeight: typography.bodyLarge }
 });

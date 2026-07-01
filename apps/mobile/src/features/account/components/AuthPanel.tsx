@@ -5,7 +5,7 @@ import { AccountAuthForm } from "./AccountAuthForm";
 import { AuthPanelIntro } from "./AuthPanelIntro";
 import type { AuthPanelProps } from "./authPanelTypes";
 
-export function AuthPanel({ busy, configured, displayName, email, isRegister, message, mode, password, onChangeDisplayName, onChangeEmail, onChangePassword, onSwitchMode, onProviderSubmit, onSubmit }: AuthPanelProps) {
+export function AuthPanel({ busy, configured, displayName, email, isRegister, message, mode, password, onChangeDisplayName, onChangeEmail, onChangePassword, onForgotPassword, onSwitchMode, onProviderSubmit, onSubmit }: AuthPanelProps) {
   return (
     <View style={styles.panel}>
       <AuthPanelIntro configured={configured} isRegister={isRegister} />
@@ -19,6 +19,7 @@ export function AuthPanel({ busy, configured, displayName, email, isRegister, me
         onChangeDisplayName={onChangeDisplayName}
         onChangeEmail={onChangeEmail}
         onChangePassword={onChangePassword}
+        onForgotPassword={onForgotPassword}
         onSwitchMode={onSwitchMode}
         onProviderSubmit={onProviderSubmit}
         onSubmit={onSubmit}

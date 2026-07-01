@@ -2,9 +2,9 @@ import React from "react";
 import type { AuthMode, AuthProvider } from "../../../sync";
 import { AccountAuthActions } from "./AccountAuthActions";
 import { AccountAuthFields } from "./AccountAuthFields";
+import { AccountAuthForgotButton } from "./AccountAuthForgotButton";
 import { AccountAuthMessage } from "./AccountAuthMessage";
-import { AuthDivider } from "./AuthDivider";
-import { AuthProviderButtons } from "./AuthProviderButtons";
+import { AccountAuthProviders } from "./AccountAuthProviders";
 
 type Props = {
   busy: boolean;
@@ -18,20 +18,21 @@ type Props = {
   onChangePassword: (value: string) => void;
   onSwitchMode?: (mode: AuthMode) => void;
   onProviderSubmit?: (provider: AuthProvider) => void;
+  onForgotPassword?: () => void;
   onSubmit: (mode: AuthMode) => void;
 };
 
-export function AccountAuthForm({ busy, displayName, email, mode, password, message, onChangeDisplayName, onChangeEmail, onChangePassword, onSwitchMode, onProviderSubmit, onSubmit }: Props) {
+export function AccountAuthForm({ busy, displayName, email, mode, password, message, onChangeDisplayName, onChangeEmail, onChangePassword, onSwitchMode, onProviderSubmit, onForgotPassword, onSubmit }: Props) {
   const fixedMode = Boolean(mode);
   const activeMode = mode || "sign-in";
 
   return (
     <>
-      {onProviderSubmit && <AuthProviderButtons busy={busy} onPress={onProviderSubmit} />}
-      {onProviderSubmit && <AuthDivider />}
+      <AccountAuthProviders busy={busy} onProviderSubmit={onProviderSubmit} />
       <AccountAuthFields activeMode={activeMode} displayName={displayName} email={email} password={password} onChangeDisplayName={onChangeDisplayName} onChangeEmail={onChangeEmail} onChangePassword={onChangePassword} />
       <AccountAuthMessage message={message} />
       <AccountAuthActions activeMode={activeMode} busy={busy} fixedMode={fixedMode} onSwitchMode={onSwitchMode} onSubmit={onSubmit} />
+      {activeMode === "sign-in" && <AccountAuthForgotButton onPress={onForgotPassword} />}
     </>
   );
 }

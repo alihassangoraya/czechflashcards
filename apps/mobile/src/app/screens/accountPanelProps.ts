@@ -16,6 +16,7 @@ export function buildAccountPanelProps(props: AccountRouteProps) {
     onAuthenticate: props.onAuthenticate,
     onAuthenticateProvider: props.onAuthenticateProvider,
     onSignOut: props.onSignOut,
+    onSignInToSync: () => props.onSetScreen("login"),
     onSyncNow: props.onSyncNow
   };
 }

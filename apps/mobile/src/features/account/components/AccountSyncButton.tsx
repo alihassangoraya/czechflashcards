@@ -5,15 +5,16 @@ import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
 
 type Props = {
+  label?: string;
   onSyncNow: () => void;
 };
 
-export function AccountSyncButton({ onSyncNow }: Props) {
+export function AccountSyncButton({ label, onSyncNow }: Props) {
   const { t } = useI18n();
   return (
     <Pressable style={styles.button} onPress={onSyncNow} accessibilityRole="button">
       <MaterialIcons name="sync" size={size.iconSmall} color={colors.iconAction} />
-      <Text style={styles.label}>{t("settings.syncNow")}</Text>
+      <Text style={styles.label}>{label || t("settings.syncNow")}</Text>
     </Pressable>
   );
 }

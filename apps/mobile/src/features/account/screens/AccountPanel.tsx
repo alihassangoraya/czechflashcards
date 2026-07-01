@@ -15,7 +15,7 @@ export function AccountPanel(props: AccountPanelProps) {
   return (
     <View style={styles.stack}>
       <AccountLocalSummary {...props} />
-      {!configured ? <OfflineAccountPanel /> : accountEmail ? <SignedInAccountContent account={account} accountEmail={accountEmail} busy={busy} syncStatus={props.syncStatus} onSyncNow={props.onSyncNow} /> : <SignedOutAccountContent account={account} busy={busy} />}
+      {!configured ? <OfflineAccountPanel /> : accountEmail ? <SignedInAccountContent account={account} accountEmail={accountEmail} busy={busy} syncStatus={props.syncStatus} onSyncNow={props.onSyncNow} /> : <SignedOutAccountContent onSignInToSync={props.onSignInToSync} />}
     </View>
   );
 }

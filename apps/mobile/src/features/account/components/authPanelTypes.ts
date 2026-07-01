@@ -12,6 +12,7 @@ export type AuthPanelProps = {
   onChangeDisplayName: (value: string) => void;
   onChangeEmail: (value: string) => void;
   onChangePassword: (value: string) => void;
+  onForgotPassword?: () => void;
   onSwitchMode: (mode: AuthMode) => void;
   onProviderSubmit: (provider: AuthProvider) => void;
   onSubmit: (mode: AuthMode) => void;

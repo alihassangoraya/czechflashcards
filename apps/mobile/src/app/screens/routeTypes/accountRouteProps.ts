@@ -13,6 +13,7 @@ export type AccountRouteProps = Pick<
   | "settings"
   | "showToast"
   | "onGoBack"
+  | "onSetScreen"
   | "onAuthenticate"
   | "onAuthenticateProvider"
   | "onSignOut"
