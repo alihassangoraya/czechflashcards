@@ -6,7 +6,7 @@ import { AccountSignOutButton } from "./AccountSignOutButton";
 import { FriendPanel } from "./FriendPanel";
 import type { SignedInAccountProps } from "./signedInAccountTypes";
 
-export function SignedInAccount({ busy, friendCode, myFriendCode, friendRequests, friends, friendBusy, loadingFriends, message, onChangeFriendCode, onSendFriendRequest, onRespondToFriendRequest, onSignOut }: SignedInAccountProps) {
+export function SignedInAccount({ busy, friendCode, myFriendCode, friendSetupUnavailable, friendRequests, friends, friendBusy, loadingFriends, message, onChangeFriendCode, onSendFriendRequest, onRespondToFriendRequest, onSignOut }: SignedInAccountProps) {
   const { t } = useI18n();
 
   return (
@@ -14,6 +14,7 @@ export function SignedInAccount({ busy, friendCode, myFriendCode, friendRequests
       <FriendPanel
         friendCode={friendCode}
         myFriendCode={myFriendCode}
+        friendSetupUnavailable={friendSetupUnavailable}
         friendRequests={friendRequests}
         friends={friends}
         friendBusy={friendBusy}

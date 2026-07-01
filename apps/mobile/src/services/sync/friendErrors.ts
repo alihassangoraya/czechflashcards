@@ -1,5 +1,5 @@
 export function isFriendRpcSchemaError(error: unknown) {
-  return error instanceof Error && /friend_requests|friend_streaks|schema cache|PGRST202|function public/i.test(error.message);
+  return error instanceof Error && /friend_requests|friend_streaks|ensure_profile|profiles|friendships|schema cache|PGRST202|PGRST205|404|function public|relation .* does not exist/i.test(error.message);
 }
 
 export function rpcErrorMessage(error: { code?: string; message: string }) {

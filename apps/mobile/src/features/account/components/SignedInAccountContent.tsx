@@ -17,6 +17,7 @@ export function SignedInAccountContent({ account, accountEmail, busy, syncStatus
         busy={busy}
         friendCode={account.friendCode}
         myFriendCode={account.myFriendCode}
+        friendSetupUnavailable={account.friendSetupUnavailable}
         friendRequests={account.friendRequests}
         friends={account.friends}
         friendBusy={account.friendBusy}

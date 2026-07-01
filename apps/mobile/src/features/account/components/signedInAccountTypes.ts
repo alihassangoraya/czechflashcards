@@ -12,6 +12,7 @@ export type SignedInAccountProps = Pick<SignedInAccountContentProps, "accountEma
   busy: boolean;
   friendCode: string;
   myFriendCode: string | null;
+  friendSetupUnavailable: boolean;
   friendRequests: FriendRequest[];
   friends: FriendStreak[];
   friendBusy: boolean;

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useI18n } from "../../../i18n/I18nProvider";
 import type { AppSupabaseClient, FriendRequest, FriendStreak } from "../../../sync";
 import { fetchFriendActivity } from "./friendActivityActions";
+import { isFriendRpcSchemaError } from "../../../services/sync/friendErrors";
 
 type Params = {
   supabase: AppSupabaseClient;
@@ -32,5 +33,5 @@ export function useFriendActivityList({ supabase }: Params) {
 }
 
 function isFriendSchemaError(error: unknown) {
-  return error instanceof Error && /friend_requests|friend_streaks|schema cache|PGRST202/.test(error.message);
+  return isFriendRpcSchemaError(error);
 }

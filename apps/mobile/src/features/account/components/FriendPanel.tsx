@@ -8,17 +8,17 @@ import { FriendRequestRow } from "./FriendRequestRow";
 import { FriendStreakRow } from "./FriendStreakRow";
 import { splitFriendRows } from "./friendPanelModel";
 
-export function FriendPanel({ friendCode, myFriendCode, friendRequests, friends, friendBusy, loadingFriends, onChangeFriendCode, onSendFriendRequest, onRespondToFriendRequest }: FriendPanelProps) {
+export function FriendPanel({ friendCode, myFriendCode, friendSetupUnavailable, friendRequests, friends, friendBusy, loadingFriends, onChangeFriendCode, onSendFriendRequest, onRespondToFriendRequest }: FriendPanelProps) {
   const { t } = useI18n();
-  const disabled = friendBusy || !friendCode.trim();
-  const displayCode = myFriendCode ? formatFriendCode(myFriendCode) : t("account.preparing");
+  const disabled = friendSetupUnavailable || friendBusy || !friendCode.trim();
+  const displayCode = friendSetupUnavailable ? t("account.friendSetupMissing") : myFriendCode ? formatFriendCode(myFriendCode) : t("account.preparing");
   const rows = splitFriendRows(friends);
 
   return (
     <View style={styles.panel}>
       <Text style={styles.fieldLabel}>{t("account.friendCode")}</Text>
-      <Text selectable style={styles.friendCode}>{displayCode}</Text>
-      <TextInput style={styles.input} value={formatFriendCode(friendCode)} onChangeText={onChangeFriendCode} autoCapitalize="characters" placeholder={t("account.friendCodePlaceholder")} placeholderTextColor={colors.textMuted} />
+      <Text selectable={!friendSetupUnavailable} style={[styles.friendCode, friendSetupUnavailable && styles.setupWarning]}>{displayCode}</Text>
+      <TextInput editable={!friendSetupUnavailable} style={[styles.input, friendSetupUnavailable && styles.disabled]} value={formatFriendCode(friendCode)} onChangeText={onChangeFriendCode} autoCapitalize="characters" placeholder={t("account.friendCodePlaceholder")} placeholderTextColor={colors.textMuted} />
       <Pressable disabled={disabled} style={[styles.secondaryAction, disabled && styles.disabled]} onPress={onSendFriendRequest}><Text style={styles.secondaryActionText}>{friendBusy ? t("account.sendingFriend") : t("account.sendFriend")}</Text></Pressable>
       {loadingFriends && <Text style={styles.muted}>{t("account.loadingFriends")}</Text>}
       {!loadingFriends && !friendRequests.length && !friends.length && <Text style={styles.muted}>{t("account.noFriends")}</Text>}
