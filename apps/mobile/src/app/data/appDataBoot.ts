@@ -5,6 +5,7 @@ import { openSeededDatabase } from "./appDatabaseBootstrap";
 import { syncAppDatabase } from "./appDataSync";
 import { refreshAppData } from "./appDataRefresh";
 import type { AppDataState } from "./appDataStateTypes";
+import { userDisplayName } from "./userDisplayName";
 
 export async function bootAppData(state: AppDataState, supabase: AppSupabaseClient): Promise<void> {
   const database = await openSeededDatabase();
@@ -17,6 +18,7 @@ export async function bootAppData(state: AppDataState, supabase: AppSupabaseClie
   if (supabase) {
     const { data } = await supabase.auth.getSession();
     state.setAccountEmail(data.session?.user.email || null);
+    state.setAccountName(userDisplayName(data.session?.user));
   }
 
   const syncResult = await syncAppDatabase(database, supabase);

@@ -10,6 +10,7 @@ export type HomeScreenProps = {
   customCount: number;
   dailyProgress: string;
   accountEmail: string | null;
+  accountName: string | null;
   syncStatus: string;
   onStartStudy: () => void;
   onStartQuiz: () => void;

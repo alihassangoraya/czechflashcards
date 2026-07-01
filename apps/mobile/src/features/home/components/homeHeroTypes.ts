@@ -3,6 +3,7 @@ export type HomeHeroProps = {
   examLevel: string;
   dueCount: number;
   accountEmail: string | null;
+  accountName: string | null;
   wide: boolean;
   onStartStudy: () => void;
   onStartQuiz: () => void;

@@ -1,6 +1,7 @@
 export const hiHomeTranslations = {
   "home.continueLearning": "सीखना जारी रखें",
   "home.greeting": "Ahoj, studentu!",
+  "home.greetingName": "Ahoj, {name}!",
   "home.cardsReady": "{count} कार्ड आपके लिए तैयार हैं.",
   "home.keepFresh": "आज अपनी चेक ताज़ा रखें.",
   "home.startQuiz": "B1 क्विज़ शुरू करें",

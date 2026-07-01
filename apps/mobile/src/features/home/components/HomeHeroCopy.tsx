@@ -5,15 +5,17 @@ import { colors, spacing, typography } from "../../../theme/design";
 
 type Props = {
   dueCount: number;
+  accountName: string | null;
 };
 
-export function HomeHeroCopy({ dueCount }: Props) {
+export function HomeHeroCopy({ dueCount, accountName }: Props) {
   const { t, textAlign } = useI18n();
+  const greeting = accountName ? t("home.greetingName", { name: accountName }) : t("home.greeting");
 
   return (
     <View style={styles.heroCopy}>
       <Text style={[styles.heroEyebrow, { textAlign }]}>{t("home.continueLearning")}</Text>
-      <Text style={[styles.heroTitle, { textAlign }]}>{t("home.greeting")}</Text>
+      <Text style={[styles.heroTitle, { textAlign }]}>{greeting}</Text>
       <Text style={[styles.heroSubtitle, { textAlign }]}>{dueCount > 0 ? t("home.cardsReady", { count: dueCount }) : t("home.keepFresh")}</Text>
     </View>
   );

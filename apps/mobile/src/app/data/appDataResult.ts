@@ -20,6 +20,7 @@ export function buildAppDataResult({ state, actions, auth }: Input) {
     dailyProgressLog: state.dailyProgressLog,
     syncStatus: state.syncStatus,
     accountEmail: state.accountEmail,
+    accountName: state.accountName,
     authBusy: auth.authBusy,
     setCards: state.setCards,
     setSavedCardIds: state.setSavedCardIds,

@@ -1,6 +1,7 @@
 export const csHomeTranslations = {
   "home.continueLearning": "Pokračovat v učení",
   "home.greeting": "Ahoj, studentu!",
+  "home.greetingName": "Ahoj, {name}!",
   "home.cardsReady": "{count} kartiček čeká na tebe.",
   "home.keepFresh": "Udrž si dnes češtinu čerstvou.",
   "home.startQuiz": "Spustit B1 kvíz",

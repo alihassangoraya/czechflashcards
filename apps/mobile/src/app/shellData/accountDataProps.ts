@@ -6,6 +6,7 @@ export function buildAccountDataProps(input: AppShellDataInput) {
   return {
     syncStatus: data.syncStatus,
     accountEmail: data.accountEmail,
+    accountName: data.accountName,
     authBusy: data.authBusy,
     ...buildAccountSummaryProps(input),
     supabase

@@ -14,6 +14,7 @@ export function buildHomeHeroProps({ model, props, wide }: Input): HomeHeroProps
     examLevel: props.settings.examLevel,
     dueCount: model.dueCount,
     accountEmail: props.accountEmail,
+    accountName: props.accountName,
     wide,
     onStartStudy: props.onStartStudy,
     onStartQuiz: props.onStartQuiz,

@@ -1,6 +1,7 @@
 export const ukHomeTranslations = {
   "home.continueLearning": "Продовжити навчання",
   "home.greeting": "Ahoj, studentu!",
+  "home.greetingName": "Ahoj, {name}!",
   "home.cardsReady": "{count} карток готові для тебе.",
   "home.keepFresh": "Підтримуй чеську у формі сьогодні.",
   "home.startQuiz": "Почати тест B1",

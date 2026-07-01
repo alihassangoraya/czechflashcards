@@ -1,6 +1,7 @@
 export const enHomeTranslations = {
   "home.continueLearning": "Continue learning",
   "home.greeting": "Ahoj, studentu!",
+  "home.greetingName": "Ahoj, {name}!",
   "home.cardsReady": "{count} cards are ready for you.",
   "home.keepFresh": "Keep your Czech fresh today.",
   "home.startQuiz": "Start B1 quiz",

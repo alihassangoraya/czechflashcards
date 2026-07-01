@@ -10,6 +10,7 @@ export type HomeRouteProps = Pick<
   | "savedCardIds"
   | "dailyProgress"
   | "accountEmail"
+  | "accountName"
   | "syncStatus"
   | "onStartStudy"
   | "onSelectCategory"

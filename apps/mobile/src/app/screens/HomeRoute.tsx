@@ -2,7 +2,7 @@ import React from "react";
 import { HomeScreen } from "../../features/home";
 import type { HomeRouteProps } from "./routeTypes";
 
-export function HomeRoute({ deck, cards, customCards, states, settings, savedCardIds, dailyProgress, accountEmail, syncStatus, onStartStudy, onSelectCategory, onSetPanel, onSetScreen }: HomeRouteProps) {
+export function HomeRoute({ deck, cards, customCards, states, settings, savedCardIds, dailyProgress, accountEmail, accountName, syncStatus, onStartStudy, onSelectCategory, onSetPanel, onSetScreen }: HomeRouteProps) {
   return (
     <HomeScreen
       deck={deck}
@@ -13,6 +13,7 @@ export function HomeRoute({ deck, cards, customCards, states, settings, savedCar
       customCount={customCards.length}
       dailyProgress={dailyProgress}
       accountEmail={accountEmail}
+      accountName={accountName}
       syncStatus={syncStatus}
       onStartStudy={onStartStudy}
       onStartQuiz={() => onSetScreen("quiz")}
