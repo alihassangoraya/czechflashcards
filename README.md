@@ -126,6 +126,11 @@ before enabling authenticated sync. In Supabase Auth, enable Email sign-in and
 choose whether new accounts require email confirmation. The mobile account
 screen remains safely guest-only until both variables are present.
 
+Production email templates live in `supabase/email-templates`. Copy the auth
+templates into Supabase Auth Email Templates, then use the lifecycle templates
+with a transactional sender for reminders, due-card nudges, and streak
+protection emails.
+
 ## Custom Vocabulary and Import
 
 Custom words can be added from the `+` control. Only the Czech word and English
@@ -247,6 +252,7 @@ this repository. Read it before changing product behavior or deployment files.
 | `apps/mobile/src/services/notifications` | Platform notification scheduling boundary. |
 | `apps/mobile/src/services/sync` | Optional Supabase auth, friendship, snapshot, and queue sync services. |
 | `apps/mobile/src/theme` | Central design tokens used by all mobile/web UI components. |
+| `supabase/email-templates` | Production auth and lifecycle email templates with setup notes. |
 | `supabase/migrations` | Auth, sync, streak, notification, and friendship database foundation. |
 | `scripts/export-shared-seed.js` | Generates the shared mobile vocabulary seed. |
 | `scripts/import-google-vocabulary.mjs` | Extracts the Google-project Kotlin B1 seed into enriched JSON. |

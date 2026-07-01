@@ -1,0 +1,13 @@
+Hi,
+
+Welcome to Czech Flashcards. Confirm your email address to save your progress, custom decks, and starred words across devices.
+
+Confirm your account:
+{{ .ConfirmationURL }}
+
+This link was sent to {{ .Email }} and will expire for your security.
+
+If you did not create a Czech Flashcards account, you can ignore this email.
+
+Czech Flashcards
+{{ .SiteURL }}

@@ -1,0 +1,9 @@
+Hi,
+
+Confirm this email address for your Czech Flashcards account:
+{{ .ConfirmationURL }}
+
+If you did not request an email change, ignore this message and review your account security.
+
+Czech Flashcards
+{{ .SiteURL }}

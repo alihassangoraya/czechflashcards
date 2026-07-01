@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Your Czech practice is ready</title>
+  </head>
+  <body style="margin:0;background:#f5f1ea;color:#1f2a22;font-family:Arial,Helvetica,sans-serif;">
+    <div style="display:none;max-height:0;overflow:hidden;">You have {{cards_due}} Czech cards ready for review today.</div>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f5f1ea;padding:32px 16px;">
+      <tr><td align="center">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;background:#fffdf8;border:1px solid #ddd6c9;border-radius:14px;overflow:hidden;">
+          <tr><td style="padding:28px;">
+            <p style="margin:0 0 12px;color:#5a6a5e;font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;">Daily Czech practice</p>
+            <h1 style="margin:0 0 14px;color:#223128;font-size:28px;line-height:1.2;">Ahoj, {{user_name}}</h1>
+            <p style="margin:0 0 20px;color:#526258;font-size:16px;line-height:1.6;">You have <strong>{{cards_due}}</strong> cards ready. Your goal today is <strong>{{daily_goal}}</strong> cards.</p>
+            <p style="margin:0 0 24px;"><a href="{{app_url}}" style="display:inline-block;background:#4f6f52;color:#ffffff;text-decoration:none;border-radius:10px;padding:14px 22px;font-size:16px;font-weight:700;">Start today's review</a></p>
+            <p style="margin:0;color:#6c776e;font-size:13px;line-height:1.6;">Small daily practice beats one huge session. Keep it light and consistent.</p>
+          </td></tr>
+          <tr><td style="background:#f0eadf;padding:18px 28px;color:#6c776e;font-size:12px;line-height:1.6;">Daily reminders are enabled at {{reminder_time}}. <a href="{{unsubscribe_url}}" style="color:#2f6f91;">Manage reminders or unsubscribe</a>.</td></tr>
+        </table>
+      </td></tr>
+    </table>
+  </body>
+</html>

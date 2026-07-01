@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Confirm your Czech Flashcards account</title>
+  </head>
+  <body style="margin:0;background:#f5f1ea;color:#1f2a22;font-family:Arial,Helvetica,sans-serif;">
+    <div style="display:none;max-height:0;overflow:hidden;">Confirm your email to save your Czech Flashcards progress across devices.</div>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f5f1ea;padding:32px 16px;">
+      <tr><td align="center">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;background:#fffdf8;border:1px solid #ddd6c9;border-radius:14px;overflow:hidden;">
+          <tr><td style="padding:28px 28px 12px;">
+            <p style="margin:0 0 12px;color:#5a6a5e;font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;">Czech Flashcards</p>
+            <h1 style="margin:0;color:#223128;font-size:28px;line-height:1.2;">Confirm your account</h1>
+          </td></tr>
+          <tr><td style="padding:4px 28px 24px;">
+            <p style="margin:0 0 18px;color:#526258;font-size:16px;line-height:1.6;">Welcome. Confirm your email address to save your progress, custom decks, and starred words across devices.</p>
+            <p style="margin:0 0 24px;"><a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#4f6f52;color:#ffffff;text-decoration:none;border-radius:10px;padding:14px 22px;font-size:16px;font-weight:700;">Confirm account</a></p>
+            <p style="margin:0;color:#6c776e;font-size:13px;line-height:1.6;">If the button does not work, copy and paste this link into your browser:<br><a href="{{ .ConfirmationURL }}" style="color:#2f6f91;word-break:break-all;">{{ .ConfirmationURL }}</a></p>
+          </td></tr>
+          <tr><td style="background:#f0eadf;padding:18px 28px;color:#6c776e;font-size:12px;line-height:1.6;">This link was sent to {{ .Email }}. If you did not create a Czech Flashcards account, you can ignore this email.</td></tr>
+        </table>
+      </td></tr>
+    </table>
+  </body>
+</html>

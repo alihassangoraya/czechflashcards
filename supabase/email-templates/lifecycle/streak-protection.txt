@@ -1,0 +1,9 @@
+Hi {{user_name}},
+
+Your {{streak_days}} day Czech streak can continue today. Review a few cards before the day ends.
+
+Open Czech Flashcards:
+{{app_url}}
+
+Manage reminders or unsubscribe:
+{{unsubscribe_url}}

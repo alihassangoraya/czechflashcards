@@ -1,0 +1,9 @@
+Hi {{user_name}},
+
+{{cards_due}} Czech cards are due for review. Open the app when you have a quiet minute.
+
+Review due cards:
+{{app_url}}
+
+Manage reminders or unsubscribe:
+{{unsubscribe_url}}

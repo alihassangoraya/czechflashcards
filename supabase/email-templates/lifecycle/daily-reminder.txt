@@ -1,0 +1,11 @@
+Hi {{user_name}},
+
+Your Czech practice is ready for today. You have {{cards_due}} cards due and your daily goal is {{daily_goal}} cards.
+
+Start studying:
+{{app_url}}
+
+You are receiving this because daily reminders are enabled for your Czech Flashcards account at {{reminder_time}}.
+
+Manage reminders or unsubscribe:
+{{unsubscribe_url}}
