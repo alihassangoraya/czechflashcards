@@ -2,5 +2,5 @@ import { StyleSheet } from "react-native";
 import { spacing } from "../../../theme/design";
 
 export const authScreenStyles = StyleSheet.create({
-  screen: { flexGrow: 1, paddingHorizontal: spacing.page, paddingBottom: spacing.screenBottom }
+  screen: { flexGrow: 1, alignItems: "center", paddingHorizontal: spacing.page, paddingBottom: spacing.screenBottom, paddingTop: spacing.xl }
 });

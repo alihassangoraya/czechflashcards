@@ -6,9 +6,10 @@ export {
   respondToFriendRequest,
   restoreSyncSnapshot,
   sendFriendRequest,
+  signInWithOAuthProvider,
   signInWithPassword,
   signOut,
   signUpWithPassword
 } from "./services/sync";
 
-export type { AppSupabaseClient, AuthMode, FriendRequest, FriendStreak, SupabaseClient, SyncStatus } from "./services/sync";
+export type { AppSupabaseClient, AuthMode, AuthProvider, FriendRequest, FriendStreak, SupabaseClient, SyncStatus } from "./services/sync";

@@ -1,4 +1,4 @@
-import type { AuthMode } from "../models/accountAuth";
+import type { AuthMode, AuthProvider } from "../../../sync";
 
 export type AuthPanelProps = {
   busy: boolean;
@@ -13,5 +13,6 @@ export type AuthPanelProps = {
   onChangeEmail: (value: string) => void;
   onChangePassword: (value: string) => void;
   onSwitchMode: (mode: AuthMode) => void;
+  onProviderSubmit: (provider: AuthProvider) => void;
   onSubmit: (mode: AuthMode) => void;
 };

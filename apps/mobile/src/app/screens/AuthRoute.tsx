@@ -2,7 +2,7 @@ import React from "react";
 import { AuthScreen } from "../../features/account";
 import type { AuthRouteProps } from "./routeTypes";
 
-export function AuthRoute({ screen, syncStatus, authBusy, onSetScreen, onAuthenticate }: AuthRouteProps) {
+export function AuthRoute({ screen, syncStatus, authBusy, onSetScreen, onAuthenticate, onAuthenticateProvider }: AuthRouteProps) {
   return (
     <AuthScreen
       configured={syncStatus !== "not-configured"}
@@ -11,6 +11,7 @@ export function AuthRoute({ screen, syncStatus, authBusy, onSetScreen, onAuthent
       onBack={() => onSetScreen("home")}
       onSwitchMode={(mode) => onSetScreen(mode === "sign-up" ? "register" : "login")}
       onAuthenticate={onAuthenticate}
+      onAuthenticateProvider={onAuthenticateProvider}
     />
   );
 }

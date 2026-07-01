@@ -7,8 +7,8 @@ import { useAccountPanel } from "../hooks/useAccountPanel";
 
 export type { AccountStudySummary } from "../types/accountTypes";
 
-export function AccountPanel({ configured, supabase, accountEmail, studySummary, busy, onAuthenticate, onSignOut }: AccountPanelProps) {
-  const account = useAccountPanel({ accountEmail, supabase, onAuthenticate, onSignOut });
+export function AccountPanel({ configured, supabase, accountEmail, studySummary, busy, onAuthenticate, onAuthenticateProvider, onSignOut }: AccountPanelProps) {
+  const account = useAccountPanel({ accountEmail, supabase, onAuthenticate, onAuthenticateProvider, onSignOut });
   if (!configured) return <OfflineAccountPanel studySummary={studySummary} accountEmail={accountEmail} />;
   if (accountEmail) return <SignedInAccountContent account={account} accountEmail={accountEmail} busy={busy} studySummary={studySummary} />;
   return <SignedOutAccountContent account={account} busy={busy} studySummary={studySummary} />;

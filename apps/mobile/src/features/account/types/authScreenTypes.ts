@@ -1,4 +1,4 @@
-import type { AuthMode } from "../models/accountAuth";
+import type { AuthMode, AuthProvider } from "../../../sync";
 
 export type AuthScreenProps = {
   configured: boolean;
@@ -7,4 +7,5 @@ export type AuthScreenProps = {
   onBack: () => void;
   onSwitchMode: (mode: AuthMode) => void;
   onAuthenticate: (mode: AuthMode, email: string, password: string, displayName: string) => Promise<string | null>;
+  onAuthenticateProvider: (provider: AuthProvider) => Promise<string | null>;
 };

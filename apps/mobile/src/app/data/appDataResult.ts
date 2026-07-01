@@ -31,6 +31,7 @@ export function buildAppDataResult({ state, actions, auth }: Input) {
     persistSettings: actions.persistSettings,
     syncNow: actions.syncNow,
     authenticate: auth.authenticate,
+    authenticateWithProvider: auth.authenticateWithProvider,
     signOutAccount: auth.signOutAccount
   };
 }

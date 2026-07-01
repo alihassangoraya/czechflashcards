@@ -1,11 +1,11 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import { colors, radius, spacing } from "../../../theme/design";
+import { colors, radius, size, spacing } from "../../../theme/design";
 import { AccountAuthForm } from "./AccountAuthForm";
 import { AuthPanelIntro } from "./AuthPanelIntro";
 import type { AuthPanelProps } from "./authPanelTypes";
 
-export function AuthPanel({ busy, configured, displayName, email, isRegister, message, mode, password, onChangeDisplayName, onChangeEmail, onChangePassword, onSwitchMode, onSubmit }: AuthPanelProps) {
+export function AuthPanel({ busy, configured, displayName, email, isRegister, message, mode, password, onChangeDisplayName, onChangeEmail, onChangePassword, onSwitchMode, onProviderSubmit, onSubmit }: AuthPanelProps) {
   return (
     <View style={styles.panel}>
       <AuthPanelIntro configured={configured} isRegister={isRegister} />
@@ -20,6 +20,7 @@ export function AuthPanel({ busy, configured, displayName, email, isRegister, me
         onChangeEmail={onChangeEmail}
         onChangePassword={onChangePassword}
         onSwitchMode={onSwitchMode}
+        onProviderSubmit={onProviderSubmit}
         onSubmit={onSubmit}
       />
     </View>
@@ -27,5 +28,5 @@ export function AuthPanel({ busy, configured, displayName, email, isRegister, me
 }
 
 const styles = StyleSheet.create({
-  panel: { gap: spacing.xl, borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surface, padding: spacing.panel }
+  panel: { width: "100%", maxWidth: size.authPanelMaxWidth, gap: spacing.xl, borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surface, padding: spacing.panel }
 });

@@ -9,5 +9,6 @@ export type AccountModalProps = Pick<
   | "authBusy"
   | "onSetPanel"
   | "onAuthenticate"
+  | "onAuthenticateProvider"
   | "onSignOut"
 >;

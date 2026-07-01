@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { signInWithPassword, signOut, signUpWithPassword, type AppSupabaseClient, type AuthMode } from "../../sync";
+import { signInWithOAuthProvider, signInWithPassword, signOut, signUpWithPassword, type AppSupabaseClient, type AuthMode, type AuthProvider } from "../../sync";
 
 export function useAuthActions(supabase: AppSupabaseClient, onAuthenticated: () => Promise<void>) {
   const [authBusy, setAuthBusy] = useState(false);
@@ -21,7 +21,14 @@ export function useAuthActions(supabase: AppSupabaseClient, onAuthenticated: () 
     return error;
   }
 
-  return { authBusy, authenticate, signOutAccount };
+  async function authenticateWithProvider(provider: AuthProvider) {
+    setAuthBusy(true);
+    const error = await signInWithOAuthProvider(supabase, provider);
+    setAuthBusy(false);
+    return error;
+  }
+
+  return { authBusy, authenticate, authenticateWithProvider, signOutAccount };
 }
 
 export type AuthActions = ReturnType<typeof useAuthActions>;

@@ -25,6 +25,7 @@ export function SignedOutAccountContent({ account, busy, studySummary }: Props) 
         onChangeDisplayName={account.setDisplayName}
         onChangeEmail={account.setEmail}
         onChangePassword={account.setPassword}
+        onProviderSubmit={(provider) => void account.signInWithProvider(provider)}
         onSubmit={(mode) => void account.submit(mode)}
       />
     </View>

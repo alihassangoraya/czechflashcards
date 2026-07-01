@@ -4,6 +4,8 @@ export const size = {
   iconMedium: 22,
   iconLarge: 24,
   actionMinHeight: 40,
+  authPanelMaxWidth: 440,
+  authProviderMinWidth: 140,
   headerAction: 42,
   dailyGoalIcon: 44,
   cardAction: 36,

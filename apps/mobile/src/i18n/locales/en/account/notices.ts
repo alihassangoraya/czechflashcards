@@ -4,6 +4,7 @@ export const enAccountNoticeTranslations = {
   "account.shortPassword": "Password must be at least 6 characters.",
   "account.created": "Account created. Check your email if confirmation is enabled.",
   "account.signedIn": "Signed in and syncing this device.",
+  "account.providerStarted": "Provider sign-in opened. Complete it to sync this device.",
   "account.supabaseMissing": "Supabase URL and anonymous key are missing in this build.",
   "account.enterCredentials": "Enter your email and password.",
   "account.friendSent": "Friend request sent.",
