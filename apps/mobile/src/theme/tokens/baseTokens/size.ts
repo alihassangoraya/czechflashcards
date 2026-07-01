@@ -17,6 +17,7 @@ export const size = {
   progressStatusMinWidth: 72,
   grammarCaseColumnWidth: 72,
   searchActionMaxWidth: 132,
+  searchResultActionsWidth: 180,
   searchResultMinWidth: 180,
   deckCardPhoneWidth: "48%",
   deckCardTabletWidth: "31.8%",

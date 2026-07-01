@@ -24,7 +24,7 @@ export function SearchResultHeader({ card }: Props) {
 }
 
 const styles = StyleSheet.create({
-  topLine: { flexDirection: "row", justifyContent: "space-between", gap: spacing.lg, flexWrap: "wrap" },
+  topLine: { flexDirection: "row", justifyContent: "space-between", gap: spacing.lg, flexWrap: "wrap", paddingRight: size.searchResultActionsWidth },
   wordGroup: { minWidth: size.searchResultMinWidth, flexGrow: 1, gap: spacing.xxs },
   word: { color: colors.textStrong, fontSize: typography.titleSmall, lineHeight: typography.cardBodyLine, fontWeight: typography.weightSemibold },
   pronunciation: { color: colors.textMuted, fontSize: typography.caption, fontWeight: typography.weightMedium },
