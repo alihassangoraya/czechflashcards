@@ -27,6 +27,6 @@ export function HomeHero({ activeDeckLabel, examLevel, dueCount, accountEmail, a
 const styles = StyleSheet.create({
   hero: { width: "100%", height: size.heroHeight, overflow: "hidden", backgroundColor: colors.primaryDeep, padding: spacing.page, justifyContent: "space-between" },
   heroWide: { height: size.heroWideHeight },
-  heroImage: { resizeMode: "cover" },
+  heroImage: {},
   heroOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: colors.heroOverlay }
 });

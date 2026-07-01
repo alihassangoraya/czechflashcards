@@ -24,7 +24,7 @@ export function StudyCardMotion({ cardRotation, children, dragX, panHandlers }: 
 
   return (
     <View style={styles.cardFrame} {...panHandlers}>
-      <Animated.View pointerEvents="box-none" style={[styles.cardMotion, { transform: [{ translateX: dragX }, { rotateZ: cardRotation }] }]}>
+      <Animated.View style={[styles.cardMotion, { transform: [{ translateX: dragX }, { rotateZ: cardRotation }] }]}>
         <SwipeStamp animatedStyle={{ opacity: againOpacity }} direction="again" />
         <SwipeStamp animatedStyle={{ opacity: knownOpacity }} direction="known" />
         {children}
@@ -35,5 +35,5 @@ export function StudyCardMotion({ cardRotation, children, dragX, panHandlers }: 
 
 const styles = StyleSheet.create({
   cardFrame: { position: "relative", height: size.cardHeight },
-  cardMotion: { ...StyleSheet.absoluteFillObject }
+  cardMotion: { ...StyleSheet.absoluteFillObject, pointerEvents: "box-none" }
 });

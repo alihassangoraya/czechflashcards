@@ -12,18 +12,19 @@ import type { SearchPanelProps } from "./searchPanelTypes";
 export function SearchPanel({ cards, query, meaningLanguage, savedCardIds, onQueryChange, onStudy, onToggleSaved, onManageDecks, onEdit }: SearchPanelProps) {
   const results = useMemo(() => searchCards(cards, query), [cards, query]);
   const trimmedQuery = query.trim();
+  const hasQuery = Boolean(trimmedQuery);
 
   return (
     <View style={styles.root}>
       <SearchField query={query} onQueryChange={onQueryChange} />
 
-      {trimmedQuery ? (
+      {hasQuery ? (
         <SearchResultMeta count={results.length} />
       ) : (
         <SearchPrompt />
       )}
 
-      {trimmedQuery && results.length === 0 && <SearchNoResults />}
+      {hasQuery && results.length === 0 && <SearchNoResults />}
 
       <SearchResultsList results={results} meaningLanguage={meaningLanguage} savedCardIds={savedCardIds} onStudy={onStudy} onToggleSaved={onToggleSaved} onManageDecks={onManageDecks} onEdit={onEdit} />
     </View>

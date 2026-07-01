@@ -9,7 +9,7 @@ type Props = { card: Card; meaningLanguage: MeaningLanguage };
 
 export function SearchResultTranslations({ card, meaningLanguage }: Props) {
   const meaning = selectedMeaning(card, meaningLanguage).trim();
-  const english = card.en.trim();
+  const english = String(card.en || "").trim();
   const showSelectedMeaning = Boolean(meaning) && meaningLanguage !== "en" && meaning !== english;
   const isRtl = meaningLanguage === "ur";
 
