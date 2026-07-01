@@ -1,10 +1,10 @@
 export const size = {
-  iconSmall: 17,
-  icon: 20,
+  iconSmall: 17, icon: 20,
   iconMedium: 22,
   iconLarge: 24,
   actionMinHeight: 40,
   authPanelMaxWidth: 440,
+  accountSummaryItemMinWidth: 120,
   authProviderMinWidth: 140,
   headerAction: 42,
   dailyGoalIcon: 44,
