@@ -1,9 +1,6 @@
 import { useEffect } from "react";
 import type { ThemePreference } from "../theme/design";
-import { applyNativeThemePreference } from "../theme/themeReload";
-import { resolveThemePreference } from "../theme/systemThemeMode";
-import { writeStoredThemePreference } from "../theme/themeModePersistence";
-import { applyWebThemeVariables } from "../theme/webThemeVariables";
+import { applyThemePreference } from "../theme/applyThemePreference";
 
 type Props = {
   themePreference: ThemePreference;
@@ -11,10 +8,7 @@ type Props = {
 
 export function ThemeModeSync({ themePreference }: Props) {
   useEffect(() => {
-    const resolvedThemeMode = resolveThemePreference(themePreference);
-    applyNativeThemePreference(themePreference);
-    writeStoredThemePreference(themePreference);
-    applyWebThemeVariables(resolvedThemeMode);
+    applyThemePreference(themePreference);
   }, [themePreference]);
 
   return null;

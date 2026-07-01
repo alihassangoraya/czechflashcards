@@ -18,5 +18,7 @@ export function applyWebThemeVariables(mode: ThemeMode): void {
     document.documentElement.style.setProperty(colorVariableName(key), colors[key]);
   }
   document.documentElement.style.setProperty("--app-background", colors.background);
+  document.documentElement.style.backgroundColor = colors.background;
   document.body.style.backgroundColor = colors.background;
+  document.getElementById("root")?.style.setProperty("background-color", colors.background);
 }

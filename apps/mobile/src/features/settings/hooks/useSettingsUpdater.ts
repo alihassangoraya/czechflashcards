@@ -1,7 +1,9 @@
 import type { StudySettings } from "../../../database";
+import { applyThemePreference } from "../../../theme/applyThemePreference";
 
 export function createSettingsUpdater(settings: StudySettings, onChange: (settings: StudySettings) => void) {
   function update(patch: Partial<StudySettings>) {
+    if (patch.themeMode) applyThemePreference(patch.themeMode);
     onChange({ ...settings, ...patch });
   }
 
