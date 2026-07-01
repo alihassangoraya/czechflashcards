@@ -18,6 +18,8 @@ export const hiAccountProfileTranslations = {
   "account.sync.idle": "Ready",
   "account.sync.synced": "Synced",
   "account.sync.error": "ध्यान चाहिए",
+  "account.tab.sync": "अकाउंट और sync",
+  "account.tab.friends": "दोस्त",
   "account.customWords": "कस्टम शब्द",
   "account.savedWords": "सेव शब्द",
   "account.myDecks": "मेरे डेक",

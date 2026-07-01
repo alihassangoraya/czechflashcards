@@ -18,6 +18,8 @@ export const urAccountProfileTranslations = {
   "account.sync.idle": "Ready",
   "account.sync.synced": "Synced",
   "account.sync.error": "توجہ چاہیے",
+  "account.tab.sync": "اکاؤنٹ اور sync",
+  "account.tab.friends": "دوست",
   "account.customWords": "کسٹم الفاظ",
   "account.savedWords": "محفوظ الفاظ",
   "account.myDecks": "میرے ڈیکس",

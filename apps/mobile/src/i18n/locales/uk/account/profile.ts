@@ -18,6 +18,8 @@ export const ukAccountProfileTranslations = {
   "account.sync.idle": "Готово",
   "account.sync.synced": "Синхронізовано",
   "account.sync.error": "Потрібна увага",
+  "account.tab.sync": "Акаунт і sync",
+  "account.tab.friends": "Друзі",
   "account.customWords": "Власні слова",
   "account.savedWords": "Збережені слова",
   "account.myDecks": "Мої колоди",

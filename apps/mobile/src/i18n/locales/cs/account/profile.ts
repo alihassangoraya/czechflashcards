@@ -18,6 +18,8 @@ export const csAccountProfileTranslations = {
   "account.sync.idle": "Připraveno",
   "account.sync.synced": "Synchronizováno",
   "account.sync.error": "Vyžaduje pozornost",
+  "account.tab.sync": "Účet a sync",
+  "account.tab.friends": "Přátelé",
   "account.customWords": "Vlastní slova",
   "account.savedWords": "Uložená slova",
   "account.myDecks": "Moje balíčky",
