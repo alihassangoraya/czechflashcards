@@ -1,14 +1,15 @@
-import type { AppSupabaseClient, AuthProvider } from "../../../sync";
+import type { AppSupabaseClient, AuthProvider, SyncStatus } from "../../../sync";
 import type { AuthMode } from "../models/accountAuth";
-import type { AccountStudySummary } from "./accountTypes";
 
 export type AccountPanelProps = {
   configured: boolean;
   supabase: AppSupabaseClient;
+  syncStatus: SyncStatus;
   accountEmail: string | null;
-  studySummary: AccountStudySummary;
   busy: boolean;
   onAuthenticate: (mode: AuthMode, email: string, password: string, displayName: string) => Promise<string | null>;
   onAuthenticateProvider: (provider: AuthProvider) => Promise<string | null>;
   onSignOut: () => Promise<string | null>;
+  onSyncNow: () => void;
+  showToast: (message: string) => void;
 };

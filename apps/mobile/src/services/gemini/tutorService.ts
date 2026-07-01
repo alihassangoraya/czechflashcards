@@ -5,10 +5,10 @@ import { buildTutorLessonPrompt, buildTutorPhoneticPrompt } from "./tutorPrompts
 
 export type { GeminiTutorResult } from "./geminiTypes";
 
-export async function explainCzechCard(card: Card): Promise<GeminiTutorResult> {
+export async function explainCzechCard(card: Card, language: string): Promise<GeminiTutorResult> {
   const [lesson, phonetics] = await Promise.all([
-    generateGeminiText(buildTutorLessonPrompt(card), "Tutor notes could not be generated."),
-    generateGeminiText(buildTutorPhoneticPrompt(card), "Pronunciation notes could not be generated.")
+    generateGeminiText(buildTutorLessonPrompt(card, language), "Tutor notes could not be generated."),
+    generateGeminiText(buildTutorPhoneticPrompt(card, language), "Pronunciation notes could not be generated.")
   ]);
 
   return { lesson, phonetics };

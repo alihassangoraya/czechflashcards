@@ -1,7 +1,15 @@
+import { hiAccountAuthTranslations } from "./account/auth";
+import { hiAccountBadgeTranslations } from "./account/badges";
+import { hiAccountDeckMembershipTranslations } from "./account/deckMembership";
+import { hiAccountFriendTranslations } from "./account/friends";
+import { hiAccountNoticeTranslations } from "./account/notices";
+import { hiAccountProfileTranslations } from "./account/profile";
+
 export const hiAccountTranslations = {
-  "account.continueGoogle": "Google",
-  "account.continueFacebook": "Facebook",
-  "account.continueApple": "Apple",
-  "account.orEmail": "या ईमेल से जारी रखें",
-  "account.providerStarted": "प्रोवाइडर साइन-इन खुल गया है. इस डिवाइस को सिंक करने के लिए इसे पूरा करें.",
+  ...hiAccountAuthTranslations,
+  ...hiAccountProfileTranslations,
+  ...hiAccountBadgeTranslations,
+  ...hiAccountFriendTranslations,
+  ...hiAccountNoticeTranslations,
+  ...hiAccountDeckMembershipTranslations
 } as const;

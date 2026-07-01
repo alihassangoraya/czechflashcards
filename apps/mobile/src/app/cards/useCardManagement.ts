@@ -5,8 +5,8 @@ import { useDeckMembershipActions } from "./useDeckMembershipActions";
 import { useSavedCardActions } from "./useSavedCardActions";
 
 export function useCardManagement({ db, cards, current, panel, savedCardIds, setSavedCardIds, setDeckMemberships, setCurrent, setRevealed, setPanel, setSessionReviews, refresh, forceCard, showToast }: CardManagementProps) {
-  const editor = useCardEditor({ db, current, panel, setCurrent, setRevealed, setPanel, setSessionReviews, refresh, forceCard });
-  const customWords = useCustomWordActions({ db, refresh });
+  const editor = useCardEditor({ db, current, panel, setCurrent, setRevealed, setPanel, setSessionReviews, refresh, forceCard, showToast });
+  const customWords = useCustomWordActions({ db, cards, refresh, showToast });
   const savedCards = useSavedCardActions({ db, cards, savedCardIds, setSavedCardIds, showToast });
   const deckMembership = useDeckMembershipActions({ db, cards, setDeckMemberships, setPanel, showToast });
 

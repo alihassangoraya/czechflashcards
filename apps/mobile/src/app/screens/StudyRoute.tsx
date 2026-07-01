@@ -2,7 +2,7 @@ import React from "react";
 import { StudyScreen } from "../../features/study";
 import type { StudyRouteProps } from "./routeTypes";
 
-export function StudyRoute({ current, settings, savedCardIds, revealed, grading, lastReviewCard, sessionReviews, sessionTarget, reviewedToday, dailyGoal, sessionProgress, studyAnimations, reviewInterval, onSetScreen, onSetPanel, onToggleSaved, onSetDeckManagementCard, onOpenCardEditor, onUndoLastReview, onGrade }: StudyRouteProps) {
+export function StudyRoute({ current, settings, savedCardIds, revealed, grading, lastReviewCard, sessionReviews, sessionTarget, reviewedToday, dailyGoal, sessionProgress, studyAnimations, reviewInterval, onGoBack, onSetPanel, onToggleSaved, onSetDeckManagementCard, onOpenCardEditor, onUndoLastReview, onGrade }: StudyRouteProps) {
   return (
     <StudyScreen
       current={current}
@@ -11,7 +11,6 @@ export function StudyRoute({ current, settings, savedCardIds, revealed, grading,
       revealed={revealed}
       flipping={studyAnimations.flipping}
       grading={grading}
-      swipeDirection={studyAnimations.swipeDirection}
       lastReviewCard={lastReviewCard}
       sessionReviews={sessionReviews}
       sessionTarget={sessionTarget}
@@ -23,7 +22,7 @@ export function StudyRoute({ current, settings, savedCardIds, revealed, grading,
       cardRotation={studyAnimations.cardRotation}
       panHandlers={studyAnimations.panHandlers}
       reviewInterval={reviewInterval}
-      onBack={() => onSetScreen("home")}
+      onBack={onGoBack}
       onOpenGrammar={() => onSetPanel("grammar")}
       onFlipCard={studyAnimations.flipCard}
       onToggleSaved={(cardId) => onToggleSaved(cardId, true)}

@@ -18,5 +18,5 @@ export function filterDeck(cards: Card[], examLevel: CardLevel, deckFilter: stri
 }
 
 export function selectedMeaning(card: Card, language: MeaningLanguage): string {
-  return language === "ur" ? card.ur : card.hi;
+  return card[language] || card.en;
 }

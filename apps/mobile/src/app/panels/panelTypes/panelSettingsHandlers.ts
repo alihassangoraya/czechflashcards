@@ -5,8 +5,8 @@ export type PanelSettingsHandlers = {
   onSyncNow: () => void;
   onRestoreJson: () => void;
   onImportCsv: () => void;
-  onShuffleDue: () => void;
-  onReviewAllNow: () => void;
+  onShuffleDue: () => boolean;
+  onReviewAllNow: () => Promise<boolean>;
   onExportProgress: () => void;
   onExportDeck: () => void;
 };

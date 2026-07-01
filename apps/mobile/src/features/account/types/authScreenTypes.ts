@@ -8,4 +8,5 @@ export type AuthScreenProps = {
   onSwitchMode: (mode: AuthMode) => void;
   onAuthenticate: (mode: AuthMode, email: string, password: string, displayName: string) => Promise<string | null>;
   onAuthenticateProvider: (provider: AuthProvider) => Promise<string | null>;
+  showToast: (message: string) => void;
 };

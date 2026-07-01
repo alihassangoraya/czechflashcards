@@ -8,5 +8,4 @@ export type SwipePanResponderParams = {
   swipeCompleting: MutableRefObject<boolean>;
   completeSwipe: (direction: SwipeDirection) => void;
   resetCancelledSwipe: () => void;
-  setSwipeDirection: (direction: SwipeDirection | null) => void;
 };

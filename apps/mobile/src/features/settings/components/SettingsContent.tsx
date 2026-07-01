@@ -1,12 +1,11 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { spacing } from "../../../theme/design";
-import { DataToolsSection } from "./DataToolsSection";
+import { AppearanceSection } from "./AppearanceSection";
 import { ReminderSettingsSection } from "./ReminderSettingsSection";
 import { SettingsCustomDecksSection } from "./SettingsCustomDecksSection";
-import { SettingsSummary } from "./SettingsSummary";
+import { SettingsDataToolsSection } from "./SettingsDataToolsSection";
 import { StudyPlanSection } from "./StudyPlanSection";
-import { SyncSettingsSection } from "./SyncSettingsSection";
 import type { SettingsPanelProps } from "../types/settingsPanelTypes";
 import type { SettingsDraft } from "../hooks/useSettingsDraft";
 
@@ -15,19 +14,18 @@ type Props = SettingsPanelProps & {
   draft: SettingsDraft;
 };
 
-export function SettingsContent({ settings, accountEmail, syncStatus, notice, cards, deckMemberships, activeDeckLabel, draft, onSyncNow, onAccount, onRestoreJson, onImportCsv, onShuffleDue, onReviewAllNow, onExportProgress, onExportDeck }: Props) {
+export function SettingsContent({ settings, cards, deckMemberships, settingsNotice, activeDeckLabel, draft, onRestoreJson, onImportCsv, onExportProgress, onExportDeck, onExportAccountData }: Props) {
   return (
     <View style={styles.root}>
-      <SettingsSummary examLevel={settings.examLevel} activeDeckLabel={activeDeckLabel} dailyGoal={settings.dailyGoal} />
+      <AppearanceSection appLanguage={settings.appLanguage} themeMode={settings.themeMode} onAppLanguageChange={draft.updateAppLanguage} onThemeModeChange={(themeMode) => draft.update({ themeMode })} />
       <StudyPlanSection settings={settings} activeDeckLabel={activeDeckLabel} onUpdate={draft.update} onExamLevelChange={draft.updateExamLevel} />
       <SettingsCustomDecksSection cards={cards} deckMemberships={deckMemberships} draft={draft} settings={settings} />
       <ReminderSettingsSection notifications={settings.notifications} customReminderTime={draft.customReminderTime} onChange={draft.updateNotifications} onCustomReminderTimeChange={draft.setCustomReminderTime} onCommitCustomReminderTime={draft.commitCustomReminderTime} onSetReminderTime={draft.setReminderTime} />
-      <DataToolsSection activeDeckLabel={activeDeckLabel} notice={notice} onRestoreJson={onRestoreJson} onImportCsv={onImportCsv} onShuffleDue={onShuffleDue} onReviewAllNow={onReviewAllNow} onExportProgress={onExportProgress} onExportDeck={onExportDeck} />
-      <SyncSettingsSection accountEmail={accountEmail} syncStatus={syncStatus} onSyncNow={onSyncNow} onAccount={onAccount} />
+      <SettingsDataToolsSection notice={settingsNotice} onRestoreJson={onRestoreJson} onImportCsv={onImportCsv} onExportProgress={onExportProgress} onExportDeck={onExportDeck} onExportAccountData={onExportAccountData} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { gap: spacing.hero }
+  root: { gap: spacing.panel, paddingHorizontal: spacing.page, paddingBottom: spacing.screenBottom }
 });

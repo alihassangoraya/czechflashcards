@@ -6,14 +6,13 @@ import type { StudyCardProps } from "./studyCardTypes";
 
 export function StudyCard({
   current,
-  swipeDirection,
   dragX,
   cardRotation,
   panHandlers,
   ...currentCardProps
 }: StudyCardProps) {
   return (
-    <StudyCardMotion cardRotation={cardRotation} dragX={dragX} panHandlers={panHandlers} swipeDirection={swipeDirection}>
+    <StudyCardMotion cardRotation={cardRotation} dragX={dragX} panHandlers={panHandlers}>
       {current ? (
         <CurrentStudyCard
           current={current}

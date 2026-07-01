@@ -12,7 +12,7 @@ export function searchCards(cards: Card[], query: string) {
 }
 
 function matchScore(card: Card, query: string) {
-  const fields = [card.cz, card.en, card.hi, card.ur, card.pronunciation || "", card.synonyms || "", card.antonyms || ""];
+  const fields = [card.cz, card.en, card.cs, card.hi, card.ur, card.uk, card.pronunciation || "", card.synonyms || "", card.antonyms || ""];
   const exact = fields.findIndex((value) => value.toLocaleLowerCase() === query);
   if (exact >= 0) return exact;
   const prefix = fields.findIndex((value) => value.toLocaleLowerCase().startsWith(query));

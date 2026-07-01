@@ -14,8 +14,8 @@ type Props = {
 export function CustomDeckEditActions({ labels, onCancelEditDeck, onSaveEditDeck }: Props) {
   return (
     <View style={styles.deckActions}>
-      <CustomDeckIconAction icon="check" color={colors.success} label={labels.saveDeck} onPress={onSaveEditDeck} />
-      <CustomDeckIconAction icon="close" color={colors.textMuted} label={labels.cancelEdit} onPress={onCancelEditDeck} />
+      <CustomDeckIconAction icon="check" color={colors.iconSuccess} label={labels.saveDeck} onPress={onSaveEditDeck} />
+      <CustomDeckIconAction icon="close" color={colors.iconMuted} label={labels.cancelEdit} onPress={onCancelEditDeck} />
     </View>
   );
 }

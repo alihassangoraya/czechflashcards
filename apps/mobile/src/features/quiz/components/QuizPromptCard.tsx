@@ -14,7 +14,7 @@ export function QuizPromptCard({ card }: QuizPromptCardProps) {
       <Text style={styles.promptLabel}>{t("quiz.chooseMeaning")}</Text>
       <Text style={styles.word}>{card.cz}</Text>
       <Pressable style={styles.audioLine} onPress={() => speak(card.cz, { language: "cs-CZ", rate: 0.86 })} accessibilityRole="button" accessibilityLabel={t("quiz.playWord", { word: card.cz })}>
-        <MaterialIcons name="volume-up" size={size.iconSmall} color={colors.action} />
+        <MaterialIcons name="volume-up" size={size.iconSmall} color={colors.iconAction} />
         <Text style={styles.pronunciation}>[ {card.pronunciation || card.cz} ]</Text>
       </Pressable>
     </View>
@@ -22,8 +22,8 @@ export function QuizPromptCard({ card }: QuizPromptCardProps) {
 }
 
 const styles = StyleSheet.create({
-  promptCard: { gap: spacing.lg, borderWidth: spacing.hairline, borderColor: colors.borderSoft, borderRadius: radius.card, backgroundColor: colors.surface, padding: spacing.card, ...shadow.soft },
-  promptLabel: { color: colors.textSoft, fontSize: typography.body, fontWeight: typography.weightRegular, textAlign: "center" },
+  promptCard: { alignItems: "center", gap: spacing.lg, borderWidth: spacing.hairline, borderColor: colors.borderSoft, borderRadius: radius.card, backgroundColor: colors.surface, padding: spacing.card, ...shadow.soft },
+  promptLabel: { alignSelf: "stretch", width: "100%", color: colors.textSoft, fontSize: typography.body, fontWeight: typography.weightRegular, textAlign: "center" },
   word: { color: colors.textStrong, fontSize: typography.word, lineHeight: typography.word + spacing.lg, fontWeight: typography.weightBold, textAlign: "center" },
   audioLine: { alignSelf: "center", flexDirection: "row", alignItems: "center", gap: spacing.smd, borderRadius: radius.md, backgroundColor: colors.actionSoft, paddingHorizontal: spacing.lg, paddingVertical: spacing.smd },
   pronunciation: { color: colors.action, fontSize: typography.bodySmall, fontWeight: typography.weightMedium }

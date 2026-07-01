@@ -1,3 +1,5 @@
+const { enrichSeedDetails } = require("./seedDetailsEnrichment");
+
 function seedSlug(value) {
   return String(value || "card")
     .toLowerCase()
@@ -8,22 +10,26 @@ function seedSlug(value) {
 }
 
 function normalizeForSeed(card, index) {
+  const details = enrichSeedDetails(card);
+
   return {
     id: card.id || `${seedSlug(card.cz)}-${index}`,
     cz: String(card.cz || "").trim(),
     en: String(card.en || "").trim(),
+    cs: String(card.cs || "").trim(),
     hi: String(card.hi || "").trim(),
     ur: String(card.ur || card.urdu || "").trim(),
+    uk: String(card.uk || "").trim(),
     sentence: String(card.sentence || "").trim(),
     sentenceEn: String(card.sentenceEn || card.exampleEn || "").trim(),
     level: card.level || null,
     tags: Array.isArray(card.tags) ? card.tags : String(card.tags || "daily").split(/[,\s]+/).filter(Boolean),
     source: card.source || "legacy-web",
-    pronunciation: String(card.pronunciation || "").trim(),
-    synonyms: String(card.synonyms || "").trim(),
-    antonyms: String(card.antonyms || "").trim(),
-    grammar: card.grammar || null,
-    googleCategory: String(card.googleCategory || "").trim()
+    pronunciation: details.pronunciation,
+    synonyms: details.synonyms,
+    antonyms: details.antonyms,
+    grammar: details.grammar,
+    googleCategory: details.googleCategory
   };
 }
 

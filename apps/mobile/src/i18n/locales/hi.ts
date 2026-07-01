@@ -1,4 +1,5 @@
 import { hiCoreTranslations } from "./hi/core";
+import { hiToastTranslations } from "./hi/toast";
 import { hiHomeTranslations } from "./hi/home";
 import { hiSettingsTranslations } from "./hi/settings";
 import { hiStudyTranslations } from "./hi/study";
@@ -10,6 +11,7 @@ import { hiProgressTranslations } from "./hi/progress";
 
 export const hi = {
   ...hiCoreTranslations,
+  ...hiToastTranslations,
   ...hiHomeTranslations,
   ...hiSettingsTranslations,
   ...hiStudyTranslations,

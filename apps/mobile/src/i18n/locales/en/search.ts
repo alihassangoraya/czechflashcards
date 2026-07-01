@@ -1,9 +1,9 @@
 export const enSearchTranslations = {
-  "search.placeholder": "Search Czech, English, Hindi, or Urdu",
+  "search.placeholder": "Search Czech, English, Czech meaning, Hindi, Urdu, or Ukrainian",
   "search.accessibility": "Search vocabulary",
   "search.clear": "Clear search",
   "search.findTitle": "Find a word",
-  "search.findCopy": "Search all {count}+ cards in Czech, English, Hindi, or Urdu.",
+  "search.findCopy": "Search all {count}+ cards across Czech, English, Czech meaning, Hindi, Urdu, and Ukrainian.",
   "search.noResultsTitle": "No matching words",
   "search.noResultsCopy": "Try a shorter spelling or another language.",
   "search.matches": "{count} {label}",
@@ -21,4 +21,7 @@ export const enSearchTranslations = {
   "search.actionDeck": "Deck",
   "search.actionSave": "Save",
   "search.actionSaved": "Saved",
+  "search.synonyms": "Synonyms",
+  "search.antonyms": "Antonyms",
+  "search.grammar": "Grammar",
 } as const;

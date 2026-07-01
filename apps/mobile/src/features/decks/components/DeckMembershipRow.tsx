@@ -17,13 +17,13 @@ export function DeckMembershipRow({ deck, inDeck, onPress }: Props) {
   return (
     <Pressable style={[styles.deckRow, inDeck && styles.deckRowActive]} onPress={onPress} accessibilityRole="button" accessibilityState={{ selected: inDeck }}>
       <View style={[styles.deckIcon, inDeck && styles.deckIconActive]}>
-        <MaterialIcons name="folder" size={size.icon} color={inDeck ? colors.onPrimary : colors.primaryDeep} />
+        <MaterialIcons name="folder" size={size.icon} color={inDeck ? colors.onPrimary : colors.iconPrimary} />
       </View>
       <View style={styles.deckCopy}>
         <Text style={styles.deckName}>{deck.name}</Text>
         <Text style={styles.deckMeta}>{inDeck ? t("deckMembership.inDeck") : t("deckMembership.tapToAdd")}</Text>
       </View>
-      <MaterialIcons name={inDeck ? "check-circle" : "add-circle-outline"} size={size.iconMedium} color={inDeck ? colors.success : colors.action} />
+      <MaterialIcons name={inDeck ? "check-circle" : "add-circle-outline"} size={size.iconMedium} color={inDeck ? colors.iconSuccess : colors.iconAction} />
     </Pressable>
   );
 }

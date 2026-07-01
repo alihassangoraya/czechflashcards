@@ -1,5 +1,5 @@
 import type { AppDatabase, StudySettings } from "../../database";
-import type { AppSupabaseClient } from "../../sync";
+import type { AppSupabaseClient, SyncStatus } from "../../sync";
 import { refreshAppData } from "./appDataRefresh";
 import { persistAppSettings } from "./appDataSettings";
 import type { AppDataState } from "./appDataStateTypes";
@@ -17,8 +17,8 @@ export function useAppDataActions({ state, supabase }: Params) {
     await refreshAppData(state, database, dailyGoal);
   }
 
-  async function syncNow(database: AppDatabase | null = db): Promise<void> {
-    await syncAppDataNow(state, database, supabase, settings?.dailyGoal || 30);
+  async function syncNow(database: AppDatabase | null = db): Promise<SyncStatus | null> {
+    return syncAppDataNow(state, database, supabase, settings?.dailyGoal || 30);
   }
 
   async function persistSettings(next: StudySettings): Promise<void> {

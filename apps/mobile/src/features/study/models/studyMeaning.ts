@@ -1,13 +1,14 @@
 import type { Card } from "@czech-flashcards/shared";
 import { selectedMeaning } from "@czech-flashcards/shared";
-import type { StudySettings } from "../../../database";
+import type { MeaningLanguage } from "@czech-flashcards/shared";
 
-export function pronunciationHint(word: string) {
-  return `[ ${word} ] · stress the first syllable`;
+export function pronunciationDisplay(card: Card) {
+  return `[ ${card.pronunciation || card.cz} ]`;
 }
 
-export function displaySelectedMeaning(card: Card, language: StudySettings["meaningLanguage"]): string {
+export function displaySelectedMeaning(card: Card, language: MeaningLanguage): string {
   const meaning = selectedMeaning(card, language).trim();
+  if (language === "en" || meaning === card.en.trim()) return "";
   return isRealTranslation(meaning) ? meaning : "";
 }
 

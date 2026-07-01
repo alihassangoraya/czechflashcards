@@ -1,4 +1,5 @@
 import { ukCoreTranslations } from "./uk/core";
+import { ukToastTranslations } from "./uk/toast";
 import { ukHomeTranslations } from "./uk/home";
 import { ukSettingsTranslations } from "./uk/settings";
 import { ukStudyTranslations } from "./uk/study";
@@ -10,6 +11,7 @@ import { ukProgressTranslations } from "./uk/progress";
 
 export const uk = {
   ...ukCoreTranslations,
+  ...ukToastTranslations,
   ...ukHomeTranslations,
   ...ukSettingsTranslations,
   ...ukStudyTranslations,

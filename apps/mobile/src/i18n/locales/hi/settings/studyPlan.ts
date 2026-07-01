@@ -1,9 +1,10 @@
 export const hiSettingsStudyPlanTranslations = {
   "settings.studyPlan": "स्टडी प्लान",
   "settings.studyPlanDescription": "चुनें कि क्या अभ्यास करना है.",
+  "settings.appearance": "दिखावट और भाषा",
+  "settings.appearanceDescription": "ऐप को पढ़ने में आरामदायक बनाएँ.",
   "settings.examLevel": "परीक्षा स्तर",
   "settings.activeDeck": "सक्रिय डेक",
-  "settings.meaningLanguage": "अर्थ की भाषा",
   "settings.appLanguage": "ऐप भाषा",
   "settings.appLanguageDescription": "इंटरफ़ेस भाषा चुनें. शब्दावली चेक-केंद्रित रहेगी.",
   "settings.themeMode": "थीम",

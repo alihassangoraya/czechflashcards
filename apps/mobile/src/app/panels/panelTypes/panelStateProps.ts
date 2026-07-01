@@ -4,4 +4,5 @@ export type PanelStateProps = {
   panel: Panel | null;
   query: string;
   settingsNotice: string;
+  showToast: (message: string) => void;
 };

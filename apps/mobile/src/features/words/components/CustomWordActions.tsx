@@ -17,10 +17,10 @@ export function CustomWordActions({ deleting, word, onEdit, onRequestDelete }: P
   return (
     <View style={styles.actions}>
       <Pressable style={styles.editButton} onPress={onEdit} accessibilityRole="button" accessibilityLabel={t("words.editWord", { word })}>
-        <MaterialIcons name="edit" size={size.iconSmall} color={colors.action} />
+        <MaterialIcons name="edit" size={size.iconSmall} color={colors.iconAction} />
       </Pressable>
       <Pressable style={[styles.deleteButton, deleting && styles.deleteButtonActive]} onPress={onRequestDelete} accessibilityRole="button" accessibilityLabel={t("words.deleteWord", { word })}>
-        <MaterialIcons name="delete-outline" size={size.iconSmall} color={colors.danger} />
+        <MaterialIcons name="delete-outline" size={size.iconSmall} color={colors.iconDanger} />
       </Pressable>
     </View>
   );

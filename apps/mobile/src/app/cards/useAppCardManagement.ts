@@ -1,5 +1,5 @@
 import type { AppData } from "../data/useAppData";
-import type { AppNavigation } from "../navigation/useAppNavigation";
+import type { AppNavigation } from "../navigation/appNavigationTypes";
 import type { StudySession } from "../study/useStudySession";
 import { useCardManagement } from "./useCardManagement";
 

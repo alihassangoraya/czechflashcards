@@ -8,7 +8,7 @@ import type { HeaderIconProps } from "./headerIconTypes";
 export function HeaderIcon({ icon, label, onPress, primary = false }: HeaderIconProps) {
   return (
     <Pressable style={[styles.headerIcon, primary && styles.headerIconPrimary]} onPress={onPress} accessibilityRole="button" accessibilityLabel={label}>
-      <MaterialIcons name={icon} size={size.iconMedium} color={primary ? colors.onPrimary : colors.textStrong} />
+      <MaterialIcons name={icon} size={size.iconMedium} color={primary ? colors.onPrimary : colors.iconDefault} />
     </Pressable>
   );
 }

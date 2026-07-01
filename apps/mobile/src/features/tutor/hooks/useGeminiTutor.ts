@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { Card } from "@czech-flashcards/shared";
 import { explainCzechCard, type GeminiTutorResult } from "../../../services/gemini/tutorService";
 
-export function useGeminiTutor(card: Card | null) {
+export function useGeminiTutor(card: Card | null, language: string) {
   const [openForId, setOpenForId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<GeminiTutorResult | null>(null);
@@ -13,7 +13,7 @@ export function useGeminiTutor(card: Card | null) {
     setResult(null);
     setLoading(true);
     try {
-      setResult(await explainCzechCard(card));
+      setResult(await explainCzechCard(card, language));
     } finally {
       setLoading(false);
     }

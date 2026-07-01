@@ -3,7 +3,7 @@ import type { StudySettings } from "./settingsTypes";
 export const DEFAULT_SETTINGS: StudySettings = {
   examLevel: "b1",
   deckFilter: "b1-focus",
-  meaningLanguage: "ur",
+  meaningLanguage: "en",
   appLanguage: "en",
   themeMode: "system",
   dailyGoal: 30,

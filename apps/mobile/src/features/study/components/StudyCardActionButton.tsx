@@ -25,7 +25,7 @@ export function StudyCardActionButton({ icon, label, muted, onPress, selected, s
       accessibilityState={selected == null ? undefined : { selected }}
       accessibilityLabel={label}
     >
-      <MaterialIcons name={icon} size={muted ? size.iconMedium : size.icon} color={muted ? colors.actionMuted : colors.action} />
+      <MaterialIcons name={icon} size={muted ? size.iconMedium : size.icon} color={muted ? colors.iconMuted : colors.iconAction} />
     </Pressable>
   );
 }

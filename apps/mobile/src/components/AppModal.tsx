@@ -5,13 +5,14 @@ import { appModalStyles as styles } from "./appModalStyles";
 import type { AppModalProps } from "./appModalTypes";
 
 export function AppModal({ visible, title, onClose, children }: AppModalProps) {
-  const { t, textAlign } = useI18n();
+  const { direction, t, textAlign } = useI18n();
+  const rtl = direction === "rtl";
 
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
       <SafeAreaView style={styles.modalOverlay}>
         <View style={styles.modalSheet}>
-          <View style={styles.modalHeader}>
+          <View style={[styles.modalHeader, rtl && styles.rtlRow]}>
             <Text style={[styles.modalTitle, { textAlign }]}>{title}</Text>
             <Pressable style={styles.closeButton} onPress={onClose} accessibilityRole="button" accessibilityLabel={t("common.close", { title })}>
               <Text style={styles.closeButtonText}>x</Text>

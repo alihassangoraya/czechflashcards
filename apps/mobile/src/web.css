@@ -10,12 +10,14 @@ body,
 #root {
   min-height: 100%;
   margin: 0;
+  background: var(--app-background, #f4f1ea);
 }
 
 body {
-  background: #f6f0e6;
+  background: var(--app-background, #f4f1ea);
 }
 
 #root {
   display: flex;
+  background: var(--app-background, #f4f1ea);
 }

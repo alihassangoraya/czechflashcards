@@ -1,7 +1,7 @@
-import { Platform } from "react-native";
+import { Platform, Share } from "react-native";
 
-export function downloadJson(fileName: string, payload: unknown): boolean {
-  if (Platform.OS !== "web" || typeof document === "undefined") return false;
+export async function downloadJson(fileName: string, payload: unknown): Promise<boolean> {
+  if (Platform.OS !== "web" || typeof document === "undefined") return shareJson(fileName, payload);
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
@@ -10,6 +10,15 @@ export function downloadJson(fileName: string, payload: unknown): boolean {
   link.click();
   URL.revokeObjectURL(url);
   return true;
+}
+
+async function shareJson(fileName: string, payload: unknown): Promise<boolean> {
+  try {
+    const result = await Share.share({ title: fileName, message: JSON.stringify(payload, null, 2) });
+    return result.action !== Share.dismissedAction;
+  } catch {
+    return false;
+  }
 }
 
 export function pickTextFile(accept: string, onText: (text: string) => void | Promise<void>, onUnavailable: () => void) {

@@ -21,7 +21,6 @@ export function useStudyAnimations({ current, revealed, grading, onRevealChange,
     flipCard: flip.flipCard,
     flipping: flip.flipping,
     flipProgress: flip.flipProgress,
-    panHandlers: swipe.panHandlers,
-    swipeDirection: swipe.swipeDirection
+    panHandlers: swipe.panHandlers
   };
 }

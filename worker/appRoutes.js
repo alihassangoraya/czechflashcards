@@ -1,11 +1,14 @@
 const appRoutePaths = new Set([
   "/",
+  "/account",
+  "/settings",
   "/index.html",
   "/quiz",
   "/flashcards",
   "/progress",
   "/login",
-  "/register"
+  "/register",
+  "/reset-password"
 ]);
 
 function normalizePath(pathname) {

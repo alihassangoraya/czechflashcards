@@ -19,7 +19,7 @@ type Props = {
 export function CustomDeckSelectArea({ deck, countLabel, active, editing, editingDeckName, onSelectDeck, onEditingDeckNameChange, onSaveEditDeck }: Props) {
   return (
     <Pressable style={styles.deckSelectArea} onPress={() => onSelectDeck(deck.id)} accessibilityRole="button">
-      <MaterialIcons name="folder" size={size.iconSmall} color={active ? colors.primaryDeep : colors.textMuted} />
+      <MaterialIcons name="folder" size={size.iconSmall} color={active ? colors.iconPrimary : colors.iconMuted} />
       {editing ? (
         <TextInput style={styles.deckEditInput} value={editingDeckName} onChangeText={onEditingDeckNameChange} autoFocus returnKeyType="done" onSubmitEditing={onSaveEditDeck} />
       ) : (

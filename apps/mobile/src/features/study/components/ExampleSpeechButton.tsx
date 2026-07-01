@@ -20,7 +20,7 @@ export function ExampleSpeechButton({ label, sentence }: Props) {
       accessibilityRole="button"
       accessibilityLabel={label}
     >
-      <MaterialIcons name="volume-up" size={size.iconSmall} color={colors.action} />
+      <MaterialIcons name="volume-up" size={size.iconSmall} color={colors.iconAction} />
       <Text style={styles.example} numberOfLines={2}>{sentence}</Text>
     </Pressable>
   );

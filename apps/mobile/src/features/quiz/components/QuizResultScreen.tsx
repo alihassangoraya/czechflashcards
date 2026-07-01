@@ -20,7 +20,7 @@ export function QuizResultScreen({ score, total, onRestart, onClose }: Props) {
   return (
     <ScrollView contentContainerStyle={styles.resultContent}>
       <View style={styles.resultIcon}>
-        <MaterialIcons name="emoji-events" size={size.quizResultIcon} color={colors.warning} />
+        <MaterialIcons name="emoji-events" size={size.quizResultIcon} color={colors.iconWarning} />
       </View>
       <Text style={[styles.resultTitle, { textAlign }]}>{t("quiz.congrats")}</Text>
       <Text style={[styles.resultSubtitle, { textAlign }]}>{t("quiz.complete")}</Text>

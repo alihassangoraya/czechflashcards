@@ -4,7 +4,7 @@ import { MaterialIcons } from "../../../components/MaterialIcons";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { speak } from "../../../services/speech";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
-import { pronunciationHint } from "../models/studyMeaning";
+import { pronunciationDisplay } from "../models/studyMeaning";
 import type { PronunciationPillProps } from "./pronunciationPillTypes";
 
 export function PronunciationPill({ card }: PronunciationPillProps) {
@@ -17,8 +17,8 @@ export function PronunciationPill({ card }: PronunciationPillProps) {
       accessibilityRole="button"
       accessibilityLabel={t("study.playWord", { word: card.cz })}
     >
-      <MaterialIcons name="volume-up" size={size.iconSmall} color={colors.action} />
-      <Text style={styles.text}>{card.pronunciation || pronunciationHint(card.cz)}</Text>
+      <MaterialIcons name="volume-up" size={size.iconSmall} color={colors.iconAction} />
+      <Text style={styles.text}>{`${pronunciationDisplay(card)} · ${t("study.stressFirstSyllable")}`}</Text>
     </Pressable>
   );
 }

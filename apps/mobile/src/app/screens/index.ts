@@ -1,7 +1,10 @@
+export { AccountRoute } from "./AccountRoute";
 export { AuthRoute } from "./AuthRoute";
 export { HomeRoute } from "./HomeRoute";
 export { ProgressRoute } from "./ProgressRoute";
 export { QuizRoute } from "./QuizRoute";
+export { ResetPasswordRoute } from "./ResetPasswordRoute";
+export { SettingsRoute } from "./SettingsRoute";
 export { StudyRoute } from "./StudyRoute";
-export type { AuthRouteProps, HomeRouteProps, ProgressRouteProps, QuizRouteProps, StudyRouteProps } from "./routeTypes";
+export type { AccountRouteProps, AuthRouteProps, HomeRouteProps, ProgressRouteProps, QuizRouteProps, ResetPasswordRouteProps, SettingsRouteProps, StudyRouteProps } from "./routeTypes";
 export type { MainScreenProps, StudyAnimations } from "./screenTypes/index";

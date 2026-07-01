@@ -12,6 +12,7 @@ export function GrammarDetailCard({ grammar }: Props) {
   const { t, textAlign } = useI18n();
   const title = [
     grammar.partOfSpeech,
+    grammar.aspect,
     grammar.reflexive ? t("details.reflexive") : ""
   ].filter(Boolean).join(" · ");
 

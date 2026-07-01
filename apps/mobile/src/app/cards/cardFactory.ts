@@ -6,8 +6,10 @@ export function createCustomCard(values: AddWordValues): Card {
     id: `custom-${Date.now()}-${slug(values.cz)}`,
     cz: values.cz.trim(),
     en: values.en.trim(),
+    cs: values.cs.trim(),
     hi: values.hi.trim(),
     ur: values.ur.trim(),
+    uk: values.uk.trim(),
     sentence: values.sentence.trim(),
     sentenceEn: values.sentenceEn.trim(),
     level: "a2",
@@ -21,8 +23,10 @@ export function applyCardCorrection(card: Card, values: CorrectionValues): Card 
     ...card,
     cz: values.cz.trim(),
     en: values.en.trim(),
+    cs: values.cs.trim(),
     hi: values.hi.trim(),
     ur: values.ur.trim(),
+    uk: values.uk.trim(),
     sentence: values.sentence.trim(),
     sentenceEn: values.sentenceEn.trim()
   };

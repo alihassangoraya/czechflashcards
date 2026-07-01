@@ -1,5 +1,5 @@
-import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View, type ViewStyle } from "react-native";
+import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, radius, size, spacing, typography } from "../../../theme/design";
 
 type Props<T extends string> = {
@@ -11,11 +11,14 @@ type Props<T extends string> = {
 };
 
 export function ChoiceSegment<T extends string>({ value, options, labels, onChange, compact = false }: Props<T>) {
+  const { direction } = useI18n();
+  const fixedOrder = { direction: "ltr" } as ViewStyle;
+
   return (
-    <View style={[styles.choiceSegment, compact && styles.choiceSegmentCompact]}>
+    <View style={[styles.choiceSegment, compact && styles.choiceSegmentCompact, fixedOrder]}>
       {options.map((option) => (
         <Pressable key={option} style={[styles.choiceOption, value === option && styles.choiceOptionActive]} onPress={() => onChange(option)} accessibilityRole="radio" accessibilityState={{ selected: value === option }}>
-          <Text style={[styles.choiceText, value === option && styles.choiceTextActive]}>{labels[option]}</Text>
+          <Text style={[styles.choiceText, { writingDirection: direction }, value === option && styles.choiceTextActive]}>{labels[option]}</Text>
         </Pressable>
       ))}
     </View>
@@ -23,10 +26,10 @@ export function ChoiceSegment<T extends string>({ value, options, labels, onChan
 }
 
 const styles = StyleSheet.create({
-  choiceSegment: { flexDirection: "row", gap: spacing.xs, borderRadius: radius.md, backgroundColor: colors.surfaceMuted, padding: spacing.xs },
+  choiceSegment: { flexDirection: "row", gap: spacing.xs, borderRadius: radius.md, backgroundColor: colors.sheet, padding: spacing.xs },
   choiceSegmentCompact: { flex: 1 },
-  choiceOption: { flex: 1, minHeight: size.touchTarget, alignItems: "center", justifyContent: "center", borderRadius: radius.sm, paddingHorizontal: spacing.md },
-  choiceOptionActive: { backgroundColor: colors.surface, borderWidth: spacing.hairline, borderColor: colors.border },
-  choiceText: { color: colors.textMuted, fontSize: typography.bodySmall, fontWeight: typography.weightMedium },
-  choiceTextActive: { color: colors.primaryDeep, fontWeight: typography.weightSemibold }
+  choiceOption: { flex: 1, minHeight: size.actionMinHeight, alignItems: "center", justifyContent: "center", borderRadius: radius.sm, paddingHorizontal: spacing.md },
+  choiceOptionActive: { backgroundColor: colors.primaryDeep },
+  choiceText: { color: colors.textBody, fontSize: typography.bodySmall, fontWeight: typography.weightMedium },
+  choiceTextActive: { color: colors.onPrimary, fontWeight: typography.weightSemibold }
 });

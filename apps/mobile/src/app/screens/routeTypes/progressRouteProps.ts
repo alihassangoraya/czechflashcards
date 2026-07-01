@@ -6,5 +6,9 @@ export type ProgressRouteProps = Pick<
   | "states"
   | "settings"
   | "dailyProgressLog"
+  | "onStartStudy"
+  | "onGoBack"
   | "onSetScreen"
+  | "onShuffleDue"
+  | "onReviewAllNow"
 >;

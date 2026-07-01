@@ -10,8 +10,8 @@ type Props = {
 };
 
 export function GeminiTutorPanel({ card }: Props) {
-  const { t } = useI18n();
-  const tutor = useGeminiTutor(card);
+  const { language, t } = useI18n();
+  const tutor = useGeminiTutor(card, language);
 
   if (!card) return null;
 

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Platform } from "react-native";
-import { startupThemeMode, type ThemePreference } from "../theme/design";
+import { getTheme, startupThemeMode, type ThemePreference } from "../theme/design";
+import { applyNativeThemePreference, reloadForThemeChange } from "../theme/themeReload";
 import { resolveThemePreference } from "../theme/systemThemeMode";
 import { writeStoredThemePreference } from "../theme/themeModePersistence";
 
@@ -13,11 +14,17 @@ export function ThemeModeSync({ themePreference }: Props) {
 
   useEffect(() => {
     const resolvedThemeMode = resolveThemePreference(themePreference);
+    const background = getTheme(resolvedThemeMode).colors.background;
+    applyNativeThemePreference(themePreference);
     writeStoredThemePreference(themePreference);
+    if (Platform.OS === "web" && typeof document !== "undefined") {
+      document.documentElement.style.setProperty("--app-background", background);
+      document.body.style.backgroundColor = background;
+    }
 
-    if (!initialSyncDone.current && Platform.OS === "web" && resolvedThemeMode !== startupThemeMode && typeof window !== "undefined") {
+    if (Platform.OS === "web" && !initialSyncDone.current && resolvedThemeMode !== startupThemeMode) {
       initialSyncDone.current = true;
-      window.location.reload();
+      reloadForThemeChange();
       return;
     }
 

@@ -17,9 +17,9 @@ type Props = {
 export function QuizResultMetrics({ accuracy, labels, missed, score }: Props) {
   return (
     <View style={styles.resultMetrics}>
-      <ResultMetric icon="check-circle" value={`${score}`} label={labels.correct} color={colors.success} />
-      <ResultMetric icon="cancel" value={`${missed}`} label={labels.missed} color={colors.danger} />
-      <ResultMetric icon="bolt" value={`${accuracy}%`} label={labels.accuracy} color={colors.action} />
+      <ResultMetric icon="check-circle" value={`${score}`} label={labels.correct} color={colors.iconSuccess} />
+      <ResultMetric icon="cancel" value={`${missed}`} label={labels.missed} color={colors.iconDanger} />
+      <ResultMetric icon="bolt" value={`${accuracy}%`} label={labels.accuracy} color={colors.iconAction} />
     </View>
   );
 }

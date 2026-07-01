@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import type { Card } from "@czech-flashcards/shared";
+import type { Card, MeaningLanguage } from "@czech-flashcards/shared";
 import { buildQuestions } from "../models/quizQuestions";
 import { deriveQuizMetrics } from "../models/quizSessionMetrics";
 import { useQuizAnswerState } from "./useQuizAnswerState";
@@ -7,9 +7,9 @@ import { useQuizCloseActions } from "./useQuizCloseActions";
 import { useQuizNextAction } from "./useQuizNextAction";
 import { useQuizRound } from "./useQuizRound";
 
-export function useQuizSession(deck: Card[], onClose: () => void) {
+export function useQuizSession(deck: Card[], language: MeaningLanguage, onClose: () => void) {
   const { restartQuiz, round } = useQuizRound();
-  const questions = useMemo(() => buildQuestions(deck), [deck, round]);
+  const questions = useMemo(() => buildQuestions(deck, language), [deck, language, round]);
   const state = useQuizAnswerState(deck, round);
   const question = questions[state.index];
   const metrics = deriveQuizMetrics({ checked: state.checked, index: state.index, question, score: state.score, selected: state.selected });

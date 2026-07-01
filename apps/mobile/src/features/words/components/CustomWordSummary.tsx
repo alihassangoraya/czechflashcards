@@ -13,7 +13,7 @@ export function CustomWordSummary({ card, decks }: CustomWordSummaryProps) {
   return (
     <>
       <View style={styles.accent}>
-        <MaterialIcons name="auto-stories" size={size.iconSmall} color={colors.primaryDeep} />
+        <MaterialIcons name="auto-stories" size={size.iconSmall} color={colors.iconPrimary} />
       </View>
       <View style={styles.copy}>
         <View style={styles.titleRow}>

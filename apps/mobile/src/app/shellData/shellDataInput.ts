@@ -1,7 +1,7 @@
 import type { Card } from "@czech-flashcards/shared";
 import type { AppSupabaseClient } from "../../sync";
 import type { AppData } from "../data/useAppData";
-import type { AppNavigation } from "../navigation/useAppNavigation";
+import type { AppNavigation } from "../navigation/appNavigationTypes";
 import type { CardManagement } from "../cards/useCardManagement";
 import type { StudySession } from "../study/useStudySession";
 
@@ -13,4 +13,5 @@ export type AppShellDataInput = {
   cardManagement: CardManagement;
   supabase: AppSupabaseClient;
   toastMessage: string;
+  showToast: (message: string) => void;
 };

@@ -1,4 +1,5 @@
 import { urCoreTranslations } from "./ur/core";
+import { urToastTranslations } from "./ur/toast";
 import { urHomeTranslations } from "./ur/home";
 import { urSettingsTranslations } from "./ur/settings";
 import { urStudyTranslations } from "./ur/study";
@@ -10,6 +11,7 @@ import { urProgressTranslations } from "./ur/progress";
 
 export const ur = {
   ...urCoreTranslations,
+  ...urToastTranslations,
   ...urHomeTranslations,
   ...urSettingsTranslations,
   ...urStudyTranslations,

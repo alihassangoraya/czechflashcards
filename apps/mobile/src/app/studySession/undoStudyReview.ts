@@ -13,14 +13,15 @@ type UndoInput = {
   refresh: (database?: AppDatabase | null) => Promise<void>;
 };
 
-export async function undoStudyReview(input: UndoInput): Promise<void> {
-  if (!input.db || !input.settings || !input.lastReview || input.grading) return;
+export async function undoStudyReview(input: UndoInput): Promise<boolean> {
+  if (!input.db || !input.settings || !input.lastReview || input.grading) return false;
   input.setGrading(true);
   try {
     input.onBeforeRestore(input.lastReview);
     await restoreReview(input.db, input.lastReview, input.settings.dailyGoal);
     await input.refresh(input.db);
     input.onRestored();
+    return true;
   } finally {
     input.setGrading(false);
   }

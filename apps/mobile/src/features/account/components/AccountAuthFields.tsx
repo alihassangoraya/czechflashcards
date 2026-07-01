@@ -7,16 +7,15 @@ type Props = {
   activeMode: AuthMode;
   displayName: string;
   email: string;
-  fixedMode: boolean;
   password: string;
   onChangeDisplayName: (value: string) => void;
   onChangeEmail: (value: string) => void;
   onChangePassword: (value: string) => void;
 };
 
-export function AccountAuthFields({ activeMode, displayName, email, fixedMode, password, onChangeDisplayName, onChangeEmail, onChangePassword }: Props) {
+export function AccountAuthFields({ activeMode, displayName, email, password, onChangeDisplayName, onChangeEmail, onChangePassword }: Props) {
   const { t } = useI18n();
-  const showDisplayName = activeMode === "sign-up" || !fixedMode;
+  const showDisplayName = activeMode === "sign-up";
 
   return (
     <>

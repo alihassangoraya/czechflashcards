@@ -1,9 +1,9 @@
 export const hiSearchTranslations = {
-  "search.placeholder": "चेक, अंग्रेज़ी, हिंदी या उर्दू खोजें",
+  "search.placeholder": "चेक, अंग्रेज़ी, चेक अर्थ, हिंदी, उर्दू या यूक्रेनी खोजें",
   "search.accessibility": "शब्दावली खोजें",
   "search.clear": "खोज साफ़ करें",
   "search.findTitle": "शब्द खोजें",
-  "search.findCopy": "{count}+ कार्ड में चेक, अंग्रेज़ी, हिंदी या उर्दू खोजें.",
+  "search.findCopy": "{count}+ कार्ड में चेक, अंग्रेज़ी, चेक अर्थ, हिंदी, उर्दू और यूक्रेनी खोजें.",
   "search.noResultsTitle": "कोई शब्द नहीं मिला",
   "search.noResultsCopy": "छोटी स्पेलिंग या दूसरी भाषा आज़माएँ.",
   "search.matches": "{count} {label}",
@@ -21,4 +21,7 @@ export const hiSearchTranslations = {
   "search.actionDeck": "डेक",
   "search.actionSave": "सेव",
   "search.actionSaved": "सेव्ड",
+  "search.synonyms": "समानार्थी",
+  "search.antonyms": "विलोम",
+  "search.grammar": "व्याकरण",
 } as const;

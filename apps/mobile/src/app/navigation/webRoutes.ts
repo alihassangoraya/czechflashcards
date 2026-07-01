@@ -1,35 +1,33 @@
+import { Platform } from "react-native";
 import type { Screen } from "../appTypes";
+import { normalizeWebPath } from "./normalizeWebPath";
 import { screenPaths } from "./screenPaths";
 
 function canUseBrowserHistory() {
-  return typeof window !== "undefined" && Boolean(window.history);
+  return Platform.OS === "web" && typeof window !== "undefined" && Boolean(window.history && window.location);
 }
 
 export function screenFromPath(pathname: string): Screen {
-  if (pathname === screenPaths.quiz) return "quiz";
-  if (pathname === screenPaths.progress) return "progress";
-  if (pathname === screenPaths.study) return "study";
-  if (pathname === screenPaths.login) return "login";
-  if (pathname === screenPaths.register) return "register";
+  const path = normalizeWebPath(pathname);
+  const match = (Object.keys(screenPaths) as Screen[]).find((screen) => screenPaths[screen] === path);
+  if (match) return match;
   return "home";
 }
 
 export function getInitialScreenFromLocation(): Screen {
-  if (typeof window === "undefined") return "home";
+  if (!canUseBrowserHistory()) return "home";
   return screenFromPath(window.location.pathname);
 }
 
 export function syncScreenPath(screen: Screen, replace = false) {
-  if (!canUseBrowserHistory()) return;
-
+  if (!canUseBrowserHistory()) return false;
   const nextPath = screenPaths[screen];
-  if (window.location.pathname === nextPath) return;
-
+  if (window.location.pathname === nextPath) return false;
   const nextUrl = `${nextPath}${window.location.search}${window.location.hash}`;
   if (replace) {
     window.history.replaceState({ screen }, "", nextUrl);
-    return;
+    return false;
   }
-
   window.history.pushState({ screen }, "", nextUrl);
+  return true;
 }

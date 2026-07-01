@@ -17,7 +17,7 @@ export function CardUndoButton({ grading, lastReviewCard, onUndoLastReview }: Ca
       accessibilityRole="button"
       accessibilityLabel={t("study.undoReview", { word: lastReviewCard.cz })}
     >
-      <MaterialIcons name="undo" size={size.iconSmall} color={colors.primaryDeep} />
+      <MaterialIcons name="undo" size={size.iconSmall} color={colors.iconPrimary} />
       <Text style={styles.text}>{t("study.undo")}</Text>
     </Pressable>
   );

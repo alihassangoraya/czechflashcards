@@ -5,7 +5,7 @@ import type { SettingsReviewContext } from "./settingsToolTypes";
 export function useSettingsReviewActions({
   db,
   deck,
-  setSettingsNotice,
+  showActionNotice,
   refresh,
   shuffleDueCards,
   clearShuffledDueQueue,
@@ -14,16 +14,18 @@ export function useSettingsReviewActions({
   const { t } = useI18n();
 
   function shuffleDueCardsInDeck() {
-    shuffleDueCards(setSettingsNotice);
+    const hasDueCards = shuffleDueCards(showActionNotice);
     forceDeckRefresh();
+    return hasDueCards;
   }
 
   async function reviewAllNow() {
-    if (!db) return;
+    if (!db) return false;
     const count = await markCardsDueNow(db, deck.map((card) => card.id));
     clearShuffledDueQueue();
-    setSettingsNotice(count ? t("settings.notice.reviewDue", { count }) : t("settings.notice.noCards"));
+    showActionNotice(count ? t("settings.notice.reviewDue", { count }) : t("settings.notice.noCards"));
     await refresh(db);
+    return count > 0;
   }
 
   return { shuffleDueCardsInDeck, reviewAllNow };

@@ -16,5 +16,5 @@ export function filterDeck(cards, examLevel, deckFilter, savedCardIds = new Set(
 }
 
 export function selectedMeaning(card, language) {
-  return language === "ur" ? card.ur : card.hi;
+  return card[language] || card.en;
 }

@@ -22,7 +22,7 @@ export function DeckCategoryCard({ category, selected, title, onSelect }: DeckCa
         <Text style={[styles.title, { textAlign }]}>{title}</Text>
         <Text style={[styles.count, { textAlign }]}>{category.count || 0} {t("common.cards")}</Text>
       </View>
-      {selected && <MaterialIcons name="check-circle" size={size.iconSmall} color={colors.softMint} />}
+      {selected && <MaterialIcons name="check-circle" size={size.iconSmall} color={colors.iconSuccess} />}
     </Pressable>
   );
 }

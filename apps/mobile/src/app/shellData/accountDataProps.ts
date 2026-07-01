@@ -1,4 +1,3 @@
-import { buildAccountSummaryProps } from "./accountSummaryProps";
 import type { AppShellDataInput } from "./shellDataInput";
 
 export function buildAccountDataProps(input: AppShellDataInput) {
@@ -8,7 +7,6 @@ export function buildAccountDataProps(input: AppShellDataInput) {
     accountEmail: data.accountEmail,
     accountName: data.accountName,
     authBusy: data.authBusy,
-    ...buildAccountSummaryProps(input),
     supabase
   };
 }

@@ -5,6 +5,7 @@ import { useI18n } from "../../../i18n/I18nProvider";
 import { spacing } from "../../../theme/design";
 import { SearchResultExample } from "./SearchResultExample";
 import { SearchResultHeader } from "./SearchResultHeader";
+import { SearchResultLexicon } from "./SearchResultLexicon";
 import { SearchResultTranslations } from "./SearchResultTranslations";
 
 type Props = {
@@ -21,6 +22,7 @@ export function SearchResultSummary({ card, meaningLanguage, onStudy }: Props) {
       <SearchResultHeader card={card} />
       <SearchResultTranslations card={card} meaningLanguage={meaningLanguage} />
       <SearchResultExample card={card} />
+      <SearchResultLexicon card={card} />
     </Pressable>
   );
 }

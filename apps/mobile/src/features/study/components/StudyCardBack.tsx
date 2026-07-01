@@ -7,6 +7,8 @@ import { CardTranslationBlock } from "./CardTranslationBlock";
 import { studyCardBackStyles as styles } from "./studyCardBackStyles";
 import type { StudyCardBackProps } from "./studyCardBackTypes";
 import { StudyCardHint } from "./StudyCardHint";
+import { StudyCardRelatedWords } from "./StudyCardRelatedWords";
+import { WordDetailsPanel } from "./WordDetailsPanel";
 
 export function StudyCardBack({ current, currentSecondaryMeaning, flipProgress, meaningLanguage, onFlipCard }: StudyCardBackProps) {
   const { t } = useI18n();
@@ -17,6 +19,8 @@ export function StudyCardBack({ current, currentSecondaryMeaning, flipProgress, 
       <View style={styles.answer}>
         <CardTranslationBlock card={current} secondaryMeaning={currentSecondaryMeaning} meaningLanguage={meaningLanguage} />
         <CardExampleBlock card={current} />
+        <StudyCardRelatedWords card={current} />
+        <WordDetailsPanel card={current} />
       </View>
       <StudyCardHint>{t("study.tapCzech")}</StudyCardHint>
     </CardBackFaceContainer>

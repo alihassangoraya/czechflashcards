@@ -9,12 +9,12 @@ import { useAuthProviderSubmit } from "../hooks/useAuthProviderSubmit";
 import { useAuthSubmit } from "../hooks/useAuthSubmit";
 import { authScreenStyles as styles } from "./authScreenStyles";
 
-export function AuthScreen({ configured, initialMode, busy, onBack, onSwitchMode, onAuthenticate, onAuthenticateProvider }: AuthScreenProps) {
+export function AuthScreen({ configured, initialMode, busy, showToast, onBack, onSwitchMode, onAuthenticate, onAuthenticateProvider }: AuthScreenProps) {
   const { t } = useI18n();
   const credentials = useAccountCredentials();
   const isRegister = initialMode === "sign-up";
-  const submit = useAuthSubmit({ configured, credentials, onAuthenticate });
-  const submitProvider = useAuthProviderSubmit({ configured, credentials, onAuthenticateProvider });
+  const submit = useAuthSubmit({ configured, credentials, showToast, onAuthenticate });
+  const submitProvider = useAuthProviderSubmit({ configured, credentials, showToast, onAuthenticateProvider });
 
   return (
     <>

@@ -6,6 +6,7 @@ export const cardFacePressableStyles = StyleSheet.create({
     position: "absolute",
     inset: 0,
     justifyContent: "center",
+    alignItems: "center",
     backgroundColor: colors.surface,
     borderRadius: radius.card,
     padding: spacing.card,

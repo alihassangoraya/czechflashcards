@@ -15,7 +15,7 @@ export function WordDetailsHeader({ category }: Props) {
     <View style={styles.header}>
       <View style={styles.titleRow}>
         <View style={styles.iconTile}>
-          <MaterialIcons name="auto-stories" size={size.iconSmall} color={colors.primaryDeep} />
+          <MaterialIcons name="auto-stories" size={size.iconSmall} color={colors.iconPrimary} />
         </View>
         <Text style={[styles.title, { textAlign }]}>{t("details.title")}</Text>
       </View>

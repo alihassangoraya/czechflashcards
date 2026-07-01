@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import type { AppDatabase } from "../../database";
-import type { AppSupabaseClient } from "../../sync";
+import type { AppSupabaseClient, SyncStatus } from "../../sync";
 import type { AppDataState } from "./appDataStateTypes";
 import { userDisplayName } from "./userDisplayName";
 
@@ -8,7 +8,7 @@ export function useAppDataAuthSession(
   state: AppDataState,
   supabase: AppSupabaseClient,
   database: AppDatabase | null,
-  syncNow: (database: AppDatabase) => Promise<void>
+  syncNow: (database: AppDatabase) => Promise<SyncStatus | null>
 ): void {
   useEffect(() => {
     if (!supabase) return;

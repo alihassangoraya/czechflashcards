@@ -3,19 +3,20 @@ import { swipeConfig } from "./swipeConfig";
 import { directionFromDrag, shouldCaptureHorizontalSwipe } from "./swipeMath";
 import type { SwipePanResponderParams } from "./swipePanResponderTypes";
 
-export function createSwipePanResponder({ dragX, grading, swipeCompleting, completeSwipe, resetCancelledSwipe, setSwipeDirection }: SwipePanResponderParams) {
+export function createSwipePanResponder({ dragX, grading, swipeCompleting, completeSwipe, resetCancelledSwipe }: SwipePanResponderParams) {
+  const canCapture = (dx: number, dy: number) => !grading && !swipeCompleting.current && shouldCaptureHorizontalSwipe(dx, dy);
+
   return PanResponder.create({
-    onMoveShouldSetPanResponder: (_, gesture) => shouldCaptureHorizontalSwipe(gesture.dx, gesture.dy),
-    onMoveShouldSetPanResponderCapture: (_, gesture) => shouldCaptureHorizontalSwipe(gesture.dx, gesture.dy),
+    onMoveShouldSetPanResponder: (_, gesture) => canCapture(gesture.dx, gesture.dy),
+    onMoveShouldSetPanResponderCapture: (_, gesture) => canCapture(gesture.dx, gesture.dy),
     onPanResponderGrant: () => {
       if (swipeCompleting.current) return;
       dragX.stopAnimation();
     },
-    onPanResponderTerminationRequest: () => true,
+    onPanResponderTerminationRequest: () => false,
     onPanResponderMove: (_, gesture) => {
       if (swipeCompleting.current) return;
       dragX.setValue(gesture.dx);
-      setSwipeDirection(directionFromDrag(gesture.dx, swipeConfig.directionPreviewDistance));
     },
     onPanResponderRelease: (_, gesture) => {
       const direction = directionFromDrag(gesture.dx, swipeConfig.completionDistance);
@@ -28,6 +29,7 @@ export function createSwipePanResponder({ dragX, grading, swipeCompleting, compl
     onPanResponderTerminate: () => {
       if (swipeCompleting.current) return;
       resetCancelledSwipe();
-    }
+    },
+    onShouldBlockNativeResponder: () => true
   });
 }

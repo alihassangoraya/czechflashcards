@@ -15,7 +15,7 @@ export type StudyRouteProps = Pick<
   | "sessionProgress"
   | "studyAnimations"
   | "reviewInterval"
-  | "onSetScreen"
+  | "onGoBack"
   | "onSetPanel"
   | "onToggleSaved"
   | "onSetDeckManagementCard"

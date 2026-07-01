@@ -25,6 +25,7 @@ export function buildStudyQueueActions({ deck, states, current, refs, translate 
       refs.shuffledDueQueue.current = result.queue;
       refs.forcedCardId.current = null;
       onNotice(result.notice);
+      return result.hasDueCards;
     },
     clearShuffledDueQueue() {
       refs.shuffledDueQueue.current = [];

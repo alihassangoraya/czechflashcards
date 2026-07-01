@@ -10,7 +10,7 @@ import { useAuthActions } from "./useAuthActions";
 export function useAppData(supabase: AppSupabaseClient) {
   const state = useAppDataState();
   const actions = useAppDataActions({ state, supabase });
-  const auth = useAuthActions(supabase, async () => actions.syncNow());
+  const auth = useAuthActions(supabase, async () => { await actions.syncNow(); });
 
   useEffect(() => {
     void bootAppData(state, supabase);

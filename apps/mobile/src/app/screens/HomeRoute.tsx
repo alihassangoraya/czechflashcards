@@ -21,8 +21,8 @@ export function HomeRoute({ deck, cards, customCards, states, settings, savedCar
       onSelectCategory={onSelectCategory}
       onSearch={() => onSetPanel("search")}
       onAdd={() => onSetPanel("add")}
-      onSettings={() => onSetPanel("settings")}
-      onAccount={() => onSetPanel("account")}
+      onSettings={() => onSetScreen("settings")}
+      onAccount={() => onSetScreen("account")}
     />
   );
 }

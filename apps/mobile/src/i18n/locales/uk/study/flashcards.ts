@@ -19,6 +19,7 @@ export const ukStudyFlashcardTranslations = {
   "study.undo": "Скасувати",
   "study.known": "Відоме",
   "study.playWord": "Відтворити {word}",
+  "study.stressFirstSyllable": "наголос на першому складі",
   "study.undoReview": "Скасувати повторення для {word}",
   "study.addToMyList": "Додати {word} до мого списку",
   "study.removeFromMyList": "Видалити {word} з мого списку",

@@ -12,8 +12,8 @@ type Input = {
 };
 
 export function useUndoStudyAction({ db, settings, queue, refresh, reviewState }: Input) {
-  return async function undoLastReview(): Promise<void> {
-    await undoStudyReview({
+  return async function undoLastReview(): Promise<boolean> {
+    return undoStudyReview({
       db,
       settings,
       lastReview: reviewState.lastReview,

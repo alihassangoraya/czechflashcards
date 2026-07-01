@@ -1,4 +1,4 @@
-import type { Card } from "@czech-flashcards/shared";
+import { selectedMeaning, type Card, type MeaningLanguage } from "@czech-flashcards/shared";
 
 export type Question = {
   card: Card;
@@ -6,17 +6,19 @@ export type Question = {
   correctIndex: number;
 };
 
-export function buildQuestions(deck: Card[]): Question[] {
-  const pool = deck.filter((card) => card.cz && card.en);
-  const meanings = Array.from(new Set(pool.map((card) => card.en)));
+export function buildQuestions(deck: Card[], language: MeaningLanguage): Question[] {
+  const getMeaning = (card: Card) => selectedMeaning(card, language).trim() || card.en;
+  const pool = deck.filter((card) => card.cz && getMeaning(card));
+  const meanings = Array.from(new Set(pool.map(getMeaning)));
   if (pool.length < 4 || meanings.length < 4) return [];
 
   // Build only the questions displayed in this session. Building distractors
   // for every B1 card is noticeably slower on larger decks.
   return shuffle(pool).slice(0, Math.min(10, pool.length)).map((card) => {
-    const distractors = shuffle(meanings.filter((meaning) => meaning !== card.en)).slice(0, 3);
-    const options = shuffle([...distractors, card.en]);
-    return { card, options, correctIndex: options.indexOf(card.en) };
+    const answer = getMeaning(card);
+    const distractors = shuffle(meanings.filter((meaning) => meaning !== answer)).slice(0, 3);
+    const options = shuffle([...distractors, answer]);
+    return { card, options, correctIndex: options.indexOf(answer) };
   });
 }
 

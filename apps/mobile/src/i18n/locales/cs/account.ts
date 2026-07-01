@@ -1,7 +1,15 @@
+import { csAccountAuthTranslations } from "./account/auth";
+import { csAccountBadgeTranslations } from "./account/badges";
+import { csAccountDeckMembershipTranslations } from "./account/deckMembership";
+import { csAccountFriendTranslations } from "./account/friends";
+import { csAccountNoticeTranslations } from "./account/notices";
+import { csAccountProfileTranslations } from "./account/profile";
+
 export const csAccountTranslations = {
-  "account.continueGoogle": "Google",
-  "account.continueFacebook": "Facebook",
-  "account.continueApple": "Apple",
-  "account.orEmail": "nebo pokračovat e-mailem",
-  "account.providerStarted": "Přihlášení přes poskytovatele se otevřelo. Dokonči ho pro synchronizaci zařízení.",
+  ...csAccountAuthTranslations,
+  ...csAccountProfileTranslations,
+  ...csAccountBadgeTranslations,
+  ...csAccountFriendTranslations,
+  ...csAccountNoticeTranslations,
+  ...csAccountDeckMembershipTranslations
 } as const;

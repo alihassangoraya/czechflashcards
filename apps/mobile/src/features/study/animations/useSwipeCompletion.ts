@@ -13,13 +13,13 @@ type Params = {
   swipeCompleting: MutableRefObject<boolean>;
   finishSwipeCompletion: () => void;
   releaseConsumedSwipe: () => void;
-  startSwipeCompletion: (direction: SwipeDirection) => void;
+  startSwipeCompletion: () => void;
 };
 
 export function useSwipeCompletion({ dragX, grading, onSwipeGrade, swipeCompleting, finishSwipeCompletion, releaseConsumedSwipe, startSwipeCompletion }: Params) {
   return useCallback((direction: SwipeDirection) => {
     if (grading || swipeCompleting.current) return;
-    startSwipeCompletion(direction);
+    startSwipeCompletion();
     animateSwipeAway(dragX, direction, (finished) => {
       finishSwipeCompletion();
       if (finished) onSwipeGrade(gradeFromSwipe(direction));

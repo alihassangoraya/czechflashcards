@@ -10,6 +10,9 @@ export const ukAccountNoticeTranslations = {
   "account.friendSent": "Запит у друзі надіслано.",
   "account.friendAdded": "Друга додано.",
   "account.friendDeclined": "Запит відхилено.",
+  "account.resetEmailSent": "Email для скидання пароля надіслано.",
+  "account.passwordMismatch": "Паролі не збігаються.",
+  "account.passwordUpdated": "Пароль оновлено. Можеш продовжувати навчання.",
   "account.offlineAvailable": "У цій збірці немає Supabase URL або анонімного ключа. Офлайн-навчання доступне.",
   "account.signedOut": "Ти вийшов. Локальні навчальні дані залишаються на цьому пристрої."
 } as const;

@@ -18,9 +18,9 @@ type Props = {
 export function CustomDeckDefaultActions({ deck, active, labels, onRequestDeleteDeck, onStartEditDeck }: Props) {
   return (
     <View style={styles.deckActions}>
-      {active && <MaterialIcons name="check" size={size.iconSmall} color={colors.success} />}
-      <CustomDeckIconAction icon="edit" color={colors.action} label={labels.renameDeck} onPress={() => onStartEditDeck(deck.id)} />
-      <CustomDeckIconAction icon="delete-outline" color={colors.dangerStrong} label={labels.deleteDeck} onPress={() => onRequestDeleteDeck(deck.id)} />
+      {active && <MaterialIcons name="check" size={size.iconSmall} color={colors.iconSuccess} />}
+      <CustomDeckIconAction icon="edit" color={colors.iconAction} label={labels.renameDeck} onPress={() => onStartEditDeck(deck.id)} />
+      <CustomDeckIconAction icon="delete-outline" color={colors.iconDanger} label={labels.deleteDeck} onPress={() => onRequestDeleteDeck(deck.id)} />
     </View>
   );
 }

@@ -11,5 +11,21 @@ export const enAccountProfileTranslations = {
   "account.due": "Due",
   "account.localProgress": "Progress is saved on this device · {status}",
   "account.queueCopy": "Your offline reviews, custom words, corrections, settings, and starred words are queued for this account.",
-  "account.signOut": "Sign out"
+  "account.signedInAs": "Signed in as",
+  "account.syncStatusValue": "Sync status: {status}",
+  "account.sync.guest": "Guest",
+  "account.sync.not-configured": "Not configured",
+  "account.sync.idle": "Ready",
+  "account.sync.synced": "Synced",
+  "account.sync.error": "Needs attention",
+  "account.customWords": "Custom words",
+  "account.savedWords": "Saved words",
+  "account.myDecks": "My decks",
+  "account.dailyGoal": "Daily goal",
+  "account.friendSetupMissing": "Friend features need the latest database update. Sync still works for your study data.",
+  "account.signOut": "Sign out",
+  "account.dataTools": "Account data",
+  "account.dataToolsDescription": "Import, restore, or export the learning data tied to this device.",
+  "account.importCsvDetail": "Add words to your active deck",
+  "account.exportDeckDetail": "Download the active deck"
 } as const;

@@ -1,30 +1,38 @@
-import { recentDateKeys } from "./progressDates";
+import { getProgressCardCounts } from "./progressCardCounts";
 import { countGoalStreak, countStudyStreak } from "./progressStreaks";
+import { buildDailyPoints, getDailyAverage, getGoalDays } from "./progressDailySummary";
+import { buildFocusAreas } from "./progressFocusAreas";
+import { buildProgressInsights } from "./progressInsights";
+import { buildProgressQueueHealth } from "./progressQueueHealth";
 import type { ProgressDashboardInput, ProgressDashboardModel } from "../types/progressTypes";
-
 export function buildProgressDashboardModel(input: ProgressDashboardInput): ProgressDashboardModel {
-  const dailyPoints = recentDateKeys(7).map(({ key, label }) => {
-    const progress = input.dailyProgressLog[key];
-    return { key, label, reviewed: progress?.reviewed || 0, goal: progress?.goal || input.settings.dailyGoal, completed: Boolean(progress?.completed) };
-  });
-  const masteredCount = input.cards.filter((card) => (input.states[card.id]?.knownStreak || 0) >= 4).length;
-  const learningCount = input.cards.filter((card) => {
-    const state = input.states[card.id];
-    return Boolean(state?.seen && (state.knownStreak || 0) < 4);
-  }).length;
+  const dailyPoints = buildDailyPoints(input);
+  const counts = getProgressCardCounts(input);
   const today = dailyPoints[dailyPoints.length - 1];
   const dailyGoal = today?.goal || input.settings.dailyGoal;
-
+  const goalDays = getGoalDays(dailyPoints);
+  const averageDailyReviews = getDailyAverage(dailyPoints);
+  const remainingToday = Math.max(0, dailyGoal - (today?.reviewed || 0));
+  const activeDeckLabel = input.settings.customDecks.find((deck) => deck.id === input.settings.deckFilter)?.name || input.settings.deckFilter;
+  const completionRate = Math.round((goalDays / dailyPoints.length) * 100);
   return {
     currentStreak: countStudyStreak(input.dailyProgressLog),
     goalStreak: countGoalStreak(input.dailyProgressLog),
-    masteredCount,
-    learningCount,
-    unseenCount: Math.max(0, input.cards.length - masteredCount - learningCount),
+    masteredCount: counts.mastered,
+    learningCount: counts.learning,
+    unseenCount: counts.unseen,
+    studiedCount: counts.studied,
     reviewedToday: today?.reviewed || 0,
     dailyGoal,
-    goalRatio: dailyGoal ? Math.min(1, (today?.reviewed || 0) / dailyGoal) : 0,
     weeklyTotal: dailyPoints.reduce((sum, point) => sum + point.reviewed, 0),
-    dailyPoints
+    completionRate,
+    averageDailyReviews,
+    examLevel: input.settings.examLevel,
+    activeDeckLabel,
+    remainingToday,
+    dailyPoints,
+    focusAreas: buildFocusAreas(input),
+    insights: buildProgressInsights(completionRate, averageDailyReviews, activeDeckLabel),
+    queueHealth: buildProgressQueueHealth(input)
   };
 }

@@ -30,8 +30,8 @@ export function DailyTargetStepper({ dailyGoal, onChange }: Props) {
 }
 
 const styles = StyleSheet.create({
-  stepper: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: spacing.xl },
+  stepper: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: spacing.lg },
   stepperValue: { alignItems: "center", gap: spacing.xxs },
-  stepperNumber: { color: colors.textStrong, fontSize: typography.screenTitle, fontWeight: typography.weightBold },
+  stepperNumber: { color: colors.textStrong, fontSize: typography.title, fontWeight: typography.weightSemibold },
   stepperLabel: { color: colors.textMuted, fontSize: typography.caption, fontWeight: typography.weightMedium }
 });

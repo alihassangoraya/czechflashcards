@@ -8,7 +8,7 @@ export function SearchWordsPanel({ panel, cards, query, settings, savedCardIds, 
   const { t } = useI18n();
   return (
     <AppModal visible={panel === "search"} title={t("modal.search")} onClose={() => onSetPanel(null)}>
-      <SearchPanel cards={cards} query={query} meaningLanguage={settings.meaningLanguage} savedCardIds={savedCardIds} onQueryChange={onQueryChange} onStudy={onStudySearchResult} onToggleSaved={(card) => onToggleSaved(card.id)} onManageDecks={onSetDeckManagementCard} onEdit={onOpenCardEditor} />
+      <SearchPanel cards={cards} query={query} meaningLanguage={settings.appLanguage} savedCardIds={savedCardIds} onQueryChange={onQueryChange} onStudy={onStudySearchResult} onToggleSaved={(card) => onToggleSaved(card.id)} onManageDecks={onSetDeckManagementCard} onEdit={onOpenCardEditor} />
     </AppModal>
   );
 }

@@ -5,6 +5,8 @@ export type FriendPanelProps = {
   myFriendCode: string | null;
   friendRequests: FriendRequest[];
   friends: FriendStreak[];
+  friendBusy: boolean;
+  loadingFriends: boolean;
   onChangeFriendCode: (value: string) => void;
   onSendFriendRequest: () => void;
   onRespondToFriendRequest: (requestId: string, accepted: boolean) => void;

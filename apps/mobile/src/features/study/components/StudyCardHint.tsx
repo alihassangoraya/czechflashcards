@@ -15,6 +15,8 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     fontSize: typography.cardHint,
     marginTop: typography.bodyLarge,
+    alignSelf: "stretch",
+    width: "100%",
     textAlign: "center",
     fontWeight: typography.weightRegular
   }

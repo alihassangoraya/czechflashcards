@@ -19,6 +19,7 @@ export const enStudyFlashcardTranslations = {
   "study.undo": "Undo",
   "study.known": "Known",
   "study.playWord": "Play {word}",
+  "study.stressFirstSyllable": "stress the first syllable",
   "study.undoReview": "Undo review for {word}",
   "study.addToMyList": "Add {word} to My list",
   "study.removeFromMyList": "Remove {word} from My list",

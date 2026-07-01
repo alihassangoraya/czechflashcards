@@ -14,7 +14,7 @@ export function QuizFeedback({ correct, correctAnswer }: Props) {
 
   return (
     <View style={[styles.feedbackPanel, correct ? styles.feedbackCorrect : styles.feedbackWrong]}>
-      <MaterialIcons name={correct ? "check-circle" : "info"} size={size.iconMedium} color={correct ? colors.success : colors.danger} />
+      <MaterialIcons name={correct ? "check-circle" : "info"} size={size.iconMedium} color={correct ? colors.iconSuccess : colors.iconDanger} />
       <View style={styles.feedbackCopy}>
         <Text style={[styles.feedbackTitle, { textAlign }]}>{correct ? t("quiz.correct") : t("quiz.correctAnswer")}</Text>
         <Text style={[styles.feedbackText, { textAlign }]}>{correct ? t("quiz.niceRecall") : correctAnswer}</Text>

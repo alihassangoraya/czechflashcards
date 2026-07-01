@@ -21,7 +21,7 @@ export function QuizHeader({ score, onBack }: Props) {
       onBack={onBack}
       trailing={(
         <View style={styles.scoreChip} accessibilityLabel={t("quiz.correctAnswers", { count: score })}>
-          <MaterialIcons name="check-circle" size={size.iconSmall} color={colors.success} />
+          <MaterialIcons name="check-circle" size={size.iconSmall} color={colors.iconSuccess} />
           <Text style={styles.scoreChipText}>{score}</Text>
         </View>
       )}

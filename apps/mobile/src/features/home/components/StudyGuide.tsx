@@ -15,7 +15,7 @@ export function StudyGuide() {
         {guideItems.map((item) => (
           <View key={item.textKey} style={styles.guideItem}>
             <View style={styles.guideBullet}>
-              <MaterialIcons name={item.icon} size={size.iconSmall} color={colors.bohemianBlue} />
+              <MaterialIcons name={item.icon} size={size.iconSmall} color={colors.iconPrimary} />
             </View>
             <Text style={[styles.guideText, { textAlign }]}>{t(item.textKey)}</Text>
           </View>

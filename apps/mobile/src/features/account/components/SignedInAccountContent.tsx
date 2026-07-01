@@ -1,22 +1,17 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { spacing } from "../../../theme/design";
-import type { AccountStudySummary } from "../types/accountTypes";
 import type { AccountPanelState } from "../hooks/accountPanelStateTypes";
-import { AccountStudyPanel } from "./AccountStudyPanel";
+import { AccountOverviewCard } from "./AccountOverviewCard";
 import { SignedInAccount } from "./SignedInAccount";
+import { SignedInSecurityActions } from "./SignedInSecurityActions";
+import type { SignedInAccountContentProps } from "./signedInAccountTypes";
 
-type Props = {
-  account: AccountPanelState;
-  accountEmail: string;
-  busy: boolean;
-  studySummary: AccountStudySummary;
-};
-
-export function SignedInAccountContent({ account, accountEmail, busy, studySummary }: Props) {
+export function SignedInAccountContent({ account, accountEmail, busy, syncStatus, onSyncNow }: SignedInAccountContentProps & { account: AccountPanelState }) {
   return (
     <View style={styles.form}>
-      <AccountStudyPanel summary={studySummary} accountEmail={accountEmail} />
+      <AccountOverviewCard accountEmail={accountEmail} syncStatus={syncStatus} onSyncNow={onSyncNow} />
+      <SignedInSecurityActions account={account} busy={busy} />
       <SignedInAccount
         accountEmail={accountEmail}
         busy={busy}
@@ -24,6 +19,8 @@ export function SignedInAccountContent({ account, accountEmail, busy, studySumma
         myFriendCode={account.myFriendCode}
         friendRequests={account.friendRequests}
         friends={account.friends}
+        friendBusy={account.friendBusy}
+        loadingFriends={account.loadingFriends}
         message={account.message}
         onChangeFriendCode={account.setFriendCode}
         onSendFriendRequest={() => void account.sendFriend()}

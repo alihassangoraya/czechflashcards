@@ -13,12 +13,12 @@ type Props = {
 export function IconButton({ icon, label, disabled = false, onPress }: Props) {
   return (
     <Pressable disabled={disabled} style={[styles.iconButton, disabled && styles.iconButtonDisabled]} onPress={onPress} accessibilityRole="button" accessibilityLabel={label}>
-      <MaterialIcons name={icon} size={size.icon} color={colors.primaryDeep} />
+      <MaterialIcons name={icon} size={size.icon} color={colors.iconPrimary} />
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  iconButton: { width: size.touchTarget, height: size.touchTarget, alignItems: "center", justifyContent: "center", borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surfaceWarm },
+  iconButton: { width: size.actionMinHeight, height: size.actionMinHeight, alignItems: "center", justifyContent: "center", borderWidth: spacing.hairline, borderColor: colors.borderSoft, borderRadius: radius.md, backgroundColor: colors.surface },
   iconButtonDisabled: { opacity: 0.42 }
 });

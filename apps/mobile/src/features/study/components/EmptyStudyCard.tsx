@@ -19,6 +19,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     inset: 0,
     justifyContent: "center",
+    alignItems: "center",
     backgroundColor: colors.surface,
     borderRadius: radius.card,
     padding: spacing.card,
@@ -26,6 +27,6 @@ const styles = StyleSheet.create({
     borderColor: colors.borderSoft,
     backfaceVisibility: "hidden"
   },
-  word: { fontSize: typography.word, lineHeight: typography.wordLine, color: colors.textStrong, fontWeight: typography.weightBold, textAlign: "center" },
-  hint: { color: colors.textMuted, marginTop: typography.bodyLarge, textAlign: "center", fontWeight: typography.weightRegular }
+  word: { alignSelf: "stretch", width: "100%", fontSize: typography.word, lineHeight: typography.wordLine, color: colors.textStrong, fontWeight: typography.weightBold, textAlign: "center" },
+  hint: { alignSelf: "stretch", width: "100%", color: colors.textMuted, marginTop: typography.bodyLarge, textAlign: "center", fontWeight: typography.weightRegular }
 });

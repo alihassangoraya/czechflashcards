@@ -14,7 +14,7 @@ export function UtilityButton({ icon, title, detail, onPress }: Props) {
   return (
     <Pressable style={styles.utilityButton} onPress={onPress} accessibilityRole="button">
       <View style={styles.utilityIcon}>
-        <MaterialIcons name={icon} size={size.iconSmall} color={colors.primaryDeep} />
+        <MaterialIcons name={icon} size={size.iconSmall} color={colors.iconPrimary} />
       </View>
       <View style={styles.utilityCopy}>
         <Text style={styles.utilityTitle}>{title}</Text>

@@ -10,6 +10,11 @@ export const enAccountNoticeTranslations = {
   "account.friendSent": "Friend request sent.",
   "account.friendAdded": "Friend added.",
   "account.friendDeclined": "Request declined.",
+  "account.resetEmailSent": "Password reset email sent.",
+  "account.passwordMismatch": "Passwords do not match.",
+  "account.passwordUpdated": "Password updated. You can keep learning.",
+  "account.deleted": "Account deleted. Local study data remains on this device until cleared.",
+  "account.accountDataExported": "Account data exported.",
   "account.offlineAvailable": "This build has no Supabase URL or anonymous key. Offline study remains available.",
   "account.signedOut": "Signed out. Your local study data remains on this device."
 } as const;

@@ -11,5 +11,17 @@ export const ukAccountProfileTranslations = {
   "account.due": "До повторення",
   "account.localProgress": "Прогрес збережено на цьому пристрої · {status}",
   "account.queueCopy": "Офлайн-повторення, власні слова, виправлення, налаштування й обрані слова поставлено в чергу для цього акаунта.",
+  "account.signedInAs": "Вхід як",
+  "account.syncStatusValue": "Статус синхронізації: {status}",
+  "account.sync.guest": "Гість",
+  "account.sync.not-configured": "Не налаштовано",
+  "account.sync.idle": "Готово",
+  "account.sync.synced": "Синхронізовано",
+  "account.sync.error": "Потрібна увага",
+  "account.customWords": "Власні слова",
+  "account.savedWords": "Збережені слова",
+  "account.myDecks": "Мої колоди",
+  "account.dailyGoal": "Денна ціль",
+  "account.friendSetupMissing": "Для функцій друзів потрібне останнє оновлення бази даних. Навчальні дані й далі синхронізуються.",
   "account.signOut": "Вийти"
 } as const;

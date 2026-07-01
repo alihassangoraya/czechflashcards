@@ -1,30 +1,17 @@
-import { lightColors } from "./lightColors";
-import type { ColorTokens } from "./colorTypes";
 import { darkCompatibilityColorAliases } from "./compatibilityColorAliases";
+import type { ColorTokens } from "./colorTypes";
+import { darkBrandColors } from "./darkBrandColors";
+import { darkIconColors } from "./darkIconColors";
+import { darkSurfaceColors } from "./darkSurfaceColors";
+import { darkTextColors } from "./darkTextColors";
+import { lightColors } from "./lightColors";
 
 export const darkColors: ColorTokens = {
   ...lightColors,
-  background: "#171a17",
-  surface: "#222722",
-  surfaceWarm: "#20241f",
-  surfaceSecondary: "#1d211d",
-  surfaceMuted: "#303730",
-  sheet: "#20261f",
-  textStrong: "#f4f1ea",
-  text: "#f4f1ea",
-  textBody: "#e5e8e1",
-  textDeep: "#eef1eb",
-  textExample: "#d7ddd5",
-  textSoft: "#c5ccc2",
-  textMuted: "#a9b1a5",
-  textSubtle: "#b7bdb3",
-  muted: "#aeb5ab",
-  border: "#455047",
-  borderSoft: "#3a443c",
-  borderMuted: "#69756a",
-  progressTrack: "#3a443c",
-  progressTrackStrong: "#465047",
-  actionSoft: "#263a45",
+  ...darkBrandColors,
+  ...darkSurfaceColors,
+  ...darkTextColors,
+  ...darkIconColors,
   heroOverlay: "rgba(0,0,0,0.50)",
   stampSurface: "rgba(34,39,34,0.94)",
   ...darkCompatibilityColorAliases

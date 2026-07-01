@@ -3,7 +3,6 @@ export const enSettingsStudyPlanTranslations = {
   "settings.studyPlanDescription": "Choose what you want to practice.",
   "settings.examLevel": "Exam level",
   "settings.activeDeck": "Active deck",
-  "settings.meaningLanguage": "Meaning language",
   "settings.appLanguage": "App language",
   "settings.appLanguageDescription": "Choose the interface language. Vocabulary stays Czech-first.",
   "settings.themeMode": "Theme",

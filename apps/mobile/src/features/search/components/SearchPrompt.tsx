@@ -9,7 +9,7 @@ export function SearchPrompt() {
 
   return (
     <View style={styles.prompt}>
-      <View style={styles.icon}><MaterialIcons name="manage-search" size={size.iconMedium} color={colors.action} /></View>
+      <View style={styles.icon}><MaterialIcons name="manage-search" size={size.iconMedium} color={colors.iconAction} /></View>
       <View style={styles.copy}>
         <Text style={[styles.title, { textAlign }]}>{t("search.findTitle")}</Text>
         <Text style={[styles.text, { textAlign }]}>{t("search.findCopy", { count: "7,000" })}</Text>

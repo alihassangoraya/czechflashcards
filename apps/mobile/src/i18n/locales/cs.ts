@@ -1,4 +1,5 @@
 import { csCoreTranslations } from "./cs/core";
+import { csToastTranslations } from "./cs/toast";
 import { csHomeTranslations } from "./cs/home";
 import { csSettingsTranslations } from "./cs/settings";
 import { csStudyTranslations } from "./cs/study";
@@ -10,6 +11,7 @@ import { csProgressTranslations } from "./cs/progress";
 
 export const cs = {
   ...csCoreTranslations,
+  ...csToastTranslations,
   ...csHomeTranslations,
   ...csSettingsTranslations,
   ...csStudyTranslations,

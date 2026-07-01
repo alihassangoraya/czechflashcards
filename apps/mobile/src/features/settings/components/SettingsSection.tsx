@@ -14,7 +14,7 @@ export function SettingsSection({ icon, title, description, children }: Props) {
   return (
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
-        <View style={styles.sectionIcon}><MaterialIcons name={icon} size={size.iconSmall} color={colors.primaryDeep} /></View>
+        <View style={styles.sectionIcon}><MaterialIcons name={icon} size={size.iconSmall} color={colors.iconPrimary} /></View>
         <View style={styles.sectionCopy}>
           <Text style={styles.sectionTitle}>{title}</Text>
           <Text style={styles.sectionDescription}>{description}</Text>
@@ -26,10 +26,10 @@ export function SettingsSection({ icon, title, description, children }: Props) {
 }
 
 const styles = StyleSheet.create({
-  section: { gap: spacing.xl },
+  section: { gap: spacing.lg },
   sectionHeader: { flexDirection: "row", alignItems: "center", gap: spacing.lg },
-  sectionIcon: { width: size.touchTarget, height: size.touchTarget, alignItems: "center", justifyContent: "center", borderRadius: radius.md, backgroundColor: colors.primarySoft },
+  sectionIcon: { width: size.cardAction, height: size.cardAction, alignItems: "center", justifyContent: "center", borderRadius: radius.md, backgroundColor: colors.primarySoft },
   sectionCopy: { flex: 1, gap: spacing.xxs },
-  sectionTitle: { color: colors.textStrong, fontSize: typography.titleSmall, fontWeight: typography.weightSemibold },
+  sectionTitle: { color: colors.textStrong, fontSize: typography.bodyLarge, fontWeight: typography.weightSemibold },
   sectionDescription: { color: colors.textMuted, fontSize: typography.bodySmall, lineHeight: typography.bodyLarge }
 });

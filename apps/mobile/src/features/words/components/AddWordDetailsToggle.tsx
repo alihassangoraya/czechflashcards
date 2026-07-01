@@ -11,10 +11,10 @@ export function AddWordDetailsToggle({ expanded, onToggle }: AddWordDetailsToggl
   return (
     <Pressable style={styles.toggle} onPress={onToggle} accessibilityRole="button" accessibilityState={{ expanded }}>
       <View style={styles.copy}>
-        <MaterialIcons name="library-add" size={size.iconSmall} color={colors.action} />
+        <MaterialIcons name="library-add" size={size.iconSmall} color={colors.iconAction} />
         <Text style={styles.text}>{t("words.translationsContext")}</Text>
       </View>
-      <MaterialIcons name={expanded ? "expand-less" : "expand-more"} size={size.icon} color={colors.action} />
+      <MaterialIcons name={expanded ? "expand-less" : "expand-more"} size={size.icon} color={colors.iconAction} />
     </Pressable>
   );
 }

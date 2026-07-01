@@ -17,8 +17,8 @@ export function CustomDeckDeleteActions({ deck, labels, onCancelDeleteDeck, onCo
   return (
     <View style={styles.deleteConfirm}>
       <Text style={styles.deleteText}>{labels.deleteQuestion}</Text>
-      <CustomDeckIconAction icon="delete-outline" color={colors.dangerStrong} label={labels.deleteDeck} onPress={() => onConfirmDeleteDeck(deck.id)} />
-      <CustomDeckIconAction icon="close" color={colors.textMuted} label={labels.keepDeck} onPress={onCancelDeleteDeck} />
+      <CustomDeckIconAction icon="delete-outline" color={colors.iconDanger} label={labels.deleteDeck} onPress={() => onConfirmDeleteDeck(deck.id)} />
+      <CustomDeckIconAction icon="close" color={colors.iconMuted} label={labels.keepDeck} onPress={onCancelDeleteDeck} />
     </View>
   );
 }

@@ -14,15 +14,15 @@ export const lightCompatibilityColorAliases = {
 } as const;
 
 export const darkCompatibilityColorAliases = {
-  bohemianBlue: "#5d6246",
-  bohemianRed: "#a34f4f",
-  bohemianGold: "#b07d3e",
+  bohemianBlue: "#b8c392",
+  bohemianRed: "#ffaaa5",
+  bohemianGold: "#e4bd72",
   warmSand: "#20241f",
   appBackground: "#171a17",
   charcoalText: "#f4f1ea",
   card: "#222722",
   lightSand: "#3a443c",
-  softMint: "#4f7a56",
+  softMint: "#92c995",
   mutedSlate: "#aeb5ab",
   darkTaupe: "#b7bdb3",
   inkSoft: "#c5ccc2"

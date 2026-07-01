@@ -14,14 +14,13 @@ export function SearchResultActions({ card, saved, onToggleSaved, onManageDecks,
   return (
     <View style={styles.actions}>
       {card.source === "custom" && (
-        <SearchActionButton icon="edit" label={t("search.editWord", { word: card.cz })} displayLabel={t("search.actionEdit")} onPress={() => onEdit(card)} />
+        <SearchActionButton icon="edit" label={t("search.editWord", { word: card.cz })} onPress={() => onEdit(card)} />
       )}
-      <SearchActionButton icon="volume-up" label={t("search.playWord", { word: card.cz })} displayLabel={t("search.actionAudio")} onPress={() => speak(card.cz, { language: "cs-CZ", rate: 0.86 })} />
-      <SearchActionButton icon="folder" label={t("search.addToDeck", { word: card.cz })} displayLabel={t("search.actionDeck")} onPress={() => onManageDecks(card)} />
+      <SearchActionButton icon="volume-up" label={t("search.playWord", { word: card.cz })} onPress={() => speak(card.cz, { language: "cs-CZ", rate: 0.86 })} />
+      <SearchActionButton icon="folder" label={t("search.addToDeck", { word: card.cz })} onPress={() => onManageDecks(card)} />
       <SearchActionButton
         icon={saved ? "star" : "star-border"}
         label={saved ? t("search.removeFromMyList", { word: card.cz }) : t("search.addToMyList", { word: card.cz })}
-        displayLabel={saved ? t("search.actionSaved") : t("search.actionSave")}
         onPress={() => onToggleSaved(card)}
         saved={saved}
       />

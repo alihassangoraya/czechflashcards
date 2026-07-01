@@ -1,9 +1,11 @@
 import type { Card } from "@czech-flashcards/shared";
+import { tutorLanguageName } from "./tutorLanguage";
 
-export function buildTutorLessonPrompt(card: Card): string {
+export function buildTutorLessonPrompt(card: Card, language: string): string {
   return `
 You are an expert, supportive B1 Czech language tutor.
 Create a compact, structured lesson for the Czech word "${card.cz}".
+Write the explanation in ${tutorLanguageName(language)}.
 
 Known card data:
 - English: ${card.en}
@@ -21,9 +23,10 @@ Keep it friendly, precise, and useful for a learner preparing for A2/B1 Czech. A
 `.trim();
 }
 
-export function buildTutorPhoneticPrompt(card: Card): string {
+export function buildTutorPhoneticPrompt(card: Card, language: string): string {
   return `
 Provide a practical pronunciation guide for the Czech word "${card.cz}".
+Write the explanation in ${tutorLanguageName(language)}.
 
 Structure:
 1. Phonetic spelling for an English speaker.

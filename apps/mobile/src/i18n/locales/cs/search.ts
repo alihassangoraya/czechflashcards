@@ -1,9 +1,9 @@
 export const csSearchTranslations = {
-  "search.placeholder": "Hledat česky, anglicky, hindsky nebo urdsky",
+  "search.placeholder": "Hledat česky, anglicky, česky významově, hindsky, urdsky nebo ukrajinsky",
   "search.accessibility": "Hledat slovíčka",
   "search.clear": "Vymazat hledání",
   "search.findTitle": "Najít slovo",
-  "search.findCopy": "Hledej ve více než {count} kartičkách česky, anglicky, hindsky nebo urdsky.",
+  "search.findCopy": "Hledej ve více než {count} kartičkách napříč češtinou, angličtinou, hindštinou, urdštinou a ukrajinštinou.",
   "search.noResultsTitle": "Žádná shodná slova",
   "search.noResultsCopy": "Zkus kratší pravopis nebo jiný jazyk.",
   "search.matches": "{count} {label}",
@@ -21,4 +21,7 @@ export const csSearchTranslations = {
   "search.actionDeck": "Balíček",
   "search.actionSave": "Uložit",
   "search.actionSaved": "Uloženo",
+  "search.synonyms": "Synonyma",
+  "search.antonyms": "Antonyma",
+  "search.grammar": "Gramatika",
 } as const;

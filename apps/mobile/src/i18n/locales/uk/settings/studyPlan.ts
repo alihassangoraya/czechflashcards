@@ -3,7 +3,6 @@ export const ukSettingsStudyPlanTranslations = {
   "settings.studyPlanDescription": "Вибери, що хочеш практикувати.",
   "settings.examLevel": "Рівень іспиту",
   "settings.activeDeck": "Активна колода",
-  "settings.meaningLanguage": "Мова значення",
   "settings.appLanguage": "Мова додатка",
   "settings.appLanguageDescription": "Вибери мову інтерфейсу. Словник залишається чеським.",
   "settings.themeMode": "Тема",

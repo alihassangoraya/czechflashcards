@@ -8,5 +8,5 @@ export function SettingGroup({ children }: SettingGroupProps) {
 }
 
 const styles = StyleSheet.create({
-  settingGroup: { gap: spacing.xl, borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surface, padding: spacing.xl }
+  settingGroup: { gap: spacing.lg, borderWidth: spacing.hairline, borderColor: colors.borderSoft, borderRadius: radius.md, backgroundColor: colors.surfaceSecondary, padding: spacing.lg }
 });

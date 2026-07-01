@@ -3,7 +3,11 @@ import { createAssetRequest, shouldDisableCache } from "./assetRequest.js";
 export default {
   async fetch(request, env) {
     const { appRoute, assetRequest, pathname } = createAssetRequest(request);
-    const response = await env.ASSETS.fetch(assetRequest);
+    let response = await env.ASSETS.fetch(assetRequest);
+
+    if (response.status === 404 && appRoute) {
+      response = await env.ASSETS.fetch(new Request(new URL("/index.html", request.url), request));
+    }
 
     if (!shouldDisableCache(appRoute, pathname)) {
       return response;

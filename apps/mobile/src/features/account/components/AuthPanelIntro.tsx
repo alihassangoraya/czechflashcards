@@ -15,7 +15,7 @@ export function AuthPanelIntro({ configured, isRegister }: Props) {
   return (
     <>
       <View style={styles.iconWrap}>
-        <MaterialIcons name={isRegister ? "person" : "login"} size={size.iconLarge} color={colors.primaryDeep} />
+        <MaterialIcons name={isRegister ? "person" : "login"} size={size.iconLarge} color={colors.iconPrimary} />
       </View>
       <Text style={styles.heading}>{isRegister ? t("account.backupHeading") : t("account.welcomeHeading")}</Text>
       <Text style={styles.copy}>{isRegister ? t("account.backupCopy") : t("account.restoreCopy")}</Text>

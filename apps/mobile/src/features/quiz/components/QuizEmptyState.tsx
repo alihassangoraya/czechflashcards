@@ -11,12 +11,12 @@ export function QuizEmptyState({ onClose }: QuizEmptyStateProps) {
   return (
     <View style={styles.empty}>
       <View style={styles.emptyIcon}>
-        <MaterialIcons name="quiz" size={size.iconLarge} color={colors.warning} />
+        <MaterialIcons name="quiz" size={size.iconLarge} color={colors.iconWarning} />
       </View>
       <Text style={[styles.emptyTitle, { textAlign }]}>{t("quiz.needsMoreCards")}</Text>
       <Text style={[styles.emptyCopy, { textAlign }]}>{t("quiz.needsMoreCardsCopy")}</Text>
       <Pressable style={styles.secondaryButton} onPress={onClose} accessibilityRole="button">
-        <MaterialIcons name="arrow-back" size={size.icon} color={colors.primaryDeep} />
+        <MaterialIcons name="arrow-back" size={size.icon} color={colors.iconPrimary} />
         <Text style={styles.secondaryText}>{t("common.backHome")}</Text>
       </Pressable>
     </View>

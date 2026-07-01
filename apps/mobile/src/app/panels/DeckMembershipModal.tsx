@@ -4,7 +4,7 @@ import { DeckMembershipPanel } from "../../features/decks";
 import { useI18n } from "../../i18n/I18nProvider";
 import type { DeckMembershipModalProps } from "./modalTypes";
 
-export function DeckMembershipModal({ panel, settings, deckMemberships, deckManagementCard, onSetPanel, onSetDeckManagementCard, onAddCardToDeck, onRemoveCardFromDeck }: DeckMembershipModalProps) {
+export function DeckMembershipModal({ panel, settings, deckMemberships, deckManagementCard, onSetScreen, onSetDeckManagementCard, onAddCardToDeck, onRemoveCardFromDeck }: DeckMembershipModalProps) {
   const { t } = useI18n();
   return (
     <AppModal visible={panel === "deck"} title={t("modal.deck")} onClose={() => onSetDeckManagementCard(null)}>
@@ -14,7 +14,10 @@ export function DeckMembershipModal({ panel, settings, deckMemberships, deckMana
         deckMemberships={deckMemberships}
         onAddToDeck={onAddCardToDeck}
         onRemoveFromDeck={onRemoveCardFromDeck}
-        onOpenSettings={() => onSetPanel("settings")}
+        onOpenSettings={() => {
+          onSetDeckManagementCard(null);
+          onSetScreen("settings");
+        }}
       />
     </AppModal>
   );

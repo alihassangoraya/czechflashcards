@@ -10,7 +10,7 @@ export function SearchField({ query, onQueryChange }: SearchFieldProps) {
 
   return (
     <View style={styles.field}>
-      <MaterialIcons name="search" size={size.icon} color={colors.actionMuted} />
+      <MaterialIcons name="search" size={size.icon} color={colors.iconMuted} />
       <TextInput
         style={[styles.input, { textAlign, writingDirection: direction }]}
         value={query}
@@ -24,7 +24,7 @@ export function SearchField({ query, onQueryChange }: SearchFieldProps) {
       />
       {Boolean(query) && (
         <Pressable style={styles.clearButton} onPress={() => onQueryChange("")} accessibilityRole="button" accessibilityLabel={t("search.clear")}>
-          <MaterialIcons name="close" size={size.iconSmall} color={colors.textMuted} />
+          <MaterialIcons name="close" size={size.iconSmall} color={colors.iconMuted} />
         </Pressable>
       )}
     </View>

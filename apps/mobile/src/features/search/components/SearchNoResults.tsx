@@ -9,7 +9,7 @@ export function SearchNoResults() {
 
   return (
     <View style={styles.noResults}>
-      <MaterialIcons name="search-off" size={size.iconMedium} color={colors.textMuted} />
+      <MaterialIcons name="search-off" size={size.iconMedium} color={colors.iconMuted} />
       <Text style={[styles.title, { textAlign }]}>{t("search.noResultsTitle")}</Text>
       <Text style={[styles.text, { textAlign }]}>{t("search.noResultsCopy")}</Text>
     </View>

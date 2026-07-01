@@ -1,9 +1,9 @@
 export const urSearchTranslations = {
-  "search.placeholder": "چیک، انگریزی، ہندی یا اردو تلاش کریں",
+  "search.placeholder": "چیک، انگریزی، چیک معنی، ہندی، اردو یا یوکرینی تلاش کریں",
   "search.accessibility": "الفاظ تلاش کریں",
   "search.clear": "تلاش صاف کریں",
   "search.findTitle": "لفظ تلاش کریں",
-  "search.findCopy": "{count}+ کارڈز میں چیک، انگریزی، ہندی یا اردو تلاش کریں۔",
+  "search.findCopy": "{count}+ کارڈز میں چیک، انگریزی، چیک معنی، ہندی، اردو اور یوکرینی تلاش کریں۔",
   "search.noResultsTitle": "کوئی لفظ نہیں ملا",
   "search.noResultsCopy": "چھوٹی spelling یا دوسری زبان آزمائیں۔",
   "search.matches": "{count} {label}",
@@ -21,4 +21,7 @@ export const urSearchTranslations = {
   "search.actionDeck": "ڈیک",
   "search.actionSave": "محفوظ",
   "search.actionSaved": "محفوظ",
+  "search.synonyms": "مترادفات",
+  "search.antonyms": "متضاد",
+  "search.grammar": "گرامر",
 } as const;

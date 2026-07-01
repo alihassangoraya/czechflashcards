@@ -1,33 +1,11 @@
+import { hiStudyDetailsTranslations } from "./study/details";
+import { hiStudyFlashcardTranslations } from "./study/flashcards";
+import { hiStudyGrammarTranslations } from "./study/grammar";
+import { hiStudyTutorTranslations } from "./study/tutor";
+
 export const hiStudyTranslations = {
-  "study.openGrammar": "ग्रामर गाइड खोलें",
-  "study.markAgain": "Again मार्क करें",
-  "study.markKnown": "Known मार्क करें",
-  "review.again": "Again",
-  "review.hard": "Hard",
-  "review.good": "Good",
-  "review.easy": "Easy",
-  "study.sessionProgress": "कार्ड {current} / {total} · आज {reviewedToday} / {dailyGoal}",
-  "study.translation": "अनुवाद",
-  "study.inContext": "संदर्भ में",
-  "study.playExample": "चेक उदाहरण चलाएँ",
-  "study.done": "पूरा",
-  "study.noDue": "इस डेक में अभी कोई कार्ड due नहीं है.",
-  "study.revealMeaning": "अर्थ दिखाएँ",
-  "study.tapReveal": "अर्थ देखने के लिए टैप करें",
-  "study.tapCzech": "चेक देखने के लिए टैप करें",
-  "study.showCzech": "चेक शब्द दिखाएँ",
-  "study.undo": "Undo",
-  "study.known": "Known",
-  "study.playWord": "{word} चलाएँ",
-  "study.undoReview": "{word} का रिव्यू वापस करें",
-  "study.addToMyList": "{word} को मेरी सूची में जोड़ें",
-  "study.removeFromMyList": "{word} को मेरी सूची से हटाएँ",
-  "study.addToDeck": "{word} को डेक में जोड़ें",
-  "study.editCard": "{word} संपादित करें",
-  "details.title": "शब्द विवरण",
-  "details.grammar": "ग्रामर",
-  "details.reflexive": "reflexive",
-  "details.related": "संबंधित शब्द",
-  "details.opposites": "विलोम",
-  "details.category": "{category}",
+  ...hiStudyFlashcardTranslations,
+  ...hiStudyDetailsTranslations,
+  ...hiStudyGrammarTranslations,
+  ...hiStudyTutorTranslations
 } as const;

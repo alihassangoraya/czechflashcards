@@ -25,6 +25,6 @@ export function CustomDeckCreateRow({ deckName, onDeckNameChange, onCreateDeck }
 
 const styles = StyleSheet.create({
   deckCreateRow: { flexDirection: "row", gap: spacing.lg },
-  deckInput: { flex: 1, minHeight: size.touchTarget, borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surface, color: colors.textStrong, fontSize: typography.body, paddingHorizontal: spacing.xl },
-  addDeckButton: { width: size.touchTarget, height: size.touchTarget, alignItems: "center", justifyContent: "center", borderRadius: radius.md, backgroundColor: colors.primaryDeep }
+  deckInput: { flex: 1, minHeight: size.actionMinHeight, borderWidth: spacing.hairline, borderColor: colors.borderSoft, borderRadius: radius.md, backgroundColor: colors.surface, color: colors.textStrong, fontSize: typography.body, paddingHorizontal: spacing.xl },
+  addDeckButton: { width: size.actionMinHeight, height: size.actionMinHeight, alignItems: "center", justifyContent: "center", borderRadius: radius.md, backgroundColor: colors.primaryDeep }
 });

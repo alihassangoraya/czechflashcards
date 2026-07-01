@@ -12,7 +12,7 @@ type Props = {
 export function GeminiTutorButton({ label, accessibilityLabel, onPress }: Props) {
   return (
     <Pressable style={styles.button} onPress={onPress} accessibilityRole="button" accessibilityLabel={accessibilityLabel}>
-      <MaterialIcons name="auto-awesome" size={size.iconSmall} color={colors.bohemianGold} />
+      <MaterialIcons name="auto-awesome" size={size.iconSmall} color={colors.iconWarning} />
       <Text style={styles.text}>{label}</Text>
     </Pressable>
   );

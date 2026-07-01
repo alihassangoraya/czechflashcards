@@ -10,8 +10,8 @@ export function SearchResultExample({ card }: Props) {
 
   return (
     <View style={styles.exampleBox}>
-      <Text style={styles.example} numberOfLines={2}>{card.sentence}</Text>
-      {Boolean(card.sentenceEn) && <Text style={styles.exampleTranslation} numberOfLines={2}>{card.sentenceEn}</Text>}
+      <Text style={styles.example}>{card.sentence}</Text>
+      {Boolean(card.sentenceEn) && <Text style={styles.exampleTranslation}>{card.sentenceEn}</Text>}
     </View>
   );
 }

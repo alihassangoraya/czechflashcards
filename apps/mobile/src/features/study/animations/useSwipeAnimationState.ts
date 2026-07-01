@@ -1,29 +1,23 @@
 import { useCallback } from "react";
-import type { SwipeDirection } from "./animationTypes";
 import type { SwipeAnimationStateParams } from "./swipeAnimationTypes";
 import { springCardBack } from "./swipeAnimations";
 import { useResetSwipeOnCardChange } from "./useResetSwipeOnCardChange";
-import { useSwipeDirectionState } from "./useSwipeDirectionState";
 import { useSwipeFlags } from "./useSwipeFlags";
 
 export function useSwipeAnimationState({ current, dragX }: SwipeAnimationStateParams) {
   const { clearSwipeCompleting, consumedSwipe, markSwipeCompleting, releaseConsumedSwipe, resetSwipeFlags, swipeCompleting } = useSwipeFlags();
-  const { resetSwipeDirection, setSwipeDirection, swipeDirection } = useSwipeDirectionState();
-  useResetSwipeOnCardChange({ current, dragX, resetFlags: resetSwipeFlags, resetSwipeDirection });
+  useResetSwipeOnCardChange({ current, dragX, resetFlags: resetSwipeFlags });
 
   const resetCancelledSwipe = useCallback(() => {
     resetSwipeFlags();
-    resetSwipeDirection();
     springCardBack(dragX);
-  }, [dragX, resetSwipeFlags, resetSwipeDirection]);
-  const startSwipeCompletion = useCallback((direction: SwipeDirection) => {
+  }, [dragX, resetSwipeFlags]);
+  const startSwipeCompletion = useCallback(() => {
     markSwipeCompleting();
-    setSwipeDirection(direction);
   }, [markSwipeCompleting]);
 
   const finishSwipeCompletion = useCallback(() => {
     dragX.setValue(0);
-    setSwipeDirection(null);
     clearSwipeCompleting();
   }, [clearSwipeCompleting, dragX]);
   return {
@@ -31,9 +25,7 @@ export function useSwipeAnimationState({ current, dragX }: SwipeAnimationStatePa
     finishSwipeCompletion,
     releaseConsumedSwipe,
     resetCancelledSwipe,
-    setSwipeDirection,
     startSwipeCompletion,
-    swipeCompleting,
-    swipeDirection
+    swipeCompleting
   };
 }

@@ -9,5 +9,5 @@ export const studyCardBackStyles = StyleSheet.create({
     textAlign: "center",
     marginBottom: spacing.sm
   },
-  answer: { gap: spacing.mdPlus, marginTop: spacing.xl }
+  answer: { alignSelf: "stretch", width: "100%", gap: spacing.mdPlus, marginTop: spacing.xl }
 });

@@ -1,9 +1,9 @@
 export const ukSearchTranslations = {
-  "search.placeholder": "Шукати чеською, англійською, гінді або урду",
+  "search.placeholder": "Шукати чеською, англійською, чеським значенням, гінді, урду або українською",
   "search.accessibility": "Пошук словника",
   "search.clear": "Очистити пошук",
   "search.findTitle": "Знайти слово",
-  "search.findCopy": "Шукай серед {count}+ карток чеською, англійською, гінді або урду.",
+  "search.findCopy": "Шукай серед {count}+ карток чеською, англійською, чеським значенням, гінді, урду та українською.",
   "search.noResultsTitle": "Нічого не знайдено",
   "search.noResultsCopy": "Спробуй коротше написання або іншу мову.",
   "search.matches": "{count} {label}",
@@ -21,4 +21,7 @@ export const ukSearchTranslations = {
   "search.actionDeck": "Колода",
   "search.actionSave": "Зберегти",
   "search.actionSaved": "Збережено",
+  "search.synonyms": "Синоніми",
+  "search.antonyms": "Антоніми",
+  "search.grammar": "Граматика",
 } as const;

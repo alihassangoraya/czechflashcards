@@ -1,5 +1,10 @@
 import type { NotificationPreferences } from "@czech-flashcards/shared";
+import type { NotificationCapability } from "./notificationCapabilityTypes";
 
-export async function configureLocalNotifications(_preferences: NotificationPreferences): Promise<void> {
-  // Native notification scheduling will move to the bare React Native layer.
+export function notificationCapability(): NotificationCapability {
+  return "unsupported";
+}
+
+export async function configureLocalNotifications(_preferences: NotificationPreferences): Promise<NotificationCapability> {
+  return notificationCapability();
 }

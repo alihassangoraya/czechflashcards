@@ -16,6 +16,7 @@ export function buildNavigationHandlers({ data, settings, navigation, studySessi
   return {
     onSetPanel: navigation.setPanel,
     onSetScreen: navigation.navigateScreen,
+    onGoBack: navigation.goBack,
     onStartStudy: () => {
       studySession.resetSessionReviews();
       navigation.navigateScreen("study");

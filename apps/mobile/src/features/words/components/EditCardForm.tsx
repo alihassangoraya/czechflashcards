@@ -11,8 +11,10 @@ export function EditCardForm({ card, onSubmit }: EditCardFormProps) {
   const [values, setValues] = useState<EditCardFormValues>({
     cz: card.cz,
     en: card.en,
+    cs: card.cs,
     hi: card.hi,
     ur: card.ur,
+    uk: card.uk,
     sentence: card.sentence,
     sentenceEn: card.sentenceEn
   });

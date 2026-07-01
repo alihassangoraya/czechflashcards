@@ -5,11 +5,10 @@ import { SignedInAccountContent } from "../components/SignedInAccountContent";
 import { SignedOutAccountContent } from "../components/SignedOutAccountContent";
 import { useAccountPanel } from "../hooks/useAccountPanel";
 
-export type { AccountStudySummary } from "../types/accountTypes";
-
-export function AccountPanel({ configured, supabase, accountEmail, studySummary, busy, onAuthenticate, onAuthenticateProvider, onSignOut }: AccountPanelProps) {
-  const account = useAccountPanel({ accountEmail, supabase, onAuthenticate, onAuthenticateProvider, onSignOut });
-  if (!configured) return <OfflineAccountPanel studySummary={studySummary} accountEmail={accountEmail} />;
-  if (accountEmail) return <SignedInAccountContent account={account} accountEmail={accountEmail} busy={busy} studySummary={studySummary} />;
-  return <SignedOutAccountContent account={account} busy={busy} studySummary={studySummary} />;
+export function AccountPanel(props: AccountPanelProps) {
+  const { configured, supabase, accountEmail, busy, onAuthenticate, onAuthenticateProvider, onSignOut } = props;
+  const account = useAccountPanel({ accountEmail, supabase, showToast: props.showToast, onAuthenticate, onAuthenticateProvider, onSignOut });
+  if (!configured) return <OfflineAccountPanel />;
+  if (accountEmail) return <SignedInAccountContent account={account} accountEmail={accountEmail} busy={busy} syncStatus={props.syncStatus} onSyncNow={props.onSyncNow} />;
+  return <SignedOutAccountContent account={account} busy={busy} />;
 }

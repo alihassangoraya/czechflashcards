@@ -1,33 +1,11 @@
+import { urStudyDetailsTranslations } from "./study/details";
+import { urStudyFlashcardTranslations } from "./study/flashcards";
+import { urStudyGrammarTranslations } from "./study/grammar";
+import { urStudyTutorTranslations } from "./study/tutor";
+
 export const urStudyTranslations = {
-  "study.openGrammar": "گرامر گائیڈ کھولیں",
-  "study.markAgain": "Again مارک کریں",
-  "study.markKnown": "Known مارک کریں",
-  "review.again": "Again",
-  "review.hard": "Hard",
-  "review.good": "Good",
-  "review.easy": "Easy",
-  "study.sessionProgress": "کارڈ {current} / {total} · آج {reviewedToday} / {dailyGoal}",
-  "study.translation": "ترجمہ",
-  "study.inContext": "سیاق و سباق میں",
-  "study.playExample": "چیک مثال چلائیں",
-  "study.done": "مکمل",
-  "study.noDue": "اس ڈیک میں ابھی کوئی کارڈ due نہیں ہے۔",
-  "study.revealMeaning": "معنی دکھائیں",
-  "study.tapReveal": "معنی دیکھنے کے لیے ٹیپ کریں",
-  "study.tapCzech": "چیک دیکھنے کے لیے ٹیپ کریں",
-  "study.showCzech": "چیک لفظ دکھائیں",
-  "study.undo": "Undo",
-  "study.known": "Known",
-  "study.playWord": "{word} چلائیں",
-  "study.undoReview": "{word} کا ریویو واپس کریں",
-  "study.addToMyList": "{word} کو میری فہرست میں شامل کریں",
-  "study.removeFromMyList": "{word} کو میری فہرست سے ہٹائیں",
-  "study.addToDeck": "{word} کو ڈیک میں شامل کریں",
-  "study.editCard": "{word} ایڈٹ کریں",
-  "details.title": "لفظ کی تفصیل",
-  "details.grammar": "گرامر",
-  "details.reflexive": "reflexive",
-  "details.related": "متعلقہ الفاظ",
-  "details.opposites": "متضاد",
-  "details.category": "{category}",
+  ...urStudyFlashcardTranslations,
+  ...urStudyDetailsTranslations,
+  ...urStudyGrammarTranslations,
+  ...urStudyTutorTranslations
 } as const;

@@ -10,7 +10,6 @@ export function useSwipePanHandlers(params: SwipePanResponderParams) {
       params.dragX,
       params.grading,
       params.resetCancelledSwipe,
-      params.setSwipeDirection,
       params.swipeCompleting
     ]
   );

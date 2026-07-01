@@ -1,33 +1,11 @@
+import { csStudyDetailsTranslations } from "./study/details";
+import { csStudyFlashcardTranslations } from "./study/flashcards";
+import { csStudyGrammarTranslations } from "./study/grammar";
+import { csStudyTutorTranslations } from "./study/tutor";
+
 export const csStudyTranslations = {
-  "study.openGrammar": "Otevřít gramatiku",
-  "study.markAgain": "Označit znovu",
-  "study.markKnown": "Označit známé",
-  "review.again": "Znovu",
-  "review.hard": "Těžké",
-  "review.good": "Dobré",
-  "review.easy": "Lehké",
-  "study.sessionProgress": "Kartička {current} z {total} · Dnes {reviewedToday} / {dailyGoal}",
-  "study.translation": "Překlad",
-  "study.inContext": "V kontextu",
-  "study.playExample": "Přehrát český příklad",
-  "study.done": "Hotovo",
-  "study.noDue": "V tomto balíčku nejsou žádné kartičky k opakování.",
-  "study.revealMeaning": "Zobrazit význam",
-  "study.tapReveal": "Klepni pro význam",
-  "study.tapCzech": "Klepni pro češtinu",
-  "study.showCzech": "Zobrazit české slovo",
-  "study.undo": "Zpět",
-  "study.known": "Známé",
-  "study.playWord": "Přehrát {word}",
-  "study.undoReview": "Vrátit opakování slova {word}",
-  "study.addToMyList": "Přidat {word} do mého seznamu",
-  "study.removeFromMyList": "Odebrat {word} z mého seznamu",
-  "study.addToDeck": "Přidat {word} do balíčku",
-  "study.editCard": "Upravit {word}",
-  "details.title": "Detaily slova",
-  "details.grammar": "Gramatika",
-  "details.reflexive": "zvratné",
-  "details.related": "Příbuzná slova",
-  "details.opposites": "Opaky",
-  "details.category": "{category}",
+  ...csStudyFlashcardTranslations,
+  ...csStudyDetailsTranslations,
+  ...csStudyGrammarTranslations,
+  ...csStudyTutorTranslations
 } as const;

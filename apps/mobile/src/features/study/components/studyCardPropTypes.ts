@@ -16,7 +16,6 @@ export type StudyCardMotionProps = {
   flipProgress: Animated.Value;
   cardRotation: Animated.AnimatedInterpolation<string | number>;
   panHandlers: GestureResponderHandlers;
-  swipeDirection: SwipeDirection | null;
 };
 
 export type StudyCardMeaningProps = {

@@ -8,7 +8,7 @@ export function buildStudyCardProps(input: StudyContentCardProps): StudyCardProp
   return {
     ...cardProps,
     current,
-    currentSecondaryMeaning: current ? displaySelectedMeaning(current, settings.meaningLanguage) : "",
-    meaningLanguage: settings.meaningLanguage,
+    currentSecondaryMeaning: current ? displaySelectedMeaning(current, settings.appLanguage) : "",
+    meaningLanguage: settings.appLanguage,
   };
 }

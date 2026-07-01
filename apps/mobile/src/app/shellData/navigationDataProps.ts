@@ -1,10 +1,11 @@
 import type { AppShellDataInput } from "./shellDataInput";
 
-export function buildNavigationDataProps({ navigation }: AppShellDataInput) {
+export function buildNavigationDataProps({ navigation, showToast }: AppShellDataInput) {
   return {
     screen: navigation.screen,
     panel: navigation.panel,
     query: navigation.query,
-    settingsNotice: navigation.settingsNotice
+    settingsNotice: navigation.settingsNotice,
+    showToast
   };
 }

@@ -16,5 +16,9 @@ export function createSettingsUpdater(settings: StudySettings, onChange: (settin
     });
   }
 
-  return { update, updateNotifications, updateExamLevel };
+  function updateAppLanguage(appLanguage: StudySettings["appLanguage"]) {
+    update({ appLanguage, meaningLanguage: appLanguage });
+  }
+
+  return { update, updateNotifications, updateExamLevel, updateAppLanguage };
 }

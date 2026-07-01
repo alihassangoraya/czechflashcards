@@ -1,7 +1,15 @@
+import { urAccountAuthTranslations } from "./account/auth";
+import { urAccountBadgeTranslations } from "./account/badges";
+import { urAccountDeckMembershipTranslations } from "./account/deckMembership";
+import { urAccountFriendTranslations } from "./account/friends";
+import { urAccountNoticeTranslations } from "./account/notices";
+import { urAccountProfileTranslations } from "./account/profile";
+
 export const urAccountTranslations = {
-  "account.continueGoogle": "Google",
-  "account.continueFacebook": "Facebook",
-  "account.continueApple": "Apple",
-  "account.orEmail": "یا ای میل سے جاری رکھیں",
-  "account.providerStarted": "Provider سائن اِن کھل گیا ہے۔ اس ڈیوائس کو sync کرنے کے لیے اسے مکمل کریں۔",
+  ...urAccountAuthTranslations,
+  ...urAccountProfileTranslations,
+  ...urAccountBadgeTranslations,
+  ...urAccountFriendTranslations,
+  ...urAccountNoticeTranslations,
+  ...urAccountDeckMembershipTranslations
 } as const;

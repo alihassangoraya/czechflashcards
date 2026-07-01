@@ -1,5 +1,4 @@
-import React from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text, View, type ViewStyle } from "react-native";
 import { MaterialIcons } from "../../../components/MaterialIcons";
 import { useI18n } from "../../../i18n/I18nProvider";
 import { colors, size } from "../../../theme/design";
@@ -7,10 +6,12 @@ import { studySwipeActionStyles as styles } from "./studySwipeActionStyles";
 import type { StudySwipeActionsProps } from "./studySwipeActionTypes";
 
 export function StudySwipeActions({ grading, onCompleteSwipe }: StudySwipeActionsProps) {
-  const { t } = useI18n();
+  const { direction, t } = useI18n();
+  const rtl = direction === "rtl";
+  const fixedOrder = { direction: "ltr" } as ViewStyle;
 
   return (
-    <View style={styles.actions}>
+    <View style={[styles.actions, fixedOrder]}>
       <Pressable
         disabled={grading}
         style={[styles.button, styles.again, grading && styles.disabled]}
@@ -18,8 +19,9 @@ export function StudySwipeActions({ grading, onCompleteSwipe }: StudySwipeAction
         accessibilityRole="button"
         accessibilityLabel={t("study.markAgain")}
       >
-        <MaterialIcons name="arrow-back" size={size.icon} color={colors.danger} />
-        <Text style={[styles.text, styles.againText]}>{t("review.again")}</Text>
+        {rtl ? <Text style={[styles.text, styles.againText]}>{t("review.again")}</Text> : null}
+        <MaterialIcons name="arrow-back" size={size.icon} color={colors.iconDanger} />
+        {rtl ? null : <Text style={[styles.text, styles.againText]}>{t("review.again")}</Text>}
       </Pressable>
       <Pressable
         disabled={grading}
@@ -28,8 +30,9 @@ export function StudySwipeActions({ grading, onCompleteSwipe }: StudySwipeAction
         accessibilityRole="button"
         accessibilityLabel={t("study.markKnown")}
       >
+        {rtl ? <MaterialIcons name="arrow-forward" size={size.icon} color={colors.iconSuccess} /> : null}
         <Text style={[styles.text, styles.knownText]}>{t("review.easy")}</Text>
-        <MaterialIcons name="arrow-forward" size={size.icon} color={colors.success} />
+        {rtl ? null : <MaterialIcons name="arrow-forward" size={size.icon} color={colors.iconSuccess} />}
       </Pressable>
     </View>
   );

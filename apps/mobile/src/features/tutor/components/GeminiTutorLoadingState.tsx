@@ -9,7 +9,7 @@ type Props = {
 export function GeminiTutorLoadingState({ label }: Props) {
   return (
     <View style={styles.loading}>
-      <ActivityIndicator color={colors.bohemianGold} />
+      <ActivityIndicator color={colors.iconWarning} />
       <Text style={styles.muted}>{label}</Text>
     </View>
   );

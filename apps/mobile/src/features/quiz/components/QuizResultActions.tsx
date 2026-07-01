@@ -18,7 +18,7 @@ export function QuizResultActions({ restartLabel, closeLabel, onRestart, onClose
         <Text style={styles.primaryText}>{restartLabel}</Text>
       </Pressable>
       <Pressable style={styles.secondaryButton} onPress={onClose} accessibilityRole="button">
-        <MaterialIcons name="home" size={size.icon} color={colors.primaryDeep} />
+        <MaterialIcons name="home" size={size.icon} color={colors.iconPrimary} />
         <Text style={styles.secondaryText}>{closeLabel}</Text>
       </Pressable>
     </>

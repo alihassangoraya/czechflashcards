@@ -9,7 +9,7 @@ export function AddWordIntro() {
 
   return (
     <View style={styles.intro}>
-      <View style={styles.icon}><MaterialIcons name="add-circle-outline" size={size.iconMedium} color={colors.primaryDeep} /></View>
+      <View style={styles.icon}><MaterialIcons name="add-circle-outline" size={size.iconMedium} color={colors.iconPrimary} /></View>
       <View style={styles.copy}>
         <Text style={[styles.title, { textAlign }]}>{t("words.introTitle")}</Text>
         <Text style={[styles.text, { textAlign }]}>{t("words.introCopy")}</Text>

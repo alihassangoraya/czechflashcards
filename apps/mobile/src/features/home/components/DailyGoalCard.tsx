@@ -13,7 +13,7 @@ export function DailyGoalCard({ reviewedToday, dailyGoal, ratio }: DailyGoalCard
   return (
     <View style={styles.todayCard}>
       <View style={styles.todayIcon}>
-        <MaterialIcons name={complete ? "check-circle" : "whatshot"} size={size.iconLarge} color={complete ? colors.softMint : colors.bohemianGold} />
+        <MaterialIcons name={complete ? "check-circle" : "whatshot"} size={size.iconLarge} color={complete ? colors.iconSuccess : colors.iconWarning} />
       </View>
       <View style={styles.todayCopy}>
         <View style={styles.sectionHeader}>

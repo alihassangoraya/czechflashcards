@@ -11,7 +11,7 @@ export function CustomReminderTimeInput({ customReminderTime, onChange, onCommit
 
   return (
     <View style={styles.customRow}>
-      <MaterialIcons name="schedule" size={size.iconSmall} color={colors.textMuted} />
+      <MaterialIcons name="schedule" size={size.iconSmall} color={colors.iconMuted} />
       <TextInput
         style={[styles.input, { textAlign, writingDirection: direction }]}
         value={customReminderTime}

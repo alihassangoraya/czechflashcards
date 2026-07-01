@@ -18,20 +18,20 @@ type Props = {
 export function SearchResultRow({ card, meaningLanguage, saved, onStudy, onToggleSaved, onManageDecks, onEdit }: Props) {
   return (
     <View style={styles.row}>
-      <SearchResultSummary card={card} meaningLanguage={meaningLanguage} onStudy={onStudy} />
       <SearchResultActions card={card} saved={saved} onToggleSaved={onToggleSaved} onManageDecks={onManageDecks} onEdit={onEdit} />
+      <SearchResultSummary card={card} meaningLanguage={meaningLanguage} onStudy={onStudy} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   row: {
-    gap: spacing.lg,
+    gap: spacing.md,
     borderWidth: spacing.hairline,
     borderColor: colors.borderSoft,
     borderRadius: radius.md,
     backgroundColor: colors.surface,
-    padding: spacing.xl,
+    padding: spacing.lgPlus,
     ...shadow.soft
   }
 });

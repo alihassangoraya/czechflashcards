@@ -1,9 +1,10 @@
 export const csSettingsStudyPlanTranslations = {
   "settings.studyPlan": "Studijní plán",
   "settings.studyPlanDescription": "Vyber, co chceš procvičovat.",
+  "settings.appearance": "Vzhled a jazyk",
+  "settings.appearanceDescription": "Uprav aplikaci tak, aby se pohodlně četla.",
   "settings.examLevel": "Úroveň zkoušky",
   "settings.activeDeck": "Aktivní balíček",
-  "settings.meaningLanguage": "Jazyk významu",
   "settings.appLanguage": "Jazyk aplikace",
   "settings.appLanguageDescription": "Vyber jazyk rozhraní. Slovíčka zůstávají česky.",
   "settings.themeMode": "Motiv",

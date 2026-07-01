@@ -7,7 +7,7 @@ import type { DeckMembershipSummaryProps } from "./deckMembershipSummaryTypes";
 export function DeckMembershipSummary({ card }: DeckMembershipSummaryProps) {
   return (
     <View style={styles.wordSummary}>
-      <MaterialIcons name="library-add" size={size.iconMedium} color={colors.primaryDeep} />
+      <MaterialIcons name="library-add" size={size.iconMedium} color={colors.iconPrimary} />
       <View style={styles.wordCopy}>
         <Text style={styles.word}>{card.cz}</Text>
         <Text style={styles.meaning}>{card.en}</Text>

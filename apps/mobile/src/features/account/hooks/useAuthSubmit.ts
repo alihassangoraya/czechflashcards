@@ -6,27 +6,33 @@ import type { AccountCredentials } from "./useAccountCredentials";
 type Params = {
   configured: boolean;
   credentials: AccountCredentials;
+  showToast: (message: string) => void;
   onAuthenticate: (mode: AuthMode, email: string, password: string, displayName: string) => Promise<string | null>;
 };
 
-export function useAuthSubmit({ configured, credentials, onAuthenticate }: Params) {
+export function useAuthSubmit({ configured, credentials, showToast, onAuthenticate }: Params) {
   const { t } = useI18n();
+  const setFeedback = (message: string) => { credentials.setMessage(message); showToast(message); };
 
   return useCallback(async (mode: AuthMode) => {
     if (!configured) {
-      credentials.setMessage(t("account.syncNotConfigured"));
+      setFeedback(t("account.syncNotConfigured"));
       return;
     }
     if (!isValidEmail(credentials.email)) {
-      credentials.setMessage(t("account.invalidEmail"));
+      setFeedback(t("account.invalidEmail"));
       return;
     }
     if (credentials.password.length < 6) {
-      credentials.setMessage(t("account.shortPassword"));
+      setFeedback(t("account.shortPassword"));
+      return;
+    }
+    if (mode === "sign-up" && !credentials.displayName.trim()) {
+      setFeedback(t("account.nameRequired"));
       return;
     }
 
     const error = await onAuthenticate(mode, credentials.email, credentials.password, credentials.displayName);
-    credentials.setMessage(error || (mode === "sign-up" ? t("account.created") : t("account.signedIn")));
-  }, [configured, credentials, onAuthenticate, t]);
+    setFeedback(error || (mode === "sign-up" ? t("account.created") : t("account.signedIn")));
+  }, [configured, credentials, onAuthenticate, setFeedback, t]);
 }

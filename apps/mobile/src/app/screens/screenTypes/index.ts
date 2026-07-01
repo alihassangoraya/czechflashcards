@@ -4,5 +4,6 @@ export type { MainDeckDataProps } from "./mainDeckDataProps";
 export type { MainNavigationHandlers } from "./mainNavigationHandlers";
 export type { MainRouteStateProps } from "./mainRouteStateProps";
 export type { MainScreenProps, StudyAnimations } from "./mainScreenProps";
+export type { MainSettingsHandlers } from "./mainSettingsHandlers";
 export type { MainStudyDataProps } from "./mainStudyDataProps";
 export type { MainStudyHandlers } from "./mainStudyHandlers";

@@ -29,7 +29,7 @@ export function AccountAuthForm({ busy, displayName, email, mode, password, mess
     <>
       {onProviderSubmit && <AuthProviderButtons busy={busy} onPress={onProviderSubmit} />}
       {onProviderSubmit && <AuthDivider />}
-      <AccountAuthFields activeMode={activeMode} displayName={displayName} email={email} fixedMode={fixedMode} password={password} onChangeDisplayName={onChangeDisplayName} onChangeEmail={onChangeEmail} onChangePassword={onChangePassword} />
+      <AccountAuthFields activeMode={activeMode} displayName={displayName} email={email} password={password} onChangeDisplayName={onChangeDisplayName} onChangeEmail={onChangeEmail} onChangePassword={onChangePassword} />
       <AccountAuthMessage message={message} />
       <AccountAuthActions activeMode={activeMode} busy={busy} fixedMode={fixedMode} onSwitchMode={onSwitchMode} onSubmit={onSubmit} />
     </>

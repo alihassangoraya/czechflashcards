@@ -1,27 +1,36 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { useI18n } from "../../../i18n/I18nProvider";
-import { colors, radius, spacing, typography } from "../../../theme/design";
+import { GrammarConjugationTable } from "./GrammarConjugationTable";
+import { grammarVerbGuideStyles as styles } from "./grammarVerbGuideStyles";
 
-export function GrammarVerbGuide() {
+type Props = {
+  word?: string;
+  reflexive?: boolean;
+};
+
+export function GrammarVerbGuide({ word = "", reflexive = false }: Props) {
   const { t } = useI18n();
 
   return (
     <>
       <Text style={styles.heading}>{t("grammar.presentTense")}</Text>
       <Text style={styles.copy}>{t("grammar.verbCopy")}</Text>
-      <View style={styles.table}>
-        <Text style={styles.tableText}>{t("grammar.subjectsSingular")}</Text>
-        <Text style={styles.tableText}>{t("grammar.subjectsPlural")}</Text>
-      </View>
+      {word ? <GrammarConjugationTable word={word} /> : (
+        <View style={styles.table}>
+          <Text style={styles.tableText}>{t("grammar.subjectsSingular")}</Text>
+          <Text style={styles.tableText}>{t("grammar.subjectsPlural")}</Text>
+        </View>
+      )}
+      {reflexive ? (
+        <View style={styles.note}>
+          <Text style={styles.noteTitle}>{t("grammar.reflexiveTitle")}</Text>
+          <Text style={styles.tableText}>{t("grammar.reflexiveCopy")}</Text>
+        </View>
+      ) : null}
+      <Text style={styles.rulesTitle}>{t("grammar.presentRules")}</Text>
+      <Text style={styles.tableText}>{t("grammar.presentRulesCopy")}</Text>
       <Text style={styles.copy}>{t("grammar.aspectCopy")}</Text>
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  heading: { color: colors.primaryDeep, fontSize: typography.titleSmall, fontWeight: typography.weightSemibold, marginTop: spacing.xxs },
-  copy: { color: colors.textSoft, fontSize: typography.body, lineHeight: typography.bodyLarge + spacing.mdPlus, fontWeight: typography.weightRegular },
-  table: { gap: spacing.md, borderWidth: spacing.hairline, borderColor: colors.border, borderRadius: radius.md, backgroundColor: colors.surface, padding: spacing.xl },
-  tableText: { color: colors.textExample, fontSize: typography.bodySmall, lineHeight: typography.bodyLarge + spacing.xs, fontWeight: typography.weightRegular }
-});

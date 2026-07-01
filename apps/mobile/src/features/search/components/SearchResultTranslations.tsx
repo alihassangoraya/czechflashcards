@@ -8,18 +8,21 @@ import { colors, size, spacing, typography } from "../../../theme/design";
 type Props = { card: Card; meaningLanguage: MeaningLanguage };
 
 export function SearchResultTranslations({ card, meaningLanguage }: Props) {
-  const meaning = selectedMeaning(card, meaningLanguage);
+  const meaning = selectedMeaning(card, meaningLanguage).trim();
+  const english = card.en.trim();
+  const showSelectedMeaning = Boolean(meaning) && meaningLanguage !== "en" && meaning !== english;
+  const isRtl = meaningLanguage === "ur";
 
   return (
     <View style={styles.translationGrid}>
       <View style={styles.translationBlock}>
         <Text style={styles.label}>{languageDisplayNames.en}</Text>
-        <Text style={styles.translation}>{card.en}</Text>
+        <Text style={styles.translation}>{english}</Text>
       </View>
-      {Boolean(meaning) && (
+      {showSelectedMeaning && (
         <View style={styles.translationBlock}>
-          <Text style={[styles.label, meaningLanguage === "ur" && styles.rtl]}>{languageDisplayNames[meaningLanguage]}</Text>
-          <Text style={[styles.translation, meaningLanguage === "ur" && styles.rtl]}>{meaning}</Text>
+          <Text style={[styles.label, isRtl && styles.rtl]}>{languageDisplayNames[meaningLanguage]}</Text>
+          <Text style={[styles.translation, isRtl && styles.rtl]}>{meaning}</Text>
         </View>
       )}
     </View>

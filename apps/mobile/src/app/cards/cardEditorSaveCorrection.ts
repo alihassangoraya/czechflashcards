@@ -15,9 +15,10 @@ type Input = {
 };
 
 export async function saveCardEditorCorrection({ db, editingCard, values, clearEditingCard, forceCard, setPanel, refresh }: Input) {
-  if (!db || !editingCard) return;
+  if (!db || !editingCard) return null;
   const card = await saveEditedCard({ db, editingCard, values });
   forceCard(card.id, true);
   setPanel(clearEditingCard());
   await refresh(db);
+  return card;
 }

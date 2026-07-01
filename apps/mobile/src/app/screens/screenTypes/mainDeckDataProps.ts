@@ -1,5 +1,5 @@
 import type { Card } from "@czech-flashcards/shared";
-import type { ReviewStates, SavedCardIds, StudySettings } from "../../../database";
+import type { DeckMemberships, ReviewStates, SavedCardIds, StudySettings } from "../../../database";
 
 export type MainDeckDataProps = {
   deck: Card[];
@@ -8,4 +8,5 @@ export type MainDeckDataProps = {
   states: ReviewStates;
   settings: StudySettings;
   savedCardIds: SavedCardIds;
+  deckMemberships: DeckMemberships;
 };

@@ -6,7 +6,7 @@ export type DeckMembershipModalProps = Pick<
   | "settings"
   | "deckMemberships"
   | "deckManagementCard"
-  | "onSetPanel"
+  | "onSetScreen"
   | "onSetDeckManagementCard"
   | "onAddCardToDeck"
   | "onRemoveCardFromDeck"

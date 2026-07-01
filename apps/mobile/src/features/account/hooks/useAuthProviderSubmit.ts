@@ -6,17 +6,19 @@ import type { AccountCredentials } from "./useAccountCredentials";
 type Params = {
   configured: boolean;
   credentials: AccountCredentials;
+  showToast: (message: string) => void;
   onAuthenticateProvider: (provider: AuthProvider) => Promise<string | null>;
 };
 
-export function useAuthProviderSubmit({ configured, credentials, onAuthenticateProvider }: Params) {
+export function useAuthProviderSubmit({ configured, credentials, showToast, onAuthenticateProvider }: Params) {
   const { t } = useI18n();
+  const setFeedback = (message: string) => { credentials.setMessage(message); showToast(message); };
 
   return useCallback(async (provider: AuthProvider) => {
     if (!configured) {
-      credentials.setMessage(t("account.syncNotConfigured"));
+      setFeedback(t("account.syncNotConfigured"));
       return;
     }
-    credentials.setMessage((await onAuthenticateProvider(provider)) || t("account.providerStarted"));
-  }, [configured, credentials, onAuthenticateProvider, t]);
+    setFeedback((await onAuthenticateProvider(provider)) || t("account.providerStarted"));
+  }, [configured, onAuthenticateProvider, setFeedback, t]);
 }

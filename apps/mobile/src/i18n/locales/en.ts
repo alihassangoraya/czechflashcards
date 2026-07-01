@@ -1,4 +1,5 @@
 import { enCoreTranslations } from "./en/core";
+import { enToastTranslations } from "./en/toast";
 import { enHomeTranslations } from "./en/home";
 import { enSettingsTranslations } from "./en/settings";
 import { enStudyTranslations } from "./en/study";
@@ -10,6 +11,7 @@ import { enProgressTranslations } from "./en/progress";
 
 export const en = {
   ...enCoreTranslations,
+  ...enToastTranslations,
   ...enHomeTranslations,
   ...enSettingsTranslations,
   ...enStudyTranslations,

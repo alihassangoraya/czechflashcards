@@ -17,7 +17,7 @@ export function FormSection({ icon, title, required = false, children }: Props) 
   return (
     <View style={styles.formSection}>
       <View style={styles.sectionHeader}>
-        <MaterialIcons name={icon} size={size.iconSmall} color={colors.primaryDeep} />
+        <MaterialIcons name={icon} size={size.iconSmall} color={colors.iconPrimary} />
         <Text style={[styles.sectionTitle, { textAlign }]}>{title}</Text>
         {required && <Text style={styles.required}>{t("words.required")}</Text>}
       </View>
