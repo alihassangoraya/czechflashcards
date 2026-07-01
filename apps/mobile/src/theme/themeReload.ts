@@ -1,4 +1,4 @@
-import { Appearance } from "react-native";
+import { Appearance, NativeModules } from "react-native";
 import type { ThemePreference } from "./design";
 
 export function applyNativeThemePreference(themePreference: ThemePreference): void {
@@ -6,5 +6,5 @@ export function applyNativeThemePreference(themePreference: ThemePreference): vo
 }
 
 export function reloadForThemeChange(): void {
-  // Native theme changes are applied through Appearance.setColorScheme.
+  NativeModules.DevSettings?.reload?.();
 }

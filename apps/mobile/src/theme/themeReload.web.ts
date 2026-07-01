@@ -5,5 +5,5 @@ export function applyNativeThemePreference(themePreference: ThemePreference): vo
 }
 
 export function reloadForThemeChange(): void {
-  if (typeof window !== "undefined") window.location.reload();
+  // Web styles use CSS variables, so theme changes apply without a page reload.
 }
