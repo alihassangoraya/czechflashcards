@@ -9,5 +9,5 @@ export function createAssetRequest(request) {
 }
 
 export function shouldDisableCache(appRoute, pathname) {
-  return appRoute || pathname === "/sw.js";
+  return appRoute || pathname === "/index.html" || pathname === "/sw.js";
 }
