@@ -1,3 +1,5 @@
+drop function if exists public.friend_requests();
+
 create or replace function public.friend_requests()
 returns table (id uuid, friend_code text, display_name text, created_at timestamptz)
 language sql
@@ -12,6 +14,8 @@ as $$
 $$;
 
 grant execute on function public.friend_requests() to authenticated;
+
+drop function if exists public.friend_streaks();
 
 create or replace function public.friend_streaks()
 returns table (friend_code text, display_name text, current_streak integer, longest_streak integer, last_completed_on date, privacy_level text, status text)
