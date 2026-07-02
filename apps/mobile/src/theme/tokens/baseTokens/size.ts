@@ -1,3 +1,5 @@
+import { searchSize } from "./searchSize";
+
 export const size = {
   iconSmall: 17, icon: 20,
   iconMedium: 22,
@@ -16,9 +18,7 @@ export const size = {
   progressMetricMinWidth: 150,
   progressStatusMinWidth: 72,
   grammarCaseColumnWidth: 72,
-  searchActionMaxWidth: 132,
-  searchResultActionsWidth: 180,
-  searchResultMinWidth: 180,
+  ...searchSize,
   deckCardPhoneWidth: "48%",
   deckCardTabletWidth: "31.8%",
   studyProgressMaxWidth: 326,
