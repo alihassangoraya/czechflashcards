@@ -14,18 +14,24 @@ export function AuthPanelIntro({ configured, isRegister }: Props) {
 
   return (
     <>
-      <View style={styles.iconWrap}>
-        <MaterialIcons name={isRegister ? "person" : "login"} size={size.iconLarge} color={colors.iconPrimary} />
+      <View style={styles.row}>
+        <View style={styles.iconWrap}>
+          <MaterialIcons name={isRegister ? "person" : "login"} size={size.iconLarge} color={colors.iconPrimary} />
+        </View>
+        <View style={styles.copyStack}>
+          <Text style={styles.heading}>{isRegister ? t("account.backupHeading") : t("account.welcomeHeading")}</Text>
+          <Text style={styles.copy}>{isRegister ? t("account.backupCopy") : t("account.restoreCopy")}</Text>
+        </View>
       </View>
-      <Text style={styles.heading}>{isRegister ? t("account.backupHeading") : t("account.welcomeHeading")}</Text>
-      <Text style={styles.copy}>{isRegister ? t("account.backupCopy") : t("account.restoreCopy")}</Text>
       {!configured && <Text style={styles.warning}>{t("account.supabaseMissing")}</Text>}
     </>
   );
 }
 
 const styles = StyleSheet.create({
+  row: { flexDirection: "row", alignItems: "center", gap: spacing.lg },
   iconWrap: { width: size.headerAction, height: size.headerAction, alignItems: "center", justifyContent: "center", borderRadius: radius.md, backgroundColor: colors.primarySoft },
+  copyStack: { flex: 1, gap: spacing.xs },
   heading: { color: colors.textStrong, fontSize: typography.title, fontWeight: typography.weightSemibold },
   copy: { color: colors.textMuted, fontSize: typography.body, lineHeight: typography.screenTitle },
   warning: { color: colors.dangerStrong, fontSize: typography.bodySmall, fontWeight: typography.weightSemibold }
